@@ -118,10 +118,14 @@ class TTbarDensity:
     def shape(self):
         return (len(self.midx), len(self.midx), self.n_legendre, self.n_hermite)
 
+    def top_functions(self, phi, cos_theta, phi_p, cos_theta_p):
+        """The per-top angular basis (here the paper's M functions); subclasses override this."""
+        return m_functions(phi, cos_theta, phi_p, cos_theta_p, self.midx)
+
     def factors(self, X):
         """Basis factors (M_lep, M_had, p_l, h_n) evaluated on the events in X."""
-        return (m_functions(*(X[k] for k in LEP), self.midx),
-                m_functions(*(X[k] for k in HAD), self.midx),
+        return (self.top_functions(*(X[k] for k in LEP)),
+                self.top_functions(*(X[k] for k in HAD)),
                 legendre_functions(X["cos_Theta"], self.n_legendre),
                 hermite_functions(X["Y"], self.n_hermite, self.y_scale))
 
@@ -203,7 +207,7 @@ class TTbarDensity:
         wp = np.full(n, 2 * pi / n)
         g = np.meshgrid(ph, u, ph, u, indexing="ij")
         w = np.einsum("a,b,c,d->abcd", wp, wu, wp, wu).ravel()
-        vals = m_functions(*(x.ravel() for x in g), self.midx)
+        vals = self.top_functions(*(x.ravel() for x in g))
         return [x.ravel() for x in g], w, vals
 
     def _y_integral(self):
@@ -253,7 +257,7 @@ class TTbarDensity:
             wts = [np.array([1.0]) if i == pos else axes[i][1] for i in range(4)]
             g = np.meshgrid(*pts, indexing="ij")
             w = np.einsum("a,b,c,d->abcd", *wts).ravel()
-            out.append(w @ m_functions(*(v.ravel() for v in g), self.midx))
+            out.append(w @ self.top_functions(*(v.ravel() for v in g)))
         return np.array(out)
 
     # ---- persistence -------------------------------------------------------
@@ -302,6 +306,15 @@ def cv_threshold_scan(s1, s2, counts, thresholds):
 
 def describe(f, flat_index):
     """Physics label of a basis term: the non-constant factors and what they probe."""
+    if getattr(f, "sh", False):
+        a, b, l, n = np.unravel_index(flat_index, f.shape)
+        parts = [f"{side}[Y{l1}^{m1}(θ,φ) Y{l2}^{m2}(θ',φ')]" for side, (l1, l2, m1, m2)
+                 in (("lep", f.midx[a]), ("had", f.midx[b])) if (l1, l2) != (0, 0)]
+        if l:
+            parts.append(f"P{l}(cosΘ)")
+        if n:
+            parts.append(f"H{n}(Y)")
+        return (" x ".join(parts) or "constant"), "spherical-harmonic term"
     if hasattr(f, "term"):
         _, ma, mb, l, n = f.term(flat_index)
     else:
@@ -564,9 +577,65 @@ class ExtendedDensity:
         return f
 
 
+# ----------------------------------------------------------------------------
+# Spherical-harmonic product basis (for comparison with the paper's M functions)
+# ----------------------------------------------------------------------------
+def sh_indices(l1max=1, l2max=2):
+    """[(l1, l2, m1, m2)] of Y_{l1}^{m1}(θ,φ) Y_{l2}^{m2}(θ',φ'), stored like (j1, j2, m', m) so the
+    conjugate partner is (l1, l2, -m1, -m2) as for the M functions."""
+    return [(l1, l2, m1, m2) for l1 in range(l1max + 1) for l2 in range(l2max + 1)
+            for m1 in range(-l1, l1 + 1) for m2 in range(-l2, l2 + 1)]
+
+
+def sh_functions(phi, cos_theta, phi_p, cos_theta_p, idx):
+    """(N, len(idx)) values of Y_{l1}^{m1}(θ, φ) Y_{l2}^{m2}(θ', φ') (orthonormal in dΩ dΩ')."""
+    from scipy.special import sph_harm_y
+    th, thp = np.arccos(np.clip(cos_theta, -1, 1)), np.arccos(np.clip(cos_theta_p, -1, 1))
+    cache = {}
+
+    def Y(l, m, t, p, key):
+        if (key, l, m) not in cache:
+            cache[(key, l, m)] = sph_harm_y(l, m, t, p)
+        return cache[(key, l, m)]
+    return np.stack([Y(l1, m1, th, phi, 0) * Y(l2, m2, thp, phi_p, 1) for l1, l2, m1, m2 in idx], axis=-1)
+
+
+class SHDensity(TTbarDensity):
+    """Same construction as TTbarDensity, but each top's angular factor is the product of two
+    ordinary spherical harmonics, Y_{l1}^{m1}(θ,φ) Y_{l2}^{m2}(θ',φ'), l1 <= l1max, l2 <= l2max
+    ((l1max+1)^2 (l2max+1)^2 functions per top), instead of the spin-weighted M functions."""
+
+    sh = True
+
+    def __init__(self, n_legendre=5, n_hermite=5, y_scale=1.0, l1max=1, l2max=2):
+        super().__init__(n_legendre, n_hermite, y_scale)
+        self.l1max, self.l2max = l1max, l2max
+        self.midx = sh_indices(l1max, l2max)
+
+    def top_functions(self, phi, cos_theta, phi_p, cos_theta_p):
+        return sh_functions(phi, cos_theta, phi_p, cos_theta_p, self.midx)
+
+    def truncated(self, keep):
+        g = SHDensity(self.n_legendre, self.n_hermite, self.y_scale, self.l1max, self.l2max)
+        g.c, g.c_err, g.n_fit = np.where(keep, self.c, 0), self.c_err, self.n_fit
+        return g
+
+    def save(self, path, **meta):
+        np.savez(path, kind="sh", c=self.c, c_err=self.c_err, n_fit=self.n_fit,
+                 params=np.array([self.n_legendre, self.n_hermite, self.l1max, self.l2max]),
+                 y_scale=self.y_scale, meta=repr(meta))
+
+    @classmethod
+    def load(cls, path):
+        z = np.load(path, allow_pickle=False)
+        nl, nh, l1, l2 = (int(v) for v in z["params"])
+        f = cls(nl, nh, float(z["y_scale"]), l1, l2)
+        f.c, f.c_err, f.n_fit = z["c"], z["c_err"], int(z["n_fit"])
+        return f
+
+
 def load_density(path):
-    """Load either a TTbarDensity (paper basis) or an ExtendedDensity file."""
+    """Load a TTbarDensity (paper basis), ExtendedDensity or SHDensity file."""
     z = np.load(path, allow_pickle=False)
-    if "kind" in z and str(z["kind"]) == "extended":
-        return ExtendedDensity.load(path)
-    return TTbarDensity.load(path)
+    kind = str(z["kind"]) if "kind" in z else "paper"
+    return {"extended": ExtendedDensity, "sh": SHDensity}.get(kind, TTbarDensity).load(path)

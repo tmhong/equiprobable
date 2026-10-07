@@ -232,3 +232,29 @@ def test_leave_one_out_exact():
                                  "n_hermite_hi": 5}))
             ref.fit({key: v[keep] for key, v in X.items()})
             assert np.isclose(loo[k], ref({key: v[k:k + 1] for key, v in X.items()})[0], rtol=1e-9, atol=1e-15)
+
+
+# ------------------------------------------------ spherical-harmonic basis ----
+def test_sh_basis_orthonormal_and_closed():
+    g = osde.SHDensity()
+    assert len(g.midx) == 36 and np.prod(g.shape) == 36 * 36 * 25
+    u, wu = legendre.leggauss(12)
+    ph = -pi + 2 * pi * (np.arange(12) + 0.5) / 12
+    wp = np.full(12, 2 * pi / 12)
+    grid = np.meshgrid(ph, u, ph, u, indexing="ij")
+    w = np.einsum("a,b,c,d->abcd", wp, wu, wp, wu).ravel()
+    B = g.top_functions(*(x.ravel() for x in grid))
+    assert np.allclose(np.einsum("k,ki,kj->ij", w, B.conj(), B), np.eye(36), atol=1e-12)
+    part = g.conjugate_partner()
+    assert np.array_equal(np.sort(part), np.arange(part.size))
+
+
+def test_sh_toy_recovery_and_reality():
+    X = toy_events(100000)
+    g = osde.SHDensity().fit(X)
+    re, im = g({k: v[:1000] for k, v in X.items()}, imag=True)
+    assert np.max(abs(im)) < 1e-10 * np.max(abs(re))
+    assert abs(g.integral() - 1) < 0.01
+    u = np.linspace(-0.95, 0.95, 9)       # cos θ' marginal is l <= 2 in both bases
+    ref = 3 / 8 * (1 - u)**2 * 0.3 + 3 / 4 * (1 - u**2) * 0.7
+    assert np.allclose(g.projection("cos_theta_prime", u), ref, atol=0.03)

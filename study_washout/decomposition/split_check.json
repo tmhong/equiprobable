@@ -1,0 +1,72 @@
+{
+ "S1 LHE parton, reco_ok": {
+  "matched": {
+   "n_tt": 16269,
+   "n_hh": 525,
+   "auc_parton_f": 0.6505,
+   "auc_loo": 0.608
+  },
+  "unmatched": {
+   "n_tt": 25048,
+   "n_hh": 3891,
+   "auc_parton_f": 0.6548,
+   "auc_loo": 0.6479
+  }
+ },
+ "S1c post-ISR parton, reco_ok": {
+  "matched": {
+   "n_tt": 16269,
+   "n_hh": 525,
+   "auc_parton_f": 0.643,
+   "auc_loo": 0.5988
+  },
+  "unmatched": {
+   "n_tt": 25048,
+   "n_hh": 3891,
+   "auc_parton_f": 0.6609,
+   "auc_loo": 0.6361
+  }
+ },
+ "S1d pre-hadronization (FSR), reco_ok": {
+  "matched": {
+   "n_tt": 16269,
+   "n_hh": 525,
+   "auc_parton_f": 0.6443,
+   "auc_loo": 0.6021
+  },
+  "unmatched": {
+   "n_tt": 25048,
+   "n_hh": 3891,
+   "auc_parton_f": 0.6366,
+   "auc_loo": 0.6097
+  }
+ },
+ "S2chi chi2 jets + gen lep + true nu": {
+  "matched": {
+   "n_tt": 16269,
+   "n_hh": 525,
+   "auc_parton_f": 0.6389,
+   "auc_loo": 0.6055
+  },
+  "unmatched": {
+   "n_tt": 25048,
+   "n_hh": 3891,
+   "auc_parton_f": 0.5772,
+   "auc_loo": 0.5384
+  }
+ },
+ "S4 gen chi2 reconstruction": {
+  "matched": {
+   "n_tt": 16269,
+   "n_hh": 525,
+   "auc_parton_f": 0.5482,
+   "auc_loo": 0.5541
+  },
+  "unmatched": {
+   "n_tt": 25048,
+   "n_hh": 3891,
+   "auc_parton_f": 0.5391,
+   "auc_loo": 0.5165
+  }
+ }
+}

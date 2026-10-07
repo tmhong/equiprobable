@@ -28,7 +28,7 @@ sys.path.insert(0, HERE)
 from plotting import angles, histo, io, physics  # noqa: E402
 
 CHUNK = 10000           # Delphes events read at a time
-LEVEL_STYLE = {"parton": ":", "gen": "--", "reco": "-"}
+LEVEL_STYLE = {"parton": ":", "parton_trig": "-.", "gen": "--", "reco": "-"}
 
 
 def load_sample(label, path, levels, max_events, angle_opts):
@@ -53,7 +53,7 @@ def load_sample(label, path, levels, max_events, angle_opts):
 
     events = {}
     # the parton record is also needed to truth-tag the W_had jets (up vs down type)
-    need_parton = "parton" in levels or (angle_opts["jet_assignment"] == "truth" and
+    need_parton = "parton" in levels or "parton_trig" in levels or (angle_opts["jet_assignment"] == "truth" and
                                          ("gen" in levels or "reco" in levels))
     if need_parton and lhe:
         print(f"[{label}] reading {lhe}")
@@ -82,6 +82,9 @@ def load_sample(label, path, levels, max_events, angle_opts):
         if lvl != "parton":
             angles.assign_had_quarks(ev, parton, angle_opts["jet_assignment"])
         angles.add_angles(ev, angle_opts["had_fermion"])
+    if "parton_trig" in levels and "parton" in events:
+        # parton level + the offline single-lepton (trigger) cuts on the charged lepton
+        events["parton_trig"] = events["parton"].mask(events["parton"].lep_trigger)
     if "parton" not in levels:
         events.pop("parton", None)
     missing = [l for l in levels if l not in events]
@@ -134,7 +137,8 @@ def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--sample", action="append", required=True, metavar="LABEL=PATH")
     p.add_argument("--config", default=os.path.join(HERE, "plot_config.py"))
-    p.add_argument("--levels", default="parton,gen,reco", help="subset of parton,gen,reco to draw")
+    p.add_argument("--levels", default="parton,parton_trig,gen,reco",
+                   help="subset of parton,parton_trig,gen,reco to draw")
     p.add_argument("--only", default=None, help="comma list of plot names to make")
     p.add_argument("--norm", choices=["unit", "xsec", "none"], default="unit")
     p.add_argument("--lumi", type=float, default=140.0, help="fb^-1, used with --norm xsec")
@@ -184,7 +188,8 @@ def main():
                     if not xsec:
                         sys.exit(f"--norm xsec needs a cross section for sample {label}")
                     w = w * xsec * 1e3 * args.lumi / len(events[lvl])
-                name = f"{label} ({lvl})" if multi else lvl
+                shown = lvl.replace("parton_trig", "parton+trig")
+                name = f"{label} ({shown})" if multi else shown
                 # ratio reference: with several samples, the first sample at the same
                 # level; with one sample, the first level drawn
                 ref = next((i for i, e in enumerate(entries) if e["level"] == lvl), len(entries)) \

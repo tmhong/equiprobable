@@ -1,0 +1,26 @@
+paper (M functions)    parton       all  terms  14400  ISE -7.229e-06 ± 1.2e-07  worst χ²/ndf     7.5 (cos_Theta)  Y    28.8  f<=0 1.6%  AUC 0.6526580849999999
+paper (M functions)    parton       CV   terms    326  ISE -7.693e-06 ± 1.1e-07  worst χ²/ndf     6.9 (cos_Theta)  Y    28.6  f<=0 0.2%  AUC 0.6653885500000001
+paper (M functions)    parton_trig  all  terms  14400  ISE -8.493e-06 ± 1.7e-07  worst χ²/ndf    47.0 (phi_prime)  Y     7.9  f<=0 1.6%  AUC 0.6694251331588893
+paper (M functions)    parton_trig  CV   terms    385  ISE -9.077e-06 ± 1.5e-07  worst χ²/ndf    45.7 (phi_prime)  Y     7.8  f<=0 0.4%  AUC 0.684536226130241
+paper (M functions)    gen          all  terms  14400  ISE -1.197e-05 ± 3.9e-07  worst χ²/ndf    68.3 (cos_theta)  Y  1057.0  f<=0 2.7%  AUC 0.5253343824277992
+paper (M functions)    gen          CV   terms    459  ISE -1.309e-05 ± 3.6e-07  worst χ²/ndf    68.3 (cos_theta)  Y   906.9  f<=0 0.9%  AUC 0.5252100927795658
+paper (M functions)    reco         all  terms  14400  ISE -1.217e-05 ± 6.1e-07  worst χ²/ndf    66.9 (cos_theta_prime)  Y   473.8  f<=0 4.5%  AUC 0.5068474048080449
+paper (M functions)    reco         CV   terms    342  ISE -1.428e-05 ± 5.3e-07  worst χ²/ndf    68.8 (cos_theta_prime)  Y   473.3  f<=0 1.1%  AUC 0.5049804465860088
+spherical harmonics    parton       all  terms  32400  ISE -6.174e-06 ± 1.3e-07  worst χ²/ndf     7.5 (cos_Theta)  Y    28.8  f<=0 4.0%  AUC 0.638986125
+spherical harmonics    parton       CV   terms    150  ISE -7.634e-06 ± 1.1e-07  worst χ²/ndf     7.3 (cos_Theta)  Y    28.6  f<=0 0.1%  AUC 0.669806165
+spherical harmonics    parton_trig  all  terms  32400  ISE -7.098e-06 ± 1.9e-07  worst χ²/ndf     8.2 (phi_prime)  Y     7.9  f<=0 4.5%  AUC 0.6477895947316643
+spherical harmonics    parton_trig  CV   terms    269  ISE -9.008e-06 ± 1.5e-07  worst χ²/ndf     7.4 (phi_prime)  Y     7.8  f<=0 0.3%  AUC 0.688283240799947
+spherical harmonics    gen          all  terms  32400  ISE -9.621e-06 ± 4.5e-07  worst χ²/ndf    68.3 (cos_theta)  Y  1057.0  f<=0 6.6%  AUC 0.5199112126024554
+spherical harmonics    gen          CV   terms    555  ISE -1.311e-05 ± 3.6e-07  worst χ²/ndf    68.3 (cos_theta)  Y   906.9  f<=0 1.3%  AUC 0.5247368170806952
+spherical harmonics    reco         all  terms  32400  ISE -8.401e-06 ± 7.3e-07  worst χ²/ndf    66.9 (cos_theta_prime)  Y   473.8  f<=0 9.9%  AUC 0.5069920913423769
+spherical harmonics    reco         CV   terms    279  ISE -1.429e-05 ± 5.2e-07  worst χ²/ndf    64.5 (cos_theta_prime)  Y   473.3  f<=0 1.5%  AUC 0.5099388519352641
+extended               parton       all  terms  14436  ISE -7.312e-06 ± 1.2e-07  worst χ²/ndf     1.5 (phi_prime_tilde)  Y     0.5  f<=0 1.4%  AUC 0.65478663
+extended               parton       CV   terms    333  ISE -7.716e-06 ± 1.1e-07  worst χ²/ndf     1.7 (phi_prime_tilde)  Y     0.5  f<=0 0.3%  AUC 0.66594342
+extended               parton_trig  all  terms  18936  ISE -8.536e-06 ± 1.7e-07  worst χ²/ndf     0.9 (phi_prime_tilde)  Y     0.8  f<=0 2.1%  AUC 0.6665041234284201
+extended               parton_trig  CV   terms    498  ISE -9.288e-06 ± 1.5e-07  worst χ²/ndf     1.8 (phi_prime)  Y     0.8  f<=0 0.4%  AUC 0.6841226945843062
+extended               gen          all  terms  32494  ISE -1.113e-05 ± 4.4e-07  worst χ²/ndf     1.3 (cos_Theta)  Y    16.1  f<=0 5.7%  AUC 0.5279073260448875
+extended               gen          CV   terms    679  ISE -1.420e-05 ± 3.8e-07  worst χ²/ndf     1.4 (phi_prime)  Y    43.0  f<=0 1.6%  AUC 0.5350676477496616
+extended               reco         all  terms  49867  ISE -5.832e-06 ± 7.1e-07  worst χ²/ndf     1.1 (cos_theta_tilde)  Y     9.6  f<=0 12.7%  AUC 0.5073148536112712
+extended               reco         CV   terms    323  ISE -1.521e-05 ± 5.4e-07  worst χ²/ndf     2.4 (cos_theta_prime_tilde)  Y     1.6  f<=0 1.4%  AUC 0.5117217915815571
+wrote osde_sh/basis_comparison.png
+CMP_DONE

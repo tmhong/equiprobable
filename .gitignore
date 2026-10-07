@@ -23,3 +23,6 @@ __pycache__/
 .pytest_cache/
 *.pyc
 .DS_Store
+osde_sh/
+ml/
+study_washout/**/*.npz

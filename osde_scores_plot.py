@@ -19,7 +19,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--dir", default=os.path.join(HERE, "osde"))
     args = p.parse_args()
-    for lvl in ("parton", "gen", "reco"):
+    for lvl in ("parton", "parton_trig", "gen", "reco"):
         path = os.path.join(args.dir, f"scores_{lvl}.npz")
         if os.path.exists(path):
             z = np.load(path)

@@ -10,7 +10,7 @@ reconstruction vs jet cuts, response and jet assignment), so they need not.
 Compared: parton (all), gen and reco (events with a reconstructed tt̄), and reco restricted to
 events whose jets are all correctly assigned (perfect flavour tagging + correct assignment).
 
-Output: plots/lep_vs_had.png and plots/lep_vs_had.json (KS distance and p-value per pair)
+Output: plots/lep_vs_had_<case>.png (one per level) and plots/lep_vs_had.json (KS distance, p-value)
 """
 import argparse
 import json
@@ -28,7 +28,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 import make_plots  # noqa: E402
-from plotting import summary  # noqa: E402
+from plotting import style, summary  # noqa: E402
 
 PAIRS = [("cos_theta", "cos_theta_tilde", r"$\cos\theta$ vs $\cos\tilde\theta$", (-1, 1)),
          ("phi", "phi_tilde", r"$\phi$ vs $\tilde\phi$", (-np.pi, np.pi)),
@@ -60,33 +60,33 @@ def main():
     P, G, R = ev["parton"], ev["gen"], ev["reco"]
     cases = [("parton", P, np.ones(len(P), bool)), ("gen", G, np.asarray(G.reco_ok)),
              ("reco", R, np.asarray(R.reco_ok)), ("reco, correct jets", R, summary.correct_assignment(R, P))]
-    fig, axs = plt.subplots(len(cases), len(PAIRS), figsize=(17, 13))
+    style.use()
     res = {}
-    for i, (lab, E, m) in enumerate(cases):
+    for lab, E, m in cases:
         res[lab] = {"n": int(m.sum())}
-        for j, (a, b, title, rng) in enumerate(PAIRS):
-            va, vb = np.asarray(E[a], float)[m], np.asarray(E[b], float)[m]
-            ok = np.isfinite(va) & np.isfinite(vb)
-            va, vb = va[ok], vb[ok]
-            d, pv = ks(va, vb)
-            res[lab][f"{a}|{b}"] = {"ks": d, "p": pv}
-            ax = axs[i, j]
-            edges = np.linspace(*rng, 26)
-            ax.hist(va, edges, histtype="step", density=True, lw=1.6, color="#1f4e9c", label="leptonic top")
-            ax.hist(vb, edges, histtype="step", density=True, lw=1.6, color="#d1495b", ls="--",
-                    label="hadronic top (down-type $q$)")
-            ax.set_title(f"{lab}: KS {d:.3f}, p = {pv:.2g}", fontsize=9)
-            ax.set_xlim(*rng)
-            ax.set_ylim(bottom=0)
-            if i == len(cases) - 1:
+        tag = lab.replace(", ", "_").replace(" ", "_")
+        for part, pairs in (("decay", PAIRS[2:]), ("top", PAIRS[:2])):
+            fig, axs = plt.subplots(1, 2, figsize=(14, 5.6))
+            for ax, (a, b, title, rng) in zip(axs, pairs):
+                va, vb = np.asarray(E[a], float)[m], np.asarray(E[b], float)[m]
+                ok = np.isfinite(va) & np.isfinite(vb)
+                va, vb = va[ok], vb[ok]
+                d, pv = ks(va, vb)
+                res[lab][f"{a}|{b}"] = {"ks": d, "p": pv}
+                edges = np.linspace(*rng, 26)
+                ax.hist(va, edges, histtype="step", density=True, lw=2.4, color="#1f4e9c", label="leptonic top")
+                ax.hist(vb, edges, histtype="step", density=True, lw=2.4, color="#d1495b", ls="--",
+                        label="hadronic (down-type $q$)")
+                ax.set_title(f"KS distance {d:.3f}, p = {pv:.2g}", fontsize=17)
+                ax.set_xlim(*rng)
+                ax.set_ylim(bottom=0)
                 ax.set_xlabel(title)
-            if j == 0:
-                ax.set_ylabel(f"{lab}\n({m.sum()} events)", fontsize=9)
-    axs[0, 0].legend(fontsize=8, frameon=False, loc="lower center")
-    fig.suptitle(r"Leptonic vs hadronic top decay angles (hadronic side: down-type quark, truth-tagged)", fontsize=12)
-    fig.tight_layout()
-    os.makedirs(os.path.dirname(args.out), exist_ok=True)
-    fig.savefig(args.out + ".png", dpi=110)
+            axs[0].legend(fontsize=15, frameon=True, framealpha=0.9, loc="lower center")
+            fig.suptitle(f"{lab} ({m.sum()} events)")
+            fig.tight_layout()
+            os.makedirs(os.path.dirname(args.out), exist_ok=True)
+            fig.savefig(f"{args.out}_{tag}_{part}.png", dpi=110)
+            plt.close(fig)
     with open(args.out + ".json", "w") as f:
         json.dump(res, f, indent=1)
     for lab, r in res.items():

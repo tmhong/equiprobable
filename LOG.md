@@ -172,3 +172,59 @@ Newest entries are at the bottom. Numbers refer to the samples listed under "Sam
 ### t fills [0, 1] (user request)
 - **Problem:** with s′₀ and s′₁ at the strict min and max, single extreme events stretch the range and leave empty bins (up to 18 of 50 for hh). No choice of y₀ fixes this.
 - **Fix:** s′₀ and s′₁ are now the 0.5% and 99.5% quantiles of the combined sample, with events beyond them in the first or last bin. Result: no empty bins for tt̄ or hh, at any level, with either basis (`--edge-quantile`).
+
+### Spherical-harmonic basis (user request)
+- **Basis:** `SHDensity`, with Y_{l₁}^{m₁}(θ,φ)·Y_{l₂}^{m₂}(θ′,φ′), l₁ ≤ 1, l₂ ≤ 2, per top: 36 functions (vs 24 M), 32,400 coefficients. Tests: orthonormality, conjugation closure, toy recovery.
+- **Comparison** (`basis_compare.py`): held-out ISE = Σ|ĉ|² − 2⟨f̂⟩ on the independent tt̄ sample, with paired differences vs M.
+  - All terms: SH is worse at every level (10–15σ).
+  - After CV truncation: SH ≈ M at gen and reco; M is better at parton level (+0.06 ± 0.02 ×10⁻⁶, about 3σ).
+  - SH describes the trigger-sculpted φ′ better (χ²/ndf 7.4 vs 45.7), because l₂ = 2 allows a second φ′ harmonic.
+  - The extended basis is best at gen and reco (> 8σ). The hh AUC is basis-independent.
+- **Bug found and fixed:** `osde_simplify.py` saved the Kronmal–Tarter (√2σ) truncation as `_simplified`, not the CV-best one. The truncation was rerun for all bases and levels, and the document and slides were corrected.
+
+### Parton + lepton trigger level (user request: "see it through")
+- `parton_trig` = parton events whose lepton passes p_T > 25 GeV and |η| < 2.47 (e) / 2.5 (μ); 71.5% of tt̄.
+- Carried through plots, angle caches, order scan, and OSDE in all three bases.
+- Paper-basis AUC 0.669 (CV: 0.685). The trigger sculpts φ′ and cos θ′, so it needs j₁ ≥ 4 and j₂ ≥ 8.
+
+### Is the OSDE approach helping? ML comparison (`ml_compare.py`, user request)
+- **Test set:** the same for every method (independent tt̄ + 40% held-out hh).
+- **Unsupervised** (trained on tt̄ only, same angles), parton level:
+  - OSDE f_tt̄: 0.652 (all terms), 0.665 (CV);
+  - normalizing flow (RealNVP): 0.654;
+  - Gaussian mixture: 0.583;
+  - autoencoder: 0.528.
+  - So OSDE is as good as or better than modern density estimators, with about 330 interpretable coefficients.
+- **Supervised** (tt̄ vs hh labels):
+  - angles only: BDT 0.881, MLP 0.887, FT-Transformer 0.884;
+  - adding y = f_tt̄ (leave-one-out for tt̄ training events): no gain (Δ ≤ 0.002);
+  - angles + momenta: 0.9995+ (the masses give hh away);
+  - particle transformer on momenta: about 1.0.
+- **Controls:** shuffled labels 0.49; tt̄-vs-tt̄ 0.50.
+- Paired bootstrap errors on the AUC differences were added; the parton run is being redone with them.
+
+### Legibility (user request)
+- Shared plotting style (`plotting/style.py`).
+- Multi-panel grids split into two figures (production + leptonic top, hadronic top). Score plots are 2×2, ROC curves one panel per slide, validation plots at most two per slide.
+- Long tables continue on further slides.
+- The deck is reviewed page by page.
+
+### Readable document
+- Claude Doc "tt̄ vs hh → bb̄ℓνqq̄′: angles, OSDE density and ML comparison": https://claude.ai/code/artifact/9b8d4480-1510-428c-8332-45c9a6454023
+
+## 2026-10-07 — Legibility pass 2; why the separation washes out at gen level
+
+- Second slide review: outline duplicate removed, MG5 syntax replaced by physics notation (tt̄ and hh),
+  caption-free angle diagram for the slide, Δp_z split into 3 figures, lep-vs-had per case 1×2,
+  scores split into two wide figures per level, CV curves one per slide, larger legends/fonts in
+  acceptance, truncation, basis comparison; "parton_trig" no longer appears in figures.
+- Question: parton-level f_tt̄ separates hh/tt̄ (AUC 0.65) but gen gives 0.525. Two studies
+  (study_washout/mechanism, study_washout/decomposition):
+  * Parton: hh "tops" are W(h1)+b(h2), m_Wb median 135 GeV, one W off-shell (median 32 GeV) ->
+    cosθ, cosθ̃ peak at −1, cosΘ isotropic (no t-channel), no V−A zero in cosθ'.
+  * Step losses in f_tt̄ AUC (LOO): selection 0, ISR recoil −0.007, FSR −0.033, χ² jet choice −0.063
+    (largest; χ² picks true jets in 8% of hh vs 34% tt̄), ν from m_W constraint −0.028 (−0.05 on matched
+    events; mostly the p_z-solution choice). Supervised BDT on angles: 0.88 -> 0.66.
+  * Information is not gone: BDT on hypothesis-free gen observables (m_bb, ΔR_bb, MET, m_T, …) 0.87.
+  * Conclusion: the tt̄-hypothesis reconstruction moves hh into the tt̄-dense region of angle space.
+- Slides: new section "Why the separation washes out at gen level".

@@ -46,12 +46,14 @@ def draw(plot, entries, norm, outpath, lumi_fb=None):
     entries: list of dicts {label, values, weights}
     norm:    'unit' (area 1), 'xsec' (weights already in events/lumi) or 'none'
     """
+    from . import style
+    style.use()
     ratio = plot.get("ratio", True) and len(entries) > 1
     if ratio:
-        fig, (ax, rax) = plt.subplots(2, 1, figsize=(6.4, 6.0), sharex=True,
-                                      gridspec_kw={"height_ratios": [3, 1], "hspace": 0.05})
+        fig, (ax, rax) = plt.subplots(2, 1, figsize=(7.6, 7.0), sharex=True,
+                                      gridspec_kw={"height_ratios": [3, 1], "hspace": 0.0})
     else:
-        fig, ax = plt.subplots(figsize=(6.4, 4.8))
+        fig, ax = plt.subplots(figsize=(7.6, 5.8))
         rax = None
 
     hists = []
@@ -79,11 +81,15 @@ def draw(plot, entries, norm, outpath, lumi_fb=None):
     else:
         ax.set_ylim(bottom=0)
     ax.margins(x=0)
-    ax.legend(frameon=False, fontsize=8, loc=plot.get("legend_loc", "best"))
+    # legend above the axes so it never covers the data
+    ncol = 2 if len(entries) > 2 else len(entries)
+    ax.legend(frameon=False, fontsize=15, loc="lower left", bbox_to_anchor=(0.0, 1.0), ncol=ncol,
+              borderaxespad=0.2, handlelength=1.6, columnspacing=1.0)
     title = plot.get("title", "")
     if norm == "xsec" and lumi_fb:
         title = (title + "   " if title else "") + f"$\\mathcal{{L}}$ = {lumi_fb:g} fb$^{{-1}}$"
-    ax.set_title(title, fontsize=9, loc="right")
+    if title:
+        ax.text(1.0, 1.0, title, transform=ax.transAxes, ha="right", va="bottom", fontsize=14)
 
     if rax is not None:
         # each entry is compared with entries[ent["ref"]] (default: the first entry)
@@ -104,8 +110,10 @@ def draw(plot, entries, norm, outpath, lumi_fb=None):
         rax.stairs(1 + band, edges, baseline=1 - band, fill=True, color="0.85", zorder=0)
         rax.axhline(1, color="0.3", linewidth=0.8)
         rax.set_ylim(*plot.get("ratio_range", (0.5, 1.5)))
+        rax.set_yticks([0.75, 1.0, 1.25])                  # no tick at the panel edges (no collisions)
+        ax.yaxis.get_major_ticks()[0].label1.set_visible(False)
         rax.set_ylabel(plot.get("ratio_label") or f"Ratio to\n{entries[refs[0]].get('ref_label') or entries[refs[0]]['label']}",
-                       fontsize=8)
+                       fontsize=14)
         rax.set_xlabel(plot.get("xlabel", plot["name"]))
     else:
         ax.set_xlabel(plot.get("xlabel", plot["name"]))

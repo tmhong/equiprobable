@@ -39,7 +39,7 @@ def main():
 
     res = {}
     for d, lab in ((args.paper, "paper"), (args.extended, "extended")):
-        for lvl in ("parton", "gen", "reco"):
+        for lvl in ("parton", "parton_trig", "gen", "reco"):
             for kind in ("", "_simplified"):
                 path = os.path.join(d, f"f_ttbar_{lvl}{kind}.npz")
                 if not os.path.exists(path):

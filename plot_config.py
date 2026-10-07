@@ -3,7 +3,8 @@ Plot definitions for make_plots.py.  Edit freely.
 
 Each entry in PLOTS is a dict:
   name     output file name (and default x label)
-  levels   which event levels to draw, any of "parton", "gen", "reco".
+  levels   which event levels to draw, any of "parton", "parton_trig" (parton events whose
+           lepton passes the offline single-lepton cuts), "gen", "reco".
            All requested levels for all samples are overlaid on one canvas.
   expr     function ev -> values with one entry per event: a number, or
            several per event (jagged like ev.jets.pt, or an (nevents, k) array
@@ -49,7 +50,7 @@ CUTS = {
 #                   tagging), "softer" or "harder" (lower/higher-pT jet)
 ANGLES = {"had_fermion": "down", "jet_assignment": "truth"}
 
-ALL = ["parton", "gen", "reco"]
+ALL = ["parton", "parton_trig", "gen", "reco"]
 GR = ["gen", "reco"]
 
 PLOTS = [

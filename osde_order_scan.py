@@ -62,7 +62,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--train", required=True)
     p.add_argument("--tag", default="down_truth")
-    p.add_argument("--levels", default="parton,gen,reco")
+    p.add_argument("--levels", default="parton,parton_trig,gen,reco")
     p.add_argument("--out", default=os.path.join(HERE, "osde", "order_scan.json"))
     args = p.parse_args()
     z = np.load(os.path.join(args.train, f"angles_{args.tag}.npz"))

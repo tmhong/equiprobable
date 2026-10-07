@@ -1,0 +1,50 @@
+[run_seed1001] reading samples/ttbar_bblvqq/run_seed1001/parton_events.lhe.gz
+[run_seed1001] reading samples/ttbar_bblvqq/run_seed1001/delphes_events.root
+[osde] cached angles in samples/ttbar_bblvqq/run_seed1001/angles_down_truth.npz
+[run_seed2001] reading samples/hh_bblvqq/run_seed2001/parton_events.lhe.gz
+[run_seed2001] reading samples/hh_bblvqq/run_seed2001/delphes_events.root
+[osde] cached angles in samples/hh_bblvqq/run_seed2001/angles_down_truth.npz
+[run_seed12345] reading samples/ttbar_bblvqq/run_seed12345/parton_events.lhe.gz
+[run_seed12345] reading samples/ttbar_bblvqq/run_seed12345/delphes_events.root
+[osde] cached angles in samples/ttbar_bblvqq/run_seed12345/angles_down_truth.npz
+[osde] parton: N_train=100000  significant(>3σ)=186/14400  ∫f=1.006  f<=0: train 1.5%, hh 5.9%, test 1.6%  AUC(hh vs tt)=0.653
+[osde] parton_trig: N_train=71322  significant(>3σ)=255/14400  ∫f=1.000  f<=0: train 2.0%, hh 6.8%, test 1.6%  AUC(hh vs tt)=0.669
+[osde] gen: N_train=41317  significant(>3σ)=330/14400  ∫f=0.985  f<=0: train 2.7%, hh 4.3%, test 2.7%  AUC(hh vs tt)=0.525
+[osde] reco: N_train=24030  significant(>3σ)=253/14400  ∫f=0.987  f<=0: train 4.5%, hh 4.8%, test 4.5%  AUC(hh vs tt)=0.507
+[osde] outputs in osde_tmp_cache_build
+angle                      parton  parton_trig       gen      reco   (best 1-D order)
+cos_theta                       0         4        13        18
+phi                             0         2         4         4
+cos_theta_prime                 2         8         6         5
+phi_prime                       1         7        12         4
+cos_theta_tilde                 1         1         7         7
+phi_tilde                       0         0         4         3
+cos_theta_prime_tilde           2         2         8        24
+phi_prime_tilde                 1         1         4         5
+cos_Theta                      10         6         6        13
+Y                              10        10         8        24
+parton: needs j1max >= 1, j2max >= 2, min(j1max,j2max) >= 1, n_legendre >= 11, n_hermite >= 11 (Hermite scale 1.111)
+parton_trig: needs j1max >= 4, j2max >= 8, min(j1max,j2max) >= 7, n_legendre >= 7, n_hermite >= 11 (Hermite scale 1.03)
+gen: needs j1max >= 13, j2max >= 8, min(j1max,j2max) >= 12, n_legendre >= 7, n_hermite >= 9 (Hermite scale 0.799)
+reco: needs j1max >= 18, j2max >= 24, min(j1max,j2max) >= 5, n_legendre >= 14, n_hermite >= 25 (Hermite scale 0.791)
+[osde] angles from cache samples/ttbar_bblvqq/run_seed1001/angles_down_truth.npz
+[osde] angles from cache samples/hh_bblvqq/run_seed2001/angles_down_truth.npz
+[osde] angles from cache samples/ttbar_bblvqq/run_seed12345/angles_down_truth.npz
+[osde] parton_trig: N_train=71322  significant(>3σ)=255/14400  ∫f=1.000  f<=0: train 2.0%, hh 6.8%, test 1.6%  AUC(hh vs tt)=0.669
+[osde] outputs in osde
+[simplify] parton_trig: kept  all 14400, KT 2756, CV-best (t=2.5) 385, 5σ 108
+[osde] angles from cache samples/ttbar_bblvqq/run_seed1001/angles_down_truth.npz
+[osde] angles from cache samples/hh_bblvqq/run_seed2001/angles_down_truth.npz
+[osde] angles from cache samples/ttbar_bblvqq/run_seed12345/angles_down_truth.npz
+[osde] parton_trig: N_train=71322  significant(>3σ)=269/32400  ∫f=1.000  f<=0: train 4.7%, hh 10.7%, test 4.5%  AUC(hh vs tt)=0.648
+[osde] outputs in osde_sh
+[simplify] parton_trig: kept  all 32400, KT 5188, CV-best (t=3) 269, 5σ 102
+[osde] angles from cache samples/ttbar_bblvqq/run_seed1001/angles_down_truth.npz
+[osde] angles from cache samples/hh_bblvqq/run_seed2001/angles_down_truth.npz
+[osde] angles from cache samples/ttbar_bblvqq/run_seed12345/angles_down_truth.npz
+[osde] parton_trig: extended basis J1=7 J2=8 Legendre 7 Hermite 11 (scale 1.03): 18936 terms A 14400, L 2260, H 2260, P 10, Y 6
+[osde] parton_trig: N_train=71322  significant(>3σ)=316/18936  ∫f=0.999  f<=0: train 2.3%, hh 8.2%, test 2.1%  AUC(hh vs tt)=0.667
+[osde] outputs in osde_ext
+[simplify] parton_trig: kept  all 18936, KT 3581, CV-best (t=2.5) 498, 5σ 133
+TRIG_DONE
+EXIT=0

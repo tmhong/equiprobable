@@ -28,7 +28,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 from osde_fit import ANGLE_TEX  # noqa: E402
-from plotting import osde  # noqa: E402
+from plotting import osde, style  # noqa: E402
 
 # angle: (kind, order of the paper's basis)
 ANGLES = {"cos_theta": ("leg", 1), "cos_theta_prime": ("leg", 2), "phi_prime": ("four", 1),
@@ -54,14 +54,15 @@ def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--train", required=True, help="tt̄ fit sample (angle cache)")
     p.add_argument("--osde", default=os.path.join(HERE, "osde"))
-    p.add_argument("--levels", default="parton,gen,reco")
+    p.add_argument("--levels", default="parton,parton_trig,gen,reco")
     p.add_argument("--tag", default="down_truth")
     args = p.parse_args()
 
     z = np.load(os.path.join(args.train, f"angles_{args.tag}.npz"))
     for lvl in args.levels.split(","):
         f = osde.load_density(os.path.join(args.osde, f"f_ttbar_{lvl}.npz"))
-        fig, axs = plt.subplots(2, 3, figsize=(15, 7.6))
+        style.use()
+        fig, axs = plt.subplots(2, 3, figsize=(14.5, 8.0))
         res = {}
         for ax, (a, (kind, order)) in zip(axs.ravel(), ANGLES.items()):
             v = z[f"{lvl}/{a}"]
@@ -92,11 +93,10 @@ def main():
             ax.set_xlabel(ANGLE_TEX[a])
             ax.set_xlim(lo, hi)
             ax.set_ylim(bottom=0)
-            ax.set_title(f"$\\chi^2$/ndf: same order {res[a]['chi2_same_order']:.0f}, "
-                         f"high order {res[a]['chi2_high_order']:.0f} / {len(cen)}", fontsize=9)
-        axs[0, 0].legend(fontsize=7.5, frameon=False, loc="lower left")
+            ax.set_title(f"$\\chi^2$: {res[a]['chi2_same_order']:.0f} vs {res[a]['chi2_high_order']:.0f} (ndf {len(cen)})", fontsize=18)
+        axs[0, 0].legend(fontsize=14, frameon=True, framealpha=0.9, loc="lower left")
         fig.suptitle(f"{lvl} level: the basis order limits what $f_{{t\\bar t}}$ can describe "
-                     "(black = dashed orange: code consistent)", fontsize=11)
+                     "(black = dashed orange: code consistent)", fontsize=16)
         fig.tight_layout()
         fig.savefig(os.path.join(args.osde, f"truncation_{lvl}.png"), dpi=110)
         plt.close(fig)

@@ -1,0 +1,3 @@
+[tt] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed1001/parton_events.lhe.gz
+[tt] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed1001/delphes_events.root
+saved tt 40000 matched 0.1625 reco_ok 0.41315

@@ -27,7 +27,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 import make_plots  # noqa: E402
-from plotting import physics, summary  # noqa: E402
+from plotting import physics, summary, style  # noqa: E402
 
 
 def width(d):
@@ -61,7 +61,10 @@ def main():
     bins = np.linspace(-400, 400, 81)
     res = {}
 
-    fig, axs = plt.subplots(1, 3, figsize=(16, 4.6))
+    style.use()
+
+    figs = [plt.subplots(figsize=(9.5, 6.6)) for _ in range(3)]
+    axs = [a for _, a in figs]
     for lvl, c in (("gen", "#d1495b"), ("reco", "#1f4e9c")):
         E = ev[lvl]
         ok = np.asarray(E.reco_ok)
@@ -70,7 +73,7 @@ def main():
         res[lvl] = {"median": m, "half_width_68": w, "rms": float(d.std()), "n": int(ok.sum())}
         axs[0].hist(np.clip(d, bins[0], bins[-1]), bins, histtype="step", density=True, lw=1.6, color=c,
                     label=f"{lvl}: median {m:+.1f}, 68% half-width {w:.0f} GeV")
-    axs[0].set_title("all events with a reconstructed $t\\bar t$", fontsize=10)
+    axs[0].set_title("gen vs reco", fontsize=18)
 
     R = ev["reco"]
     ok = np.asarray(R.reco_ok)
@@ -82,7 +85,7 @@ def main():
         res[f"reco_{lab}"] = {"median": m, "half_width_68": w, "n": int(mask.sum())}
         axs[1].hist(np.clip(d, bins[0], bins[-1]), bins, histtype="step", density=True, lw=1.6, color=c,
                     label=f"{lab} ({mask.sum()}): {w:.0f} GeV")
-    axs[1].set_title("reco level: effect of the jet assignment", fontsize=10)
+    axs[1].set_title("reco: effect of the jet assignment", fontsize=18)
 
     sols, degenerate = both_solutions(R)
     chosen = np.asarray(R.nu.pz)
@@ -100,17 +103,18 @@ def main():
                      "frac_chi2_picks_closer": float(np.mean(closer[two])),
                      "frac_smaller_picks_closer": float(np.mean((np.abs(smaller - truth) <= np.abs(
                          np.where(smaller == sols[0], sols[1], sols[0]) - truth))[two]))}
-    axs[2].set_title(f"reco, two real solutions ({two.sum()} events; "
-                     f"{100 * res['choice']['frac_complex']:.0f}% had none)", fontsize=10)
+    axs[2].set_title(f"reco: choice of solution ({two.sum()} events)", fontsize=18)
 
     for ax in axs:
         ax.set_xlabel(r"$\Delta p_z = p_z^{\nu,\mathrm{reco}} - p_z^{\nu,\mathrm{parton}}$ [GeV]")
         ax.set_ylabel("normalized")
-        ax.legend(fontsize=7.5, frameon=False, loc="upper left")
+        ax.legend(fontsize=14, frameon=True, framealpha=0.9, loc="upper left")
         ax.set_xlim(bins[0], bins[-1])
-    fig.tight_layout()
     os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
-    fig.savefig(args.out, dpi=120)
+    stem, ext = os.path.splitext(args.out)
+    for (fig, _), key in zip(figs, "abc"):
+        fig.tight_layout()
+        fig.savefig(f"{stem}_{key}{ext}", dpi=110)
     with open(os.path.splitext(args.out)[0] + ".json", "w") as f:
         json.dump(res, f, indent=1)
     print(json.dumps(res, indent=1))

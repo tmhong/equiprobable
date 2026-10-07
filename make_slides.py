@@ -14,6 +14,7 @@ Examples:
 import argparse
 import json
 import os
+import re
 import runpy
 import shutil
 import subprocess
@@ -47,35 +48,33 @@ def build_slides(S, meta):
         bullets("Sample generation", [
             r"MadGraph5\_aMC@NLO 3.6.7 (LO, \texttt{sm}, 4-flavour proton) "
             r"$\to$ Pythia8 $\to$ Delphes 3.5.1, ATLAS card, \textbf{no pileup}",
-            r"Decay chains keep spin correlations; no generator-level cuts:",
-            code(r"""generate    p p > t t~, (t > b w+, w+ > lep+ nul), (t~ > b~ w-, w- > q q)
-add process p p > t t~, (t > b w+, w+ > q q), (t~ > b~ w-, w- > lep- nul~)"""),
+            r"Decay chains (spin correlations kept), no generator-level cuts: "
+            r"$pp\to t\bar t$, $t\to bW^+(\to\ell^+\nu)$, $\bar t\to\bar bW^-(\to q\bar q')$, plus the charge conjugate",
             rf"$\sqrt{{s}}={fmt(meta.get('sqrts_GeV', 0) / 1000, 3)}$ TeV, "
             rf"$\ell={lepton_tex(meta.get('leptons', '?'))}$, "
             rf"{meta.get('nevents', S['reco']['n'])} events, seed {meta.get('seed', '?')}",
             rf"$\sigma = {fmt(xs, 4)}$ pb $\approx \sigma_{{t\bar{{t}}}}^\mathrm{{LO}}\times"
             r"2\,\mathcal{B}(W\to\ell\nu)\,\mathcal{B}(W\to q\bar{q}')$ (with $\ell=e,\mu$)",
         ]),
-        table("Object definitions and levels",
-              ["", "parton", r"parton + $\ell$ trigger", "particle level (gen)", "reco (Delphes ATLAS)"], [
-            ["source", "MG5 LHE, before shower", "MG5 LHE, before shower", "Pythia8 final state",
-             "Delphes ATLAS card"],
-            ["leptons", r"LHE $e/\mu$, no cut", r"$p_T>25$, $|\eta|<2.47\,(e), 2.5\,(\mu)$",
-             r"status-1 $e/\mu$ from $W/Z/h$ ($\tau$)", "Electron, Muon (same cuts)"],
-            ["jets", r"LHE $q,\bar q'$ (no cut)", r"LHE $q,\bar q'$ (no cut)",
-             r"GenJet anti-$k_t$ 0.4, $p_T>25$, $|\eta|<2.5$", "Jet (same cuts)"],
-            ["b", r"LHE $b,\bar b$", r"LHE $b,\bar b$", r"$\Delta R(j,b)<0.4$, $p_T^b>5$", "BTag bit 0"],
-            ["overlap", "--", "--", r"drop jets $\Delta R(j,\ell)<0.4$", "UniqueObjectFinder"],
-            [r"$E_T^\mathrm{miss}$", r"$p_T^\nu$ (LHE)", r"$p_T^\nu$ (LHE)", r"GenMissingET: $\sum$ all $\nu$",
-             r"MissingET: $-\sum$ calo towers"],
-            ["selection", "none", r"lepton only", r"$1\ell$, $\geq4j$, $\geq1b$, $\chi^2$", r"$1\ell$, $\geq4j$, $\geq1b$, $\chi^2$"],
+        table("Event levels",
+              ["", "parton", r"parton + $\ell$ trig.", "gen (particle)", "reco"], [
+            ["source", "MG5 LHE", "MG5 LHE", "Pythia8", "Delphes ATLAS"],
+            ["selection", "none", r"$\ell$ cuts only", r"$1\ell,\geq4j,\geq1b,\chi^2$", r"$1\ell,\geq4j,\geq1b,\chi^2$"],
             ["events kept", r"100\%", rf"{100 * S['parton']['trigger_eff']:.1f}\%",
              rf"{100 * S['gen']['n_reco'] / S['gen']['n']:.1f}\%", rf"{100 * S['reco']['n_reco'] / S['reco']['n']:.1f}\%"],
-        ], note=r"Parton level means the MG5 partons with \emph{no} cuts; ``parton + $\ell$ trigger'' adds only the "
-                r"offline single-lepton cuts. Reco $E_T^\mathrm{miss}$ is the negative vector sum of the calorimeter "
-                r"towers; checked: muon and electron events show the same reco$-$gen $E_T^\mathrm{miss}$ along the "
-                rf"lepton (${S['met_check']['mu']:+.1f}$ vs ${S['met_check']['e']:+.1f}$ GeV), so muons are not missed.",
-           fit=True),
+            [r"$E_T^\mathrm{miss}$", r"$p_T^\nu$", r"$p_T^\nu$", r"$\sum$ all $\nu$", r"$-\sum$ calo towers"],
+        ], note=r"Parton = MG5 partons with \emph{no} cuts; parton + $\ell$ trigger adds only the lepton cuts "
+                r"($p_T>25$ GeV, $|\eta|<2.47$ ($e$), $2.5$ ($\mu$)). Reco and gen $E_T^\mathrm{miss}$ agree for muon and "
+                rf"electron events (reco$-$gen along the lepton: ${S['met_check']['mu']:+.1f}$ vs "
+                rf"${S['met_check']['e']:+.1f}$ GeV), so the calorimeter MET does not lose muons."),
+        table("Object definitions (gen and reco)", ["", "particle level (gen)", "reco (Delphes ATLAS)"], [
+            ["jets", r"GenJet anti-$k_t$ 0.4", r"Jet anti-$k_t$ 0.4"],
+            ["", r"\multicolumn{2}{c}{$p_T>25$ GeV, $|\eta|<2.5$}"],
+            ["b-jets", r"$\Delta R(j,b)<0.4$, $p_T^b>5$ GeV", "BTag bit 0"],
+            ["leptons", r"status-1 $e/\mu$ from $W/Z/h$ (or such a $\tau$)", "Electron, Muon"],
+            ["", r"\multicolumn{2}{c}{$p_T>25$ GeV, $|\eta|<2.47\ (e)$, $2.5\ (\mu)$}"],
+            ["overlap", r"drop jets with $\Delta R(j,\ell)<0.4$", "UniqueObjectFinder"],
+        ], note=r"Preselection: exactly 1 lepton, $\geq 4$ jets, $\geq 1$ b-jet, then the $\chi^2$ $t\bar t$ reconstruction."),
         table("Cutflow", ["selection", "gen", "", "reco", ""],
               cutflow_rows(S), note=r"Fractions relative to all generated events."),
         figures(r"Leptons and $E_T^\mathrm{miss}$", ["lep_pt", "lep_eta", "met", "mtw"]),
@@ -98,7 +97,7 @@ add process p p > t t~, (t > b w+, w+ > q q), (t~ > b~ w-, w- > lep- nul~)"""),
               note=r"The broad inclusive peaks come from wrong jet choices (combinatorics) "
                    r"and quarks that are out of acceptance, not from the jet response."),
         section("The ten angles"),
-        wide_figure("Definition of the ten angles", os.path.join(HERE, "figures", "angle_diagram.pdf")),
+        wide_figure("Definition of the ten angles", os.path.join(HERE, "figures", "angle_diagram_slide.pdf")),
         bullets("The ten angles (as in the paper)", [
             r"$Y$: $t\bar{t}$ rapidity (lab); $\Theta$: polar angle of $t_\mathrm{lep}$ in the $t\bar{t}$ frame",
             r"$(\theta,\phi)$: $W$ in the top rest frame; $z=\hat{p}_t^\mathrm{lab}$, "
@@ -135,32 +134,35 @@ add process p p > t t~, (t > b w+, w+ > q q), (t~ > b~ w-, w- > lep- nul~)"""),
 
 def lep_had_slides():
     """Leptonic vs hadronic decay angles (lep_had_compare.py)."""
-    path = os.path.join(PLOTS_DIR, "lep_vs_had.png")
-    if not os.path.exists(path):
+    if not os.path.exists(os.path.join(PLOTS_DIR, "lep_vs_had_parton_decay.png")):
         return []
     r = json.load(open(os.path.join(PLOTS_DIR, "lep_vs_had.json")))
     key = "cos_theta_prime|cos_theta_prime_tilde"
     pp = ", ".join(f"{v['p']:.2f}" for k, v in r["parton"].items() if k != "n")
-    return [wide_figure(r"Leptonic vs hadronic top: same distributions?", path, note=(
-        r"SM: the down-type quark plays the role of the charged lepton, so the pairs must agree. Parton level: "
-        rf"yes (KS $p$ = {pp} for $\cos\theta$, $\phi$, $\cos\theta'$, $\phi'$). Gen/reco: no, even with perfect "
-        rf"flavour tagging and correct jets ($\cos\theta'$ KS distance {r['reco, correct jets'][key]['ks']:.3f}): "
-        r"the two sides have different acceptance and resolution (lepton cuts + $\nu$ vs jet cuts and response)."))]
+    return [wide_figure(r"Leptonic vs hadronic top, parton level: $W$ decay angles",
+                        os.path.join(PLOTS_DIR, "lep_vs_had_parton_decay.png"),
+                        note=rf"SM: the down-type quark plays the role of the charged lepton. Parton level agrees "
+                             rf"(KS $p$ = {pp} for $\cos\theta$, $\phi$, $\cos\theta'$, $\phi'$)."),
+            wide_figure(r"Leptonic vs hadronic top, reco level with correct jets",
+                        os.path.join(PLOTS_DIR, "lep_vs_had_reco_correct_jets_decay.png"),
+                        note=rf"Even with perfect flavour tagging and correct jets they differ ($\cos\theta'$ KS distance "
+                             rf"{r['reco, correct jets'][key]['ks']:.3f}): different acceptance and resolution on the two "
+                             r"sides (lepton cuts + $\nu$ vs jet cuts and response).")]
 
 
 def nu_pz_slides():
-    """Δp_z distributions from nu_pz_plot.py (plots/nu_pz.png + .json)."""
-    path = os.path.join(PLOTS_DIR, "nu_pz.png")
-    if not os.path.exists(path):
+    """Δp_z distributions from nu_pz_plot.py (plots/nu_pz_{a,b,c}.png + nu_pz.json)."""
+    if not os.path.exists(os.path.join(PLOTS_DIR, "nu_pz_a.png")):
         return []
     r = json.load(open(os.path.join(PLOTS_DIR, "nu_pz.json")))
     ch = r["choice"]
-    return [wide_figure(r"Neutrino $\Delta p_z$", path, note=(
-        rf"Correct jets: {r['reco_all jets correctly assigned']['half_width_68']:.0f} GeV vs "
-        rf"{r['reco']['half_width_68']:.0f} GeV for all events (68\% half-width). "
-        rf"No real solution in {100 * ch['frac_complex']:.0f}\% of events. With two solutions, the "
-        rf"top-mass $\chi^2$ picks the one closer to the truth in {100 * ch['frac_chi2_picks_closer']:.0f}\% "
-        rf"of events vs {100 * ch['frac_smaller_picks_closer']:.0f}\% for smaller $|p_z|$."))]
+    return [figures(r"Neutrino $\Delta p_z$", ["nu_pz_a", "nu_pz_b"], note=(
+                rf"68\% half-width: gen {r['gen']['half_width_68']:.0f} GeV, reco {r['reco']['half_width_68']:.0f} GeV; "
+                rf"reco with all jets correct {r['reco_all jets correctly assigned']['half_width_68']:.0f} GeV.")),
+            figures(r"Neutrino $\Delta p_z$: which $m_W$ solution?", ["nu_pz_c"], note=(
+                rf"No real solution in {100 * ch['frac_complex']:.0f}\% of events. With two, the top-mass $\chi^2$ picks "
+                rf"the one closer to the truth in {100 * ch['frac_chi2_picks_closer']:.0f}\% of events vs "
+                rf"{100 * ch['frac_smaller_picks_closer']:.0f}\% for the smaller $|p_z|$."))]
 
 
 def hh_whad_slides():
@@ -176,6 +178,17 @@ def hh_whad_slides():
         r"gen / reco): the reconstruction makes $hh$ look like $t\bar t$."))]
 
 
+def score_slides(title, d, lvl):
+    """The two score figures of osde_fit.plot_scores: y (linear, log) and surprisal + ROC."""
+    return [wide_figure(f"{title}: $y$", os.path.join(d, f"scores_{lvl}.png"),
+                        note=r"Left: $y=f_{t\bar t}(\mathbf{x})$, linear (shaded: $y<0$). Right: log scale; the left "
+                             r"bin holds all events with $y\le0$. $t\bar t$: independent sample and fit sample "
+                             r"(leave-one-out)."),
+            wide_figure(f"{title}: surprisal and ROC", os.path.join(d, f"scores_{lvl}_s.png"),
+                        note=r"Left: $s'=-\ln(y+y_0)$, shifted so every event has $y'>0$. Right: ROC from a scan over "
+                             r"$y_\mathrm{cut}$ (events with $f<y_\mathrm{cut}$ called $hh$-like).")]
+
+
 def build_hh_osde_slides(H, O, tests):
     """Slides for the hh sample and for f_tt̄ from OSDE (H: hh numbers, O: osde/summary.json)."""
     lv = O["levels"]
@@ -183,13 +196,12 @@ def build_hh_osde_slides(H, O, tests):
         section(r"$hh$ samples", "hh samples"),
         bullets(r"$hh\to b\bar{b}\,WW^*\to b\bar{b}\,\ell\nu\,q\bar{q}'$ sample", [
             r"MadGraph5 built-in \texttt{heft} model (LO, $m_t\to\infty$), same Pythia8 + Delphes ATLAS chain",
-            code(r"""generate    g g > h h, (h > b b~), (h > lep+ nul q q)
-add process g g > h h, (h > b b~), (h > lep- nul~ q q)"""),
+            r"$gg\to hh$, $h\to b\bar b$, $h\to\ell\nu q\bar q'$ (+ charge conjugate), generated as one process",
             r"$h\to WW^*$ has one off-shell $W$, so $h\to\ell\nu q\bar{q}'$ is a 4-body decay",
             rf"{H['meta'].get('nevents', '?')} events, seed {H['meta'].get('seed', '?')}; "
             rf"$\sigma\times\mathcal{{B}} = {1000 * H['meta']['cross_section_pb']:.3g}$ fb "
             r"(LO HEFT with MG defaults; \emph{not} an SM prediction, so plots use unit area)",
-            r"For tt-hypothesis quantities, $hh$ uses the same $\chi^2$; at parton level the b pairing "
+            r"For $t\bar t$-hypothesis quantities, $hh$ uses the same $\chi^2$; at parton level the b pairing "
             r"is the one closest to $m_t$",
             r"Prompt leptons: status-1 $e/\mu$ from $W$, $Z$, $h$, or a $\tau$ from one of these "
             r"(in $h\to WW^*$ the lepton can come directly from the $h$)",
@@ -228,7 +240,7 @@ add process g g > h h, (h > b b~), (h > lep- nul~ q q)"""),
             r"reduces exactly to the paper basis; leave-one-out equals brute-force refits",
         ]),
     ]
-    for lvl in ("parton", "gen", "reco"):
+    for lvl in ("parton", "parton_trig", "gen", "reco"):
         if lvl in lv:
             s = lv[lvl]
             c2 = s["proj_chi2"]
@@ -236,17 +248,17 @@ add process g g > h h, (h > b b~), (h > lep- nul~ q q)"""),
             slides.append(wide_figure(
                 rf"$f^\mathrm{{{lvl}}}_{{t\bar t}}$ (fit on {lvl}-level $t\bar t$, {s['n']['train']} events): "
                 rf"projections",
-                os.path.join(O["_dir"], f"projections_ttbar_{lvl}.png"),
+                os.path.join(O["_dir"], f"projections_ttbar_{lvl}.png")))
+            slides.append(wide_figure(
+                rf"$f^\mathrm{{{lvl}}}_{{t\bar t}}$ projections, hadronic top",
+                os.path.join(O["_dir"], f"projections_ttbar_{lvl}_had.png"),
                 note=rf"Black: $f_{{t\bar t}}$ integrated over the other nine angles. "
                      rf"Largest $\chi^2$/ndf vs training data: {ANGLE_TEX[worst]} "
                      rf"({c2[worst][0]:.0f}/{c2[worst][1]})."))
-            slides.append(wide_figure(
-                rf"$f^\mathrm{{{lvl}}}_{{t\bar t}}$ applied to {lvl}-level $t\bar t$ (independent) and $hh$",
-                os.path.join(O["_dir"], f"scores_{lvl}.png"),
-                note=r"Left: $y=f_{t\bar t}(\mathbf{x})$; middle: surprisal $s=-\ln y$; right: "
-                     r"$hh$ vs $t\bar t$ efficiency when calling $f<y_\mathrm{cut}$ anomalous."))
+            slides += score_slides(rf"$f^\mathrm{{{lvl}}}_{{t\bar t}}$ applied to {lvl}-level $t\bar t$ and $hh$",
+                                   O["_dir"], lvl)
     rows = []
-    for lvl in ("parton", "gen", "reco"):
+    for lvl in ("parton", "parton_trig", "gen", "reco"):
         if lvl in lv:
             s = lv[lvl]
             fn = s["frac_negative"]
@@ -263,7 +275,7 @@ add process g g > h h, (h > b b~), (h > lep- nul~ q q)"""),
                              r"$f\le0$ comes from the truncated series (Gibbs overshoot), as noted in the paper. "
                              r"AUC = probability that an $hh$ event has lower $f_{t\bar t}$ than a $t\bar t$ event."))
     rows = []
-    for lvl in ("parton", "gen", "reco"):
+    for lvl in ("parton", "parton_trig", "gen", "reco"):
         if lvl in lv and "self_inclusion" in lv[lvl]:
             si, fn, ms = lv[lvl]["self_inclusion"], lv[lvl]["frac_negative"], lv[lvl]["mean_surprisal"]
             rows.append([lvl, rf"{100 * si['self_term_over_f_median']:.0f}\%",
@@ -280,7 +292,7 @@ add process g g > h h, (h > b b~), (h > lep- nul~ q q)"""),
                                  r"independent $t\bar t$ sample: the difference was entirely this bias, "
                                  r"largest at reco (smallest $N$). Plots use LOO for the fit sample.", fit=True))
     rows = []
-    for lvl in ("parton", "gen", "reco"):
+    for lvl in ("parton", "parton_trig", "gen", "reco"):
         if lvl in lv:
             rows.append([lvl] + [rf"{t['kept']} / {t['auc']:.3f} / ${t['ds_test_train']:+.3f}$"
                                  for t in lv[lvl]["truncation"]])
@@ -292,13 +304,13 @@ add process g g > h h, (h > b b~), (h > lep- nul~ q q)"""),
                              r"Dropping insignificant terms removes the overfitting, but the gen/reco AUC stays "
                              r"$\approx0.5$, so the loss of separation is not caused by noise.", fit=True))
     yrows = []
-    for lvl in ("parton", "gen", "reco"):
+    for lvl in ("parton", "parton_trig", "gen", "reco"):
         if lvl in lv:
             yrows.append([lvl] + [f"{y['chi2']:.0f}/{y['ndf']}" for y in lv[lvl]["y_scale_scan"]])
     first = lv[next(iter(lv))]["y_scale_scan"]
     slides.append(table(r"Diagnostics: Hermite scale for $Y$ ($\chi^2$ of the $Y$ projection, train)",
                         ["level"] + [f"$s={y['scale']}$" for y in first[:-1]] + [r"$s=\mathrm{std}(Y)$"], yrows,
-                        note=r"The paper uses $s=1$ (default here); \texttt{osde\_fit.py --y-scale} changes it. "
+                        note=r"The paper uses $s=1$ (the default here; it is a free parameter of the fit). "
                              r"Gen/reco $Y$ is narrower (std $\approx0.8$), so $s=1$ fits poorly there and $f$ "
                              r"overshoots below zero at large $|Y|$."))
     return slides
@@ -345,16 +357,16 @@ def extended_slides(odir, edir):
                           os.path.join(odir, "truncation_gen.png"))]
     names = ["cos_theta", "phi", "cos_theta_prime", "phi_prime", "cos_theta_tilde", "phi_tilde",
              "cos_theta_prime_tilde", "phi_prime_tilde", "cos_Theta", "Y"]
-    rows = [[ANGLE_TEX[a]] + [str(scan[l][a]) for l in ("parton", "gen", "reco")] for a in names]
-    req = [scan[l]["_required"] for l in ("parton", "gen", "reco")]
+    rows = [[ANGLE_TEX[a]] + [str(scan[l][a]) for l in ("parton", "parton_trig", "gen", "reco")] for a in names]
+    req = [scan[l]["_required"] for l in ("parton", "parton_trig", "gen", "reco")]
     rows.append([r"\textbf{needs}"] + [rf"$j_1\ge{r['j1max']}, j_2\ge{max(r['j2max'], r['min_j1_j2_for_phi_prime'])}$"
                                         for r in req])
     slides.append(table(r"How many orders each angle needs (1-D cross-validated order)",
-                        ["angle", "parton", "gen", "reco"], rows,
+                        ["angle"] + [LVL_TEX[l] for l in ("parton", "parton_trig", "gen", "reco")], rows,
                         note=r"Order = Legendre degree ($\cos$), harmonic ($\phi$), Hermite order ($Y$, scale = std$(Y)$). "
                              r"Parton level confirms the paper: $j_1\le1$, $j_2\le2$ (only $\cos\Theta$, $Y$ need more). "
                              r"A full product at gen/reco orders would need $>10^{6}$ terms per top pair.", fit=True))
-    bp = {l: esum["levels"][l]["basis_params"] for l in ("parton", "gen", "reco")}
+    bp = {l: esum["levels"][l]["basis_params"] for l in ("parton", "parton_trig", "gen", "reco")}
     slides.append(bullets(r"Extended (block) basis", [
         r"Union of disjoint subsets of the full orthonormal product basis $\Rightarrow$ still orthonormal, "
         r"OSDE unchanged",
@@ -369,7 +381,7 @@ def extended_slides(odir, edir):
         r"Trade-off: correlations \emph{between} the two tops stay at the physics order",
     ]))
     rows = []
-    for l in ("parton", "gen", "reco"):
+    for l in ("parton", "parton_trig", "gen", "reco"):
         for key, lab in (("paper", "paper"), ("paper_simplified", "paper, CV"), ("extended", "extended"),
                          ("extended_simplified", "extended, CV")):
             c = comp.get(f"{key}/{l}")
@@ -383,8 +395,13 @@ def extended_slides(odir, edir):
     for l in ("gen", "reco"):
         slides.append(wide_figure(rf"Extended $f^\mathrm{{{l}}}_{{t\bar t}}$ (CV-truncated): projections",
                                   os.path.join(edir, f"projections_ttbar_simplified_{l}.png")))
+        slides.append(wide_figure(rf"Extended $f^\mathrm{{{l}}}_{{t\bar t}}$ (CV-truncated): hadronic top",
+                                  os.path.join(edir, f"projections_ttbar_simplified_{l}_had.png")))
+    for l in ("reco",):
+        slides += score_slides(rf"Extended $f^\mathrm{{{l}}}_{{t\bar t}}$ applied to {l}-level $t\bar t$ and $hh$",
+                               edir, l)
     rows = []
-    for l in ("parton", "gen", "reco"):
+    for l in ("parton", "parton_trig", "gen", "reco"):
         v = esimp["levels"][l]["variants"]
         for key, lab in (("all", "all terms"), ("cv_best", "CV best"), ("5sigma", r"$5\sigma$")):
             r = v[key]
@@ -397,36 +414,209 @@ def extended_slides(odir, edir):
                              r"the limitation is the $t\bar t$-hypothesis reconstruction, not the density. "
                              r"Without truncation the many high-order terms add noise ($f\le0$ up to 13\%).",
                         fit=True))
-    for l in ("reco",):
-        slides.append(wide_figure(rf"Extended $f^\mathrm{{{l}}}_{{t\bar t}}$ applied to {l}-level $t\bar t$ and $hh$",
-                                  os.path.join(edir, f"scores_{l}.png")))
     return slides
+
+
+LVL_TEX = {"parton": "parton", "parton_trig": "parton+trig", "gen": "gen", "reco": "reco"}
+
+
+def sh_slides(sdir):
+    """Spherical-harmonic product basis vs the paper's M functions (basis_compare.py)."""
+    p = os.path.join(sdir, "basis_comparison.json")
+    if not os.path.exists(p):
+        return []
+    R = json.load(open(p))
+    lv = [l for l in ("parton", "parton_trig", "gen", "reco") if f"paper (M functions)|{l}|CV" in R]
+    slides = [section("Spherical-harmonic basis", "Spherical-harmonic basis"),
+              bullets(r"Spherical-harmonic products instead of the $M$ functions", [
+                  r"Per top: $Y_{l_1}^{m_1}(\theta,\phi)\,Y_{l_2}^{m_2}(\theta',\phi')$, $l_1\le1$, $l_2\le2$: "
+                  r"36 functions (vs 24 $M$); with the same $p_l(\cos\Theta)$, $h_n(Y)$: 32\,400 coefficients",
+                  r"Orthonormal and closed under conjugation (tests); same OSDE, leave-one-out and CV truncation",
+                  r"Physics difference: $M$ uses spin-weighted $D^{j}_{m'm}(\phi,\theta,0)$; e.g.\ "
+                  r"$d^1_{01}\propto\sin\theta$ is not a finite sum of $Y_{l0}$, so in principle the SM decay density, "
+                  r"finite in $M$, needs infinitely many $Y_{lm}$ products (tested below at 100k events)",
+                  r"Figure of merit: held-out ISE $=\sum|\hat c|^2-2\langle\hat f\rangle_\mathrm{indep}$ "
+                  r"($=\int(\hat f-f)^2-\int f^2$; lower = closer to the true density), on the independent $t\bar t$ sample",
+              ]),
+              wide_figure(r"Paper ($M$) vs spherical harmonics vs extended", os.path.join(sdir, "basis_comparison.png"))]
+    rows = []
+    for l in lv:
+        for lab, key in (("paper ($M$)", "paper (M functions)"), ("sph. harmonics", "spherical harmonics"),
+                         ("extended", "extended")):
+            for tr in ("all", "CV"):
+                r = R.get(f"{key}|{l}|{tr}")
+                if not r:
+                    continue
+                d = (rf"${1e6 * r['delta_ise_vs_paper']:+.2f}\pm{1e6 * r['delta_ise_vs_paper_err']:.2f}$"
+                     if "delta_ise_vs_paper" in r and not key.startswith("paper") else "--")
+                rows.append([LVL_TEX[l] if (key.startswith("paper") and tr == "all") else "",
+                             f"{lab}, {'all' if tr == 'all' else 'CV'}", str(r["terms"]), d,
+                             f"{r['worst_chi2ndf']:.1f}", rf"{100 * r['frac_negative_indep']:.1f}\%",
+                             f"{r['auc']:.3f}" if r["auc"] else "--"])
+    slides.append(table(r"Basis comparison (independent $t\bar t$ sample)",
+                        ["level", "basis", "terms", r"$\Delta$ISE vs $M$ [$10^{-6}$]", r"worst $\chi^2$/ndf",
+                         r"$f\le0$", "AUC"], rows,
+                        note=r"$\Delta$ISE $<0$: closer to the true density than the paper's $M$ basis (paired, same "
+                             r"events). Worst $\chi^2$/ndf of the 1-D projections excludes $Y$.", fit=True))
+
+    def dlt(key, l):
+        r = R.get(f"{key}|{l}|CV", {})
+        return r.get("delta_ise_vs_paper", float("nan")) * 1e6, r.get("delta_ise_vs_paper_err", float("nan")) * 1e6
+    sh_all = [R[f"spherical harmonics|{l}|all"]["delta_ise_vs_paper"] / R[f"spherical harmonics|{l}|all"]["delta_ise_vs_paper_err"]
+              for l in lv if "delta_ise_vs_paper" in R.get(f"spherical harmonics|{l}|all", {})]
+    items = [
+        rf"All terms kept: spherical harmonics are worse than $M$ at every level ({min(sh_all):.0f}--{max(sh_all):.0f} "
+        r"$\sigma$ in $\Delta$ISE): 32\,400 terms, most of them noise",
+        r"After CV truncation: " + "; ".join(
+            rf"{LVL_TEX[l]} $\Delta$ISE(SH) $={dlt('spherical harmonics', l)[0]:+.2f}\pm{dlt('spherical harmonics', l)[1]:.2f}$"
+            for l in lv) + r" ($10^{-6}$): spherical harmonics and $M$ describe $t\bar t$ about equally well",
+        rf"Spherical harmonics fit the trigger-sculpted $\phi'$ better (parton+trig worst $\chi^2$/ndf "
+        rf"{R['spherical harmonics|parton_trig|CV']['worst_chi2ndf']:.1f} vs {R['paper (M functions)|parton_trig|CV']['worst_chi2ndf']:.1f}): "
+        r"$l_2=2$ allows a second harmonic in $\phi'$, which $M$ ties to $j_1\le1$" if "spherical harmonics|parton_trig|CV" in R else
+        r"",
+        r"The extended basis is best at gen/reco: " + "; ".join(
+            rf"{LVL_TEX[l]} $\Delta$ISE $={dlt('extended', l)[0]:+.2f}\pm{dlt('extended', l)[1]:.2f}$" for l in lv),
+        r"The $hh$ AUC hardly depends on the basis",
+    ]
+    slides.append(bullets("Basis comparison: conclusions", [i for i in items if i]))
+    return slides
+
+
+def ml_slides(mdir):
+    """Is the OSDE approach helping?  Unsupervised and supervised ML on the same inputs (ml_compare.py)."""
+    out = []
+    res = {}
+    for l in ("parton", "parton_trig"):
+        p = os.path.join(mdir, f"results_{l}.json")
+        if os.path.exists(p):
+            res[l] = json.load(open(p))
+    if not res:
+        return []
+    out.append(section("Is the OSDE approach helping? (ML)", "Is the OSDE approach helping? (ML)"))
+    r0 = res[next(iter(res))]
+    out.append(bullets("Setup: same events, same inputs", [
+        rf"Test set for every method: the independent $t\bar t$ sample ({r0['n_test_tt']}) and a held-out 40\% of "
+        rf"$hh$ ({r0['n_test_hh']}); training: $t\bar t$ fit sample + 50\% of $hh$ (10\% each for validation)",
+        r"\textbf{Unsupervised} (trained on $t\bar t$ only, like $f_{t\bar t}$): Gaussian-mixture density, "
+        r"autoencoder, normalizing flow (RealNVP) on the same ten angles",
+        r"\textbf{Supervised} ($t\bar t$ vs $hh$ labels; an upper bound): BDT, MLP, FT-Transformer on (a) our angles, "
+        r"(b) angles + parton momenta; particle transformer (pairwise $m$, $\Delta R$) on momenta",
+        r"\textbf{Does $y$ help ML?} the same classifiers with $y=f_{t\bar t}$ and $s'$ added (leave-one-out $y$ for "
+        r"$t\bar t$ training events)",
+        r"Controls: shuffled labels and $t\bar t$-vs-$t\bar t$ must give AUC $\approx0.5$; train vs test AUC",
+    ]))
+    for l, r in res.items():
+        for key, what in (("a", "unsupervised vs supervised, angles"), ("b", "does $y$ help?"),
+                          ("c", "angles + momenta")):
+            p = os.path.join(mdir, f"roc_{l}_{key}.png")
+            if os.path.exists(p):
+                out.append(wide_figure(rf"ROC, {LVL_TEX[l]} level: {what}", p))
+    for l, r in res.items():
+        rr = r["results"]
+        rows = [[v["group"].replace("+", " + "), k.split(" [")[0].replace("_", " ").replace("f tt", r"$f_{t\bar t}$"),
+                 rf"${v['auc_test']:.3f}\pm{v['auc_err']:.3f}$",
+                 f"{v['auc_train']:.3f}" if "auc_train" in v and v["auc_train"] == v["auc_train"] else "--"]
+                for k, v in rr.items()]
+        out.append(table(rf"AUC ($hh$ vs $t\bar t$), {LVL_TEX[l]} level", ["inputs", "method", "AUC (test)", "AUC (train)"],
+                         rows, fit=True))
+        unsup = {k: v for k, v in rr.items() if v["group"] == "unsupervised"}
+        osde_best = max((v["auc_test"], k) for k, v in unsup.items() if k.startswith("OSDE"))
+        other_best = max((v["auc_test"], k) for k, v in unsup.items() if not k.startswith("OSDE"))
+        sup = {k: v for k, v in rr.items() if v["group"] == "angles"}
+        supy = {k: v for k, v in rr.items() if v["group"] == "angles+y"}
+        best_sup = max(v["auc_test"] for v in sup.values())
+        best_supy = max(v["auc_test"] for v in supy.values())
+        gain = [supy[k.replace("[angles]", "[angles+y]")]["auc_test"] - v["auc_test"] for k, v in sup.items()
+                if k.replace("[angles]", "[angles+y]") in supy]
+        mom = max(v["auc_test"] for v in rr.values() if v["group"].startswith("angles+momenta"))
+        out.append(bullets(rf"Answer, {LVL_TEX[l]} level", [
+            rf"As an anomaly detector (no $hh$ used): OSDE $f_{{t\bar t}}$ AUC {osde_best[0]:.3f} vs "
+            rf"{other_best[0]:.3f} for the best other unsupervised method ({other_best[1].split(' (')[0]})",
+            rf"Knowing $hh$ (supervised) on the same angles: AUC {best_sup:.3f}, the upper bound for these inputs",
+            rf"Adding $y$ to the supervised classifiers: AUC change {min(gain):+.3f} to {max(gain):+.3f} "
+            rf"(best {best_supy:.3f}), within the $\pm${r['results'][next(iter(sup))]['auc_err']:.3f} uncertainty: "
+            r"$y$ carries no information the classifier does not already learn from the angles",
+            rf"Momenta (which contain $m_{{b\bar b}}=m_h$ etc.) make the task trivial: AUC {mom:.4f}",
+        ]))
+    return out
+
+
+def washout_slides(wdir):
+    """Why the parton-level hh/tt̄ separation washes out at gen level (study_washout/)."""
+    m, d = os.path.join(wdir, "mechanism", "figures"), os.path.join(wdir, "decomposition")
+    if not os.path.exists(os.path.join(d, "decomposition_chain.png")):
+        return []
+    return [
+        section(r"Why the separation washes out at gen level", "Washout parton to gen"),
+        bullets(r"Short answer", [
+            r"At parton level the $hh$ ``tops'' are not tops: each is the $W$ from one Higgs plus the $b$ from the other "
+            r"($m_{Wb}$ median 135 GeV), and one $W$ is off-shell ($m_{W^*}$ median 32 GeV)",
+            r"$\Rightarrow$ $hh$ has $\cos\theta$, $\cos\tilde\theta$ peaked at $-1$, isotropic $\cos\Theta$ "
+            r"(no $t$-channel), and no $V\!-\!A$ zero in $\cos\theta'$",
+            r"At gen level the $t\bar t$-hypothesis reconstruction rebuilds $m_W$ and $m_t$ from whatever jets fit: "
+            r"the $\chi^2$ picks the true jets in 8\% of $hh$ (34\% of $t\bar t$); the $m_W$-constrained $\nu$ puts "
+            r"the leptonic $W^*$ on shell",
+            r"Ranked losses in $f_{t\bar t}$ AUC: wrong jets in the $\chi^2$ ($-0.06$) $>$ FSR ($-0.03$) "
+            r"$\approx$ $\nu$ from $m_W$ ($-0.03$); selection and ISR recoil cost nothing",
+            r"The information is \textbf{not} gone: a BDT on hypothesis-free gen observables ($m_{bb}$, "
+            r"$\Delta R_{bb}$, MET, $m_T$, \ldots) gives AUC 0.87 on the same events",
+        ]),
+        wide_figure(r"Parton level: what separates $hh$ from $t\bar t$", os.path.join(m, "fig1_parton_signatures.png")),
+        wide_figure(r"Step by step from parton to gen: all selected events", os.path.join(d, "slide_chain_main.png"),
+                    note=r"Green: parton-level $f_{t\bar t}$ applied unchanged; orange: $f_{t\bar t}$ refit at each step; blue: "
+                         r"supervised BDT on the ten angles. Biggest $f_{t\bar t}$ loss: the $\chi^2$ jet choice."),
+        wide_figure(r"Step by step: events with correctly matched jets", os.path.join(d, "slide_chain_matched.png"),
+                    note=r"When all four partons match distinct jets, jets cost nothing; the $m_W$-constrained $\nu$ "
+                         r"(choice of $p_z$ solution) costs 0.05--0.08."),
+        wide_figure(r"Which angles lose the separation, and where", os.path.join(d, "slide_angles.png"),
+                    note=r"$\cos\Theta$ and $\cos\tilde\theta$ die at the $\chi^2$ jet choice; $\cos\theta'$ dies with "
+                         r"the $m_W$-constrained neutrino; ISR recoil mainly costs $\phi$, $\tilde\phi$, $Y$."),
+        wide_figure(r"The $\chi^2$ builds $W$ and top masses that $hh$ does not have",
+                    os.path.join(m, "fig2_chi2_mass_pull.png")),
+        wide_figure(r"$hh$ angles become $t\bar t$-like", os.path.join(m, "fig3_angle_morphing.png"),
+                    note=r"``true jets + true $\nu$'' is a small, biased subset (532 $hh$ events)."),
+        wide_figure(r"Gen level still separates, with hypothesis-free observables", os.path.join(m, "fig5_hypothesis_free.png")),
+        wide_figure(r"Summary of the chain (supervised BDT)", os.path.join(m, "fig4_auc_chain.png")),
+        bullets(r"Implications", [
+            r"The angles are the right variables for $t\bar t$, but at gen/reco they are computed under the "
+            r"$t\bar t$ hypothesis, which removes exactly what makes $hh$ different",
+            r"$f_{t\bar t}$ is unsupervised: it flags only where $t\bar t$ is rare; the fitted reconstruction moves $hh$ "
+            r"into the $t\bar t$-dense region",
+            r"Options: (i) add the $\chi^2$ value and the masses ($m_{bb}$, $m_{jj}$, $m_{jjb}$) as extra dimensions "
+            r"of $f_{t\bar t}$; (ii) use $hh$-hypothesis angles; (iii) loosen the $m_W$ constraint for the $\nu$",
+            r"Caveats: matched $hh$ subsets are small (500 events); FSR step uses last-copy partons (slight overestimate)",
+        ]),
+    ]
 
 
 def discriminator_slides(odir):
     """The paper's y and t figure (paper_style_plots.py) and the y0 sensitivity."""
     slides = [section(r"Discriminator $t$ (paper style)", "Discriminator t (paper style)")]
-    for l in ("parton", "gen", "reco"):
+    slides.append(bullets(r"Definition of $t$ (as in the paper)", [
+        r"$y'=y-y_0$, $s'=-\ln y'$, $t=(s'_1-s')/(s'_1-s'_0)\in[0,1]$; $t\to0$: less $t\bar t$-like",
+        r"$y_0=2.5\times\min y$: the paper figure's axis starts at $\approx2.5\times\min y$ and its $t$ is populated "
+        r"from 0, which needs $y_0$ well below $\min y$",
+        r"$s'_0$, $s'_1$ = 0.5\%, 99.5\% quantiles of $s'$ ($t\bar t$ + $hh$); events beyond go into the first/last "
+        r"bin, so $t$ fills [0, 1] with no empty bins",
+        r"$t\bar t$: fit sample with leave-one-out $y$; both samples at unit area; ratio $hh/(hh+t\bar t)$ below",
+    ]))
+    for l in ("parton", "parton_trig", "gen", "reco"):
         p = os.path.join(odir, f"tt_hh_dNdy_dNdt_{l}.pdf")
         if os.path.exists(p):
-            slides.append(wide_figure(rf"$y=f^\mathrm{{{l}}}_{{t\bar t}}$ and $t$, {l} level (paper basis)", p,
-                                      note=r"$y'=y-y_0$, $y_0=2.5\times\min y$ (from the paper figure); $s'=-\ln y'$; $s'_{0,1}$ = 0.5\%, 99.5\% "
-                                           r"quantiles (beyond: first/last bin), so $t$ fills [0, 1] with no empty bins; "
-                                           r"$t=(s'_1-s')/(s'_1-s'_0)$. $t\bar t$: fit sample (leave-one-out); "
-                                           r"unit area."))
+            slides.append(wide_figure(rf"$y=f^\mathrm{{{l}}}_{{t\bar t}}$ and $t$, {l} level (paper basis)", p))
     p = os.path.join(odir, "t_vs_y0_parton.png")
     if os.path.exists(p):
         slides.append(wide_figure(r"Shape of $t$ depends on $y_0$", p, note=(
             r"$s'_1$ is set by the most negative event, so $y_0$ just below $\min y$ squeezes $t$ toward 1. "
             r"The paper figure (axis from $-1.5\times10^{-5}$, $t$ populated from 0) implies "
-            r"$y_0\approx2.5\times\min y$, used here; please confirm. The ROC/AUC do not depend on $y_0$ (monotonic).")))
+            r"$y_0\approx2.5\times\min y$, used here. The ROC/AUC do not depend on $y_0$ (monotonic).")))
     return slides
 
 
 def coefficient_slides(C, odir):
     """How many of the 14400 coefficients matter (osde_simplify.py)."""
     lv = C["levels"]
-    lvls = [l for l in ("parton", "gen", "reco") if l in lv]
+    lvls = [l for l in ("parton", "parton_trig", "gen", "reco") if l in lv]
     v = {l: lv[l]["variants"] for l in lvls}
     slides = [
         section("How many coefficients matter?"),
@@ -444,8 +634,8 @@ def coefficient_slides(C, odir):
             + r" of 14400 terms; flat out to $5\sigma$: "
             + ", ".join(f"{v[l]['5sigma']['kept']}" for l in lvls),
         ]),
-        figures(r"Cross-validated error vs number of coefficients",
-                [os.path.relpath(os.path.join(odir, f"simplify_{l}"), HERE) for l in lvls]),
+        *[figures(rf"Cross-validated error vs number of coefficients, {LVL_TEX[l]}",
+                  [os.path.relpath(os.path.join(odir, f"simplify_{l}"), HERE)]) for l in lvls],
     ]
     rows = []
     names = [("all", "all (paper)"), ("kronmal_tarter", r"$\sqrt2\sigma$ (K--T)"),
@@ -501,10 +691,11 @@ def acceptance_slides(adir):
     ])]
     for label in ("tt", "hh"):
         for kind, title in (("shapes", "no cuts vs after cuts"), ("cutflow", "efficiency vs angle, cut by cut")):
-            path = os.path.join(adir, f"acceptance_{label}_{kind}.png")
-            if os.path.exists(path):
-                name = r"$t\bar t$" if label == "tt" else r"$hh$"
-                slides.append(wide_figure(f"Acceptance, {name}: {title}", path))
+            name = r"$t\bar t$" if label == "tt" else r"$hh$"
+            for suffix, part in (("", "production, leptonic top"), ("_had", "hadronic top")):
+                path = os.path.join(adir, f"acceptance_{label}_{kind}{suffix}.png")
+                if os.path.exists(path):
+                    slides.append(wide_figure(f"Acceptance, {name}: {title} ({part})", path))
     return slides
 
 
@@ -531,7 +722,7 @@ def closing_slide(S, O=None):
     slides = [bullets("Summary (1/2): samples and angles", items)]
     if O:
         lv = O["levels"]
-        auc = ", ".join(f"{l} {lv[l]['auc_hh_vs_tt']:.2f}" for l in ("parton", "gen", "reco") if l in lv)
+        auc = ", ".join(f"{l} {lv[l]['auc_hh_vs_tt']:.2f}" for l in ("parton", "parton_trig", "gen", "reco") if l in lv)
         items = [rf"$f_{{t\bar t}}$ from 14400 OSDE coefficients; AUC($hh$ vs independent $t\bar t$): {auc}"]
         if wh:
             items.append(r"Separation is lost at gen/reco because the $t\bar t$-hypothesis $\chi^2$ makes $hh$ "
@@ -543,7 +734,7 @@ def closing_slide(S, O=None):
         if C:
             cl = C["levels"]
             items.append(r"Only $\sim$50--350 coefficients matter: CV keeps "
-                         + ", ".join(f"{cl[l]['variants']['cv_best']['kept']}" for l in ("parton", "gen", "reco")
+                         + ", ".join(f"{cl[l]['variants']['cv_best']['kept']}" for l in ("parton", "parton_trig", "gen", "reco")
                                      if l in cl)
                          + r" (parton, gen, reco); simplified $f$ has fewer negative values and the same AUC; "
                            r"parton level resolves $t\bar t$ spin correlations")
@@ -552,7 +743,7 @@ def closing_slide(S, O=None):
             el = E["levels"]
             items.append(r"Paper basis has the right order at parton level, but gen/reco acceptance needs "
                          r"$j_{1,2}$ up to 13--16: the extended block basis ("
-                         + ", ".join(f"{el[l]['variants']['cv_best']['kept']}" for l in ("parton", "gen", "reco"))
+                         + ", ".join(f"{el[l]['variants']['cv_best']['kept']}" for l in ("parton", "parton_trig", "gen", "reco"))
                          + r" terms after CV) describes every angle ($\chi^2$/ndf $\approx$ 0.3--1.6; gen $Y$ "
                            r"still imperfect); the $hh$ AUC is unchanged")
         items.append(r"Paper-style $t$: its shape depends on the choice of $y_0$ (AUC does not)")
@@ -601,26 +792,29 @@ def bullets(title, items):
 
 
 def figures(title, names, note=None):
-    """Plots from the plots directory: one row for 1-3 plots, 2x2 for 4, rows of 3 beyond."""
-    n = len(names)
-    ncols = {1: 1, 2: 2, 3: 3, 4: 2}.get(n, 3)
-    w = {1: 0.6, 2: 0.47, 3: 0.30}[ncols]
-    h = (0.72 if n <= 3 else 0.41) - (0.04 if note else 0)
-    cells = []
-    for name in names:
-        path = os.path.join(HERE, name + ".png") if "/" in name else os.path.join(PLOTS_DIR, name + ".png")
-        if os.path.exists(path):
-            cells.append(rf"\includegraphics[width={w}\textwidth,height={h}\textheight,keepaspectratio]"
-                         rf"{{{os.path.relpath(path, OUT_DIR)}}}")
-        else:
-            print(f"[slides] warning: missing plot {path}")
-            cells.append(rf"\fbox{{\parbox{{{w}\textwidth}}{{\centering\tiny missing: "
-                         rf"\texttt{{{name.replace('_', chr(92) + '_')}}}}}}}")
-    rows = [r" \hspace{0.03\textwidth} ".join(cells[i:i + ncols]) for i in range(0, n, ncols)]
-    body = "\\centering\n" + " \\\\[2pt]\n".join(rows)
-    if note:
-        body += f"\n\n\\vspace{{2pt}}{{\\footnotesize {note}}}"
-    return frame(title, body)
+    """Plots from the plots directory, at most two per slide (so they stay legible); more names
+    become several slides titled (1/n), (2/n), ..."""
+    chunks = [names[i:i + 2] for i in range(0, len(names), 2)]
+    out = []
+    for k, chunk in enumerate(chunks):
+        t = title if len(chunks) == 1 else f"{title} ({k + 1}/{len(chunks)})"
+        w = 0.6 if len(chunk) == 1 else 0.48
+        h = 0.74 - (0.06 if note else 0)
+        cells = []
+        for name in chunk:
+            path = os.path.join(HERE, name + ".png") if "/" in name else os.path.join(PLOTS_DIR, name + ".png")
+            if os.path.exists(path):
+                cells.append(rf"\includegraphics[width={w}\textwidth,height={h}\textheight,keepaspectratio]"
+                             rf"{{{os.path.relpath(path, OUT_DIR)}}}")
+            else:
+                print(f"[slides] warning: missing plot {path}")
+                cells.append(rf"\fbox{{\parbox{{{w}\textwidth}}{{\centering\tiny missing: "
+                             rf"\texttt{{{name.replace('_', chr(92) + '_')}}}}}}}")
+        body = "\\centering\n" + r" \hspace{0.02\textwidth} ".join(cells)
+        if note and k == len(chunks) - 1:
+            body += f"\n\n\\vspace{{2pt}}{{\\footnotesize {note}}}"
+        out.append(frame(t, body))
+    return "\n".join(out)
 
 
 def wide_figure(title, path, note=None):
@@ -628,15 +822,36 @@ def wide_figure(title, path, note=None):
     if not os.path.exists(path):
         print(f"[slides] warning: missing {path}")
         return frame(title, rf"\centering missing: \texttt{{{os.path.basename(path).replace('_', chr(92) + '_')}}}")
-    body = (rf"\centering\includegraphics[width=\textwidth,height=0.74\textheight,keepaspectratio]"
+    # leave room for the note: the longer the note, the shorter the figure
+    h = 0.76 if not note else (0.64 if len(note) < 220 else 0.56)
+    body = (rf"\centering\includegraphics[width=\textwidth,height={h}\textheight,keepaspectratio]"
             rf"{{{os.path.relpath(path, OUT_DIR)}}}")
     if note:
         body += f"\n\n\\vspace{{2pt}}{{\\footnotesize {note}}}"
     return frame(title, body)
 
 
-def table(title, header, rows, note=None, fit=False):
-    """fit=True shrinks a table that is wider than the text (never enlarges it)."""
+def table(title, header, rows, note=None, fit=False, max_rows=12):
+    """fit=True shrinks a table that is wider than the text (never enlarges it).  Tables longer
+    than max_rows continue on further slides, split where a row's first cell starts a new group."""
+    if len(rows) > max_rows:
+        groups, cur = [], []
+        for r in rows:
+            if cur and r[0] not in ("", None):
+                groups.append(cur)
+                cur = []
+            cur.append(r)
+        groups.append(cur)
+        pages, page = [], []
+        for g in groups:
+            if page and len(page) + len(g) > max_rows:
+                pages.append(page)
+                page = []
+            page += g
+        pages.append(page)
+        if len(pages) > 1:
+            return "\n".join(table(f"{title} ({k + 1}/{len(pages)})", header, p, note if k == len(pages) - 1 else None,
+                                    fit, max_rows=10 ** 6) for k, p in enumerate(pages))
     cols = "l" + "c" * (len(header) - 1)
     lines = [r"\centering\small", (r"\begin{adjustbox}{max width=\textwidth}" if fit else "")
              + rf"\begin{{tabular}}{{{cols}}}", r"\toprule",
@@ -653,6 +868,10 @@ def table(title, header, rows, note=None, fit=False):
 
 
 def frame(title, body, fragile=False):
+    # display name of the parton + lepton-trigger level (the code name contains an underscore);
+    # file names ("..._parton_trig.png") are preceded by "_" and are left alone
+    title = re.sub(r"(?<![_/\w])parton_trig(?![\w.])", "parton+trig", title)
+    body = re.sub(r"(?<![_/\w])parton_trig(?![\w.])", "parton+trig", body)
     opt = "[fragile]" if fragile else ""
     return f"\\begin{{frame}}{opt}{{{title}}}\n{body}\n\\end{{frame}}\n"
 
@@ -735,7 +954,7 @@ PREAMBLE = r"""\documentclass[aspectratio=169,11pt]{beamer}
   \centering{\large\color{pittroyal}\insertauthor\par}\vspace{0.25cm}
   {\small\insertinstitute\par}\vspace{0.25cm}{\small\color{pittgray}\insertdate\par}}
 % outline at the start of each section, current section highlighted
-\AtBeginSection[]{\begin{frame}{Outline}\tableofcontents[currentsection]\end{frame}}
+\AtBeginSection[]{\ifnum\value{section}>1\begin{frame}{Outline}\tableofcontents[currentsection]\end{frame}\fi}
 \usepackage{booktabs}
 \usepackage{adjustbox}
 \usepackage{amsmath,amssymb,bm}
@@ -827,6 +1046,9 @@ def main():
         if os.path.exists(simp):
             slides += coefficient_slides(json.load(open(simp)), os.path.abspath(args.osde))
         slides += extended_slides(os.path.abspath(args.osde), os.path.join(HERE, "osde_ext"))
+        slides += sh_slides(os.path.join(HERE, "osde_sh"))
+        slides += ml_slides(os.path.join(HERE, "ml"))
+        slides += washout_slides(os.path.join(HERE, "study_washout"))
         slides += discriminator_slides(os.path.abspath(args.osde))
     elif args.hh or args.osde:
         sys.exit("--hh and --osde go together")

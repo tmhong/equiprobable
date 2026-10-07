@@ -1,0 +1,7 @@
+[tt] reading samples/ttbar_bblvqq/run_seed1001/parton_events.lhe.gz
+[tt] reading samples/ttbar_bblvqq/run_seed1001/delphes_events.root
+[acceptance] tt: N=100000  gen sel 41.3%  reco sel 24.0%
+[hh] reading samples/hh_bblvqq/run_seed2001/parton_events.lhe.gz
+[hh] reading samples/hh_bblvqq/run_seed2001/delphes_events.root
+[acceptance] hh: N=20000  gen sel 22.1%  reco sel 9.4%
+[acceptance] outputs in /Users/TMHONG/Claude-code/ttbar_bblvqq/acceptance

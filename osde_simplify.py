@@ -28,7 +28,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 from osde_fit import efficiency_curve  # noqa: E402
-from plotting import osde  # noqa: E402
+from plotting import osde, style  # noqa: E402
 from plotting.angles import ANGLE_NAMES  # noqa: E402
 
 THRESHOLDS = [0, 0.5, 1.0, osde.KT_THRESHOLD, 2, 2.5, 3, 4, 5, 7, 10, 15, 20]
@@ -55,16 +55,46 @@ def stats(scores):
             "mean_s": {k: s(v) for k, v in scores.items()}}
 
 
+def plot_cv(res, lvl, folds, path):
+    """Cross-validated ISE vs number of kept coefficients (labels: threshold in sigma)."""
+    style.use()
+    cv, cv_err, cv_kept = np.array(res["cv"]), np.array(res["cv_err"]), np.array(res["cv_kept"])
+    fig, ax = plt.subplots(figsize=(9.5, 6.4))
+    rel = cv - cv[0]
+    ax.errorbar(cv_kept, rel, yerr=cv_err, fmt="o-", color="#1f4e9c", ms=6, lw=2)
+    for t, kp, r in zip(THRESHOLDS, cv_kept, rel):
+        if t in (0, 1.0, 2.5, 5, 20):                       # label a few thresholds only (no overlaps)
+            ax.annotate(f"{t:.2g}$\\sigma$", (kp, r), textcoords="offset points", xytext=(6, 8), fontsize=17)
+    kt = THRESHOLDS.index(osde.KT_THRESHOLD)
+    ax.plot(cv_kept[kt], rel[kt], "s", color="#d1495b", ms=13, mfc="none", mew=2, label=r"Kronmal-Tarter ($\sqrt{2}\sigma$)")
+    best = int(np.argmin(cv))
+    ax.plot(cv_kept[best], rel[best], "*", color="#2a9d8f", ms=20, label=f"CV minimum ({THRESHOLDS[best]:.2g}$\\sigma$)")
+    ax.set_xscale("log")
+    ax.set_xlabel("coefficients kept (labels: threshold in $\\sigma$)")
+    ax.set_ylabel("CV ISE $-$ ISE(all terms)")
+    ax.set_title(f"{lvl.replace('_trig', '+trig')} level: {folds}-fold cross-validation")
+    ax.legend(frameon=False, fontsize=16)
+    fig.tight_layout()
+    fig.savefig(path, dpi=110)
+    plt.close(fig)
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--train", required=True)
     p.add_argument("--test")
     p.add_argument("--hh", required=True)
     p.add_argument("--osde", default=os.path.join(HERE, "osde"), help="osde_fit.py output directory")
-    p.add_argument("--levels", default="parton,gen,reco")
+    p.add_argument("--levels", default="parton,parton_trig,gen,reco")
     p.add_argument("--tag", default="down_truth", help="angle cache tag (<had_fermion>_<jet_assignment>)")
     p.add_argument("--folds", type=int, default=5)
+    p.add_argument("--replot", action="store_true", help="only redraw the CV figures from simplify_summary.json")
     args = p.parse_args()
+    if args.replot:
+        S = json.load(open(os.path.join(args.osde, "simplify_summary.json")))
+        for lvl, res in S["levels"].items():
+            plot_cv(res, lvl, args.folds, os.path.join(args.osde, f"simplify_{lvl}.png"))
+        return
 
     out = {"thresholds": THRESHOLDS, "levels": {}}
     for lvl in args.levels.split(","):
@@ -89,11 +119,11 @@ def main():
             g = f.truncated(keep)
             sc = evaluate(g, X)
             res["variants"][name] = {"threshold": t, "kept": int(keep.sum()), **stats(sc)}
-            if name == "kronmal_tarter":
-                g.save(os.path.join(args.osde, f"f_ttbar_{lvl}_simplified.npz"), criterion="Kronmal-Tarter")
+            if name == "cv_best":                          # the saved simplified f = CV-optimal truncation
+                g.save(os.path.join(args.osde, f"f_ttbar_{lvl}_simplified.npz"), criterion=f"5-fold CV, t={t_cv}")
                 order = np.argsort(-sig.ravel())
                 with open(os.path.join(args.osde, f"terms_{lvl}.txt"), "w") as fh:
-                    fh.write(f"# {lvl}: {int(keep.sum())} of {sig.size} terms kept (|c|/sigma > sqrt2)\n")
+                    fh.write(f"# {lvl}: {int(keep.sum())} of {sig.size} terms kept (|c|/sigma > {t_cv}, 5-fold CV)\n")
                     fh.write("# rank  |c|/sigma     Re c        Im c       term  |  physics\n")
                     for r, i in enumerate(order[: int(keep.sum())]):
                         c = f.c.ravel()[i]
@@ -119,24 +149,7 @@ def main():
                                                    / f.c_err.ravel()[sig.ravel() > 5]))
         out["levels"][lvl] = res
 
-        # plot the CV curve
-        fig, ax = plt.subplots(figsize=(6.4, 4.4))
-        rel = cv - cv[0]
-        ax.errorbar(cv_kept, rel, yerr=cv_err, fmt="o-", color="#1f4e9c", ms=4)
-        for t, kp, r in zip(THRESHOLDS, cv_kept, rel):
-            ax.annotate(f"{t:.2g}", (kp, r), textcoords="offset points", xytext=(4, 4), fontsize=7)
-        kt = THRESHOLDS.index(osde.KT_THRESHOLD)
-        ax.plot(cv_kept[kt], rel[kt], "s", color="#d1495b", ms=9, mfc="none", label=r"Kronmal-Tarter ($\sqrt{2}\sigma$)")
-        best = int(np.argmin(cv))
-        ax.plot(cv_kept[best], rel[best], "*", color="#2a9d8f", ms=13, label=f"CV minimum ({THRESHOLDS[best]:.2g}$\\sigma$)")
-        ax.set_xscale("log")
-        ax.set_xlabel("coefficients kept (labels: threshold in σ)")
-        ax.set_ylabel("cross-validated ISE − ISE(all terms)")
-        ax.set_title(f"{lvl} level: {args.folds}-fold cross-validation", fontsize=10)
-        ax.legend(frameon=False, fontsize=8)
-        fig.tight_layout()
-        fig.savefig(os.path.join(args.osde, f"simplify_{lvl}.png"), dpi=120)
-        plt.close(fig)
+        plot_cv(res, lvl, args.folds, os.path.join(args.osde, f"simplify_{lvl}.png"))
 
         v = res["variants"]
         print(f"[simplify] {lvl}: kept  all {v['all']['kept']}, KT {v['kronmal_tarter']['kept']}, "
@@ -146,7 +159,12 @@ def main():
             print(f"      {name:15s} kept {r['kept']:5d}  AUC {r['auc']:.3f}  f<=0 test {100 * fn.get('test', 0):.1f}% "
                   f"hh {100 * fn['hh']:.1f}%  <s> train(LOO)/test {r['mean_s']['train']:.2f}/"
                   f"{r['mean_s'].get('test', float('nan')):.2f}")
-    with open(os.path.join(args.osde, "simplify_summary.json"), "w") as fh:
+    path = os.path.join(args.osde, "simplify_summary.json")
+    if os.path.exists(path):                       # merge with levels done earlier
+        old = json.load(open(path))
+        old["levels"].update(out["levels"])
+        out["levels"] = old["levels"]
+    with open(path, "w") as fh:
         json.dump(out, fh, indent=1)
 
 

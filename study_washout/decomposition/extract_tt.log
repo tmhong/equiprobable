@@ -1,0 +1,4 @@
+[tt] reading ../../samples/ttbar_bblvqq/run_seed1001/parton_events.lhe.gz
+[tt] reading ../../samples/ttbar_bblvqq/run_seed1001/delphes_events.root
+tt 100000 100000 200s
+saved cache_tt.npz 204s

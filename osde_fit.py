@@ -32,9 +32,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 import make_plots  # noqa: E402
-from plotting import angles, osde  # noqa: E402
+from plotting import angles, osde, style  # noqa: E402
 
-LEVELS = ["parton", "gen", "reco"]
+LEVELS = ["parton", "parton_trig", "gen", "reco"]
 COLORS = {"train": "#1f4e9c", "test": "#2a9d8f", "hh": "#d1495b"}
 # "train": the tt̄ sample the coefficients are extracted from; "test": a separately generated
 # tt̄ sample that f is applied to (never used in the fit); "hh": the hh sample
@@ -59,7 +59,7 @@ def get_angles(sample, levels, opts, rebuild=False):
     for lvl in levels:
         ev = events[lvl]
         ok = np.all([np.isfinite(np.asarray(ev[a])) for a in angles.ANGLE_NAMES], axis=0)
-        if lvl != "parton":
+        if lvl not in ("parton", "parton_trig"):          # gen/reco: events with a reconstructed tt̄
             ok &= np.asarray(ev.reco_ok)
         out[lvl] = {a: np.asarray(ev[a], float)[ok] for a in angles.ANGLE_NAMES}
         flat.update({f"{lvl}/{a}": v for a, v in out[lvl].items()})
@@ -75,60 +75,81 @@ def domain(a):
     return (-np.pi, np.pi) if a.startswith("phi") else (-1.0, 1.0)
 
 
+PROJ_GROUPS = [("", ["Y", "cos_Theta", "cos_theta", "phi", "cos_theta_prime", "phi_prime"], (2, 3)),
+               ("_had", ["cos_theta_tilde", "phi_tilde", "cos_theta_prime_tilde", "phi_prime_tilde"], (2, 2))]
+
+
 def plot_projections(f, data, level, path, nbins=20):
-    """10 panels: normalized histograms of each sample and the projection of f."""
-    fig, axs = plt.subplots(2, 5, figsize=(17, 6.4))
-    chi2 = {}
-    for ax, a in zip(axs.ravel(), angles.ANGLE_NAMES):
+    """Normalized histograms of each sample and the projection of f, for all ten angles.
+    Two figures (legible on a slide): <path> = production + leptonic top (2x3),
+    <path stem>_had.png = hadronic top (2x2).  Returns {angle: (chi2, ndf)} vs the fit sample."""
+    style.use()
+    chi2, curves = {}, {}
+    for a in angles.ANGLE_NAMES:
         lo, hi = domain(a)
         edges = np.linspace(lo, hi, nbins + 1)
+        hists = {}
         for name, X in data.items():
             v = X[a]
             h, _ = np.histogram(v, edges)
             norm = len(v) * np.diff(edges)
-            dens, err = h / norm, np.sqrt(h) / norm
-            ax.errorbar(0.5 * (edges[1:] + edges[:-1]), dens, yerr=err, fmt="o", ms=2.5,
-                        color=COLORS[name], label=f"{LABELS[name]} ({len(v)})", elinewidth=0.8)
-            if name == "train":
-                # f projection averaged over each bin, for a chi2 with the training histogram
-                fine = np.linspace(lo, hi, nbins * 8 + 1)
-                proj = f.projection(a, 0.5 * (fine[1:] + fine[:-1])).reshape(nbins, 8).mean(axis=1)
-                good = err > 0
-                chi2[a] = float(np.sum(((dens - proj)[good] / err[good]) ** 2)), int(good.sum())
+            hists[name] = (h / norm, np.sqrt(h) / norm)
+        fine = np.linspace(lo, hi, nbins * 8 + 1)
+        proj = f.projection(a, 0.5 * (fine[1:] + fine[:-1])).reshape(nbins, 8).mean(axis=1)
+        dens, err = hists["train"]
+        good = err > 0
+        chi2[a] = float(np.sum(((dens - proj)[good] / err[good]) ** 2)), int(good.sum())
         x = np.linspace(lo, hi, 300)
-        ax.plot(x, f.projection(a, x), color="k", lw=1.4, label="OSDE $f_{t\\bar t}$")
-        ax.set_xlabel(ANGLE_TEX[a])
-        ax.set_xlim(lo, hi)
-        ax.set_ylim(bottom=min(0, ax.get_ylim()[0]))
-        c2, nd = chi2.get(a, (np.nan, 0))
-        ax.set_title(f"$\\chi^2$/ndf(train) = {c2:.0f}/{nd}", fontsize=8, loc="right")
-    axs[0, 0].legend(fontsize=7, frameon=False)
-    fig.suptitle(f"OSDE projections, {level} level", fontsize=11)
-    fig.tight_layout()
-    fig.savefig(path, dpi=110)
-    plt.close(fig)
+        curves[a] = (edges, hists, x, f.projection(a, x))
+    stem, ext = os.path.splitext(path)
+    for suffix, names, (nr, nc) in PROJ_GROUPS:
+        fig, axs = plt.subplots(nr, nc, figsize=((4.6 if nc == 3 else 6.9) * nc, 3.9 * nr))
+        for ax, a in zip(np.ravel(axs), names):
+            edges, hists, x, fx = curves[a]
+            cen = 0.5 * (edges[1:] + edges[:-1])
+            for name, (dens, err) in hists.items():
+                ax.errorbar(cen, dens, yerr=err, fmt="o", ms=4, color=COLORS[name], elinewidth=1,
+                            label=LABELS[name])
+            ax.plot(x, fx, color="k", lw=2, label="OSDE $f_{t\\bar t}$")
+            ax.set_xlabel(ANGLE_TEX[a])
+            ax.set_xlim(edges[0], edges[-1])
+            ax.set_ylim(bottom=min(0, ax.get_ylim()[0]))
+            c2, nd = chi2[a]
+            ax.set_title(f"$\\chi^2$/ndf = {c2:.0f}/{nd}", fontsize=16, loc="right")
+        np.ravel(axs)[0].legend(fontsize=16, frameon=True, framealpha=0.85, loc="best")
+        fig.suptitle(f"OSDE projections, {level.replace('_trig', '+trig')} level"
+                     + (" (hadronic top)" if suffix else " (production, leptonic top)"))
+        fig.tight_layout()
+        fig.savefig(stem + suffix + ext, dpi=110)
+        plt.close(fig)
     return chi2
 
 
 def plot_scores(scores, level, path):
     """y = f(x): linear axis (negatives visible); log axis with a y <= 0 bin; surprisal of the shifted
     y' = y + y0 (y0 > |min y| so that all y' > 0); ROC."""
-    fig, axs4 = plt.subplots(1, 4, figsize=(20, 4.3))
+    style.use()
+    # two wide figures (fill a 16:9 slide): <path> = y (linear, log); <stem>_s.png = surprisal, ROC
+    fig, (a0, a1) = plt.subplots(1, 2, figsize=(15, 6.0))
+    fig2, (a2, a3) = plt.subplots(1, 2, figsize=(15, 6.0))
+    axs4 = [a0, a1, a2, a3]
     # linear y, including f <= 0 (Gibbs overshoot of the truncated series)
     allv = np.concatenate(list(scores.values()))
     lo_lin, hi_lin = np.percentile(allv, 0.05), np.percentile(allv, 99.95)
     lo_lin = min(lo_lin, -0.05 * hi_lin)
-    lbins = np.linspace(lo_lin, hi_lin, 80)
+    expo = int(np.floor(np.log10(hi_lin)))
+    unit = 10.0 ** expo                                  # plot y in units of 10^expo (no offset text)
+    lbins = np.linspace(lo_lin, hi_lin, 80) / unit
     ax = axs4[0]
-    ax.axvspan(lo_lin, 0, color="0.88", zorder=0)
+    ax.axvspan(lbins[0], 0, color="0.88", zorder=0)
     ax.axvline(0, color="0.3", lw=0.8)
     for name, v in scores.items():
-        ax.hist(np.clip(v, lbins[0], lbins[-1]), lbins, histtype="step", density=True, color=COLORS[name], lw=1.5,
-                label=f"{LABELS[name]}: {100 * np.mean(v <= 0):.1f}% $\\leq0$, min {v.min():.1e}")
+        ax.hist(np.clip(v / unit, lbins[0], lbins[-1]), lbins, histtype="step", density=True, color=COLORS[name],
+                lw=1.5, label=f"{LABELS[name]}: {100 * np.mean(v <= 0):.1f}% $\\leq0$")
     ax.set_yscale("log")
-    ax.set_xlabel(r"$y = f_{t\bar t}(\mathbf{x})$ (linear; shaded: $y<0$)")
+    ax.set_xlabel(rf"$y = f_{{t\bar t}}(\mathbf{{x}})$  [$10^{{{expo}}}$]  (shaded: $y<0$)")
     ax.set_ylabel(r"$(1/N)\,dN/dy$")
-    ax.legend(fontsize=7.5, frameon=False, loc="upper right")
+    ax.legend(fontsize=16, frameon=True, framealpha=0.85, loc="upper right")
     axs = axs4[1:]
     # log axis for y > 0, plus one extra bin on the left holding all events with y <= 0
     pos = {k: v[v > 0] for k, v in scores.items()}
@@ -146,12 +167,12 @@ def plot_scores(scores, level, path):
         ax.stairs(h, ebins, color=COLORS[name], lw=1.5, label=f"{LABELS[name]}")
         ax.stairs([np.mean(v <= 0)], [neg_lo, neg_hi], color=COLORS[name], lw=1.5)
     ax.text(np.sqrt(neg_lo * neg_hi), 0.98, r"$y\leq0$", transform=ax.get_xaxis_transform(),
-            ha="center", va="top", fontsize=8)
+            ha="center", va="top", fontsize=14)
     ax.set_xscale("log")
     ax.set_yscale("log")
     ax.set_xlabel(r"$y = f_{t\bar t}(\mathbf{x})$ (log; left bin: $y\leq0$)")
     ax.set_ylabel("fraction of events per bin")
-    ax.legend(fontsize=8, frameon=False, loc="lower center")
+    ax.legend(fontsize=16, frameon=True, framealpha=0.85, loc="lower center")
     # surprisal of the shifted density y' = y + y0, with y0 common to all samples so that y' > 0
     y0 = 1.05 * max(0.0, -min(float(v.min()) for v in scores.values()))
     shifted = {k: v + y0 for k, v in scores.items()}
@@ -163,8 +184,8 @@ def plot_scores(scores, level, path):
                     label=f"{LABELS[name]}: $\\langle s'\\rangle$ = {np.mean(s):.2f}")
     axs[1].set_xlabel(r"surprisal $s' = -\ln y'$, $y' = y + y_0$")
     axs[1].set_ylabel("normalized")
-    axs[1].set_title(f"$y_0$ = {y0:.2e} (1.05 x most negative $y$; all $y'>0$)", fontsize=9)
-    axs[1].legend(fontsize=8, frameon=False)
+    axs[1].set_title(f"$y_0$ = {y0:.1e} (all $y'>0$)", fontsize=19)
+    axs[1].legend(fontsize=16, frameon=False, loc="upper left")
     # efficiency curve: call an event anomalous if f < threshold (f <= 0 is most anomalous)
     tt = scores.get("test", scores["train"])
     eff_tt, eff_hh, auc = efficiency_curve(tt, scores["hh"])
@@ -172,12 +193,15 @@ def plot_scores(scores, level, path):
     axs[2].plot([0, 1], [0, 1], ls=":", color="0.5")
     axs[2].set_xlabel(r"$t\bar t$ (independent sample) efficiency")
     axs[2].set_ylabel(r"$hh$ efficiency")
-    axs[2].set_title(r"ROC: scan over $y_\mathrm{cut}$, events with $f<y_\mathrm{cut}$ selected", fontsize=9)
-    axs[2].legend(fontsize=9, frameon=False, loc="lower right")
-    fig.suptitle(f"$f_{{t\\bar t}}$ applied to $t\\bar t$ and $hh$, {level} level", fontsize=11)
-    fig.tight_layout()
+    axs[2].set_title(r"ROC (scan over $y_\mathrm{cut}$; $f<y_\mathrm{cut}$ selected)", fontsize=16)
+    axs[2].legend(fontsize=16, frameon=False, loc="lower right")
+    for fg in (fig, fig2):
+        fg.tight_layout()
+    stem, ext = os.path.splitext(path)
     fig.savefig(path, dpi=110)
+    fig2.savefig(stem + "_s" + ext, dpi=110)
     plt.close(fig)
+    plt.close(fig2)
     return auc
 
 
@@ -237,6 +261,8 @@ def make_density(args, lvl):
     """The paper's basis, or the extended block basis with the orders found by osde_order_scan.py."""
     if args.basis == "paper":
         return osde.TTbarDensity(args.n_legendre, args.n_hermite, args.y_scale)
+    if args.basis == "sh":
+        return osde.SHDensity(args.n_legendre, args.n_hermite, args.y_scale, args.sh_l1, args.sh_l2)
     r = json.load(open(args.orders))[lvl]["_required"]
     cap = args.max_order
     phip = r["min_j1_j2_for_phi_prime"]
@@ -261,8 +287,11 @@ def main():
     p.add_argument("--n-legendre", type=int, default=5)
     p.add_argument("--n-hermite", type=int, default=5)
     p.add_argument("--y-scale", type=float, default=1.0, help="Hermite scale s (paper: 1)")
-    p.add_argument("--basis", choices=["paper", "extended"], default="paper",
-                   help="paper: j1<=1, j2<=2 product basis; extended: + high-order blocks (orders from --orders)")
+    p.add_argument("--basis", choices=["paper", "extended", "sh"], default="paper",
+                   help="paper: j1<=1, j2<=2 product basis; extended: + high-order blocks (orders from --orders); "
+                        "sh: spherical-harmonic products Y_l1m1(θ,φ) Y_l2m2(θ',φ') per top")
+    p.add_argument("--sh-l1", type=int, default=1, help="l1max for --basis sh")
+    p.add_argument("--sh-l2", type=int, default=2, help="l2max for --basis sh")
     p.add_argument("--orders", default=os.path.join(HERE, "osde", "order_scan.json"),
                    help="osde_order_scan.py output (used with --basis extended)")
     p.add_argument("--max-order", type=int, default=16, help="cap on the extended orders")
@@ -312,7 +341,8 @@ def main():
             "basis_params": ({"J1": f.J1, "J2": f.J2, "n_legendre_hi": f.nl_hi, "n_hermite_hi": f.nh_hi,
                               "y_scale": f.y_scale,
                               "blocks": {b[0]: int(n) for b, n in zip(f.blocks, f.sizes)}}
-                             if hasattr(f, "blocks") else {"J1": 1, "J2": 2}),
+                             if hasattr(f, "blocks") else
+                             {"l1max": f.l1max, "l2max": f.l2max} if getattr(f, "sh", False) else {"J1": 1, "J2": 2}),
             "n_significant_3sigma": int(np.sum(signif > 3)),
             "n_significant_5sigma": int(np.sum(signif > 5)),
             "integral": float(f.integral()),
@@ -332,7 +362,13 @@ def main():
               f"/{s['n_coefficients']}  ∫f={s['integral']:.3f}  f<=0: "
               + ", ".join(f"{k} {100 * v:.1f}%" for k, v in s["frac_negative"].items())
               + f"  AUC(hh vs tt)={auc:.3f}")
-    with open(os.path.join(args.out, "summary.json"), "w") as fh:
+    # merge with levels fitted earlier (so a single level can be (re)fitted with --levels)
+    path = os.path.join(args.out, "summary.json")
+    if os.path.exists(path):
+        old = json.load(open(path))
+        old["levels"].update(summary["levels"])
+        summary["levels"] = old["levels"]
+    with open(path, "w") as fh:
         json.dump(summary, fh, indent=1)
     print(f"[osde] outputs in {args.out}")
 

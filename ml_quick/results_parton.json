@@ -1,0 +1,149 @@
+{
+ "level": "parton",
+ "n_test_tt": 10000,
+ "n_test_hh": 8000,
+ "results": {
+  "OSDE f_tt, paper basis (all terms)": {
+   "group": "unsupervised",
+   "auc_test": 0.6517031,
+   "auc_err": 0.0042616992623762335,
+   "tt_rej_at_hh50": 3.399048266485384
+  },
+  "OSDE f_tt, paper basis (CV-truncated)": {
+   "group": "unsupervised",
+   "auc_test": 0.656482625,
+   "auc_err": 0.004302917933925982,
+   "tt_rej_at_hh50": 3.4806822137138878
+  },
+  "Gaussian mixture density (32 comp.)": {
+   "group": "unsupervised",
+   "auc_test": 0.582861,
+   "auc_err": 0.004581310230995397,
+   "tt_rej_at_hh50": 2.635740643120717,
+   "seconds": 34.7
+  },
+  "autoencoder (reconstruction error)": {
+   "group": "unsupervised",
+   "auc_test": 0.56392048125,
+   "auc_err": 0.004139582161716339,
+   "tt_rej_at_hh50": 2.4600246002460024,
+   "seconds": 2.4
+  },
+  "BDT [angles]": {
+   "group": "angles",
+   "auc_test": 0.881208375,
+   "auc_err": 0.002363955835914899,
+   "tt_rej_at_hh50": 12.406947890818858,
+   "auc_train": 0.9205147000000001,
+   "seconds": 6.3
+  },
+  "MLP [angles]": {
+   "group": "angles",
+   "auc_test": 0.8772414562499999,
+   "auc_err": 0.002534209212922898,
+   "tt_rej_at_hh50": 12.547051442910917,
+   "auc_train": 0.884325628888889,
+   "seconds": 3.2
+  },
+  "FT-Transformer [angles]": {
+   "group": "angles",
+   "auc_test": 0.86496524375,
+   "auc_err": 0.0026404913506699614,
+   "tt_rej_at_hh50": 10.964912280701753,
+   "auc_train": 0.8700993872222222,
+   "seconds": 112.7
+  },
+  "BDT [angles+y]": {
+   "group": "angles+y",
+   "auc_test": 0.8791192875,
+   "auc_err": 0.0023515004823424744,
+   "tt_rej_at_hh50": 12.594458438287154,
+   "auc_train": 0.9177181799999999,
+   "seconds": 6.3
+  },
+  "MLP [angles+y]": {
+   "group": "angles+y",
+   "auc_test": 0.8771198874999999,
+   "auc_err": 0.002481146500853329,
+   "tt_rej_at_hh50": 12.150668286755772,
+   "auc_train": 0.8825947138888889,
+   "seconds": 3.1
+  },
+  "FT-Transformer [angles+y]": {
+   "group": "angles+y",
+   "auc_test": 0.864827475,
+   "auc_err": 0.0026536578162332783,
+   "tt_rej_at_hh50": 11.19820828667413,
+   "auc_train": 0.8725268433333334,
+   "seconds": 121.0
+  },
+  "BDT [angles+momenta]": {
+   "group": "angles+momenta",
+   "auc_test": 0.9995349499999999,
+   "auc_err": 7.155936507300942e-05,
+   "tt_rej_at_hh50": 1000000.0,
+   "auc_train": 0.9999555033333334,
+   "seconds": 17.8
+  },
+  "MLP [angles+momenta]": {
+   "group": "angles+momenta",
+   "auc_test": 0.999472425,
+   "auc_err": 8.01061563069699e-05,
+   "tt_rej_at_hh50": 1000000.0,
+   "auc_train": 0.999744591111111,
+   "seconds": 4.8
+  },
+  "FT-Transformer [angles+momenta]": {
+   "group": "angles+momenta",
+   "auc_test": 0.9962709000000001,
+   "auc_err": 0.0002628513944185907,
+   "tt_rej_at_hh50": 10000.0,
+   "auc_train": 0.9971705266666666,
+   "seconds": 267.0
+  },
+  "BDT [angles+momenta+y]": {
+   "group": "angles+momenta+y",
+   "auc_test": 0.9994794125,
+   "auc_err": 7.656824098759345e-05,
+   "tt_rej_at_hh50": 1000000.0,
+   "auc_train": 0.9999449444444445,
+   "seconds": 18.5
+  },
+  "MLP [angles+momenta+y]": {
+   "group": "angles+momenta+y",
+   "auc_test": 0.9996329374999999,
+   "auc_err": 5.474506630164005e-05,
+   "tt_rej_at_hh50": 1000000.0,
+   "auc_train": 0.9998390466666667,
+   "seconds": 4.3
+  },
+  "FT-Transformer [angles+momenta+y]": {
+   "group": "angles+momenta+y",
+   "auc_test": 0.9974708624999999,
+   "auc_err": 0.0002015733551053677,
+   "tt_rej_at_hh50": 10000.0,
+   "auc_train": 0.9981249916666667,
+   "seconds": 283.0
+  },
+  "Particle Transformer [momenta + pairwise m, dR]": {
+   "group": "momenta",
+   "auc_test": 0.9999981,
+   "auc_err": 1.107766587554518e-06,
+   "tt_rej_at_hh50": 1000000.0,
+   "auc_train": NaN,
+   "seconds": 67.7
+  },
+  "control: BDT, shuffled labels": {
+   "group": "control",
+   "auc_test": 0.49113801874999996,
+   "auc_err": 0.004516461659555148,
+   "tt_rej_at_hh50": 1.9554165037152915
+  },
+  "control: BDT, tt (fit) vs tt (independent)": {
+   "group": "control",
+   "auc_test": 0.5020114200000001,
+   "auc_err": 0.0055036501243236405,
+   "tt_rej_at_hh50": 1.9692792437967703
+  }
+ }
+}

@@ -151,7 +151,7 @@ def make(scores, level, out_base, title=None, y0_factor=2.5, edge_quantile=0.005
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--dir", default="osde", help="osde_fit.py output directory (scores_<level>.npz)")
-    p.add_argument("--levels", default="parton,gen,reco")
+    p.add_argument("--levels", default="parton,parton_trig,gen,reco")
     p.add_argument("--edge-quantile", type=float, default=0.005,
                    help="s'_0, s'_1 = this and 1 - this quantile of s' (0 = the paper's min / max)")
     p.add_argument("--y0-factor", type=float, default=2.5,
@@ -164,7 +164,7 @@ def main():
             continue
         z = np.load(path)
         y0, s0, s1 = make({k: z[k] for k in z.files}, lvl, os.path.join(args.dir, f"tt_hh_dNdy_dNdt_{lvl}"),
-                          title=f"{lvl} level", y0_factor=args.y0_factor, edge_quantile=args.edge_quantile)
+                          title=f"{lvl.replace('parton_trig', 'parton+trig')} level", y0_factor=args.y0_factor, edge_quantile=args.edge_quantile)
         print(f"{args.dir} {lvl}: y0={y0:.3e}  s'0={s0:.2f}  s'1={s1:.2f}")
 
 

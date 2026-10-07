@@ -54,7 +54,7 @@ def right_angle(center, u, v, s=0.22):
     return f"{c(center + s * u)} -- {c(center + s * u + s * v)} -- {c(center + s * v)}"
 
 
-def build():
+def build(legend=True):
     ex, ey, ez, xp, yp, zp, lep = unit_vectors()
     O = np.zeros(3)
     t, p = np.radians(THETA), np.radians(PHI)
@@ -75,7 +75,7 @@ def build():
     add(r"\begin{document}")
     (xx, xy), (yx, yy), (zx, zy) = PROJ["x"], PROJ["y"], PROJ["z"]
     add(rf"\begin{{tikzpicture}}[x={{({xx}cm,{xy}cm)}}, y={{({yx}cm,{yy}cm)}}, z={{({zx}cm,{zy}cm)}}, "
-        r"font=\small, >={Latex[length=2.2mm]}, scale=1.2]")
+        + (r"font=\small" if legend else r"font=\large") + r", >={Latex[length=2.2mm]}, scale=1.2]")
     add(r"\tikzset{vec/.style={->, line width=1.2pt}, axis/.style={->, line width=0.7pt, black!75},"
         r" arc/.style={->, line width=0.8pt}, ra/.style={line width=0.5pt, black!70}}")
 
@@ -108,7 +108,7 @@ def build():
         add(rf"\draw[vec, {color}] {c(O)} -- {c(tip)} node[anchor=south west] {{{label}}};")
         # phi: from x to the projection, inside the xy plane
         add(rf"\draw[arc, gold!65!black] {arc(O, ex, ey, ph, 1.05)};")
-        add(rf"\node[gold!55!black] at {c(1.42 * (np.cos(ph / 2) * ex + np.sin(ph / 2) * ey))} {{{pl}}};")
+        add(rf"\node[gold!55!black] at {c(1.6 * (np.cos(ph / 2) * ex + np.sin(ph / 2) * ey) + 0.15 * ez)} {{{pl}}};")
         # theta: from z to the vector
         add(rf"\draw[arc, {color}] {arc(O, ez, vxy, th, 1.3)};")
         add(rf"\node[{color}] at {c(1.55 * (np.cos(th / 2) * ez + np.sin(th / 2) * vxy))} {{{tl}}};")
@@ -123,7 +123,7 @@ def build():
 
     # ---------------- right: W rest frame
     shift = "(0,0,7.4)"
-    frame(shift, r"$x'=y'\times z'$", r"$y'=\frac{z\times z'}{|z\times z'|}$", r"$z'=\hat p_W$",
+    frame(shift, r"$x'=y'\times z'$", r"$y'\propto z\times z'$", r"$z'=\hat p_W$",
           np.array([-np.sin(t), 0.0, np.cos(t)]), r"top direction $z$")
     angles(l, l_xy, tp, pp, "lep", r"$\theta'$", r"$\phi'$", r"$\ell$", r"$\ell_\perp$", L_LEP * 1.45)
     add(r"\end{scope}")
@@ -133,45 +133,46 @@ def build():
     add(r"\draw[->, line width=1pt, royal!70, bend left=20] (1.4,0,3.4) to node[above, font=\footnotesize, align=center]"
         r" {boost along $\hat p_W$\\(standard boost)} (1.4,0,6.4);")
 
-    # ---------------- legend
-    add(r"\node[anchor=north west, align=left, font=\footnotesize, text width=16cm] at (-2.4,0,-1.9) {"
-        r"\tikz\fill[royal!10] (0,0) rectangle (0.32,0.2); $x$--$z$ plane (contains the beam and $\hat p_t^{\,\mathrm{lab}}$;"
-        r" right: the $x'$--$z'$ plane, contains $\hat p_W$ and the top direction)\quad"
-        r"\tikz\fill[gold!30] (0,0) rectangle (0.32,0.2); $xy$ plane, perpendicular to $z$\\[2pt]"
-        r"$\theta$: angle between $z$ and the $W$.\quad"
-        r"$\phi$: \textbf{azimuth of the $W$ around $z$}: project the $W$ onto the $xy$ plane ($W_\perp$);"
-        r" $\phi$ is the angle from $x$ to $W_\perp$, toward $y$.\\"
-        r"$(\theta',\phi')$: the same for the charged lepton in the $W$ rest frame, with $(x',y',z')$:"
-        r" $z'=\hat p_W$, $y'=z\times z'/|z\times z'|$ (in the $xy$ plane), $x'=y'\times z'$,"
-        r" i.e.\ $(x',y',z')=R(\phi,\theta,0)\,(x,y,z)$.\\"
-        r"The beam is not along $z$ ($z$ is the top direction); it lies in the $x$--$z$ plane with a negative"
-        r" $x$ component, since $y\propto\hat z_\mathrm{beam}\times z$.\quad "
-        r"Hadronic top: same construction with the down-type quark in place of $\ell$.};")
+    # ---------------- legend (left out of the slide version: the slide text carries it)
+    if legend:
+        add(r"\node[anchor=north west, align=left, font=\footnotesize, text width=16cm] at (-2.4,0,-1.9) {"
+            r"\tikz\fill[royal!10] (0,0) rectangle (0.32,0.2); $x$--$z$ plane (contains the beam and $\hat p_t^{\,\mathrm{lab}}$;"
+            r" right: the $x'$--$z'$ plane, contains $\hat p_W$ and the top direction)\quad"
+            r"\tikz\fill[gold!30] (0,0) rectangle (0.32,0.2); $xy$ plane, perpendicular to $z$\\[2pt]"
+            r"$\theta$: angle between $z$ and the $W$.\quad"
+            r"$\phi$: \textbf{azimuth of the $W$ around $z$}: project the $W$ onto the $xy$ plane ($W_\perp$);"
+            r" $\phi$ is the angle from $x$ to $W_\perp$, toward $y$.\\"
+            r"$(\theta',\phi')$: the same for the charged lepton in the $W$ rest frame, with $(x',y',z')$:"
+            r" $z'=\hat p_W$, $y'=z\times z'/|z\times z'|$ (in the $xy$ plane), $x'=y'\times z'$,"
+            r" i.e.\ $(x',y',z')=R(\phi,\theta,0)\,(x,y,z)$.\\"
+            r"The beam is not along $z$ ($z$ is the top direction); it lies in the $x$--$z$ plane with a negative"
+            r" $x$ component, since $y\propto\hat z_\mathrm{beam}\times z$.\quad "
+            r"Hadronic top: same construction with the down-type quark in place of $\ell$.};")
     add(r"\end{tikzpicture}")
     add(r"\end{document}")
     return "\n".join(lines) + "\n"
 
 
 def main():
-    tex = os.path.join(HERE, "angle_diagram.tex")
-    with open(tex, "w") as f:
-        f.write(build())
-    res = subprocess.run(["pdflatex", "-interaction=nonstopmode", "-halt-on-error", "angle_diagram.tex"],
-                         cwd=HERE, stdout=subprocess.PIPE, text=True)
-    if res.returncode:
-        print("\n".join(res.stdout.splitlines()[-20:]))
-        raise SystemExit("pdflatex failed")
-    for ext in ("aux", "log"):
-        p = os.path.join(HERE, f"angle_diagram.{ext}")
-        if os.path.exists(p):
-            os.remove(p)
-    try:
-        import pymupdf
-        pymupdf.open(os.path.join(HERE, "angle_diagram.pdf"))[0].get_pixmap(dpi=150).save(
-            os.path.join(HERE, "angle_diagram.png"))
-    except ImportError:
-        pass
-    print(f"wrote {tex[:-4]}.pdf")
+    for name, legend in (("angle_diagram", True), ("angle_diagram_slide", False)):
+        tex = os.path.join(HERE, f"{name}.tex")
+        with open(tex, "w") as f:
+            f.write(build(legend))
+        res = subprocess.run(["pdflatex", "-interaction=nonstopmode", "-halt-on-error", f"{name}.tex"],
+                             cwd=HERE, stdout=subprocess.PIPE, text=True)
+        if res.returncode:
+            print("\n".join(res.stdout.splitlines()[-20:]))
+            raise SystemExit("pdflatex failed")
+        for ext in ("aux", "log"):
+            p = os.path.join(HERE, f"{name}.{ext}")
+            if os.path.exists(p):
+                os.remove(p)
+        try:
+            import pymupdf
+            pymupdf.open(os.path.join(HERE, f"{name}.pdf"))[0].get_pixmap(dpi=150).save(os.path.join(HERE, f"{name}.png"))
+        except ImportError:
+            pass
+        print(f"wrote {os.path.join(HERE, name)}.pdf")
 
 
 if __name__ == "__main__":

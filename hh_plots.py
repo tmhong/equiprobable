@@ -20,6 +20,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
+from plotting import style  # noqa: E402
 import numpy as np  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -45,10 +46,11 @@ def main():
     onshell = m_qq > m_lv                      # hadronic boson is the on-shell W
 
     bins = np.linspace(0, 200, 51)
-    fig, axs = plt.subplots(1, 2, figsize=(12, 4.4), sharey=False)
+    style.use()
+    fig, axs = plt.subplots(1, 2, figsize=(14, 5.8), sharey=False)
     res = {"frac_had_onshell": float(onshell.mean())}
-    for ax, case, title in ((axs[0], onshell, r"hadronic $W$ on-shell ($m_{q\bar q'}>m_{\ell\nu}$)"),
-                            (axs[1], ~onshell, r"hadronic $W^*$ off-shell ($m_{q\bar q'}<m_{\ell\nu}$)")):
+    for ax, case, title in ((axs[0], onshell, r"hadronic $W$ on-shell"),
+                            (axs[1], ~onshell, r"hadronic $W^*$ off-shell")):
         for lvl, (col, ls) in LEVELS.items():
             E = ev[lvl]
             sel = case if lvl == "parton" else case & np.asarray(E.reco_ok)
@@ -58,13 +60,12 @@ def main():
             ax.hist(np.clip(m, bins[0], bins[-1] - 1e-6), bins, histtype="step", density=True, lw=1.6,
                     color=col, ls=ls, label=f"{lvl} ({len(m)}, median {med:.0f} GeV)")
             res[f"{'onshell' if case is onshell else 'offshell'}_{lvl}_median"] = float(med)
-        ax.set_title(f"{title}: {100 * case.mean():.0f}% of events", fontsize=10)
-        ax.set_xlabel(r"$m_{W,\mathrm{had}}$ [GeV]  (gen/reco: $\chi^2$-selected jets)")
+        ax.set_title(f"{title}: {100 * case.mean():.0f}% of events", fontsize=15)
+        ax.set_xlabel(r"$m_{W,\mathrm{had}}$ [GeV]")
         ax.set_ylabel("normalized")
-        ax.legend(fontsize=8, frameon=False)
+        ax.legend(fontsize=13, frameon=False)
         ax.set_xlim(bins[0], bins[-1])
-    fig.suptitle(r"$hh\to b\bar b\,WW^*$: hadronic $W$ mass, split by which $W$ decays hadronically "
-                 r"(parton-level truth)", fontsize=11)
+    fig.suptitle(r"$hh\to b\bar b\,WW^*$: hadronic $W$ mass by case (gen/reco: $\chi^2$-selected jets)")
     fig.tight_layout()
     os.makedirs(args.out, exist_ok=True)
     path = os.path.join(args.out, "w_had_mass_split.png")
@@ -78,7 +79,8 @@ def main():
 def overview(ev, out):
     """One readable 1x3 figure: m_bb, leading-lepton pT, number of b-jets (parton/gen/reco)."""
     import awkward as ak
-    fig, axs = plt.subplots(1, 3, figsize=(15, 4.3))
+    style.use()
+    fig, axs = plt.subplots(1, 3, figsize=(16, 5.4))
     # m_bb: parton is a delta function at m_h -> scale the axis to gen/reco and annotate
     bins = np.linspace(0, 300, 61)
     ymax = 0
@@ -95,8 +97,8 @@ def overview(ev, out):
             ymax = max(ymax, h.max())
         axs[0].stairs(h, bins, color=col, ls=ls, lw=1.6, label=f"{lvl} (median {np.median(m):.0f} GeV)")
     axs[0].set_ylim(0, 1.35 * ymax)
-    axs[0].annotate(r"parton: $\delta$ at $m_h$ (off scale)", xy=(125, 1.3 * ymax), xytext=(170, 1.2 * ymax),
-                    fontsize=8, color=LEVELS["parton"][0], arrowprops=dict(arrowstyle="->", color=LEVELS["parton"][0]))
+    axs[0].annotate(r"parton: $\delta$ at $m_h$" + "\n(off scale)", xy=(125, 1.3 * ymax), xytext=(185, 0.75 * ymax),
+                    fontsize=13, color=LEVELS["parton"][0], arrowprops=dict(arrowstyle="->", color=LEVELS["parton"][0]))
     axs[0].set_xlabel(r"$m_{b\bar b}$ [GeV]  (gen/reco: two leading b-jets)")
     # leading lepton pT
     bins = np.linspace(0, 250, 51)
@@ -115,8 +117,8 @@ def overview(ev, out):
     axs[2].set_xlabel("number of b-jets")
     for ax in axs:
         ax.set_ylabel("normalized")
-        ax.legend(fontsize=9, frameon=False)
-    fig.suptitle(r"$hh\to b\bar b\,WW^*\to b\bar b\,\ell\nu\,q\bar q'$ at parton, gen and reco level", fontsize=12)
+        ax.legend(fontsize=14, frameon=False)
+    fig.suptitle(r"$hh\to b\bar b\,WW^*\to b\bar b\,\ell\nu\,q\bar q'$ at parton, gen and reco level", fontsize=17)
     fig.tight_layout()
     fig.savefig(os.path.join(out, "hh_overview.png"), dpi=120)
 
