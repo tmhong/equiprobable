@@ -5,7 +5,8 @@ tt̄ and hh, with the ratio N_hh / (N_hh + N_tt̄) below, in the paper's style.
 
   y' = y - y0,  y0 = 2.5 * (most negative y)  (inferred from the paper figure: its y axis starts at y0 and
                t is populated continuously from 0, which needs y0 well below min y)
-  s' = -ln y',  t = (s'_1 - s') / (s'_1 - s'_0),  s'_0 / s'_1 = min / max of s'  ->  t in [0, 1],
+  s' = -ln y',  t = (s'_1 - s') / (s'_1 - s'_0),  s'_0 / s'_1 = 0.5% / 99.5% quantiles of s' (events beyond
+  go into the first / last bin; the paper's min / max leave empty bins)  ->  t in [0, 1] with no empty bins,
   t -> 0: less tt̄-like.  y0, s'_0, s'_1 are taken over tt̄ and hh together, per level.
 
 tt̄: the fit sample with leave-one-out scores (unbiased, high statistics); hh: the hh sample.
@@ -40,14 +41,16 @@ plt.rcParams.update({
 })
 
 
-def transform(scores, y0_factor=2.5):
-    """y -> t as in the paper; returns t per sample and the constants.  y0 = y0_factor x (most negative y):
-    1 would put that event at y' = 0 (s' infinite); larger factors pull s'_1 in and spread t."""
+def transform(scores, y0_factor=2.5, edge_quantile=0.005):
+    """y -> t as in the paper.  y0 = y0_factor x (most negative y).  s'_0, s'_1 are the
+    edge_quantile and 1 - edge_quantile quantiles of s' over all samples (the paper's min / max
+    correspond to edge_quantile = 0, which lets single extreme events stretch the range and leave
+    empty bins); events beyond them go into the first / last bin (t clipped to [0, 1])."""
     y0 = y0_factor * min(0.0, min(float(v.min()) for v in scores.values()))
     sp = {k: -np.log(v - y0) for k, v in scores.items()}
-    s0 = min(float(v.min()) for v in sp.values())
-    s1 = max(float(v.max()) for v in sp.values())
-    return {k: (s1 - v) / (s1 - s0) for k, v in sp.items()}, (y0, s0, s1)
+    allsp = np.concatenate(list(sp.values()))
+    s0, s1 = float(np.quantile(allsp, edge_quantile)), float(np.quantile(allsp, 1 - edge_quantile))
+    return {k: np.clip((s1 - v) / (s1 - s0), 0, 1) for k, v in sp.items()}, (y0, s0, s1)
 
 
 def merged_ratio(edges, h_hh, h_tt, n_hh, n_tt, min_count=25):
@@ -79,8 +82,8 @@ def gradient_fill(ax, h, edges, colors):
 
 
 def panel(ax, rax, v_tt, v_hh, edges, t_of_bin, xlabel, xlim, show_legend):
-    h_tt, _ = np.histogram(np.clip(v_tt, edges[0], edges[-1] - 1e-12), edges)
-    h_hh, _ = np.histogram(np.clip(v_hh, edges[0], edges[-1] - 1e-12), edges)
+    h_tt, _ = np.histogram(np.clip(v_tt, edges[0], edges[-1] - 1e-9 * (edges[-1] - edges[0])), edges)
+    h_hh, _ = np.histogram(np.clip(v_hh, edges[0], edges[-1] - 1e-9 * (edges[-1] - edges[0])), edges)
     w = np.diff(edges)
     d_tt, d_hh = h_tt / len(v_tt) / w, h_hh / len(v_hh) / w
     # color gradient linear in t, same mapping in both panels (white at low t, dark at high t)
@@ -111,9 +114,9 @@ def panel(ax, rax, v_tt, v_hh, edges, t_of_bin, xlabel, xlim, show_legend):
         a.yaxis.set_major_formatter(clean)
 
 
-def make(scores, level, out_base, title=None, y0_factor=2.5):
+def make(scores, level, out_base, title=None, y0_factor=2.5, edge_quantile=0.005):
     tt, hh = scores["train"], scores["hh"]          # tt̄: fit sample, leave-one-out scores
-    t, (y0, s0, s1) = transform({"tt": tt, "hh": hh}, y0_factor)
+    t, (y0, s0, s1) = transform({"tt": tt, "hh": hh}, y0_factor, edge_quantile)
     expo = int(np.floor(np.log10(np.percentile(tt, 99))))
     scale = 10.0 ** expo
     ylo = y0                                       # the left axis starts at the shift point, as in the paper
@@ -122,7 +125,7 @@ def make(scores, level, out_base, title=None, y0_factor=2.5):
     t_edges = np.linspace(0, 1, 51)
 
     def t_of_y(yv):
-        return (s1 + np.log(yv * scale - y0)) / (s1 - s0)
+        return np.clip((s1 + np.log(yv * scale - y0)) / (s1 - s0), 0, 1)
 
     fig = plt.figure(figsize=(9.6, 7.0))
     gs = fig.add_gridspec(2, 2, height_ratios=[2.1, 1], hspace=0.06, wspace=0.18)
@@ -149,6 +152,8 @@ def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--dir", default="osde", help="osde_fit.py output directory (scores_<level>.npz)")
     p.add_argument("--levels", default="parton,gen,reco")
+    p.add_argument("--edge-quantile", type=float, default=0.005,
+                   help="s'_0, s'_1 = this and 1 - this quantile of s' (0 = the paper's min / max)")
     p.add_argument("--y0-factor", type=float, default=2.5,
                    help="y0 = factor x (most negative y). 2.5 reproduces the paper figure (its y axis starts at "
                         "y0 ~ 2.5 x min y and t is populated continuously from 0); 1 is singular")
@@ -159,7 +164,7 @@ def main():
             continue
         z = np.load(path)
         y0, s0, s1 = make({k: z[k] for k in z.files}, lvl, os.path.join(args.dir, f"tt_hh_dNdy_dNdt_{lvl}"),
-                          title=f"{lvl} level", y0_factor=args.y0_factor)
+                          title=f"{lvl} level", y0_factor=args.y0_factor, edge_quantile=args.edge_quantile)
         print(f"{args.dir} {lvl}: y0={y0:.3e}  s'0={s0:.2f}  s'1={s1:.2f}")
 
 

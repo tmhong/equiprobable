@@ -129,7 +129,23 @@ add process p p > t t~, (t > b w+, w+ > q q), (t~ > b~ w-, w- > lep- nul~)"""),
                    r"reconstructed $t\bar{t}$ system."),
     ]
     slides += nu_pz_slides()
+    slides += lep_had_slides()
     return slides
+
+
+def lep_had_slides():
+    """Leptonic vs hadronic decay angles (lep_had_compare.py)."""
+    path = os.path.join(PLOTS_DIR, "lep_vs_had.png")
+    if not os.path.exists(path):
+        return []
+    r = json.load(open(os.path.join(PLOTS_DIR, "lep_vs_had.json")))
+    key = "cos_theta_prime|cos_theta_prime_tilde"
+    pp = ", ".join(f"{v['p']:.2f}" for k, v in r["parton"].items() if k != "n")
+    return [wide_figure(r"Leptonic vs hadronic top: same distributions?", path, note=(
+        r"SM: the down-type quark plays the role of the charged lepton, so the pairs must agree. Parton level: "
+        rf"yes (KS $p$ = {pp} for $\cos\theta$, $\phi$, $\cos\theta'$, $\phi'$). Gen/reco: no, even with perfect "
+        rf"flavour tagging and correct jets ($\cos\theta'$ KS distance {r['reco, correct jets'][key]['ks']:.3f}): "
+        r"the two sides have different acceptance and resolution (lepton cuts + $\nu$ vs jet cuts and response)."))]
 
 
 def nu_pz_slides():
@@ -394,7 +410,8 @@ def discriminator_slides(odir):
         p = os.path.join(odir, f"tt_hh_dNdy_dNdt_{l}.pdf")
         if os.path.exists(p):
             slides.append(wide_figure(rf"$y=f^\mathrm{{{l}}}_{{t\bar t}}$ and $t$, {l} level (paper basis)", p,
-                                      note=r"$y'=y-y_0$, $y_0=2.5\times\min y$ (inferred from the paper figure); $s'=-\ln y'$; "
+                                      note=r"$y'=y-y_0$, $y_0=2.5\times\min y$ (from the paper figure); $s'=-\ln y'$; $s'_{0,1}$ = 0.5\%, 99.5\% "
+                                           r"quantiles (beyond: first/last bin), so $t$ fills [0, 1] with no empty bins; "
                                            r"$t=(s'_1-s')/(s'_1-s'_0)$. $t\bar t$: fit sample (leave-one-out); "
                                            r"unit area."))
     p = os.path.join(odir, "t_vs_y0_parton.png")

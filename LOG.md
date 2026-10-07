@@ -163,3 +163,12 @@ Newest entries are at the bottom. Numbers refer to the samples listed under "Sam
 ### Paper figure as reference (user re-sent `tt_hh_dNdy_dNdt.pdf`)
 - **y₀ inferred from the figure:** its y axis starts at about −1.5×10⁻⁵ (≈ 2.5 × min y), and t is populated continuously from 0, which requires y₀ well below min y. So y₀ = 2.5 × min y is now the default (`--y0-factor`). This still needs confirming by the user.
 - **Style matched:** no title over the figure (the level is printed inside the left panel), tick labels without trailing zeros, the legend in the upper right, and the left axis starting at y₀.
+
+### Leptonic vs hadronic decay angles (user question)
+- **Expectation:** in the SM the down-type quark plays the role of the charged lepton, so cos θ′ and cos θ̃′ (and the other pairs) should agree.
+- **Parton level (100k):** they agree for every pair; KS p-values are 0.24, 0.54, 0.84 and 0.27.
+- **Gen and reco:** they differ (cos θ′ KS distance 0.056 at gen, 0.080 at reco). They still differ with perfect flavour tagging and correct jets (0.097), because the two sides have different acceptance and resolution. See `lep_had_compare.py` and `plots/lep_vs_had.png`.
+
+### t fills [0, 1] (user request)
+- **Problem:** with s′₀ and s′₁ at the strict min and max, single extreme events stretch the range and leave empty bins (up to 18 of 50 for hh). No choice of y₀ fixes this.
+- **Fix:** s′₀ and s′₁ are now the 0.5% and 99.5% quantiles of the combined sample, with events beyond them in the first or last bin. Result: no empty bins for tt̄ or hh, at any level, with either basis (`--edge-quantile`).
