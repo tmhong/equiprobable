@@ -142,6 +142,12 @@ def build_parton(particles, weight):
     ev.t_lep = ev.w_lep + ev.b_lep
     ev.t_had = ev.w_had + ev.b_had
     ev.ttbar = ev.t_lep + ev.t_had
+    # "parton + lepton trigger": the charged lepton passes the offline single-lepton cuts
+    lpt = ak.to_numpy(ak.fill_none(ev.lep.pt, 0.0))
+    leta = np.abs(ak.to_numpy(ak.fill_none(ev.lep.eta, 99.0)))
+    is_e = ev.lep_flavour == 11
+    ev.lep_trigger = np.where(is_e, (lpt > CUTS["el_pt"]) & (leta < CUTS["el_eta"]),
+                              (lpt > CUTS["mu_pt"]) & (leta < CUTS["mu_eta"])) & (ev.lep_flavour != 15)
     return ev
 
 

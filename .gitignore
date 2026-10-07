@@ -13,6 +13,7 @@ plots/
 plots_*/
 acceptance/
 osde/
+osde_ext/
 slides/*
 !slides/slides.pdf
 # LaTeX / python by-products

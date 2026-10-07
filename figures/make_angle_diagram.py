@@ -79,60 +79,74 @@ def build():
     add(r"\tikzset{vec/.style={->, line width=1.2pt}, axis/.style={->, line width=0.7pt, black!75},"
         r" arc/.style={->, line width=0.8pt}, ra/.style={line width=0.5pt, black!70}}")
 
-    def frame(origin_shift, xl, yl, zl, xz_label, xz_color):
-        """Shaded x-z plane, gold x-y quadrant, axes and right-angle markers of one frame."""
-        a = L_AXIS * 0.9
+    def frame(origin_shift, xl, yl, zl, edge, edge_label, xz_color="royal"):
+        """Shaded x-z plane anchored on a reference line (beam / top direction), gold xy quarter-disc,
+        axes and right-angle markers.  No text is placed inside or across the shaded areas."""
+        lo, hi, a = -1.1, 2.3, 2.35           # band: along the edge line [lo, hi], height a along +x
         add(rf"\begin{{scope}}[shift={{{origin_shift}}}]")
-        add(rf"\fill[{xz_color}!10] {c(-0.45 * a * ex)} -- {c(a * ex - 0.45 * a * ez)} -- {c(a * ex + a * ez)} -- "
-            rf"{c(-0.45 * a * ex + a * ez)} -- cycle;")
-        add(rf"\node[{xz_color}!80, font=\footnotesize, anchor=north east, align=right] at {c(a * ex + a * ez)} "
-            rf"{{{xz_label}}};")
-        add(rf"\fill[gold!25, opacity=0.85] {c(O)} -- {c(1.3 * ex)} -- {c(1.3 * ex + 1.3 * ey)} -- {c(1.3 * ey)} -- cycle;")
+        add(rf"\fill[{xz_color}!10] {c(lo * edge)} -- {c(hi * edge)} -- {c(hi * edge + a * ex)} -- "
+            rf"{c(lo * edge + a * ex)} -- cycle;")
+        add(rf"\draw[dashed, black!60, line width=0.8pt] {c(lo * edge)} -- {c(hi * edge)} "
+            rf"node[anchor=north west, black!70, font=\footnotesize] {{{edge_label}}};")
+        # xy plane (perpendicular to z): gold quarter disc from x toward y
+        R = 2.05
+        disc = " -- ".join(c(R * (np.cos(u) * ex + np.sin(u) * ey)) for u in np.linspace(0, np.pi / 2, 30))
+        add(rf"\fill[gold!30, opacity=0.9] {c(O)} -- {disc} -- cycle;")
         add(rf"\draw[axis] {c(O)} -- {c(L_AXIS * ex)} node[anchor=south] {{{xl}}};")
-        add(rf"\draw[axis] {c(O)} -- {c(L_AXIS * 0.9 * ey)} node[anchor=north east] {{{yl}}};")
+        add(rf"\draw[axis] {c(O)} -- {c(L_AXIS * 0.95 * ey)} node[anchor=north east] {{{yl}}};")
         add(rf"\draw[axis] {c(O)} -- {c(L_AXIS * ez)} node[anchor=west] {{{zl}}};")
         for u, v in ((ex, ey), (ey, ez), (ez, ex)):
             add(rf"\draw[ra] {right_angle(O, u, v)};")
 
-    def angles(vec, vxy, th, ph, color, tl, pl, label, length):
-        add(rf"\draw[dotted, black!55] {c(O)} -- {c(length * np.sin(th) * vxy)} -- {c(length * vec)};")
-        add(rf"\draw[vec, {color}] {c(O)} -- {c(length * vec)} node[anchor=south west] {{{label}}};")
-        add(rf"\draw[arc, {color}] {arc(O, ex, ey, ph, 0.95)};")
-        add(rf"\node[{color}] at {c(1.2 * (np.cos(ph / 2) * ex + np.sin(ph / 2) * ey))} {{{pl}}};")
+    def angles(vec, vxy, th, ph, color, tl, pl, label, perp_label, length):
+        tip, foot = length * vec, length * np.sin(th) * vxy
+        # projection onto the xy plane (solid gold) and the drop line parallel to z (dashed)
+        add(rf"\draw[->, line width=1.1pt, gold!75!black] {c(O)} -- {c(foot)} "
+            rf"node[anchor=east, gold!60!black, font=\footnotesize, xshift=-2pt] {{{perp_label}}};")
+        add(rf"\draw[dashed, line width=0.7pt, black!60] {c(foot)} -- {c(tip)};")
+        add(rf"\draw[ra] {right_angle(foot, ez, -vxy, 0.16)};")
+        add(rf"\draw[vec, {color}] {c(O)} -- {c(tip)} node[anchor=south west] {{{label}}};")
+        # phi: from x to the projection, inside the xy plane
+        add(rf"\draw[arc, gold!65!black] {arc(O, ex, ey, ph, 1.05)};")
+        add(rf"\node[gold!55!black] at {c(1.42 * (np.cos(ph / 2) * ex + np.sin(ph / 2) * ey))} {{{pl}}};")
+        # theta: from z to the vector
         add(rf"\draw[arc, {color}] {arc(O, ez, vxy, th, 1.3)};")
         add(rf"\node[{color}] at {c(1.55 * (np.cos(th / 2) * ez + np.sin(th / 2) * vxy))} {{{tl}}};")
 
     # ---------------- left: top rest frame
     frame("(0,0)", r"$x=y\times z$", r"$y\propto\hat z_\mathrm{beam}\times z$", r"$z=\hat p_t^{\,\mathrm{lab}}$",
-          r"$x$--$z$ plane:\\beam and $\hat p_t^{\,\mathrm{lab}}$", "royal")
-    add(rf"\draw[dashed, black!55, line width=0.7pt] {c(1.4 * beam)} -- {c(-2.0 * beam)} "
-        r"node[anchor=south east, black!65] {beam};")
-    add(rf"\draw[vec, black!55] {c(O)} -- {c(-0.9 * w)} node[anchor=north] {{$b$}};")
-    angles(w, w_xy, t, p, "royal", r"$\theta$", r"$\phi$", r"$W$", L_W * 0.8)
+          beam, r"beam axis")
+    add(rf"\draw[vec, black!55] {c(O)} -- {c(-0.8 * w)} node[anchor=north west] {{$b$}};")
+    angles(w, w_xy, t, p, "royal", r"$\theta$", r"$\phi$", r"$W$", r"$W_\perp$", L_W * 0.85)
     add(r"\end{scope}")
-    add(r"\node[font=\bfseries] at (3.3,0,0.6) {top rest frame};")
+    add(r"\node[font=\bfseries] at (3.5,0,0.6) {top rest frame};")
 
     # ---------------- right: W rest frame
-    shift = "(0,0,7.2)"
+    shift = "(0,0,7.4)"
     frame(shift, r"$x'=y'\times z'$", r"$y'=\frac{z\times z'}{|z\times z'|}$", r"$z'=\hat p_W$",
-          r"$x'$--$z'$ plane:\\contains $\hat p_t^{\,\mathrm{lab}}$ ($z$)", "royal")
-    angles(l, l_xy, tp, pp, "lep", r"$\theta'$", r"$\phi'$", r"$\ell$", L_LEP * 1.4)
+          np.array([-np.sin(t), 0.0, np.cos(t)]), r"top direction $z$")
+    angles(l, l_xy, tp, pp, "lep", r"$\theta'$", r"$\phi'$", r"$\ell$", r"$\ell_\perp$", L_LEP * 1.45)
     add(r"\end{scope}")
-    add(r"\node[font=\bfseries] at (3.3,0,7.8) {$W$ rest frame};")
+    add(r"\node[font=\bfseries] at (3.5,0,8.0) {$W$ rest frame};")
 
     # boost arrow between the panels
     add(r"\draw[->, line width=1pt, royal!70, bend left=20] (1.4,0,3.4) to node[above, font=\footnotesize, align=center]"
         r" {boost along $\hat p_W$\\(standard boost)} (1.4,0,6.4);")
 
     # ---------------- legend
-    add(r"\node[anchor=north west, align=left, font=\footnotesize, text width=15.5cm] at (-2.3,0,-1.8) {"
-        r"\textbf{Top rest frame}: $z=\hat p_t^{\,\mathrm{lab}}$, $y\propto\hat z_\mathrm{beam}\times z$ (normal to the"
-        r" plane of the beam and the top), $x=y\times z$; $(\theta,\phi)$ is the direction of the $W$, $\phi$ measured"
-        r" from $x$ in the $xy$ plane (gold).\\"
-        r"\textbf{$W$ rest frame}: $z'=\hat p_W$, $y'=z\times z'/|z\times z'|$ lies in the $xy$ plane, $x'=y'\times z'$;"
-        r" $(\theta',\phi')$ is the direction of the charged lepton, i.e.\ $(x',y',z')=R(\phi,\theta,0)\,(x,y,z)$.\\"
-        r"Hadronic top: the same construction gives $(\tilde\theta,\tilde\phi,\tilde\theta',\tilde\phi')$, with the"
-        r" down-type quark in place of $\ell$.};")
+    add(r"\node[anchor=north west, align=left, font=\footnotesize, text width=16cm] at (-2.4,0,-1.9) {"
+        r"\tikz\fill[royal!10] (0,0) rectangle (0.32,0.2); $x$--$z$ plane (contains the beam and $\hat p_t^{\,\mathrm{lab}}$;"
+        r" right: the $x'$--$z'$ plane, contains $\hat p_W$ and the top direction)\quad"
+        r"\tikz\fill[gold!30] (0,0) rectangle (0.32,0.2); $xy$ plane, perpendicular to $z$\\[2pt]"
+        r"$\theta$: angle between $z$ and the $W$.\quad"
+        r"$\phi$: \textbf{azimuth of the $W$ around $z$}: project the $W$ onto the $xy$ plane ($W_\perp$);"
+        r" $\phi$ is the angle from $x$ to $W_\perp$, toward $y$.\\"
+        r"$(\theta',\phi')$: the same for the charged lepton in the $W$ rest frame, with $(x',y',z')$:"
+        r" $z'=\hat p_W$, $y'=z\times z'/|z\times z'|$ (in the $xy$ plane), $x'=y'\times z'$,"
+        r" i.e.\ $(x',y',z')=R(\phi,\theta,0)\,(x,y,z)$.\\"
+        r"The beam is not along $z$ ($z$ is the top direction); it lies in the $x$--$z$ plane with a negative"
+        r" $x$ component, since $y\propto\hat z_\mathrm{beam}\times z$.\quad "
+        r"Hadronic top: same construction with the down-type quark in place of $\ell$.};")
     add(r"\end{tikzpicture}")
     add(r"\end{document}")
     return "\n".join(lines) + "\n"

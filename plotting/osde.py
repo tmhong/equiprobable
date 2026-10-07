@@ -33,7 +33,27 @@ HAD = ("phi_tilde", "cos_theta_tilde", "phi_prime_tilde", "cos_theta_prime_tilde
 # Wigner functions and the M basis
 # ----------------------------------------------------------------------------
 def wigner_small_d(j, mp, m, beta):
-    """Wigner small-d d^j_{m'm}(beta) (integer j), explicit Wigner formula."""
+    """Wigner small-d d^j_{m'm}(beta) (integer j), via Jacobi polynomials (numerically stable
+    to high j; agrees with the explicit Wigner sum to 1e-14)."""
+    from scipy.special import eval_jacobi, gammaln
+    beta = np.asarray(beta, dtype=float)
+    k = min(j + m, j - m, j + mp, j - mp)
+    if k == j + m:
+        a, lam = mp - m, mp - m
+    elif k == j - m:
+        a, lam = m - mp, 0
+    elif k == j + mp:
+        a, lam = m - mp, 0
+    else:
+        a, lam = mp - m, mp - m
+    b = 2 * j - 2 * k - a
+    pref = (-1) ** lam * np.exp(0.5 * (gammaln(2 * j - k + 1) + gammaln(k + 1)
+                                       - gammaln(k + a + 1) - gammaln(k + b + 1)))
+    return pref * np.sin(beta / 2) ** a * np.cos(beta / 2) ** b * eval_jacobi(k, a, b, np.cos(beta))
+
+
+def wigner_small_d_explicit(j, mp, m, beta):
+    """Explicit Wigner sum (reference implementation; loses precision at large j)."""
     beta = np.asarray(beta, dtype=float)
     c, s = np.cos(beta / 2), np.sin(beta / 2)
     pref = sqrt(factorial(j + mp) * factorial(j - mp) * factorial(j + m) * factorial(j - m))
@@ -282,19 +302,23 @@ def cv_threshold_scan(s1, s2, counts, thresholds):
 
 def describe(f, flat_index):
     """Physics label of a basis term: the non-constant factors and what they probe."""
-    a, b, l, n = np.unravel_index(flat_index, f.shape)
+    if hasattr(f, "term"):
+        _, ma, mb, l, n = f.term(flat_index)
+    else:
+        a, b, l, n = np.unravel_index(flat_index, f.shape)
+        ma, mb = f.midx[a], f.midx[b]
     parts, tags = [], []
-    for side, (j1, j2, mp, m) in (("lep", f.midx[a]), ("had", f.midx[b])):
+    for side, (j1, j2, mp, m) in (("lep", ma), ("had", mb)):
         if (j1, j2) == (0, 0):
             continue
         parts.append(f"{side}[j1={j1},j2={j2},m'={mp},m={m}]")
         if j1 == 0:
-            tags.append(f"W helicity ({side})")
+            tags.append(f"W helicity ({side})" if j2 <= 2 else f"high-order W decay ({side})")
         elif j2 == 0:
             tags.append(f"top polarization ({side}, {'longitudinal' if mp == 0 else 'transverse'})")
         else:
             tags.append(f"top pol. x W helicity interference ({side})")
-    if f.midx[a][0] == 1 and f.midx[b][0] == 1:
+    if ma[0] >= 1 and mb[0] >= 1:
         tags = ["tt spin correlation"] + tags
     if l:
         parts.append(f"P{l}(cosΘ)")
@@ -303,3 +327,246 @@ def describe(f, flat_index):
         parts.append(f"H{n}(Y)")
         tags.append("rapidity")
     return (" x ".join(parts) or "constant"), "; ".join(dict.fromkeys(tags)) or "normalization"
+
+
+# ----------------------------------------------------------------------------
+# Extended (block) basis for gen/reco: the paper's product basis plus high-order blocks
+# ----------------------------------------------------------------------------
+def single_top_indices(j1max, j2max):
+    """M functions that shape one top's angular distribution at high order: all (θ, φ) terms
+    (j2 = 0, any m') and all terms with m' = 0 (θ, θ', φ' structure).  Closed under conjugation."""
+    out = []
+    for j1 in range(j1max + 1):
+        for j2 in range(j2max + 1):
+            for mp in range(-j1, j1 + 1):
+                for m in range(-min(j1, j2), min(j1, j2) + 1):
+                    if j2 == 0 or mp == 0:
+                        out.append((j1, j2, mp, m))
+    return out
+
+
+def _m_factor_integrals(idx, names, grid=None, which=None, n=96):
+    """Integrals of M functions over (φ, cosθ, φ', cosθ'), optionally leaving `which`
+    (one of 'phi', 'cos_theta', 'phi_prime', 'cos_theta_prime') free on `grid`.
+    Separable: φ integrals are 2π δ_{m'0} and 2π δ_{m0}; θ integrals by Gauss-Legendre."""
+    u, w = legendre.leggauss(n)
+    th = np.arccos(u)
+    rows = []
+    g = None if grid is None else np.asarray(grid, float)
+    for j1, j2, mp, m in idx:
+        pref = sqrt(2 * j1 + 1) * sqrt(2 * j2 + 1) / (4 * pi)
+        fphi = (2 * pi * (mp == 0)) if which != "phi" else np.exp(-1j * mp * g)
+        fth = (w @ wigner_small_d(j1, mp, m, th)) if which != "cos_theta" else \
+            wigner_small_d(j1, mp, m, np.arccos(np.clip(g, -1, 1)))
+        fphp = (2 * pi * (m == 0)) if which != "phi_prime" else np.exp(-1j * m * g)
+        fthp = (w @ wigner_small_d(j2, m, 0, th)) if which != "cos_theta_prime" else \
+            wigner_small_d(j2, m, 0, np.arccos(np.clip(g, -1, 1)))
+        rows.append(pref * fphi * fth * fphp * fthp * (np.ones_like(g) if g is not None else 1.0))
+    out = np.array(rows, dtype=complex)
+    return out.T if g is not None else out
+
+
+class ExtendedDensity:
+    """
+    f(x) = Σ_blocks Σ c B over a union of disjoint subsets of the full orthonormal product basis
+    (so the union is orthonormal and OSDE applies unchanged):
+      A  paper block: M_lep(j1<=1, j2<=2) x M_had(same) x p_l (l < n_legendre) x h_n (n < n_hermite)
+      L  leptonic single-top block: single_top_indices(J1, J2) minus the paper set, x M_had,0 x p_0 x h_n
+      H  hadronic single-top block (same, with the tops exchanged)
+      P  high Legendre: M_0 x M_0 x p_l (n_legendre <= l < n_legendre_hi) x h_n (n < n_hermite)
+      Y  high Hermite:  M_0 x M_0 x p_0 x h_n (n_hermite <= n < n_hermite_hi)
+    Coefficients are stored flat (block A first, so index 0 is the constant term).
+    """
+
+    def __init__(self, J1=1, J2=2, n_legendre=5, n_hermite=5, n_legendre_hi=None, n_hermite_hi=None,
+                 y_scale=1.0):
+        self.J1, self.J2, self.y_scale = J1, J2, y_scale
+        self.nl, self.nh = n_legendre, n_hermite
+        self.nl_hi = max(n_legendre_hi or n_legendre, n_legendre)
+        self.nh_hi = max(n_hermite_hi or n_hermite, n_hermite)
+        self.m_lo = m_indices(1, 2)
+        lo = set(self.m_lo)
+        self.m_hi = [k for k in single_top_indices(J1, J2) if k not in lo]
+        self.m_all = self.m_lo + self.m_hi
+        z0 = [0]                                   # index of the constant M (0,0,0,0) in m_all
+        nlo, nall = len(self.m_lo), len(self.m_all)
+        lo_i, hi_i = list(range(nlo)), list(range(nlo, nall))
+        r = lambda a, b: list(range(a, b))        # noqa: E731
+        self.blocks = [("A", lo_i, lo_i, r(0, self.nl), r(0, self.nh))]
+        if hi_i:
+            self.blocks += [("L", hi_i, z0, [0], r(0, self.nh)), ("H", z0, hi_i, [0], r(0, self.nh))]
+        if self.nl_hi > self.nl:
+            self.blocks.append(("P", z0, z0, r(self.nl, self.nl_hi), r(0, self.nh)))
+        if self.nh_hi > self.nh:
+            self.blocks.append(("Y", z0, z0, [0], r(self.nh, self.nh_hi)))
+        self.sizes = [len(a) * len(b) * len(l) * len(n) for _, a, b, l, n in self.blocks]
+        self.c = self.c_err = None
+        self.n_fit = 0
+
+    @property
+    def n_terms(self):
+        return int(sum(self.sizes))
+
+    shape = property(lambda self: (self.n_terms,))
+
+    def factors(self, X):
+        return (m_functions(*(X[k] for k in LEP), self.m_all),
+                m_functions(*(X[k] for k in HAD), self.m_all),
+                legendre_functions(X["cos_Theta"], self.nl_hi),
+                hermite_functions(X["Y"], self.nh_hi, self.y_scale))
+
+    def _blockwise(self, fac, conj):
+        ml, mh, p, h = fac
+        if conj:
+            ml, mh = ml.conj(), mh.conj()
+        out = []
+        for _, a, b, l, n in self.blocks:
+            out.append(np.einsum("kj,ki,kl,kn->jiln", ml[:, a], mh[:, b], p[:, l], h[:, n],
+                                 optimize=True).ravel())
+        return np.concatenate(out)
+
+    def _sums(self, X, chunk=5000, k=1):
+        nobs = len(X["Y"])
+        s1 = np.zeros((k, self.n_terms), complex)
+        s2 = np.zeros((k, self.n_terms))
+        counts = np.zeros(k)
+        for lo in range(0, nobs, chunk):
+            fac = self.factors({key: v[lo:lo + chunk] for key, v in X.items()})
+            fold = np.arange(lo, lo + len(fac[2])) % k
+            for i in range(k):
+                msk = fold == i
+                if not msk.any():
+                    continue
+                sub = tuple(x[msk] for x in fac)
+                s1[i] += self._blockwise(sub, conj=True)
+                s2[i] += self._blockwise(tuple(abs(x) ** 2 for x in sub), conj=False).real
+                counts[i] += msk.sum()
+        return s1, s2, counts
+
+    def fit(self, X):
+        s1, s2, counts = self._sums(X)
+        n = counts.sum()
+        self.c = s1[0] / n
+        self.c_err = np.sqrt(np.clip(s2[0] / n - abs(self.c) ** 2, 0, None) / n)
+        self.n_fit = int(n)
+        return self
+
+    def fold_sums(self, X, k=5):
+        return self._sums(X, k=k)
+
+    def _evaluate(self, fac, coef):
+        ml, mh, p, h = fac
+        out, pos = 0, 0
+        for (_, a, b, l, n), size in zip(self.blocks, self.sizes):
+            cb = coef[pos:pos + size].reshape(len(a), len(b), len(l), len(n))
+            pos += size
+            out = out + np.einsum("jiln,kj,ki,kl,kn->k", cb, ml[:, a], mh[:, b], p[:, l], h[:, n], optimize=True)
+        return out
+
+    def __call__(self, X, imag=False, chunk=5000):
+        res = []
+        for lo in range(0, len(X["Y"]), chunk):
+            res.append(self._evaluate(self.factors({k: v[lo:lo + chunk] for k, v in X.items()}), self.c))
+        f = np.concatenate(res)
+        return (f.real, f.imag) if imag else f.real
+
+    def loo(self, X, chunk=5000):
+        kept = (np.abs(self.c) > 0).astype(float)
+        out = []
+        for lo in range(0, len(X["Y"]), chunk):
+            fac = self.factors({k: v[lo:lo + chunk] for k, v in X.items()})
+            f = self._evaluate(fac, self.c).real
+            self_term = self._evaluate(tuple(abs(x) ** 2 for x in fac), kept).real
+            out.append((self.n_fit * f - self_term) / (self.n_fit - 1))
+        return np.concatenate(out)
+
+    def significance(self):
+        return np.abs(self.c) / np.where(self.c_err > 0, self.c_err, np.inf)
+
+    def truncated(self, keep):
+        g = ExtendedDensity(self.J1, self.J2, self.nl, self.nh, self.nl_hi, self.nh_hi, self.y_scale)
+        g.c, g.c_err, g.n_fit = np.where(keep, self.c, 0), self.c_err, self.n_fit
+        return g
+
+    def conjugate_partner(self):
+        pos = {key: i for i, key in enumerate(self.m_all)}
+        pm = np.array([pos[(j1, j2, -mp, -m)] for j1, j2, mp, m in self.m_all])
+        out, off = [], 0
+        for (_, a, b, l, n), size in zip(self.blocks, self.sizes):
+            ia = {v: i for i, v in enumerate(a)}
+            ib = {v: i for i, v in enumerate(b)}
+            idx = np.arange(size).reshape(len(a), len(b), len(l), len(n))
+            pa = [ia[pm[v]] for v in a]
+            pb = [ib[pm[v]] for v in b]
+            out.append(off + idx[pa][:, pb].ravel())
+            off += size
+        return np.concatenate(out)
+
+    def term(self, flat):
+        """(block, lep M index, had M index, l, n) of a flat coefficient index."""
+        off = 0
+        for (name, a, b, l, n), size in zip(self.blocks, self.sizes):
+            if flat < off + size:
+                ia, ib, il, i_n = np.unravel_index(flat - off, (len(a), len(b), len(l), len(n)))
+                return name, self.m_all[a[ia]], self.m_all[b[ib]], l[il], n[i_n]
+            off += size
+        raise IndexError(flat)
+
+    # ---- integrals and projections ------------------------------------------
+    def _factor_vectors(self, name=None, grid=None):
+        """Per-factor integral vectors (or values on grid for the free variable)."""
+        im = _m_factor_integrals(self.m_all, LEP)
+        u = np.linspace(-1, 1, 4001)
+        ip = np.trapezoid(legendre_functions(u, self.nl_hi), u, axis=0)
+        y = np.linspace(-25, 25, 50001) * self.y_scale
+        iy = np.trapezoid(hermite_functions(y, self.nh_hi, self.y_scale), y, axis=0)
+        fl, fh, fp, fy = im, im, ip, iy
+        if name in LEP:
+            fl = _m_factor_integrals(self.m_all, LEP, grid, ("phi", "cos_theta", "phi_prime", "cos_theta_prime")[LEP.index(name)])
+        elif name in HAD:
+            fh = _m_factor_integrals(self.m_all, HAD, grid, ("phi", "cos_theta", "phi_prime", "cos_theta_prime")[HAD.index(name)])
+        elif name == "cos_Theta":
+            fp = legendre_functions(grid, self.nl_hi)
+        elif name == "Y":
+            fy = hermite_functions(grid, self.nh_hi, self.y_scale)
+        return fl, fh, fp, fy
+
+    def _contract(self, fl, fh, fp, fy):
+        """Σ_blocks c · (factor vectors); a factor given on a grid (2-D) becomes the output axis."""
+        out, pos = 0, 0
+        for (_, a, b, l, n), size in zip(self.blocks, self.sizes):
+            cb = self.c[pos:pos + size].reshape(len(a), len(b), len(l), len(n))
+            pos += size
+            sub = [vec[..., ix] for vec, ix in ((fl, a), (fh, b), (fp, l), (fy, n))]
+            ops = ",".join(("k" + c) if v.ndim == 2 else c for v, c in zip(sub, "jiln"))
+            free = "k" if any(v.ndim == 2 for v in sub) else ""
+            out = out + np.einsum(f"jiln,{ops}->{free}", cb, *sub, optimize=True)
+        return np.real(out)
+
+    def integral(self):
+        return float(self._contract(*self._factor_vectors()))
+
+    def projection(self, name, grid):
+        return self._contract(*self._factor_vectors(name, np.asarray(grid, float)))
+
+    # ---- persistence -----------------------------------------------------------
+    def save(self, path, **meta):
+        np.savez(path, kind="extended", c=self.c, c_err=self.c_err, n_fit=self.n_fit,
+                 params=np.array([self.J1, self.J2, self.nl, self.nh, self.nl_hi, self.nh_hi]),
+                 y_scale=self.y_scale, meta=repr(meta))
+
+    @classmethod
+    def load(cls, path):
+        z = np.load(path, allow_pickle=False)
+        J1, J2, nl, nh, nl_hi, nh_hi = (int(v) for v in z["params"])
+        f = cls(J1, J2, nl, nh, nl_hi, nh_hi, float(z["y_scale"]))
+        f.c, f.c_err, f.n_fit = z["c"], z["c_err"], int(z["n_fit"])
+        return f
+
+
+def load_density(path):
+    """Load either a TTbarDensity (paper basis) or an ExtendedDensity file."""
+    z = np.load(path, allow_pickle=False)
+    if "kind" in z and str(z["kind"]) == "extended":
+        return ExtendedDensity.load(path)
+    return TTbarDensity.load(path)

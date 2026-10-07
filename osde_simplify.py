@@ -68,7 +68,7 @@ def main():
 
     out = {"thresholds": THRESHOLDS, "levels": {}}
     for lvl in args.levels.split(","):
-        f = osde.TTbarDensity.load(os.path.join(args.osde, f"f_ttbar_{lvl}.npz"))
+        f = osde.load_density(os.path.join(args.osde, f"f_ttbar_{lvl}.npz"))
         X = {"train": angles(args.train, lvl, args.tag), "hh": angles(args.hh, lvl, args.tag)}
         if args.test:
             X["test"] = angles(args.test, lvl, args.tag)

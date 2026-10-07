@@ -3,6 +3,7 @@ Checks of the basis functions and OSDE (run: .venv/bin/python -m pytest -q tests
 """
 import os
 import sys
+from itertools import product
 from math import pi, sqrt
 
 import numpy as np
@@ -150,3 +151,84 @@ def test_toy_recovery():
     ref = 3 / 8 * (1 - u)**2 * 0.3 + 3 / 4 * (1 - u**2) * 0.7
     assert np.allclose(g, ref, atol=0.02)
     assert abs(f.integral() - 1) < 0.01
+
+
+# ------------------------------------------------- extended (block) basis ----
+def test_high_j_small_d_stable():
+    # orthonormality in j of d^j_{m'm} up to j = 24 (exact Gauss-Legendre)
+    u, w = legendre.leggauss(80)
+    th = np.arccos(u)
+    for mp, m in ((0, 0), (3, -2), (5, 5)):
+        js = range(max(abs(mp), abs(m)), 25)
+        G = np.array([[np.sum(w * osde.wigner_small_d(j1, mp, m, th) * osde.wigner_small_d(j2, mp, m, th))
+                       * sqrt((2 * j1 + 1) * (2 * j2 + 1)) / 2 for j2 in js] for j1 in js])
+        assert np.allclose(G, np.eye(len(G)), atol=1e-12)
+    # agrees with the explicit Wigner sum at low j
+    b = np.linspace(0.05, 3.0, 9)
+    for j in range(5):
+        for mp in range(-j, j + 1):
+            for m in range(-j, j + 1):
+                assert np.allclose(osde.wigner_small_d(j, mp, m, b), osde.wigner_small_d_explicit(j, mp, m, b),
+                                   atol=1e-13)
+
+
+def test_extended_blocks_orthonormal_and_disjoint():
+    g = osde.ExtendedDensity(J1=3, J2=3, n_legendre=3, n_hermite=3, n_legendre_hi=6, n_hermite_hi=6)
+    # factor set orthonormal (quadrature exact for these degrees)
+    G = m_gram(g.m_all, n=10)
+    assert np.allclose(G, np.eye(len(g.m_all)), atol=1e-11)
+    # blocks are disjoint subsets of the product basis -> the union is orthonormal
+    seen = set()
+    for _, a, b, l, n in g.blocks:
+        for t in product(a, b, l, n):
+            assert t not in seen
+            seen.add(t)
+    assert len(seen) == g.n_terms
+    # closed under conjugation
+    part = g.conjugate_partner()
+    assert np.array_equal(np.sort(part), np.arange(g.n_terms))
+
+
+def test_extended_reduces_to_paper_basis():
+    X = toy_events(20000)
+    f0 = osde.TTbarDensity().fit(X)
+    g = osde.ExtendedDensity().fit(X)          # J1=1, J2=2, 5 Legendre, 5 Hermite: block A only
+    assert g.n_terms == 14400
+    sub = {k: v[:500] for k, v in X.items()}
+    assert np.allclose(f0(sub), g(sub), rtol=1e-10, atol=1e-14)
+    # integrals agree to the precision of the (trapezoid) factor integrals of TTbarDensity
+    assert abs(f0.integral() - g.integral()) < 1e-6
+    u = np.linspace(-0.9, 0.9, 7)
+    assert np.allclose(f0.projection("cos_theta_prime", u), g.projection("cos_theta_prime", u), atol=1e-10)
+    assert np.allclose(f0.projection("phi_prime", u), g.projection("phi_prime", u), atol=1e-10)
+
+
+def test_extended_captures_sharp_marginal():
+    # cos θ' with a sharp acceptance-like edge: flat on [-0.6, 1]; needs high Legendre orders
+    n = 200000
+    X = toy_events(n)
+    X["cos_theta_prime"] = RNG.uniform(-0.6, 1, n)
+    lo = osde.ExtendedDensity().fit(X)
+    hi = osde.ExtendedDensity(J1=1, J2=12).fit(X)
+    u = np.linspace(-0.95, 0.95, 39)
+    truth = np.where(u > -0.6, 1 / 1.6, 0)
+    away = np.abs(u + 0.6) > 0.15                  # away from the discontinuity (Gibbs)
+    err_lo = np.max(np.abs(lo.projection("cos_theta_prime", u) - truth)[away])
+    err_hi = np.max(np.abs(hi.projection("cos_theta_prime", u) - truth)[away])
+    assert err_hi < 0.5 * err_lo and err_hi < 0.12
+
+
+def test_leave_one_out_exact():
+    # loo() must equal refitting without event k and evaluating at x_k (brute force)
+    X = toy_events(400)
+    for dens in (osde.TTbarDensity(n_legendre=3, n_hermite=3),
+                 osde.ExtendedDensity(J1=2, J2=3, n_legendre=3, n_hermite=3, n_legendre_hi=5, n_hermite_hi=5)):
+        full = dens.fit(X)
+        loo = full.loo(X)
+        for k in (0, 17, 399):
+            keep = np.arange(400) != k
+            ref = type(dens)(**({"n_legendre": 3, "n_hermite": 3} if isinstance(dens, osde.TTbarDensity) else
+                                {"J1": 2, "J2": 3, "n_legendre": 3, "n_hermite": 3, "n_legendre_hi": 5,
+                                 "n_hermite_hi": 5}))
+            ref.fit({key: v[keep] for key, v in X.items()})
+            assert np.isclose(loo[k], ref({key: v[k:k + 1] for key, v in X.items()})[0], rtol=1e-9, atol=1e-15)

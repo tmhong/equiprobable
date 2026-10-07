@@ -111,26 +111,59 @@ def plot_projections(f, data, level, path, nbins=20):
 
 
 def plot_scores(scores, level, path):
-    """Distributions of y = f(x) (log x-axis, y > 0) and of s = -ln y."""
-    fig, axs = plt.subplots(1, 3, figsize=(15, 4.3))
+    """y = f(x): linear axis (negatives visible); log axis with a y <= 0 bin; surprisal of the shifted
+    y' = y + y0 (y0 > |min y| so that all y' > 0); ROC."""
+    fig, axs4 = plt.subplots(1, 4, figsize=(20, 4.3))
+    # linear y, including f <= 0 (Gibbs overshoot of the truncated series)
+    allv = np.concatenate(list(scores.values()))
+    lo_lin, hi_lin = np.percentile(allv, 0.05), np.percentile(allv, 99.95)
+    lo_lin = min(lo_lin, -0.05 * hi_lin)
+    lbins = np.linspace(lo_lin, hi_lin, 80)
+    ax = axs4[0]
+    ax.axvspan(lo_lin, 0, color="0.88", zorder=0)
+    ax.axvline(0, color="0.3", lw=0.8)
+    for name, v in scores.items():
+        ax.hist(np.clip(v, lbins[0], lbins[-1]), lbins, histtype="step", density=True, color=COLORS[name], lw=1.5,
+                label=f"{LABELS[name]}: {100 * np.mean(v <= 0):.1f}% $\\leq0$, min {v.min():.1e}")
+    ax.set_yscale("log")
+    ax.set_xlabel(r"$y = f_{t\bar t}(\mathbf{x})$ (linear; shaded: $y<0$)")
+    ax.set_ylabel(r"$(1/N)\,dN/dy$")
+    ax.legend(fontsize=7.5, frameon=False, loc="upper right")
+    axs = axs4[1:]
+    # log axis for y > 0, plus one extra bin on the left holding all events with y <= 0
     pos = {k: v[v > 0] for k, v in scores.items()}
     lo = min(np.percentile(v, 0.5) for v in pos.values())
     hi = max(np.percentile(v, 99.9) for v in pos.values())
-    ebins = np.logspace(np.log10(lo), np.log10(hi), 50)
-    for name, v in pos.items():
-        axs[0].hist(v, ebins, histtype="step", density=True, color=COLORS[name], lw=1.5,
-                    label=f"{LABELS[name]}: {100 * np.mean(scores[name] <= 0):.1f}% with $f\\leq0$")
-    axs[0].set_xscale("log")
-    axs[0].set_xlabel(r"$y = f_{t\bar t}(\mathbf{x})$  ($y>0$)")
-    axs[0].set_ylabel(r"$(1/N)\,dN/dy$")
-    axs[0].set_yscale("log")
-    axs[0].legend(fontsize=8, frameon=False)
-    sb = np.linspace(-np.log(hi), -np.log(lo), 50)
-    for name, v in pos.items():
-        axs[1].hist(-np.log(v), sb, histtype="step", density=True, color=COLORS[name], lw=1.5,
-                    label=f"{LABELS[name]}: $\\langle s\\rangle$ = {np.mean(-np.log(v)):.2f}")
-    axs[1].set_xlabel(r"surprisal $s = -\ln y$")
+    nb = 40
+    ebins = np.logspace(np.log10(lo), np.log10(hi), nb + 1)
+    step = ebins[1] / ebins[0]
+    neg_lo, neg_hi = lo / step ** 3, lo / step      # the "y <= 0" bin, separated by a gap
+    ax = axs[0]
+    ax.axvspan(neg_lo, neg_hi, color="0.88", zorder=0)
+    for name, v in scores.items():
+        w = np.full(len(v), 1.0 / len(v))
+        h, _ = np.histogram(np.clip(v, lo, hi * 0.999999), ebins, weights=w)
+        ax.stairs(h, ebins, color=COLORS[name], lw=1.5, label=f"{LABELS[name]}")
+        ax.stairs([np.mean(v <= 0)], [neg_lo, neg_hi], color=COLORS[name], lw=1.5)
+    ax.text(np.sqrt(neg_lo * neg_hi), 0.98, r"$y\leq0$", transform=ax.get_xaxis_transform(),
+            ha="center", va="top", fontsize=8)
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_xlabel(r"$y = f_{t\bar t}(\mathbf{x})$ (log; left bin: $y\leq0$)")
+    ax.set_ylabel("fraction of events per bin")
+    ax.legend(fontsize=8, frameon=False, loc="lower center")
+    # surprisal of the shifted density y' = y + y0, with y0 common to all samples so that y' > 0
+    y0 = 1.05 * max(0.0, -min(float(v.min()) for v in scores.values()))
+    shifted = {k: v + y0 for k, v in scores.items()}
+    s_all = np.concatenate([-np.log(v) for v in shifted.values()])
+    sb = np.linspace(np.percentile(s_all, 0.1), np.percentile(s_all, 99.9), 50)
+    for name, v in shifted.items():
+        s = -np.log(v)
+        axs[1].hist(np.clip(s, sb[0], sb[-1]), sb, histtype="step", density=True, color=COLORS[name], lw=1.5,
+                    label=f"{LABELS[name]}: $\\langle s'\\rangle$ = {np.mean(s):.2f}")
+    axs[1].set_xlabel(r"surprisal $s' = -\ln y'$, $y' = y + y_0$")
     axs[1].set_ylabel("normalized")
+    axs[1].set_title(f"$y_0$ = {y0:.2e} (1.05 x most negative $y$; all $y'>0$)", fontsize=9)
     axs[1].legend(fontsize=8, frameon=False)
     # efficiency curve: call an event anomalous if f < threshold (f <= 0 is most anomalous)
     tt = scores.get("test", scores["train"])
@@ -200,6 +233,24 @@ def y_scale_scan(Y, n_hermite, scales=(1.0, 0.9, 0.8, 0.7)):
     return out
 
 
+def make_density(args, lvl):
+    """The paper's basis, or the extended block basis with the orders found by osde_order_scan.py."""
+    if args.basis == "paper":
+        return osde.TTbarDensity(args.n_legendre, args.n_hermite, args.y_scale)
+    r = json.load(open(args.orders))[lvl]["_required"]
+    cap = args.max_order
+    phip = r["min_j1_j2_for_phi_prime"]
+    J1 = min(cap, max(1, r["j1max"], phip))
+    J2 = min(cap, max(2, r["j2max"], phip))
+    nl_hi = min(cap + 1, max(args.n_legendre, r["n_legendre"]))
+    nh_hi = min(cap + 1, max(args.n_hermite, r["n_hermite"]))
+    f = osde.ExtendedDensity(J1, J2, args.n_legendre, args.n_hermite, nl_hi, nh_hi, r.get("y_scale", args.y_scale))
+    print(f"[osde] {lvl}: extended basis J1={J1} J2={J2} Legendre {nl_hi} Hermite {nh_hi} (scale {f.y_scale}): "
+          f"{f.n_terms} terms "
+          + ", ".join(f"{b[0]} {n}" for b, n in zip(f.blocks, f.sizes)))
+    return f
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--train", required=True, help="tt̄ sample used to fit the coefficients")
@@ -210,6 +261,11 @@ def main():
     p.add_argument("--n-legendre", type=int, default=5)
     p.add_argument("--n-hermite", type=int, default=5)
     p.add_argument("--y-scale", type=float, default=1.0, help="Hermite scale s (paper: 1)")
+    p.add_argument("--basis", choices=["paper", "extended"], default="paper",
+                   help="paper: j1<=1, j2<=2 product basis; extended: + high-order blocks (orders from --orders)")
+    p.add_argument("--orders", default=os.path.join(HERE, "osde", "order_scan.json"),
+                   help="osde_order_scan.py output (used with --basis extended)")
+    p.add_argument("--max-order", type=int, default=16, help="cap on the extended orders")
     p.add_argument("--out", default=os.path.join(HERE, "osde"))
     p.add_argument("--rebuild-cache", action="store_true")
     args = p.parse_args()
@@ -224,11 +280,11 @@ def main():
         samples["test"] = args.test
     data = {name: get_angles(path, levels, opts, args.rebuild_cache) for name, path in samples.items()}
 
-    summary = {"options": opts, "n_legendre": args.n_legendre, "n_hermite": args.n_hermite,
+    summary = {"options": opts, "basis": args.basis, "n_legendre": args.n_legendre, "n_hermite": args.n_hermite,
                "y_scale": args.y_scale, "samples": samples, "levels": {}}
     for lvl in levels:
         X = {name: d[lvl] for name, d in data.items()}
-        f = osde.TTbarDensity(args.n_legendre, args.n_hermite, args.y_scale).fit(X["train"])
+        f = make_density(args, lvl).fit(X["train"])
         f.save(os.path.join(args.out, f"f_ttbar_{lvl}.npz"), level=lvl, train=args.train)
         signif = np.abs(f.c) / np.where(f.c_err > 0, f.c_err, np.inf)
         scores, imag = {}, 0.0
@@ -253,6 +309,10 @@ def main():
         s = summary["levels"][lvl] = {
             "n": {k: int(len(v["Y"])) for k, v in X.items()},
             "n_coefficients": int(f.c.size),
+            "basis_params": ({"J1": f.J1, "J2": f.J2, "n_legendre_hi": f.nl_hi, "n_hermite_hi": f.nh_hi,
+                              "y_scale": f.y_scale,
+                              "blocks": {b[0]: int(n) for b, n in zip(f.blocks, f.sizes)}}
+                             if hasattr(f, "blocks") else {"J1": 1, "J2": 2}),
             "n_significant_3sigma": int(np.sum(signif > 3)),
             "n_significant_5sigma": int(np.sum(signif > 5)),
             "integral": float(f.integral()),

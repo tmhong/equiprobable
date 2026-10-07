@@ -117,3 +117,45 @@ Newest entries are at the bottom. Numbers refer to the samples listed under "Sam
 
 ### Git
 - Local repository created (code, docs, diagram, slide PDF; no samples or tools). Pushing to gitlab.com needs the project URL and the user's authentication.
+
+### Score plots, ROC, t (paper style)
+- **Score plots:**
+  - New linear-y panel that shows negative f.
+  - The log panel has an extra left bin for y ≤ 0 (fractions per bin).
+  - Surprisal is now computed for the shifted y′ = y + y₀, with y₀ = 1.05 × |min y| per level, so every event is included.
+- **Paper's Fig. "tt_hh_dNdy_dNdt"** reproduced in the paper's style by `paper_style_plots.py`: blue-gradient tt̄ fill, orange hh, and a red hh/(hh + tt̄) ratio with an error band.
+  - y′ = y − y₀, s′ = −ln y′, t = (s′₁ − s′)/(s′₁ − s′₀), with s′₀ and s′₁ the min and max over tt̄ and hh.
+  - **The shape of t depends strongly on y₀:** the most negative event sets s′₁. The AUC does not depend on y₀.
+  - **Open question to the user:** which y₀ does the paper use? The text says "the minimum", which makes s′ infinite for the most negative event. The text and the figure caption also differ in sign convention.
+
+### Object definitions (slide 7)
+- Four levels: parton (MG5 LHE, **no cuts**), parton + lepton trigger (offline lepton cuts only; 71.5% of events), particle level, reco.
+- **E_T^miss:**
+  - parton: p_T of the ν;
+  - gen: GenMissingET, the vector sum of all neutrinos;
+  - reco: MissingET, −Σ over calorimeter towers (Delphes ATLAS card).
+- **Check:** muon and electron events show the same reco − gen MET along the lepton (−5.9 vs −5.2 GeV), so muons are not missed.
+
+### Why f^gen and f^reco missed the data, and the extended basis (user: "specify how many and do it")
+- **Cause:** the paper basis is at most linear in cos θ (j₁ ≤ 1), quadratic in cos θ′ (j₂ ≤ 2), and first-harmonic in φ′ (|m| ≤ 1). That is exactly right at parton level, but the acceptance edges need higher orders.
+- **Code check:** f's projection equals a direct 1-D expansion at the same order (≤ 1.9% difference).
+- **1-D cross-validated order scan** (`osde_order_scan.py`):
+  - Parton level confirms j₁ ≤ 1, j₂ ≤ 2; cos Θ needs 11 Legendre terms and Y 11 Hermite terms.
+  - Gen needs j₁ ≥ 13, j₂ ≥ 12; reco needs j₁ ≥ 18, j₂ ≥ 24 (capped at 16).
+  - A full product basis at those orders would need more than 10⁶ terms per top pair.
+- **Extended block basis** (`ExtendedDensity`):
+  - Contents: the paper's full product, plus high-order single-top blocks (all (θ, φ) terms and all m′ = 0 terms), plus high-order cos Θ and Y blocks.
+  - Still orthonormal, because the blocks are disjoint subsets of the full product basis.
+  - Hermite scale = std(Y).
+  - Wigner d switched to a stable Jacobi-polynomial form, accurate to j = 24.
+  - Sizes: 14,436 (parton), 32,494 (gen), 49,867 (reco) terms.
+- **Tests:** 12 pass. New: high-j Wigner d, block orthonormality and disjointness, exact reduction to the paper basis, and exact leave-one-out vs brute-force refits.
+- **Results after CV truncation** (333 / 679 / 323 terms kept):
+  - Projection χ²/ndf ≈ 0.3–1.6 for every angle at every level; gen Y is still 39.
+  - Negative f in about 1.4% of events.
+  - AUC unchanged: 0.666 / 0.535 / 0.512.
+  - Conclusion: describing tt̄ better does not restore the hh separation.
+
+### Angle diagram (further user feedback)
+- φ made explicit: the W is projected onto the xy-plane (W⊥, solid gold arrow), with a dashed drop line parallel to z and the φ arc from x to W⊥ inside a gold quarter-disc for the xy-plane. Same for ℓ⊥ and φ′.
+- No text inside or across the shaded areas; colour swatches and plain-language definitions are in the legend.

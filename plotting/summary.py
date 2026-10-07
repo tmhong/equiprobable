@@ -82,6 +82,7 @@ def summarize(events):
         s["hel_lep"] = helicity_fractions(ev.cos_theta_prime)
         s["hel_had"] = helicity_fractions(ev.cos_theta_prime_tilde)
         if lvl == "parton":
+            s["trigger_eff"] = float(np.mean(ev.lep_trigger))
             continue
         s["cutflow"] = cutflow(ev)
         s["m_thad"], s["m_whad"] = central(ev.t_had.mass), central(ev.w_had.mass)
@@ -93,4 +94,23 @@ def summarize(events):
             s["angles_all"] = angle_comparison(ev, P, np.asarray(ev.reco_ok))
             s["angles_correct"] = angle_comparison(ev, P, ok)
             s["nu_pz"] = central((np.asarray(ev.nu.pz) - np.asarray(P.nu.pz))[np.asarray(ev.reco_ok)])
+    if "gen" in events and "reco" in events:
+        S["met_check"] = met_lepton_check(events["gen"], events["reco"])
     return S
+
+
+def met_lepton_check(G, R):
+    """Median (reco - gen) E_T^miss component along the lepton, for electron and muon events
+    (a calorimeter-only MET that missed muons would show ~ +p_T(mu) for muons)."""
+    import awkward as ak
+    sel = np.asarray(R.nleptons == 1)
+    fl = np.asarray(ak.fill_none(R.lep.flavour, 0))
+    dx = R.met * np.cos(R.met_phi) - G.met * np.cos(G.met_phi)
+    dy = R.met * np.sin(R.met_phi) - G.met * np.sin(G.met_phi)
+    lpx = np.asarray(ak.fill_none(R.lep.px, 0.0))
+    lpy = np.asarray(ak.fill_none(R.lep.py, 0.0))
+    out = {}
+    for f, lab in ((11, "e"), (13, "mu")):
+        m = sel & (fl == f)
+        out[lab] = float(np.median((dx * lpx + dy * lpy)[m] / np.hypot(lpx, lpy)[m]))
+    return out
