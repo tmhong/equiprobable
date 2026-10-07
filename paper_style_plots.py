@@ -3,7 +3,8 @@
 The paper's Fig. "tt_hh_dNdy_dNdt": distributions of y = f_tt̄(x) and of the discriminator t for
 tt̄ and hh, with the ratio N_hh / (N_hh + N_tt̄) below, in the paper's style.
 
-  y' = y - y0,  y0 = 1.05 * (most negative y)  (so every y' > 0; the paper shifts by the minimum)
+  y' = y - y0,  y0 = 2.5 * (most negative y)  (inferred from the paper figure: its y axis starts at y0 and
+               t is populated continuously from 0, which needs y0 well below min y)
   s' = -ln y',  t = (s'_1 - s') / (s'_1 - s'_0),  s'_0 / s'_1 = min / max of s'  ->  t in [0, 1],
   t -> 0: less tt̄-like.  y0, s'_0, s'_1 are taken over tt̄ and hh together, per level.
 
@@ -23,7 +24,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 from matplotlib.colors import LinearSegmentedColormap  # noqa: E402
-from matplotlib.ticker import AutoMinorLocator  # noqa: E402
+from matplotlib.ticker import AutoMinorLocator, FuncFormatter  # noqa: E402
 
 TT_DARK = "#0a2f8f"
 HH = "#e8a33d"
@@ -39,7 +40,7 @@ plt.rcParams.update({
 })
 
 
-def transform(scores, y0_factor=1.05):
+def transform(scores, y0_factor=2.5):
     """y -> t as in the paper; returns t per sample and the constants.  y0 = y0_factor x (most negative y):
     1 would put that event at y' = 0 (s' infinite); larger factors pull s'_1 in and spread t."""
     y0 = y0_factor * min(0.0, min(float(v.min()) for v in scores.values()))
@@ -94,7 +95,7 @@ def panel(ax, rax, v_tt, v_hh, edges, t_of_bin, xlabel, xlim, show_legend):
     if show_legend:
         ax.legend(handles=[plt.Rectangle((0, 0), 1, 1, fc=CMAP(0.55), ec=TT_DARK, lw=1.8),
                            plt.Line2D([], [], color=HH, lw=2.2)], labels=[r"$t\bar{t}$", r"$hh$"],
-                  frameon=False, loc="upper left", fontsize=16)
+                  frameon=False, loc="upper right", fontsize=16)
     e, r, er = merged_ratio(edges, h_hh, h_tt, len(v_hh), len(v_tt))
     rax.stairs(r + er, e, baseline=r - er, fill=True, color=RATIO, alpha=0.2, lw=0)
     rax.stairs(r, e, color=RATIO, lw=1.8)
@@ -102,17 +103,20 @@ def panel(ax, rax, v_tt, v_hh, edges, t_of_bin, xlabel, xlim, show_legend):
     rax.set_ylim(0, 1)
     rax.set_yticks([0, 0.5, 1])
     rax.set_xlabel(xlabel)
+    clean = FuncFormatter(lambda v, _: f"{v:g}" if abs(v) > 1e-12 else "0")   # 0, 0.5, 1 (no trailing zeros)
     for a in (ax, rax):
         a.xaxis.set_minor_locator(AutoMinorLocator())
         a.yaxis.set_minor_locator(AutoMinorLocator())
+        a.xaxis.set_major_formatter(clean)
+        a.yaxis.set_major_formatter(clean)
 
 
-def make(scores, level, out_base, title=None, y0_factor=1.05):
+def make(scores, level, out_base, title=None, y0_factor=2.5):
     tt, hh = scores["train"], scores["hh"]          # tt̄: fit sample, leave-one-out scores
     t, (y0, s0, s1) = transform({"tt": tt, "hh": hh}, y0_factor)
     expo = int(np.floor(np.log10(np.percentile(tt, 99))))
     scale = 10.0 ** expo
-    ylo = min(np.percentile(np.concatenate([tt, hh]), 0.2), -0.1 * np.percentile(tt, 99))
+    ylo = y0                                       # the left axis starts at the shift point, as in the paper
     yhi = np.percentile(np.concatenate([tt, hh]), 99.7)
     y_edges = np.linspace(ylo, yhi, 61) / scale
     t_edges = np.linspace(0, 1, 51)
@@ -134,7 +138,7 @@ def make(scores, level, out_base, title=None, y0_factor=1.05):
     axl.set_ylabel("Norm.  events")
     rl.set_ylabel(r"$\dfrac{hh}{hh+t\bar{t}}$")
     if title:
-        fig.suptitle(title, fontsize=14, y=0.995)
+        axl.text(0.04, 0.95, title, transform=axl.transAxes, ha="left", va="top", fontsize=13)
     for ext in ("pdf", "png"):
         fig.savefig(f"{out_base}.{ext}", bbox_inches="tight", dpi=150)
     plt.close(fig)
@@ -145,8 +149,9 @@ def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--dir", default="osde", help="osde_fit.py output directory (scores_<level>.npz)")
     p.add_argument("--levels", default="parton,gen,reco")
-    p.add_argument("--y0-factor", type=float, default=1.05,
-                   help="y0 = factor x (most negative y); the paper shifts by the minimum (factor -> 1)")
+    p.add_argument("--y0-factor", type=float, default=2.5,
+                   help="y0 = factor x (most negative y). 2.5 reproduces the paper figure (its y axis starts at "
+                        "y0 ~ 2.5 x min y and t is populated continuously from 0); 1 is singular")
     args = p.parse_args()
     for lvl in args.levels.split(","):
         path = os.path.join(args.dir, f"scores_{lvl}.npz")

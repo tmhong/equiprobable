@@ -159,3 +159,7 @@ Newest entries are at the bottom. Numbers refer to the samples listed under "Sam
 ### Angle diagram (further user feedback)
 - φ made explicit: the W is projected onto the xy-plane (W⊥, solid gold arrow), with a dashed drop line parallel to z and the φ arc from x to W⊥ inside a gold quarter-disc for the xy-plane. Same for ℓ⊥ and φ′.
 - No text inside or across the shaded areas; colour swatches and plain-language definitions are in the legend.
+
+### Paper figure as reference (user re-sent `tt_hh_dNdy_dNdt.pdf`)
+- **y₀ inferred from the figure:** its y axis starts at about −1.5×10⁻⁵ (≈ 2.5 × min y), and t is populated continuously from 0, which requires y₀ well below min y. So y₀ = 2.5 × min y is now the default (`--y0-factor`). This still needs confirming by the user.
+- **Style matched:** no title over the figure (the level is printed inside the left panel), tick labels without trailing zeros, the legend in the upper right, and the left axis starting at y₀.

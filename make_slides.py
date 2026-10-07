@@ -394,15 +394,15 @@ def discriminator_slides(odir):
         p = os.path.join(odir, f"tt_hh_dNdy_dNdt_{l}.pdf")
         if os.path.exists(p):
             slides.append(wide_figure(rf"$y=f^\mathrm{{{l}}}_{{t\bar t}}$ and $t$, {l} level (paper basis)", p,
-                                      note=r"$y'=y-y_0$, $y_0=1.05\times\min y$; $s'=-\ln y'$; "
+                                      note=r"$y'=y-y_0$, $y_0=2.5\times\min y$ (inferred from the paper figure); $s'=-\ln y'$; "
                                            r"$t=(s'_1-s')/(s'_1-s'_0)$. $t\bar t$: fit sample (leave-one-out); "
                                            r"unit area."))
     p = os.path.join(odir, "t_vs_y0_parton.png")
     if os.path.exists(p):
         slides.append(wide_figure(r"Shape of $t$ depends on $y_0$", p, note=(
             r"$s'_1$ is set by the most negative event, so $y_0$ just below $\min y$ squeezes $t$ toward 1. "
-            r"Shifting by the exact minimum makes $s'$ infinite for that event. The ROC/AUC do not depend on $y_0$ "
-            r"(monotonic). Which $y_0$ does the paper use?")))
+            r"The paper figure (axis from $-1.5\times10^{-5}$, $t$ populated from 0) implies "
+            r"$y_0\approx2.5\times\min y$, used here; please confirm. The ROC/AUC do not depend on $y_0$ (monotonic).")))
     return slides
 
 
