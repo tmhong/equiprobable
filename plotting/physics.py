@@ -365,4 +365,8 @@ def _reconstruct_ttbar(ev):
     ev.w_lep = v4(np.where(ok, wl, np.nan))
     ev.b_had, ev.b_lep = v4(pick(jet(0))), v4(pick(jet(1)))
     ev.q1, ev.q2 = v4(pick(jet(2))), v4(pick(jet(3)))      # q1 is the higher-pT jet
+    if "flavor" in ak.fields(jets):                         # Delphes truth flavour of the W_had jets (reco only)
+        fl = dense(jets.flavor, 0)
+        ev.q1_flavor = np.where(ok, fl[rows, sel[:, 2]], 0).astype(int)
+        ev.q2_flavor = np.where(ok, fl[rows, sel[:, 3]], 0).astype(int)
     ev.ttbar = ev.t_had + ev.t_lep

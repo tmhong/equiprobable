@@ -1,0 +1,134 @@
+parton {
+ "p_softer_is_down_tt": 0.5757666666666666,
+ "n_tt": 10000,
+ "n_hh": 20000,
+ "frac_cs_tt": 0.498,
+ "all terms | truth (paper assumption)": {
+  "angles": 0.6526580850000001,
+  "angles+BW": 0.9999311599999999,
+  "tt label correct (w>0.5)": null
+ },
+ "all terms | softer jet = down": {
+  "angles": 0.63889225,
+  "angles+BW": 0.999931415,
+  "tt label correct (w>0.5)": null
+ },
+ "all terms | symmetrized (no tagging)": {
+  "angles": 0.6482137750000001,
+  "angles+BW": 0.99993152,
+  "tt label correct (w>0.5)": null
+ },
+ "all terms | c-tag tight (eps_c 30%, b 11%, light 1.4%)": {
+  "angles": 0.649284895,
+  "angles+BW": 0.99993204,
+  "tt label correct (w>0.5)": 0.6339
+ },
+ "all terms | c-tag loose (eps_c 45%, b 30%, light 8%)": {
+  "angles": 0.6490759749999999,
+  "angles+BW": 0.999931305,
+  "tt label correct (w>0.5)": 0.649
+ },
+ "all terms | ideal c-tag (eps_c 100%, no mistag)": {
+  "angles": 0.6509774449999999,
+  "angles+BW": 0.999930605,
+  "tt label correct (w>0.5)": 0.7913
+ },
+ "23-ish terms (>10 sigma) | truth (paper assumption)": {
+  "angles": 0.670190545,
+  "angles+BW": 0.999932315,
+  "tt label correct (w>0.5)": null
+ },
+ "23-ish terms (>10 sigma) | softer jet = down": {
+  "angles": 0.6430771150000001,
+  "angles+BW": 0.9999317649999999,
+  "tt label correct (w>0.5)": null
+ },
+ "23-ish terms (>10 sigma) | symmetrized (no tagging)": {
+  "angles": 0.649987955,
+  "angles+BW": 0.99993198,
+  "tt label correct (w>0.5)": null
+ },
+ "23-ish terms (>10 sigma) | c-tag tight (eps_c 30%, b 11%, light 1.4%)": {
+  "angles": 0.652151715,
+  "angles+BW": 0.999932355,
+  "tt label correct (w>0.5)": 0.6354
+ },
+ "23-ish terms (>10 sigma) | c-tag loose (eps_c 45%, b 30%, light 8%)": {
+  "angles": 0.6532356850000001,
+  "angles+BW": 0.999931675,
+  "tt label correct (w>0.5)": 0.6467
+ },
+ "23-ish terms (>10 sigma) | ideal c-tag (eps_c 100%, no mistag)": {
+  "angles": 0.660992275,
+  "angles+BW": 0.999931815,
+  "tt label correct (w>0.5)": 0.7913
+ },
+ "masses only (BW)": 0.9999334
+}
+reco {
+ "p_softer_is_down_tt": 0.5320822409272803,
+ "n_tt": 2440,
+ "n_hh": 1878,
+ "frac_cs_tt": 0.335655737704918,
+ "all terms | truth (paper assumption)": {
+  "angles": 0.5068474048080448,
+  "angles+BW": 0.6003042127132108,
+  "tt label correct (w>0.5)": null
+ },
+ "all terms | softer jet = down": {
+  "angles": 0.5048977373906668,
+  "angles+BW": 0.6003192705878245,
+  "tt label correct (w>0.5)": null
+ },
+ "all terms | symmetrized (no tagging)": {
+  "angles": 0.5061916234571134,
+  "angles+BW": 0.6001405401630615,
+  "tt label correct (w>0.5)": null
+ },
+ "all terms | c-tag tight (eps_c 30%, b 11%, light 1.4%)": {
+  "angles": 0.507098805845074,
+  "angles+BW": 0.6003262539499642,
+  "tt label correct (w>0.5)": 0.5877049180327869
+ },
+ "all terms | c-tag loose (eps_c 45%, b 30%, light 8%)": {
+  "angles": 0.5059026868485832,
+  "angles+BW": 0.6001558162677421,
+  "tt label correct (w>0.5)": 0.6045081967213115
+ },
+ "all terms | ideal c-tag (eps_c 100%, no mistag)": {
+  "angles": 0.5059090155205224,
+  "angles+BW": 0.600103877511828,
+  "tt label correct (w>0.5)": 0.6663934426229509
+ },
+ "23-ish terms (>10 sigma) | truth (paper assumption)": {
+  "angles": 0.5181517222716877,
+  "angles+BW": 0.601873505124042,
+  "tt label correct (w>0.5)": null
+ },
+ "23-ish terms (>10 sigma) | softer jet = down": {
+  "angles": 0.5153568498053388,
+  "angles+BW": 0.6014885472860909,
+  "tt label correct (w>0.5)": null
+ },
+ "23-ish terms (>10 sigma) | symmetrized (no tagging)": {
+  "angles": 0.5170954887480578,
+  "angles+BW": 0.6016546203669756,
+  "tt label correct (w>0.5)": null
+ },
+ "23-ish terms (>10 sigma) | c-tag tight (eps_c 30%, b 11%, light 1.4%)": {
+  "angles": 0.5169695699994763,
+  "angles+BW": 0.6016203582464779,
+  "tt label correct (w>0.5)": 0.5860655737704918
+ },
+ "23-ish terms (>10 sigma) | c-tag loose (eps_c 45%, b 30%, light 8%)": {
+  "angles": 0.5173126276645891,
+  "angles+BW": 0.601668587091255,
+  "tt label correct (w>0.5)": 0.5918032786885246
+ },
+ "23-ish terms (>10 sigma) | ideal c-tag (eps_c 100%, no mistag)": {
+  "angles": 0.5174758637546046,
+  "angles+BW": 0.601676661603729,
+  "tt label correct (w>0.5)": 0.6663934426229509
+ },
+ "masses only (BW)": 0.6002948288203355
+}

@@ -640,14 +640,15 @@ def salvage_slides(sdir):
                 rf"({P['angles']:.2f})}}: the parton-level performance is regained. Rows add one mass at a time. "
                 r"Test: half of 40k $t\bar t$ (not used to set $M$, $W$; angles scored leave-one-out), 20k / 4.4k $hh$."),
         *angle_term_slides(sdir),
+        *noise_reco_tag_slides(sdir),
         bullets(r"Momentum in $y$: summary and next steps", [
             r"Physics: $hh$ differs from $t\bar t$ mostly \emph{off} the $t\bar t$ mass shell; the angles alone cannot see it",
             r"Simplest fix: multiply $y$ by one Breit--Wigner per resonance (2 numbers each at gen). Nothing else changes; "
             r"$t$ is built from the summed surprisal as before",
             rf"Parton: {P['angles']:.2f} $\to$ {P['angles + ... + m_t_had']:.2f}; gen: {G['angles']:.2f} $\to$ "
             rf"{G['angles + ... + m_t_had']:.2f}",
-            r"Next: solve the $\nu$ with the $m_{t,\ell}$ constraint (frees $m_{W,\ell}$ at gen); add $m_{t\bar t}$; "
-            r"reco level",
+            r"Reco: 0.51 $\to$ 0.60; realistic c-tagging changes nothing once the masses are in",
+            r"Next: solve the $\nu$ with the $m_{t,\ell}$ constraint (frees $m_{W,\ell}$); add $m_{t\bar t}$; pileup",
         ]),
     ]
 
@@ -684,6 +685,91 @@ def angle_term_slides(sdir):
             r"(cheap) because it, not the masses, is what sees an \emph{on-shell} signal with different spin structure",
         ]),
     ]
+
+
+def noise_reco_tag_slides(sdir):
+    """Truncation noise, gen/reco extension, realistic c-tagging (study_salvage/)."""
+    out = []
+    p = os.path.join(sdir, "truncation_noise.json")
+    if os.path.exists(p):
+        r = json.load(open(p))
+        Ns = sorted({x["N"] for x in r})
+        avg = lambda N, k: sum(x[k] for x in r if x["N"] == N) / sum(x["N"] == N for x in r)  # noqa: E731
+        corr = {x["N"]: x for x in r if "rep corr all" in x}
+        rows = [[f"{N // 1000 if N % 1000 == 0 else N / 1000:g}k", f"{avg(N, 'auc all'):.3f}",
+                 f"{avg(N, 'auc 10 sigma'):.3f} ({avg(N, 'terms 10 sigma'):.0f} terms)", f"{avg(N, 'gain 10 sigma'):+.3f}",
+                 (f"{corr[N]['rep corr all']:.2f} / {corr[N]['rep corr 10 sigma']:.3f}" if N in corr else "--")] for N in Ns]
+        out += [
+            bullets(r"Why do fewer terms do \emph{better}? Estimation noise", [
+                r"Each $\hat c_k$ is a sample mean over $N$ events: noise $\sigma_k\propto1/\sqrt N$. Most of the 14,400 true "
+                r"coefficients are $\approx0$, so those terms contribute only noise",
+                r"Summed over thousands of terms, the noise is a random wobble on $\hat f(x)$, unrelated to $t\bar t$ vs $hh$: "
+                r"it scrambles the event ranking and lowers the AUC",
+                r"Dropping insignificant terms removes the wobble at the cost of a small bias: the usual "
+                r"bias--variance trade-off (what the CV truncation optimizes for the density)",
+                r"Test: refit on $N$ = 12.5k--100k $t\bar t$ events (disjoint subsets), score the independent $t\bar t$ sample; "
+                r"the gain must shrink as $N$ grows, and two independent fits must agree only for the truncated $f$",
+            ]),
+            table(r"It is noise, not a fluctuation", ["fit events $N$", "AUC, all terms", r"AUC, $|c|/\sigma>10$",
+                  "gain", "score corr.\\ of 2 disjoint fits: all / trunc."], rows, fit=True,
+                  note=r"Gain errors $\pm$0.002--0.003 (paired bootstrap). The truncated $f$ is converged already at 12.5k; "
+                       r"the full $f$ approaches it as $1/\sqrt N$. Two disjoint full fits rank events differently (corr.\ "
+                       r"0.46 at 12.5k): most of the full expansion is noise."),
+            wide_figure(r"Truncation gain vs fit-sample size", os.path.join(sdir, "truncation_noise.png")),
+        ]
+    p = os.path.join(sdir, "reco_extension.json")
+    if os.path.exists(p):
+        r = json.load(open(p))
+        rows = []
+        for l in ("gen", "reco"):
+            v = r[l]
+            rows.append([l, f"{v['n_tt']} / {v['n_hh']}", f"{v['truncation']['all']['angles']:.3f}",
+                         f"{v['truncation']['>10 sigma']['angles']:.3f}", f"{v['masses only']:.3f}",
+                         f"{v['truncation']['>10 sigma']['angles+BW']:.3f}"])
+        g, rc = r["gen"]["masses"], r["reco"]["masses"]
+        out.append(table(r"Momentum extension at gen and reco", ["level", r"$t\bar t$ / $hh$", "angles (all)",
+                         r"angles ($>10\sigma$)", "masses (BW)", r"angles ($>10\sigma$) + BW"], rows, fit=True,
+                         note=r"Independent $t\bar t$ sample (no fit has seen it); $M$, $W$ from 30k fit-sample events. "
+                              rf"Widths $W$ gen/reco: $m_{{W,h}}$ {g['m_w_had']['W']:.0f}/{rc['m_w_had']['W']:.0f}, "
+                              rf"$m_{{t,\ell}}$ {g['m_t_lep']['W']:.0f}/{rc['m_t_lep']['W']:.0f}, $m_{{t,h}}$ "
+                              rf"{g['m_t_had']['W']:.0f}/{rc['m_t_had']['W']:.0f} GeV. Reco loses to jet resolution and "
+                              r"wrong-jet combinatorics; still $0.51\to0.60$."))
+    p = os.path.join(sdir, "tagging.json")
+    if os.path.exists(p):
+        r = json.load(open(p))
+        names = [("truth (paper assumption)", "perfect up/down tag (paper)"), ("ideal c-tag (eps_c 100%, no mistag)", "ideal c-tag"),
+                 ("c-tag loose (eps_c 45%, b 30%, light 8%)", r"c-tag loose (45/30/8\%)"),
+                 ("c-tag tight (eps_c 30%, b 11%, light 1.4%)", r"c-tag tight (30/11/1.4\%)"),
+                 ("symmetrized (no tagging)", "no tag: average both labels"), ("softer jet = down", "no tag: softer jet = down")]
+        key = "23-ish terms (>10 sigma)"
+        rows = []
+        for k, lab in names:
+            P, R = r["parton"][f"{key} | {k}"], r["reco"][f"{key} | {k}"]
+            c = P["tt label correct (w>0.5)"]
+            if k.startswith("softer"):
+                c = r["parton"]["p_softer_is_down_tt"]
+            rows.append([lab, "100\\%" if k.startswith("truth") else ("--" if c is None else f"{100 * c:.0f}\\%"),
+                         f"{P['angles']:.3f}", f"{P['angles+BW']:.3f}", f"{R['angles']:.3f}", f"{R['angles+BW']:.3f}"])
+        out += [
+            bullets(r"Realistic quark tagging: what the paper assumed and what we do", [
+                r"The hadronic primed angles need the \emph{down-type} $W$ daughter. The paper assumes it is known; so far "
+                r"we matched jets to the LHE quarks (perfect up/down tagging)",
+                r"Reality: $b$-tagging is already realistic at reco (Delphes ATLAS parametrization). The only up/down handle "
+                r"is c-tagging: in $W\to cs$ (50\%) a c-tagged jet is up-type, so the other is the down-type $s$",
+                r"Instead of a hard choice: $w=P(\text{softer jet is down}\,|\,\text{c-tags, kinematics})$ by Bayes "
+                r"($W\to cs$ or $ud$, tag efficiencies, prior $P(\text{softer is down})$ = 58\% parton, 53\% reco)",
+                r"$y = w\,f(\Omega_{\rm down=softer}) + (1-w)\,f(\Omega_{\rm down=harder})$: the $t\bar t$ density of the "
+                r"event as observed. $f$ is unchanged (fit with truth labels)",
+                r"Tags emulated from the true flavour (Delphes jet flavour; quark id at parton). Working points "
+                r"illustrative, ATLAS-like",
+            ]),
+            table(r"Effect of realistic c-tagging (AUC $hh$ vs $t\bar t$)", ["down-type assignment", r"label right ($t\bar t$)",
+                  "parton: angles", "+BW", "reco: angles", "+BW"], rows, fit=True,
+                  note=r"Angular $f$ with $|c|/\sigma>10$ terms; tagging working points: $\epsilon_c$ / $b$ / light mistag. "
+                       r"Without the label the angles lose at most 0.02 at parton and nothing at reco; with the masses "
+                       r"nothing at all (the masses do not depend on which jet is down-type)."),
+        ]
+    return out
 
 
 def ml_explainer_slides():

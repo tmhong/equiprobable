@@ -98,6 +98,15 @@ add process p p > t t~, (t > b w+, w+ > q q), (t~ > b~ w-, w- > lep- nul~)"""),
         generate="""\
 generate g g > h h, (h > b b~), (h > lep+ nul q q)
 add process g g > h h, (h > b b~), (h > lep- nul~ q q)"""),
+    # BSM benchmark: a heavy CP-even scalar decaying to on-shell tops (heft ggh coupling with
+    # m_H = 500 GeV, width computed by MG5).  Signal only: the interference with QCD gg -> tt̄
+    # is not included.  Same final state and on-shell masses as tt̄; differs in spin structure.
+    "Htt": dict(
+        model="heft",
+        label="g g > H > t t~ > b b~ l nu q q' (m_H = 500 GeV)",
+        param=["param_card mass 25 500", "param_card decay 25 auto"],
+        generate="""generate g g > h > t t~, (t > b w+, w+ > lep+ nul), (t~ > b~ w-, w- > q q)
+add process g g > h > t t~, (t > b w+, w+ > q q), (t~ > b~ w-, w- > lep- nul~)"""),
 }
 
 
@@ -131,7 +140,7 @@ def launch_commands(args, run_name):
         # MG5 needs the HepMC file on disk to run Delphes (its "fifo" mode does not
         # feed Delphes); it is deleted afterwards unless --keep-hepmc is given.
         lines.append("set pythia8_card HEPMCoutput:file auto")
-    for extra in args.set:
+    for extra in PROCESSES[args.process].get("param", []) + args.set:
         lines.append(f"set {extra}")
     lines += ["done", "exit"]
     return "\n".join(lines) + "\n"

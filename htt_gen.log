@@ -1,0 +1,7 @@
+[generate] running: /Users/TMHONG/Claude-code/ttbar_bblvqq/.venv/bin/python /Users/TMHONG/Claude-code/ttbar_bblvqq/tools/MG5_aMC_v3_6_7/bin/mg5_aMC /Users/TMHONG/Claude-code/ttbar_bblvqq/work/Htt_bblvqq_proc.mg5
+[generate] log: /Users/TMHONG/Claude-code/ttbar_bblvqq/work/Htt_bblvqq_proc.log
+[generate] finished in 8s (exit code 0)
+[generate] slimmed Delphes output (5 low-level branches dropped)
+[generate] Delphes card: /Users/TMHONG/Claude-code/ttbar_bblvqq/tools/MG5_aMC_v3_6_7/Delphes/cards/delphes_card_ATLAS.tcl
+[generate] running: /Users/TMHONG/Claude-code/ttbar_bblvqq/.venv/bin/python /Users/TMHONG/Claude-code/ttbar_bblvqq/work/Htt_bblvqq/bin/madevent /Users/TMHONG/Claude-code/ttbar_bblvqq/work/Htt_bblvqq_run_seed3001.mg5
+[generate] log: /Users/TMHONG/Claude-code/ttbar_bblvqq/work/Htt_bblvqq_run_seed3001.log
