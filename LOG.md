@@ -250,3 +250,6 @@ Newest entries are at the bottom. Numbers refer to the samples listed under "Sam
   Fitted Legendre correction adds only +0.004. Figures masses_{parton,gen}.png.
 - Slides: momentum section rewritten (motivation by 18-component counting, the one-line extension,
   result table); plain-language ML explainer (unsupervised incl. normalizing flow; supervised).
+- Angular terms needed with the BW factors (study_salvage/angle_terms.py): parton angles+BW = 1.000 and
+  gen = 0.689 for every truncation incl. flat angles. Angles alone: 23 terms (|c|/σ>10) give 0.665 vs
+  0.648 for all 14,400 at parton. Top terms: P2,P4(cosΘ), H2,H4(Y), W helicity (j1=0, j2=1,2) and products.

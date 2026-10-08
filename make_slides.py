@@ -639,6 +639,7 @@ def salvage_slides(sdir):
         ], note=rf"\textbf{{Gen level with the masses ({G['angles + ... + m_t_had']:.2f}) beats the parton-level angles "
                 rf"({P['angles']:.2f})}}: the parton-level performance is regained. Rows add one mass at a time. "
                 r"Test: half of 40k $t\bar t$ (not used to set $M$, $W$; angles scored leave-one-out), 20k / 4.4k $hh$."),
+        *angle_term_slides(sdir),
         bullets(r"Momentum in $y$: summary and next steps", [
             r"Physics: $hh$ differs from $t\bar t$ mostly \emph{off} the $t\bar t$ mass shell; the angles alone cannot see it",
             r"Simplest fix: multiply $y$ by one Breit--Wigner per resonance (2 numbers each at gen). Nothing else changes; "
@@ -647,6 +648,40 @@ def salvage_slides(sdir):
             rf"{G['angles + ... + m_t_had']:.2f}",
             r"Next: solve the $\nu$ with the $m_{t,\ell}$ constraint (frees $m_{W,\ell}$ at gen); add $m_{t\bar t}$; "
             r"reco level",
+        ]),
+    ]
+
+
+def angle_term_slides(sdir):
+    """With the mass factors in, how many angular terms are needed (study_salvage/angle_terms.py)."""
+    p = os.path.join(sdir, "angle_terms.json")
+    if not os.path.exists(p):
+        return []
+    r = json.load(open(p))
+    keys = ["none (masses only)", ">40 sigma", ">20 sigma", ">10 sigma", ">5 sigma", ">3 sigma", "CV", "all"]
+    name = {"none (masses only)": r"none (flat in angles)", "CV": "CV (paper method)", "all": "all"}
+    rows = []
+    for k in keys:
+        P, G = r["parton"][k], r["gen"][k]
+        lab = name.get(k, rf"$|c|/\sigma_c>{k.split()[0][1:]}$")
+        rows.append([lab, str(P["terms"]), "--" if k.startswith("none") else f"{P['angles_only']:.3f}",
+                     f"{P['with_masses']:.3f}", str(G["terms"]),
+                     "--" if k.startswith("none") else f"{G['angles_only']:.3f}", f"{G['with_masses']:.3f}"])
+    return [
+        table(r"With the masses in, how many angular terms are needed?",
+              ["angular terms kept", "parton: terms", "angles", "+BW", "gen: terms", "angles", "+BW"], rows, fit=True,
+              note=r"Terms ranked by significance $|c|/\sigma_c$. For $hh$ the masses do all the work: the angular "
+                   r"part can be flat. Even for the angles alone, $\sim$20 terms beat all 14,400 (fewer noisy terms)."),
+        bullets(r"The $\sim$20 terms that matter (parton $t\bar t$)", [
+            r"Production: $P_2(\cos\Theta)$, $P_4(\cos\Theta)$ (forward-backward peaking) and $H_2(Y)$, $H_4(Y)$ (rapidity width)",
+            r"Decay: $j_1=0$, $j_2=1,2$ on each side, i.e.\ functions of $\cos\theta'$ only: the $W$ helicity fractions "
+            r"($F_0$, $F_L$, $F_R$)",
+            r"Their products (e.g.\ $W$ helicity $\times P_2(\cos\Theta)$, lep $\times$ had): mostly what independent "
+            r"factors produce",
+            r"No top-polarization or spin-correlation term is in the top 23: LO QCD $t\bar t$ is unpolarized and its "
+            r"spin correlations are weak at this sample size",
+            r"Recommendation: $y = [\text{few-term angular } f]\times\prod_k\mathrm{BW}(m_k)$. Keep the angular part "
+            r"(cheap) because it, not the masses, is what sees an \emph{on-shell} signal with different spin structure",
         ]),
     ]
 

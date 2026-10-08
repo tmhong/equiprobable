@@ -1,0 +1,86 @@
+{
+ "parton": {
+  "none (masses only)": {
+   "terms": 0,
+   "angles_only": 0.5,
+   "with_masses": 0.9999359710620526
+  },
+  "all": {
+   "terms": 14400,
+   "angles_only": 0.6476547533810659,
+   "with_masses": 0.9999358939936356
+  },
+  ">3 sigma": {
+   "terms": 186,
+   "angles_only": 0.660784921937152,
+   "with_masses": 0.9999363066825776
+  },
+  ">5 sigma": {
+   "terms": 54,
+   "angles_only": 0.663240354017502,
+   "with_masses": 0.9999353619729516
+  },
+  ">10 sigma": {
+   "terms": 23,
+   "angles_only": 0.6650326049124899,
+   "with_masses": 0.9999362296141607
+  },
+  ">20 sigma": {
+   "terms": 16,
+   "angles_only": 0.6617784531622912,
+   "with_masses": 0.9999371643794749
+  },
+  ">40 sigma": {
+   "terms": 7,
+   "angles_only": 0.6526999751392204,
+   "with_masses": 0.999937840592681
+  },
+  "CV": {
+   "terms": 326,
+   "angles_only": 0.6605719122911694,
+   "with_masses": 0.999935866646778
+  }
+ },
+ "gen": {
+  "none (masses only)": {
+   "terms": 0,
+   "angles_only": 0.5,
+   "with_masses": 0.6887834120112656
+  },
+  "all": {
+   "terms": 14400,
+   "angles_only": 0.5277035639188573,
+   "with_masses": 0.6891315988504667
+  },
+  ">3 sigma": {
+   "terms": 330,
+   "angles_only": 0.5277458565711739,
+   "with_masses": 0.688391871803709
+  },
+  ">5 sigma": {
+   "terms": 153,
+   "angles_only": 0.5284618942930649,
+   "with_masses": 0.688292545265921
+  },
+  ">10 sigma": {
+   "terms": 54,
+   "angles_only": 0.5341275050305139,
+   "with_masses": 0.6894535941628633
+  },
+  ">20 sigma": {
+   "terms": 14,
+   "angles_only": 0.5545634778170007,
+   "with_masses": 0.6922583449522537
+  },
+  ">40 sigma": {
+   "terms": 5,
+   "angles_only": 0.5458331864649588,
+   "with_masses": 0.6915885979662102
+  },
+  "CV": {
+   "terms": 459,
+   "angles_only": 0.528887513403099,
+   "with_masses": 0.6884314446713108
+  }
+ }
+}
