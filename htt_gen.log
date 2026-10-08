@@ -5,3 +5,8 @@
 [generate] Delphes card: /Users/TMHONG/Claude-code/ttbar_bblvqq/tools/MG5_aMC_v3_6_7/Delphes/cards/delphes_card_ATLAS.tcl
 [generate] running: /Users/TMHONG/Claude-code/ttbar_bblvqq/.venv/bin/python /Users/TMHONG/Claude-code/ttbar_bblvqq/work/Htt_bblvqq/bin/madevent /Users/TMHONG/Claude-code/ttbar_bblvqq/work/Htt_bblvqq_run_seed3001.mg5
 [generate] log: /Users/TMHONG/Claude-code/ttbar_bblvqq/work/Htt_bblvqq_run_seed3001.log
+[generate] finished in 556s (exit code 0)
+[generate] cross section = 1.2829899999999998e-07 pb
+[generate] outputs in /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/Htt_bblvqq/run_seed3001:
+    parton_events.lhe.gz: /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/Htt_bblvqq/run_seed3001/parton_events.lhe.gz
+    delphes_events.root: /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/Htt_bblvqq/run_seed3001/delphes_events.root

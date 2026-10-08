@@ -1,0 +1,42 @@
+{
+ "abs": {
+  "start": 1791449462.3619268,
+  "lhe_ready": 1791449478.518068,
+  "pythia_start": 1791449478.518068,
+  "pythia_end": 1791449482.5547469,
+  "delphes_start": 1791449482.5547469,
+  "delphes_end": 1791449483.602825,
+  "end": 1791449504.803683,
+  "exit_code": 0,
+  "delphes_peak_rss_MB": 0.7734375,
+  "delphes_log_birth": 1791449482.5396004,
+  "delphes_log_mtime": 1791449483.2511337
+ },
+ "rel_s": {
+  "lhe_ready": 16.2,
+  "pythia_start": 16.2,
+  "pythia_end": 20.2,
+  "delphes_start": 20.2,
+  "delphes_end": 21.2,
+  "end": 42.4,
+  "delphes_peak_rss_MB": -1791449461.6,
+  "delphes_log_birth": 20.2,
+  "delphes_log_mtime": 20.9
+ },
+ "cmd": [
+  ".venv/bin/python",
+  "generate_samples.py",
+  "--process",
+  "ttbar",
+  "--nevents",
+  "1000",
+  "--seed",
+  "777",
+  "--run",
+  "test_pu50",
+  "--delphes-card",
+  "cards/delphes_card_ATLAS_PU50.tcl",
+  "--cores",
+  "4"
+ ]
+}

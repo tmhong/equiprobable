@@ -546,6 +546,72 @@ def ml_slides(mdir, explainer=()):
     return out
 
 
+def bsm_slides(bdir):
+    """A BSM benchmark (H -> tt̄) for the unsupervised approach (study_bsm/htt_test.py)."""
+    p = os.path.join(bdir, "htt_test.json")
+    if not os.path.exists(p):
+        return []
+    B = json.load(open(p))
+    meta = json.load(open(os.path.join(HERE, "samples", "Htt_bblvqq", "run_seed3002", "metadata.json")))
+    order = [("unsupervised | f_tt angles (>10 sigma)", r"unsup.: $f_{t\bar t}$ angles ($>10\sigma$)"),
+             ("unsupervised | BW masses", "unsup.: BW masses"),
+             ("unsupervised | m_tt density", r"unsup.: $m_{t\bar t}$ density"),
+             ("unsupervised | angles + BW", "unsup.: angles + BW"),
+             ("unsupervised | angles + BW + m_tt", r"unsup.: angles + BW + $m_{t\bar t}$"),
+             ("supervised trained on hh | angles", r"sup., trained on $hh$: angles"),
+             ("supervised trained on hh | angles + masses + m_tt", r"sup., trained on $hh$: + masses, $m_{t\bar t}$"),
+             ("supervised trained on Htt | angles", r"sup., trained on $H\to t\bar t$: angles"),
+             ("supervised trained on Htt | angles + masses + m_tt", r"sup., trained on $H\to t\bar t$: + masses, $m_{t\bar t}$")]
+    rows = []
+    for k, lab in order:
+        r = [lab]
+        for l in ("parton", "reco"):
+            for sig in ("hh", "Htt"):
+                v = B[l][f"{sig} vs tt"].get(k)
+                r.append(rf"${v[0]:.3f}\pm{v[1]:.3f}$" if v else "--")
+        rows.append(r)
+    P, R = B["parton"], B["reco"]
+    u = lambda l, k: B[l]["Htt vs tt"][k][0]  # noqa: E731
+    return [
+        section(r"A BSM benchmark: $H\to t\bar t$", "BSM benchmark: H to ttbar"),
+        bullets(r"Where an unsupervised $f_{t\bar t}$ should win: a signal nobody trained for", [
+            r"A classifier trained on $hh$ learns what $hh$ looks like; $f_{t\bar t}$ learns only what $t\bar t$ looks like",
+            r"Benchmark: $gg\to H\to t\bar t\to b\bar b\,\ell\nu\,q\bar q'$, $m_H=500$ GeV, $\Gamma_H=25$ GeV "
+            r"($\Gamma/m=5\%$, a heavy 2HDM-like scalar); \texttt{heft} $ggH$ coupling, SM-like decays, signal only "
+            r"(no interference with QCD $t\bar t$)",
+            rf"{meta['nevents']} events; $\sigma\times\mathcal{{B}}={1000 * meta['cross_section_pb']:.3g}$ fb (LO, heft normalization; shapes only)",
+            r"Unlike $hh$: on-shell tops and $W$s. Differs from QCD $t\bar t$ only in spin structure (scalar: isotropic "
+            r"$\cos\Theta$, like-helicity tops), rapidity and $m_{t\bar t}$, \emph{not} in the resonance masses",
+            r"MG5's automatic width came out absurd ($4\times10^5$ GeV; the sample was regenerated with the width set by hand)",
+            r"Scores on the same test events: unsupervised ($f_{t\bar t}$ angles, BW masses, a 1-D $t\bar t$ density of "
+            r"$m_{t\bar t}$, combinations); a BDT trained on $hh$ vs $t\bar t$ applied to both signals; a BDT trained on "
+            r"$H\to t\bar t$ as the ceiling of a dedicated search",
+        ]),
+        table(r"AUC vs $t\bar t$: $hh$ and $H\to t\bar t$, parton and reco level",
+              ["score", "parton: $hh$", r"parton: $H t\bar t$", "reco: $hh$", r"reco: $H t\bar t$"], rows, fit=True,
+              note=rf"Test events: parton {P['n_test']['tt']} $t\bar t$ / {P['n_test']['hh']} $hh$ / {P['n_test']['Htt']} $H\to t\bar t$; "
+                   rf"reco {R['n_test']['tt']} / {R['n_test']['hh']} / {R['n_test']['Htt']}. Median $m_{{t\bar t}}$ at parton: "
+                   rf"$t\bar t$ {P['mtt_median']['tt']:.0f}, $hh$ {P['mtt_median']['hh']:.0f}, $H$ {P['mtt_median']['Htt']:.0f} GeV. "
+                   r"AUC $<0.5$: the score calls the signal \emph{more} $t\bar t$-like than $t\bar t$."),
+        bullets(r"What the benchmark shows", [
+            rf"The $hh$-trained classifier is useless for $H\to t\bar t$: {u('parton', 'supervised trained on hh | angles'):.2f} on the angles and "
+            rf"{u('parton', 'supervised trained on hh | angles + masses + m_tt'):.2f} with the masses (worse than random: it learned "
+            r"``on-shell masses, high $m_{t\bar t}$ = $t\bar t$'')",
+            rf"The unsupervised angular $f_{{t\bar t}}$ is weakly positive and model-agnostic: {u('parton', 'unsupervised | f_tt angles (>10 sigma)'):.2f} "
+            rf"(parton), {u('reco', 'unsupervised | f_tt angles (>10 sigma)'):.2f} (reco), from the isotropic $\cos\Theta$ and the spin structure",
+            rf"The mass factors add nothing (on-shell) and \emph{{dilute}} the angular score ({u('parton', 'unsupervised | angles + BW'):.2f}): "
+            r"the summed surprisal is dominated by the dimensions with the largest spread. For an on-shell signal use the angular part alone, "
+            r"or weight the factors",
+            rf"Limit of any density-based score: the $m_{{t\bar t}}$ resonance sits on the bulk of QCD $t\bar t$ (median 472 GeV), so "
+            rf"``low $t\bar t$ density'' cannot flag it ({u('parton', 'unsupervised | m_tt density'):.2f}); a dedicated supervised search gets "
+            rf"{u('parton', 'supervised trained on Htt | angles + masses + m_tt'):.2f}. Anomaly detection finds signals where the background is "
+            r"\emph{rare}, not excesses where it is common",
+            r"So: yes, there are signals where $f_{t\bar t}$ beats the $hh$-trained classifier (which can be below 0.5), but the margin is "
+            r"small; the strength of the approach is that it never does worse than random",
+        ]),
+    ]
+
+
 def washout_slides(wdir):
     """Why the parton-level hh/tt̄ separation washes out at gen level (study_washout/)."""
     m, d = os.path.join(wdir, "mechanism", "figures"), os.path.join(wdir, "decomposition")
@@ -648,9 +714,25 @@ def salvage_slides(sdir):
             rf"Parton: {P['angles']:.2f} $\to$ {P['angles + ... + m_t_had']:.2f}; gen: {G['angles']:.2f} $\to$ "
             rf"{G['angles + ... + m_t_had']:.2f}",
             r"Reco: 0.51 $\to$ 0.60; realistic c-tagging changes nothing once the masses are in",
+            *angles_vs_bw_bullet(sdir),
             r"Next: solve the $\nu$ with the $m_{t,\ell}$ constraint (frees $m_{W,\ell}$); add $m_{t\bar t}$; pileup",
         ]),
     ]
+
+
+def angles_vs_bw_bullet(sdir):
+    """How much the angles add on top of the mass factors (study_salvage/angles_vs_bw.py)."""
+    p = os.path.join(sdir, "angles_vs_bw.json")
+    if not os.path.exists(p):
+        return []
+    r = json.load(open(p))
+    g, rc = r["gen"], r["reco"]
+    return [rf"What the angles add on top of BW: in the product model nothing "
+            rf"({g['unsupervised angles(>10 sigma) + BW'] - g['unsupervised masses only']:+.3f} gen, "
+            rf"{rc['unsupervised angles(>10 sigma) + BW'] - rc['unsupervised masses only']:+.3f} reco); a supervised BDT on "
+            rf"angles+masses vs masses gains {g['BDT (angles+masses) - (masses): paired'][0]:+.3f}$\pm${g['BDT (angles+masses) - (masses): paired'][1]:.3f} "
+            rf"(gen), {rc['BDT (angles+masses) - (masses): paired'][0]:+.3f}$\pm${rc['BDT (angles+masses) - (masses): paired'][1]:.3f} (reco): "
+            r"a little is there for a joint fit"]
 
 
 def angle_term_slides(sdir):
@@ -1265,6 +1347,7 @@ def main():
         slides += ml_slides(os.path.join(HERE, "ml"), ml_explainer_slides())
         slides += washout_slides(os.path.join(HERE, "study_washout"))
         slides += salvage_slides(os.path.join(HERE, "study_salvage"))
+        slides += bsm_slides(os.path.join(HERE, "study_bsm"))
         slides += discriminator_slides(os.path.abspath(args.osde))
     elif args.hh or args.osde:
         sys.exit("--hh and --osde go together")

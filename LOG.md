@@ -253,3 +253,15 @@ Newest entries are at the bottom. Numbers refer to the samples listed under "Sam
 - Angular terms needed with the BW factors (study_salvage/angle_terms.py): parton angles+BW = 1.000 and
   gen = 0.689 for every truncation incl. flat angles. Angles alone: 23 terms (|c|/σ>10) give 0.665 vs
   0.648 for all 14,400 at parton. Top terms: P2,P4(cosΘ), H2,H4(Y), W helicity (j1=0, j2=1,2) and products.
+
+## 2026-10-08 — BSM benchmark, angles vs BW, internal note, pileup and L1 studies started
+
+- Angles on top of BW (study_salvage/angles_vs_bw.py): product model +0.000 (gen) / +0.002 (reco);
+  supervised BDT angles+masses − masses: +0.029 ± 0.004 (gen), +0.037 ± 0.015 (reco).
+- BSM benchmark H(500 GeV)→tt̄, Γ_H = 25 GeV set by hand (MG5 auto width gave 4e5 GeV; first sample
+  run_seed3001 discarded; run_seed3002 used; σ×B = 0.35 fb LO heft). study_bsm/htt_test.py:
+  parton H→tt̄ vs tt̄: f_tt̄ angles 0.554, BW 0.506, +m_tt density 0.49 (dilution), hh-trained BDT 0.52
+  (angles) / 0.43 (with masses: below random), dedicated BDT 0.89. Reco: f_tt̄ angles 0.565, hh-BDT 0.51.
+  Lesson: anomaly scores find signals where background is rare, not excesses where it is common.
+- Internal note: note/make_note.py → note/note.pdf (34 pages), numbers from the same JSONs as the slides.
+- Pileup (μ = 50, 200) infrastructure agent and L1-trigger LUT study agent running (Opus, local).

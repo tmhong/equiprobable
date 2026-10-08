@@ -1,0 +1,20 @@
+set automatic_html_opening False
+set notification_center False
+set run_mode 2
+set nb_core 4
+launch test_pu50
+shower=Pythia8
+detector=Delphes
+analysis=OFF
+madspin=OFF
+done
+set run_card nevents 1000
+set run_card iseed 777
+set run_card ebeam1 6500.0
+set run_card ebeam2 6500.0
+set run_card cut_decays False
+set run_card use_syst False
+set pythia8_card Main:numberOfEvents 1000
+set pythia8_card HEPMCoutput:file auto
+done
+exit

@@ -1,0 +1,711 @@
+Error in <TCling::LoadPCM>: ROOT PCM /Users/TMHONG/Claude-code/ttbar_bblvqq/tools/MG5_aMC_v3_6_7/Delphes/build/libClassesDict_rdict.pcm file does not exist
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libASImageGui_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libASImage_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libEG_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libEve_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libFFTW_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libFITSIO_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libFitPanel_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libFoam_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libFumili_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGCocoa_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGdml_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGed_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGenVector_G__GenVector32_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGenVector_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGenetic_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGeomPainter_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGeom_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGpad_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGraf3d_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGraf_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGuiBld_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGuiHtml_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGui_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGviz3d_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libHbook_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libHistFactory_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libHistPainter_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libHist_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libMLP_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libMathCore_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libMathMore_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libMatrix_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libMinuit2_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libMinuit_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libNet_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libNetxNG_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libPhysics_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libPostscript_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libPyMVA_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libQuadp_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRCsg_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRDAVIX_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRGL_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRHTTPSniff_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRHTTP_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRMySQL_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTBrowsable_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTBrowserv7_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTDataFrame_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTEve_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTFitPanelv7_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTGeomViewer_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTGpadv7_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTGraphicsPrimitives_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTNTupleUtil_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTNTuple_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTTMVASofie_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTTPython_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTTreeViewer_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTVecOps_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTWebDisplay_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRSQLite_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRecorder_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooFitCodegen_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooFitCore_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooFitHS3_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooFitJSONInterface_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooFitMore_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooFitXRooFit_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooFit_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooStats_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRootAuth_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libSPlot_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libSQLIO_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libSmatrix_G__Smatrix32_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libSmatrix_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libSpectrumPainter_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libSpectrum_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libTMVAGui_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libTMVAUtils_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libTMVA_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libTreePlayer_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libTreeViewer_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libTree_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libWebGui6_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libXMLIO_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libXMLParser_rdict.pcm
+
+Error in <TCling::LoadPCM>: ROOT PCM /Users/TMHONG/Claude-code/ttbar_bblvqq/tools/MG5_aMC_v3_6_7/Delphes/build/libFastJetDict_rdict.pcm file does not exist
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libASImageGui_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libASImage_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libEG_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libEve_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libFFTW_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libFITSIO_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libFitPanel_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libFoam_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libFumili_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGCocoa_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGdml_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGed_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGenVector_G__GenVector32_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGenVector_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGenetic_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGeomPainter_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGeom_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGpad_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGraf3d_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGraf_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGuiBld_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGuiHtml_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGui_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGviz3d_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libHbook_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libHistFactory_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libHistPainter_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libHist_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libMLP_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libMathCore_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libMathMore_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libMatrix_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libMinuit2_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libMinuit_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libNet_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libNetxNG_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libPhysics_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libPostscript_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libPyMVA_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libQuadp_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRCsg_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRDAVIX_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRGL_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRHTTPSniff_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRHTTP_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRMySQL_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTBrowsable_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTBrowserv7_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTDataFrame_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTEve_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTFitPanelv7_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTGeomViewer_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTGpadv7_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTGraphicsPrimitives_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTNTupleUtil_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTNTuple_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTTMVASofie_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTTPython_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTTreeViewer_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTVecOps_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTWebDisplay_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRSQLite_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRecorder_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooFitCodegen_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooFitCore_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooFitHS3_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooFitJSONInterface_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooFitMore_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooFitXRooFit_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooFit_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooStats_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRootAuth_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libSPlot_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libSQLIO_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libSmatrix_G__Smatrix32_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libSmatrix_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libSpectrumPainter_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libSpectrum_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libTMVAGui_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libTMVAUtils_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libTMVA_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libTreePlayer_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libTreeViewer_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libTree_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libWebGui6_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libXMLIO_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libXMLParser_rdict.pcm
+
+Error in <TCling::LoadPCM>: ROOT PCM /Users/TMHONG/Claude-code/ttbar_bblvqq/tools/MG5_aMC_v3_6_7/Delphes/build/libModulesDict_rdict.pcm file does not exist
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libASImageGui_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libASImage_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libEG_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libEve_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libFFTW_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libFITSIO_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libFitPanel_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libFoam_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libFumili_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGCocoa_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGdml_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGed_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGenVector_G__GenVector32_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGenVector_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGenetic_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGeomPainter_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGeom_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGpad_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGraf3d_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGraf_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGuiBld_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGuiHtml_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGui_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGviz3d_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libHbook_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libHistFactory_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libHistPainter_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libHist_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libMLP_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libMathCore_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libMathMore_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libMatrix_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libMinuit2_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libMinuit_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libNet_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libNetxNG_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libPhysics_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libPostscript_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libPyMVA_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libQuadp_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRCsg_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRDAVIX_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRGL_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRHTTPSniff_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRHTTP_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRMySQL_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTBrowsable_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTBrowserv7_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTDataFrame_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTEve_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTFitPanelv7_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTGeomViewer_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTGpadv7_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTGraphicsPrimitives_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTNTupleUtil_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTNTuple_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTTMVASofie_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTTPython_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTTreeViewer_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTVecOps_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTWebDisplay_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRSQLite_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRecorder_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooFitCodegen_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooFitCore_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooFitHS3_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooFitJSONInterface_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooFitMore_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooFitXRooFit_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooFit_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooStats_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRootAuth_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libSPlot_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libSQLIO_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libSmatrix_G__Smatrix32_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libSmatrix_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libSpectrumPainter_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libSpectrum_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libTMVAGui_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libTMVAUtils_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libTMVA_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libTreePlayer_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libTreeViewer_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libTree_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libWebGui6_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libXMLIO_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libXMLParser_rdict.pcm
+
+Error in <TCling::LoadPCM>: ROOT PCM /Users/TMHONG/Claude-code/ttbar_bblvqq/tools/MG5_aMC_v3_6_7/Delphes/build/libExRootAnalysisDict_rdict.pcm file does not exist
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libASImageGui_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libASImage_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libEG_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libEve_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libFFTW_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libFITSIO_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libFitPanel_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libFoam_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libFumili_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGCocoa_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGdml_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGed_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGenVector_G__GenVector32_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGenVector_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGenetic_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGeomPainter_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGeom_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGpad_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGraf3d_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGraf_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGuiBld_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGuiHtml_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGui_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libGviz3d_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libHbook_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libHistFactory_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libHistPainter_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libHist_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libMLP_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libMathCore_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libMathMore_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libMatrix_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libMinuit2_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libMinuit_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libNet_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libNetxNG_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libPhysics_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libPostscript_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libPyMVA_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libQuadp_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRCsg_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRDAVIX_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRGL_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRHTTPSniff_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRHTTP_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRMySQL_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTBrowsable_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTBrowserv7_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTDataFrame_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTEve_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTFitPanelv7_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTGeomViewer_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTGpadv7_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTGraphicsPrimitives_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTNTupleUtil_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTNTuple_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTTMVASofie_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTTPython_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTTreeViewer_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTVecOps_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libROOTWebDisplay_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRSQLite_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRecorder_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooFitCodegen_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooFitCore_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooFitHS3_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooFitJSONInterface_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooFitMore_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooFitXRooFit_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooFit_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRooStats_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libRootAuth_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libSPlot_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libSQLIO_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libSmatrix_G__Smatrix32_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libSmatrix_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libSpectrumPainter_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libSpectrum_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libTMVAGui_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libTMVAUtils_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libTMVA_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libTreePlayer_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libTreeViewer_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libTree_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libWebGui6_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libXMLIO_rdict.pcm
+
+Info in <TCling::LoadPCM>: In-memory ROOT PCM candidate /usr/local/Cellar/root/6.36.02/lib/root/libXMLParser_rdict.pcm
+
+** INFO: adding module        PileUpMerger             PileUpMerger             
+** INFO: adding module        ParticlePropagator       ParticlePropagator       
+** INFO: adding module        Efficiency               ChargedHadronTrackingEfficiency
+** INFO: adding module        Efficiency               ElectronTrackingEfficiency
+** INFO: adding module        Efficiency               MuonTrackingEfficiency   
+** INFO: adding module        MomentumSmearing         ChargedHadronMomentumSmearing
+** INFO: adding module        MomentumSmearing         ElectronMomentumSmearing 
+** INFO: adding module        MomentumSmearing         MuonMomentumSmearing     
+** INFO: adding module        Merger                   TrackMerger              
+** INFO: adding module        TrackSmearing            TrackSmearing            
+** ERROR: can't open configuration file ../Cards//Users/TMHONG/Claude-code/ttbar_bblvqq/tools/MG5_aMC_v3_6_7/Delphes/cards/trackResolutionATLAS.tcl

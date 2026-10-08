@@ -1,0 +1,212 @@
+
+ *------------------------------------------------------------------------------------* 
+ |                                                                                    | 
+ |  *------------------------------------------------------------------------------*  | 
+ |  |                                                                              |  | 
+ |  |                                                                              |  | 
+ |  |   PPP   Y   Y  TTTTT  H   H  III    A      Welcome to the Lund Monte Carlo!  |  | 
+ |  |   P  P   Y Y     T    H   H   I    A A     This is PYTHIA version 8.317      |  | 
+ |  |   PPP     Y      T    HHHHH   I   AAAAA    Last date of change: 20 Jan 2026  |  | 
+ |  |   P       Y      T    H   H   I   A   A                                      |  | 
+ |  |   P       Y      T    H   H  III  A   A    Now is 08 Oct 2026 at 04:47:17    |  | 
+ |  |                                                                              |  | 
+ |  |   Program documentation and an archive of historic versions is found on:     |  | 
+ |  |                                                                              |  | 
+ |  |                               https://pythia.org/                            |  | 
+ |  |                                                                              |  | 
+ |  |   PYTHIA is authored by a collaboration consisting of:                       |  | 
+ |  |                                                                              |  | 
+ |  |   Javira Altmann, Christian Bierlich, Naomi Cooke, Nishita Desai,            |  | 
+ |  |   Ilkka Helenius, Philip Ilten, Joni Laulainen, Leif Lonnblad,               |  | 
+ |  |   Stephen Mrenna, Christian Preuss, Torbjorn Sjostrand, and Peter Skands.    |  | 
+ |  |                                                                              |  | 
+ |  |   The complete list of authors, including contact information and            |  | 
+ |  |   affiliations, can be found on https://pythia.org/.                         |  | 
+ |  |   Problems or bugs should be reported on email at authors@pythia.org.        |  | 
+ |  |                                                                              |  | 
+ |  |   The main program reference is C. Bierlich et al,                           |  | 
+ |  |   'A comprehensive guide to the physics and usage of Pythia 8.3',            |  | 
+ |  |   SciPost Phys. Codebases 8-r8.3 (2022) [arXiv:2203.11601 [hep-ph]]          |  | 
+ |  |                                                                              |  | 
+ |  |   PYTHIA is released under the GNU General Public Licence version 2          |  | 
+ |  |   or later. Please respect the MCnet Guidelines for Generator Authors        |  | 
+ |  |   and Users.                                                                 |  | 
+ |  |                                                                              |  | 
+ |  |   Disclaimer: this program comes without any guarantees.                     |  | 
+ |  |   Beware of errors and use common sense when interpreting results.           |  | 
+ |  |                                                                              |  | 
+ |  |   Copyright (C) 2026 Torbjorn Sjostrand                                      |  | 
+ |  |                                                                              |  | 
+ |  |                                                                              |  | 
+ |  *------------------------------------------------------------------------------*  | 
+ |                                                                                    | 
+ *------------------------------------------------------------------------------------* 
+
+
+ *-------  PYTHIA Process Initialization  --------------------------*
+ |                                                                  |
+ | We collide p+ with p+ at a CM energy of 1.300e+04 GeV            |
+ |                                                                  |
+ |------------------------------------------------------------------|
+ |                                                    |             |
+ | Subprocess                                    Code |   Estimated |
+ |                                                    |    max (mb) |
+ |                                                    |             |
+ |------------------------------------------------------------------|
+ |                                                    |             |
+ | non-diffractive                                101 |   5.642e+01 |
+ | A B -> X B single diffractive                  103 |   6.416e+00 |
+ | A B -> A X single diffractive                  104 |   6.416e+00 |
+ | A B -> X X double diffractive                  105 |   8.798e+00 |
+ | A B -> A X B central diffractive               106 |   0.000e+00 |
+ |                                                                  |
+ *-------  End PYTHIA Process Initialization -----------------------*
+
+ *-------  PYTHIA Multiparton Interactions Initialization  ---------* 
+ |                                                                  | 
+ |                   sigmaNonDiffractive =    56.42 mb              | 
+ |                                                                  | 
+ |    pT0 =  2.60 gives sigmaInteraction =   316.46 mb: accepted    | 
+ |                                                                  | 
+ *-------  End PYTHIA Multiparton Interactions Initialization  -----* 
+ PYTHIA Warning in MultipartonInteractions::init: maximum increased by factor 1.212
+
+ *-------  PYTHIA Multiparton Interactions Initialization  ---------* 
+ |                                                                  | 
+ |   diffraction XB for p+ on p+                                    | 
+ |                                                                  | 
+ |   diffractive mass = 1.00e+01 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  0.56 gives sigmaInteraction =    24.90 mb: accepted    | 
+ |   diffractive mass = 1.61e+01 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  0.62 gives sigmaInteraction =    24.17 mb: accepted    | 
+ |   diffractive mass = 2.60e+01 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  0.68 gives sigmaInteraction =    22.20 mb: accepted    | 
+ |   diffractive mass = 4.20e+01 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  0.76 gives sigmaInteraction =    20.13 mb: accepted    | 
+ |   diffractive mass = 6.77e+01 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  0.84 gives sigmaInteraction =    18.21 mb: accepted    | 
+ |   diffractive mass = 1.09e+02 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  0.93 gives sigmaInteraction =    17.13 mb: accepted    | 
+ |   diffractive mass = 1.76e+02 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.03 gives sigmaInteraction =    16.42 mb: accepted    | 
+ |   diffractive mass = 2.84e+02 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.14 gives sigmaInteraction =    17.16 mb: accepted    | 
+ |   diffractive mass = 4.58e+02 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.27 gives sigmaInteraction =    18.65 mb: accepted    | 
+ |   diffractive mass = 7.39e+02 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.41 gives sigmaInteraction =    21.14 mb: accepted    | 
+ |   diffractive mass = 1.19e+03 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.56 gives sigmaInteraction =    25.34 mb: accepted    | 
+ |   diffractive mass = 1.92e+03 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.73 gives sigmaInteraction =    30.33 mb: accepted    | 
+ |   diffractive mass = 3.10e+03 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.91 gives sigmaInteraction =    36.71 mb: accepted    | 
+ |   diffractive mass = 5.00e+03 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  2.12 gives sigmaInteraction =    43.40 mb: accepted    | 
+ |   diffractive mass = 8.06e+03 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  2.35 gives sigmaInteraction =    52.49 mb: accepted    | 
+ |   diffractive mass = 1.30e+04 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  2.60 gives sigmaInteraction =    61.12 mb: accepted    | 
+ |                                                                  | 
+ *-------  End PYTHIA Multiparton Interactions Initialization  -----* 
+
+ *-------  PYTHIA Multiparton Interactions Initialization  ---------* 
+ |                                                                  | 
+ |   diffraction AX for p+ on p+                                    | 
+ |                                                                  | 
+ |   diffractive mass = 1.00e+01 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  0.56 gives sigmaInteraction =    25.02 mb: accepted    | 
+ |   diffractive mass = 1.61e+01 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  0.62 gives sigmaInteraction =    24.03 mb: accepted    | 
+ |   diffractive mass = 2.60e+01 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  0.68 gives sigmaInteraction =    22.25 mb: accepted    | 
+ |   diffractive mass = 4.20e+01 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  0.76 gives sigmaInteraction =    20.19 mb: accepted    | 
+ |   diffractive mass = 6.77e+01 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  0.84 gives sigmaInteraction =    18.11 mb: accepted    | 
+ |   diffractive mass = 1.09e+02 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  0.93 gives sigmaInteraction =    16.97 mb: accepted    | 
+ |   diffractive mass = 1.76e+02 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.03 gives sigmaInteraction =    16.55 mb: accepted    | 
+ |   diffractive mass = 2.84e+02 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.14 gives sigmaInteraction =    16.99 mb: accepted    | 
+ |   diffractive mass = 4.58e+02 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.27 gives sigmaInteraction =    18.65 mb: accepted    | 
+ |   diffractive mass = 7.39e+02 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.41 gives sigmaInteraction =    21.35 mb: accepted    | 
+ |   diffractive mass = 1.19e+03 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.56 gives sigmaInteraction =    25.17 mb: accepted    | 
+ |   diffractive mass = 1.92e+03 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.73 gives sigmaInteraction =    30.23 mb: accepted    | 
+ |   diffractive mass = 3.10e+03 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  1.91 gives sigmaInteraction =    36.30 mb: accepted    | 
+ |   diffractive mass = 5.00e+03 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  2.12 gives sigmaInteraction =    43.95 mb: accepted    | 
+ |   diffractive mass = 8.06e+03 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  2.35 gives sigmaInteraction =    52.19 mb: accepted    | 
+ |   diffractive mass = 1.30e+04 GeV and sigmaNorm =    10.00 mb    | 
+ |    pT0 =  2.60 gives sigmaInteraction =    60.79 mb: accepted    | 
+ |                                                                  | 
+ *-------  End PYTHIA Multiparton Interactions Initialization  -----* 
+
+ *-------  PYTHIA Flag + Mode + Parm + Word + FVec + MVec + PVec + WVec Settings (changes only)  ------------------* 
+ |                                                                                                                 | 
+ | Name                                          |                      Now |      Default         Min         Max | 
+ |                                               |                          |                                      | 
+ | Beams:eCM                                     |                13000.000 |    14000.000         0.0             | 
+ | Init:showChangedParticleData                  |                      off |           on                         | 
+ | Next:numberCount                              |                     5000 |         1000           0             | 
+ | Next:numberShowEvent                          |                        0 |            1           0             | 
+ | Next:numberShowInfo                           |                        0 |            1           0             | 
+ | Next:numberShowProcess                        |                        0 |            1           0             | 
+ | Random:seed                                   |                       99 |           -1               900000000 | 
+ | Random:setSeed                                |                       on |          off                         | 
+ | SoftQCD:inelastic                             |                       on |          off                         | 
+ | StringZ:useOldAExtra                          |                       on |          off                         | 
+ |                                                                                                                 | 
+ *-------  End PYTHIA Flag + Mode + Parm + Word + FVec + MVec + PVec + WVec Settings  -----------------------------* 
+ PYTHIA Warning in SimpleSpaceShower::pT2nextQCD: weight above unity
+
+ *-------  PYTHIA Event and Cross Section Statistics  -------------------------------------------------------------*
+ |                                                                                                                 |
+ | Subprocess                                    Code |            Number of events       |      sigma +- delta    |
+ |                                                    |       Tried   Selected   Accepted |     (estimated) (mb)   |
+ |                                                    |                                   |                        |
+ |-----------------------------------------------------------------------------------------------------------------|
+ |                                                    |                                   |                        |
+ | non-diffractive                                101 |         370        370        370 |   5.642e+01  0.000e+00 |
+ | A B -> X B single diffractive                  103 |          39         39         39 |   6.416e+00  4.741e-08 |
+ | A B -> A X single diffractive                  104 |          44         44         44 |   6.416e+00  3.590e-08 |
+ | A B -> X X double diffractive                  105 |          47         47         47 |   8.798e+00  4.265e-08 |
+ |                                                    |                                   |                        |
+ | sum                                                |         500        500        500 |   7.805e+01  7.318e-08 |
+ |                                                                                                                 |
+ *-------  End PYTHIA Event and Cross Section Statistics ----------------------------------------------------------*
+
+ *-------  PYTHIA Error and Warning Messages Statistics  ----------------------------------------------------------* 
+ |                                                                                                                 | 
+ |  times   message                                                                                                | 
+ |                                                                                                                 | 
+ |      3   Warning in MultipartonInteractions::init: maximum increased                                            | 
+ |      4   Warning in SimpleSpaceShower::pT2nextQCD: weight above unity                                           | 
+ |                                                                                                                 | 
+ *-------  End PYTHIA Error and Warning Messages Statistics  ------------------------------------------------------* 
+minbias2pileup: wrote 500 events, 1.851e+02 particles/event, 0 failed Pythia8 events -> test500.pileup
+        4.27 real         3.91 user         0.02 sys
+            21692416  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                1315  page reclaims
+                 187  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 159  voluntary context switches
+                 346  involuntary context switches
+         38203918352  instructions retired
+         12310620316  cycles elapsed
+            17482112  peak memory footprint

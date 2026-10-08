@@ -26,3 +26,11 @@ __pycache__/
 osde_sh/
 ml/
 study_washout/**/*.npz
+note/note.tex
+note/*.aux
+note/*.log
+note/*.out
+note/*.toc
+note/*.fls
+note/*.fdb_latexmk
+pileup/*.root

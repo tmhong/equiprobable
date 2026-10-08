@@ -1,0 +1,16 @@
+! Pythia8 minimum-bias (inelastic) events for the Delphes pile-up library.
+! pp at 13 TeV, SoftQCD:inelastic = non-diffractive + single/double/central diffractive
+! (no elastic, so MeanPileUp in the Delphes card = mean number of inelastic interactions).
+! Tune and decays: Pythia 8.317 defaults (Monash 2013), the same Pythia8 setup MG5 uses
+! for the hard tt̄ events.  The seed is set on the minbias2pileup command line.
+Beams:idA = 2212
+Beams:idB = 2212
+Beams:eCM = 13000.
+SoftQCD:inelastic = on
+
+Next:numberCount = 5000
+Next:numberShowInfo = 0
+Next:numberShowProcess = 0
+Next:numberShowEvent = 0
+Init:showChangedSettings = on
+Init:showChangedParticleData = off

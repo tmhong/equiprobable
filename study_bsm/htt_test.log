@@ -1,0 +1,188 @@
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed1001/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed12345/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_seed2001/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/Htt_bblvqq/run_seed3002/parton_events.lhe.gz
+parton {
+ "n_test": {
+  "tt": 10000,
+  "hh": 10000,
+  "Htt": 10000
+ },
+ "mtt_median": {
+  "tt": 472.4356390502269,
+  "hh": 307.1910573865215,
+  "Htt": 502.2190770900305
+ },
+ "hh vs tt": {
+  "unsupervised | f_tt angles (>10 sigma)": [
+   0.67170278,
+   0.003198005800945605
+  ],
+  "unsupervised | BW masses": [
+   0.99995153,
+   8.846774901151458e-06
+  ],
+  "unsupervised | m_tt density": [
+   0.8102123650000002,
+   0.0028998810706700826
+  ],
+  "unsupervised | angles + BW": [
+   0.9999541799999999,
+   8.33286456469032e-06
+  ],
+  "unsupervised | angles + BW + m_tt": [
+   0.9999272800000001,
+   1.164567079214676e-05
+  ],
+  "supervised trained on hh | angles": [
+   0.87591841,
+   0.00202187102292465
+  ],
+  "supervised trained on hh | angles + masses + m_tt": [
+   0.99999996,
+   5.30918537638394e-08
+  ],
+  "supervised trained on Htt | angles": [
+   0.577544045,
+   0.00360468914226387
+  ],
+  "supervised trained on Htt | angles + masses + m_tt": [
+   0.21249384500000001,
+   0.0032422521329603183
+  ]
+ },
+ "Htt vs tt": {
+  "unsupervised | f_tt angles (>10 sigma)": [
+   0.55354357,
+   0.0038730609250542027
+  ],
+  "unsupervised | BW masses": [
+   0.50580358,
+   0.0039931642496382185
+  ],
+  "unsupervised | m_tt density": [
+   0.5573191000000001,
+   0.00434639031691152
+  ],
+  "unsupervised | angles + BW": [
+   0.51203254,
+   0.003989085190024104
+  ],
+  "unsupervised | angles + BW + m_tt": [
+   0.4915026,
+   0.0039914247340181
+  ],
+  "supervised trained on hh | angles": [
+   0.52340992,
+   0.0038310638994991384
+  ],
+  "supervised trained on hh | angles + masses + m_tt": [
+   0.42903142499999997,
+   0.004233522125858628
+  ],
+  "supervised trained on Htt | angles": [
+   0.61145249,
+   0.003957815847427923
+  ],
+  "supervised trained on Htt | angles + masses + m_tt": [
+   0.8934477749999999,
+   0.002132337111065526
+  ]
+ }
+}
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed1001/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed1001/delphes_events.root
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed12345/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed12345/delphes_events.root
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_seed2001/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_seed2001/delphes_events.root
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/Htt_bblvqq/run_seed3002/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/Htt_bblvqq/run_seed3002/delphes_events.root
+reco {
+ "n_test": {
+  "tt": 2440,
+  "hh": 939,
+  "Htt": 2951
+ },
+ "mtt_median": {
+  "tt": 511.6146943412798,
+  "hh": 465.4860166528209,
+  "Htt": 521.0469061984472
+ },
+ "hh vs tt": {
+  "unsupervised | f_tt angles (>10 sigma)": [
+   0.5230542607238255,
+   0.011970521311900288
+  ],
+  "unsupervised | BW masses": [
+   0.5932209012028842,
+   0.01049963963447169
+  ],
+  "unsupervised | m_tt density": [
+   0.5023003631348313,
+   0.012014793408392887
+  ],
+  "unsupervised | angles + BW": [
+   0.5955769130047662,
+   0.010549446889723903
+  ],
+  "unsupervised | angles + BW + m_tt": [
+   0.5838850189423698,
+   0.010511202278556132
+  ],
+  "supervised trained on hh | angles": [
+   0.5862327380017109,
+   0.010839030364588371
+  ],
+  "supervised trained on hh | angles + masses + m_tt": [
+   0.6869939244749385,
+   0.011007373707844336
+  ],
+  "supervised trained on Htt | angles": [
+   0.5025812252308874,
+   0.01171908211048569
+  ],
+  "supervised trained on Htt | angles + masses + m_tt": [
+   0.4596444595750624,
+   0.01127049910839829
+  ]
+ },
+ "Htt vs tt": {
+  "unsupervised | f_tt angles (>10 sigma)": [
+   0.5654940531411969,
+   0.007271940832052291
+  ],
+  "unsupervised | BW masses": [
+   0.536495964135525,
+   0.008005045955047366
+  ],
+  "unsupervised | m_tt density": [
+   0.48688344045641657,
+   0.007197554036427239
+  ],
+  "unsupervised | angles + BW": [
+   0.5502558177000294,
+   0.008060582425590856
+  ],
+  "unsupervised | angles + BW + m_tt": [
+   0.5312885045913861,
+   0.008093292944073328
+  ],
+  "supervised trained on hh | angles": [
+   0.5047963735549494,
+   0.008120869296629476
+  ],
+  "supervised trained on hh | angles + masses + m_tt": [
+   0.48239704795818034,
+   0.007420428786445063
+  ],
+  "supervised trained on Htt | angles": [
+   0.5526534489558971,
+   0.007176721746583332
+  ],
+  "supervised trained on Htt | angles + masses + m_tt": [
+   0.642029931504186,
+   0.007697320323960559
+  ]
+ }
+}

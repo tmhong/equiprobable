@@ -1,0 +1,15 @@
+{
+  "process": "p p > t t~ > b b~ l nu q q'",
+  "leptons": "e,mu",
+  "sqrts_GeV": 13000.0,
+  "nevents": 1000,
+  "seed": 777,
+  "cross_section_pb": 135.6665,
+  "stage": "delphes",
+  "delphes_card": "cards/delphes_card_ATLAS_PU50.tcl",
+  "mg5_run_dir": "/Users/TMHONG/Claude-code/ttbar_bblvqq/work/ttbar_bblvqq/Events/test_pu50",
+  "files": {
+    "parton_events.lhe.gz": "/Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/test_pu50/parton_events.lhe.gz",
+    "delphes_events.root": "/Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/test_pu50/delphes_events.root"
+  }
+}

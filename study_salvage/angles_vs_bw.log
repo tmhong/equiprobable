@@ -1,0 +1,28 @@
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed1001/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed1001/delphes_events.root
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed12345/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed12345/delphes_events.root
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_seed2001/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_seed2001/delphes_events.root
+gen {
+ "unsupervised masses only": 0.6899087213317627,
+ "unsupervised angles(>10 sigma) + BW": 0.6915174752669626,
+ "BDT masses": 0.708240431066518,
+ "BDT angles": 0.6445048199624184,
+ "BDT angles+masses": 0.7379747437299734,
+ "BDT (angles+masses) - (masses): paired": [
+  0.029457949423037942,
+  0.004082770866698038
+ ]
+}
+reco {
+ "unsupervised masses only": 0.6002948288203355,
+ "unsupervised angles(>10 sigma) + BW": 0.601873505124042,
+ "BDT masses": 0.5643776514953125,
+ "BDT angles": 0.5765743117023691,
+ "BDT angles+masses": 0.602864487857679,
+ "BDT (angles+masses) - (masses): paired": [
+  0.03695776994544874,
+  0.014881320556749315
+ ]
+}

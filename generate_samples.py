@@ -99,12 +99,14 @@ add process p p > t t~, (t > b w+, w+ > q q), (t~ > b~ w-, w- > lep- nul~)"""),
 generate g g > h h, (h > b b~), (h > lep+ nul q q)
 add process g g > h h, (h > b b~), (h > lep- nul~ q q)"""),
     # BSM benchmark: a heavy CP-even scalar decaying to on-shell tops (heft ggh coupling with
-    # m_H = 500 GeV, width computed by MG5).  Signal only: the interference with QCD gg -> tt̄
-    # is not included.  Same final state and on-shell masses as tt̄; differs in spin structure.
+    # m_H = 500 GeV).  The width is set by hand to 25 GeV (Gamma/m = 5%, a typical heavy 2HDM
+    # scalar): MG5's automatic width for the heft h at 500 GeV comes out absurd (4e5 GeV).
+    # Signal only: the interference with QCD gg -> tt̄ is not included.  Same final state and
+    # on-shell masses as tt̄; differs in spin structure, cos Theta and m_tt̄.
     "Htt": dict(
         model="heft",
-        label="g g > H > t t~ > b b~ l nu q q' (m_H = 500 GeV)",
-        param=["param_card mass 25 500", "param_card decay 25 auto"],
+        label="g g > H > t t~ > b b~ l nu q q' (m_H = 500 GeV, Gamma_H = 25 GeV)",
+        param=["param_card mass 25 500", "param_card decay 25 25.0"],
         generate="""generate g g > h > t t~, (t > b w+, w+ > lep+ nul), (t~ > b~ w-, w- > q q)
 add process g g > h > t t~, (t > b w+, w+ > q q), (t~ > b~ w-, w- > lep- nul~)"""),
 }
@@ -177,7 +179,9 @@ def install_delphes_card(args, proc_dir):
     if not args.full_delphes_output:
         # Same detector simulation, but don't store the bulky low-level
         # collections (tracks, towers, energy-flow objects): ~30% smaller files.
-        text, n = re.subn(r"^([ \t]*add Branch \S+ (Track|Tower|EFlowTrack|EFlowPhoton|EFlowNeutralHadron) )",
+        # ParticleFlowCandidate and Vertex exist only in pileup cards (huge at high <mu>).
+        text, n = re.subn(r"^([ \t]*add Branch \S+ (Track|Tower|EFlowTrack|EFlowPhoton|EFlowNeutralHadron"
+                          r"|ParticleFlowCandidate|Vertex) )",
                           r"#\1", text, flags=re.M)
         print(f"[generate] slimmed Delphes output ({n} low-level branches dropped)")
     with open(os.path.join(proc_dir, "Cards", "delphes_card.dat"), "w") as f:
