@@ -191,7 +191,8 @@ def sec_intro(N):
         [r"Does $y$ help a supervised classifier?", r"No (change within $\pm0.002$)"],
         [r"What happens at gen and reco level?", rf"AUC drops to {auc_all['gen']:.2f} and {auc_all['reco']:.2f}"],
         [r"Why?", r"The $\chi^2$ fit and the $m_W$-constrained neutrino rebuild $hh$ events as $t\bar t$; the "
-                  r"information survives in observables that do not assume $t\bar t$ (BDT AUC 0.87)"],
+                  rf"information survives in observables that do not assume $t\bar t$ (BDT AUC "
+                  rf"{N['mech']['bdt']['gen: hypothesis-independent observables (reco_ok events)']:.2f})"],
         [r"How many coefficients matter?",
          rf"Cross-validation keeps {', '.join(str(cl[l]['variants']['cv_best']['kept']) for l in LEVELS)} of 14\,400 "
          r"(parton, parton+trig, gen, reco); $\sim$20 terms do as well as all of them"],
@@ -252,8 +253,9 @@ def sec_samples(N):
             for lvl in ("gen", "reco")]
     wh = N["whad_split"]
     LEPTON_TEXT = (r"$hh$ leptons are softer (from the $W^*$) and less isolated, so its efficiency is lower." if SIGNAL == "h125"
-                   else r"the signal leptons are as hard as in $t\bar t$ (both $W$ bosons on shell); its lower efficiency comes from "
-                        r"the softer $b$ jets of a 170~GeV scalar and from isolation.")
+                   else r"the signal loses at the one-lepton step: the $W$ is nearly at rest in a 170~GeV scalar, whereas a top "
+                        r"gives its $W$ 68~GeV of momentum, so the signal lepton is harder than in $hh(125)$ but still softer than in "
+                        r"$t\bar t$; the jet and $b$-tag steps keep more of the signal than of $t\bar t$.")
     SAMPLE_TEXT = (r"Because $h\to WW^*$ has one off-shell $W$, the $h\to\ell\nu q\bar q'$ decay is a four-body decay."
                    if SIGNAL == "h125" else
                    r"The scalar mass is set to $m_H=170$~GeV with $\Gamma_H=0.38$~GeV (as for an SM-like scalar of that mass), "

@@ -211,8 +211,9 @@ def build_hh_osde_slides(H, O, tests):
                 str(b[1]), rf"{100 * b[1] / H['hh_cutflow'][0][1]:.1f}\%"]
                for a, b in zip(H["tt_cutflow"], H["hh_cutflow"])],
               note=(r"$hh$ leptons are softer (from $W^*$) and less isolated, so the efficiency is lower." if SIGNAL == "h125" else
-                    r"Both $W$s are on shell, so the signal leptons are as hard as in $t\bar t$; the lower efficiency comes from "
-                    r"the jets (softer $b$s from a 170 GeV scalar) and from isolation.")),
+                    r"The loss is at the one-lepton step: the $W$ is nearly at rest in a 170 GeV scalar, whereas a top gives its "
+                    r"$W$ 68 GeV of momentum, so the signal lepton is harder than in $hh(125)$ but still softer than in $t\bar t$; "
+                    r"the jet and $b$-tag steps keep more of the signal than of $t\bar t$.")),
         wide_figure(r"$hh$ sample: parton, gen and reco level", os.path.join(sdir("plots_hh"), "hh_overview.png")),
         *hh_whad_slides(),
 
