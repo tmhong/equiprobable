@@ -204,13 +204,15 @@ def build_hh_osde_slides(H, O, tests):
             r"For $t\bar t$-hypothesis quantities, $hh$ uses the same $\chi^2$; at parton level the b pairing "
             r"is the one closest to $m_t$",
             r"Prompt leptons: status-1 $e/\mu$ from $W$, $Z$, $h$, or a $\tau$ from one of these "
-            r"(in $h\to WW^*$ the lepton can come directly from the $h$)",
+            r"(in $h\to WW^{(*)}$ the lepton can come directly from the $h$ in the record)",
         ]),
         table(r"Cutflow: $t\bar{t}$ vs $hh$ (reco)", ["selection", r"$t\bar t$", "", r"$hh$", ""],
               [[a[0], str(a[1]), rf"{100 * a[1] / H['tt_cutflow'][0][1]:.1f}\%",
                 str(b[1]), rf"{100 * b[1] / H['hh_cutflow'][0][1]:.1f}\%"]
                for a, b in zip(H["tt_cutflow"], H["hh_cutflow"])],
-              note=r"$hh$ leptons are softer (from $W^*$) and less isolated, so the efficiency is lower."),
+              note=(r"$hh$ leptons are softer (from $W^*$) and less isolated, so the efficiency is lower." if SIGNAL == "h125" else
+                    r"Both $W$s are on shell, so the signal leptons are as hard as in $t\bar t$; the lower efficiency comes from "
+                    r"the jets (softer $b$s from a 170 GeV scalar) and from isolation.")),
         wide_figure(r"$hh$ sample: parton, gen and reco level", os.path.join(sdir("plots_hh"), "hh_overview.png")),
         *hh_whad_slides(),
 
@@ -397,7 +399,7 @@ def extended_slides(odir, edir):
                                   os.path.join(edir, f"projections_ttbar_simplified_{l}.png")))
         slides.append(wide_figure(rf"Extended $f^\mathrm{{{l}}}_{{t\bar t}}$ (CV-truncated): hadronic top",
                                   os.path.join(edir, f"projections_ttbar_simplified_{l}_had.png")))
-    for l in ("reco",):
+    for l in (("reco",) if SIGNAL == "h125" else ()):
         slides += score_slides(rf"Extended $f^\mathrm{{{l}}}_{{t\bar t}}$ applied to {l}-level $t\bar t$ and $hh$",
                                edir, l)
     rows = []
@@ -406,13 +408,16 @@ def extended_slides(odir, edir):
         for key, lab in (("all", "all terms"), ("cv_best", "CV best"), ("5sigma", r"$5\sigma$")):
             r = v[key]
             fn = r["frac_negative"]
-            rows.append([l if key == "all" else "", lab, str(r["kept"]), f"{r['auc']:.3f}",
-                         rf"{100 * fn.get('test', fn['train']):.1f}\%", rf"{100 * fn['hh']:.1f}\%"])
-    slides.append(table(r"Extended basis: performance", ["level", "terms", "number", r"AUC ($hh$ vs $t\bar t$)",
-                                                          r"$f\le0$ ($t\bar t$ indep.)", r"$f\le0$ ($hh$)"], rows,
-                        note=r"A much better description of $t\bar t$ hardly changes the $hh$ separation at gen/reco: "
-                             r"the limitation is the $t\bar t$-hypothesis reconstruction, not the density. "
-                             r"Without truncation the many high-order terms add noise ($f\le0$ up to 13\%).",
+            rows.append([l if key == "all" else "", lab, str(r["kept"])] + ([f"{r['auc']:.3f}"] if SIGNAL == "h125" else [])
+                        + [rf"{100 * fn.get('test', fn['train']):.1f}\%"] + ([rf"{100 * fn['hh']:.1f}\%"] if SIGNAL == "h125" else []))
+    slides.append(table(r"Extended basis: performance" + ("" if SIGNAL == "h125" else r" ($t\bar t$ only)"),
+                        ["level", "terms", "number"] + ([r"AUC ($hh$ vs $t\bar t$)"] if SIGNAL == "h125" else [])
+                        + [r"$f\le0$ ($t\bar t$ indep.)"] + ([r"$f\le0$ ($hh$)"] if SIGNAL == "h125" else []), rows,
+                        note=(r"A much better description of $t\bar t$ hardly changes the $hh$ separation at gen/reco: "
+                              r"the limitation is the $t\bar t$-hypothesis reconstruction, not the density. "
+                              r"Without truncation the many high-order terms add noise ($f\le0$ up to 13\%)." if SIGNAL == "h125" else
+                              r"Studied on $t\bar t$ only (the density description). Without truncation the many high-order terms "
+                              r"add noise ($f\le0$ up to 13\%)."),
                         fit=True))
     return slides
 
@@ -451,11 +456,11 @@ def sh_slides(sdir):
                      if "delta_ise_vs_paper" in r and not key.startswith("paper") else "--")
                 rows.append([LVL_TEX[l] if (key.startswith("paper") and tr == "all") else "",
                              f"{lab}, {'all' if tr == 'all' else 'CV'}", str(r["terms"]), d,
-                             f"{r['worst_chi2ndf']:.1f}", rf"{100 * r['frac_negative_indep']:.1f}\%",
-                             f"{r['auc']:.3f}" if r["auc"] else "--"])
+                             f"{r['worst_chi2ndf']:.1f}", rf"{100 * r['frac_negative_indep']:.1f}\%"]
+                            + ([f"{r['auc']:.3f}" if r["auc"] else "--"] if SIGNAL == "h125" else []))
     slides.append(table(r"Basis comparison (independent $t\bar t$ sample)",
                         ["level", "basis", "terms", r"$\Delta$ISE vs $M$ [$10^{-6}$]", r"worst $\chi^2$/ndf",
-                         r"$f\le0$", "AUC"], rows,
+                         r"$f\le0$"] + (["AUC"] if SIGNAL == "h125" else []), rows,
                         note=r"$\Delta$ISE $<0$: closer to the true density than the paper's $M$ basis (paired, same "
                              r"events). Worst $\chi^2$/ndf of the 1-D projections excludes $Y$.", fit=True))
 
@@ -476,7 +481,8 @@ def sh_slides(sdir):
         r"",
         r"The extended basis is best at gen/reco: " + "; ".join(
             rf"{LVL_TEX[l]} $\Delta$ISE $={dlt('extended', l)[0]:+.2f}\pm{dlt('extended', l)[1]:.2f}$" for l in lv),
-        r"The $hh$ AUC hardly depends on the basis",
+        (r"The $hh$ AUC hardly depends on the basis" if SIGNAL == "h125" else
+         r"A $t\bar t$-only study: the basis choice is about describing the $t\bar t$ density, not about the signal"),
     ]
     slides.append(bullets("Basis comparison: conclusions", [i for i in items if i]))
     return slides
@@ -537,8 +543,10 @@ def ml_slides(mdir, explainer=()):
                       if k.startswith(osde_best[1]) and other_best[1] in k),
             rf"Knowing $hh$ (supervised) on the same angles: AUC {best_sup:.3f}, the upper bound for these inputs",
             rf"Adding $y$ to the supervised classifiers: AUC change {min(gain):+.3f} to {max(gain):+.3f} "
-            rf"(best {best_supy:.3f}), within the $\pm${r['results'][next(iter(sup))]['auc_err']:.3f} uncertainty: "
-            r"$y$ carries no information the classifier does not already learn from the angles",
+            rf"(best {best_supy:.3f}); test-AUC error $\pm${r['results'][next(iter(sup))]['auc_err']:.3f}"
+            + (r": $y$ carries no information the classifier does not already learn from the angles"
+               if max(abs(g) for g in gain) < 2.5 * r['results'][next(iter(sup))]['auc_err'] else
+               r": a small but significant gain (paired bootstrap), i.e.\ $y$ summarizes something the networks do not fully learn here"),
             rf"Momenta (which contain $m_{{b\bar b}}=m_h$ etc.) make the task trivial: AUC {mom:.4f}",
             rf"Controls: shuffled labels {rr['control: BDT, shuffled labels']['auc_test']:.3f}, $t\bar t$ vs $t\bar t$ "
             rf"{rr['control: BDT, tt (fit) vs tt (independent)']['auc_test']:.3f} (expected 0.5)",

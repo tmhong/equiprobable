@@ -201,36 +201,38 @@ def sec_intro(N):
          rf"{N['simplest']['gen']['angles + ... + m_t_had']:.2f}, reco {rx['reco']['truncation']['all']['angles']:.2f}$\to$"
          rf"{rx['reco']['truncation']['>10 sigma']['angles+BW']:.2f}"],
     ]
-    return r"""
-\section{Introduction and summary}
-\label{sec:intro}
+    SIGNAL_INTRO = (r"$hh\to b\bar b\,WW^*\to b\bar b\,\ell\nu\,q\bar q'$" if SIGNAL == "h125"
+                    else r"$HH\to b\bar b\,WW\to b\bar b\,\ell\nu\,q\bar q'$ with $m_H=170$~GeV (both $W$ bosons on shell)")
+    return rf"""
+\section{{Introduction and summary}}
+\label{{sec:intro}}
 
-This note documents a study of the orthogonal-series density estimate (OSDE) $f_{t\bar t}(\mathbf{x})$
-of the ten $t\bar t$ decay and production angles $\mathbf{x}=\{Y,\Theta,\theta,\phi,\theta',\phi',
-\tilde\theta,\tilde\phi,\tilde\theta',\tilde\phi'\}$ defined in the paper, as a signal-agnostic
-(unsupervised) discriminant: $y=f_{t\bar t}(\mathbf{x})$ is low for events that do not look like
-$t\bar t$, whatever they are.  The test signal is $hh\to b\bar b\,WW^*\to b\bar b\,\ell\nu\,q\bar q'$, which
+This note documents a study of the orthogonal-series density estimate (OSDE) $f_{{t\bar t}}(\mathbf{{x}})$
+of the ten $t\bar t$ decay and production angles $\mathbf{{x}}=\{{Y,\Theta,\theta,\phi,\theta',\phi',
+\tilde\theta,\tilde\phi,\tilde\theta',\tilde\phi'\}}$ defined in the paper, as a signal-agnostic
+(unsupervised) discriminant: $y=f_{{t\bar t}}(\mathbf{{x}})$ is low for events that do not look like
+$t\bar t$, whatever they are.  The test signal is {SIGNAL_INTRO}, which
 has the same final state.  The study has four parts:
-\begin{enumerate}
+\begin{{enumerate}}
 \item Monte Carlo samples of $t\bar t$ and $hh$ at parton level (MadGraph5), particle level (Pythia8) and
   detector level (Delphes, ATLAS card, no pileup), with the full $t\bar t$ reconstruction, and the ten angles
-  computed at each level (Sections~\ref{sec:samples}--\ref{sec:angles}).
-\item The density $f_{t\bar t}$ by OSDE in the paper's basis, its validation, the number of coefficients
+  computed at each level (Sections~\ref{{sec:samples}}--\ref{{sec:angles}}).
+\item The density $f_{{t\bar t}}$ by OSDE in the paper's basis, its validation, the number of coefficients
   that matter, the orders needed at particle and detector level, and a comparison with a spherical-harmonic
-  basis (Sections~\ref{sec:osde}--\ref{sec:sh}).
-\item How well $f_{t\bar t}$ separates $hh$ from $t\bar t$ compared with other unsupervised methods and with
+  basis (Sections~\ref{{sec:osde}}--\ref{{sec:sh}}).
+\item How well $f_{{t\bar t}}$ separates $hh$ from $t\bar t$ compared with other unsupervised methods and with
   supervised machine learning on the same inputs, and why the separation seen at parton level disappears
-  after reconstruction (Sections~\ref{sec:ml}--\ref{sec:washout}).
+  after reconstruction (Sections~\ref{{sec:ml}}--\ref{{sec:washout}}).
 \item The fix: putting the momenta back through the resonance masses, which recovers the parton-level
   performance at particle and detector level, and the effect of realistic quark tagging
-  (Section~\ref{sec:momentum}).
-\end{enumerate}
-These four parts are Study A.  Study B (Section~\ref{sec:bsm}) turns to new physics in the production with
+  (Section~\ref{{sec:momentum}}).
+\end{{enumerate}}
+These four parts are Study A.  Study B (Section~\ref{{sec:bsm}}) turns to new physics in the production with
 on-shell tops, a heavy scalar $H\to t\bar t$ at 500~GeV and at the $2m_t$ threshold, where the masses carry
 nothing and the angles everything, and introduces the OSDE coefficients as a bump hunt in angle space.
-Study C (Section~\ref{sec:pileup}) takes the method towards the detector: pileup, and a lookup-table version
+Study C (Section~\ref{{sec:pileup}}) takes the method towards the detector: pileup, and a lookup-table version
 for the Level-1 trigger.
-The headline answers are collected in Table~\ref{tab:summary}.  Throughout, AUC is the area under the ROC
+The headline answers are collected in Table~\ref{{tab:summary}}.  Throughout, AUC is the area under the ROC
 curve for $hh$ versus $t\bar t$ (0.5 = no separation), always evaluated on events that were not used in
 any fit: the independent $t\bar t$ sample, or the fit sample scored leave-one-out where stated.
 """ + tab("Headline answers.", ["question", "answer"], rows, "tab:summary", col=r"p{0.36\textwidth}p{0.6\textwidth}") + r"""
@@ -249,6 +251,9 @@ def sec_samples(N):
     mres = [[lvl] + [rf"${S[lvl][k][0]:.0f}\pm{S[lvl][k][1]:.0f}$" for k in ("m_thad", "m_thad_correct", "m_whad", "m_whad_correct")]
             for lvl in ("gen", "reco")]
     wh = N["whad_split"]
+    LEPTON_TEXT = (r"$hh$ leptons are softer (from the $W^*$) and less isolated, so its efficiency is lower." if SIGNAL == "h125"
+                   else r"the signal leptons are as hard as in $t\bar t$ (both $W$ bosons on shell); its lower efficiency comes from "
+                        r"the softer $b$ jets of a 170~GeV scalar and from isolation.")
     SAMPLE_TEXT = (r"Because $h\to WW^*$ has one off-shell $W$, the $h\to\ell\nu q\bar q'$ decay is a four-body decay."
                    if SIGNAL == "h125" else
                    r"The scalar mass is set to $m_H=170$~GeV with $\Gamma_H=0.38$~GeV (as for an SM-like scalar of that mass), "
@@ -292,7 +297,7 @@ Four event levels are used (Table~\ref{{tab:levels}}).  \emph{{Parton}} is the M
 and $|\eta|<2.47$ ($e$) or $2.5$ ($\mu$), and keeps {pct(S['parton']['trigger_eff'])} of the events.
 \emph{{Gen}} is the particle level: anti-$k_t$ $R=0.4$ GenJets, the prompt lepton, and the missing momentum
 from the sum of all neutrinos.  Prompt leptons are status-1 $e/\mu$ from a $W$, $Z$ or $h$, or from a $\tau$
-that itself comes from one of these (in $h\to WW^*$ the lepton can come directly from the $h$ in the
+that itself comes from one of these (in $h\to WW^{{(*)}}$ the lepton can come directly from the $h$ in the
 record); leptons from $B$ and $D$ decays, also via $\tau$, are not prompt.  GenJets within $\Delta R<0.4$ of
 a prompt lepton are removed, since the lepton is clustered into a jet otherwise.  A GenJet is $b$-labelled
 if a $b$ quark with $p_T>5$~GeV lies within $\Delta R<0.4$.  \emph{{Reco}} is the Delphes output: jets,
@@ -310,8 +315,7 @@ minimized over all assignments of the six leading jets to $(b_\mathrm{{had}},b_\
 $\min(n_b,2)$ $b$-tagged jets in the two $b$ slots, and over the two solutions of the neutrino $p_z$ from the
 $m_W$ constraint, so that the $m_t$ term resolves the two-fold ambiguity ($\sigma_W=10$, $\sigma_t=15$~GeV).
 The cutflow is in Table~\ref{{tab:cutflow}}: {pct(S['gen']['n_reco'] / S['gen']['n'])} of the $t\bar t$
-events survive at gen level and {pct(S['reco']['n_reco'] / S['reco']['n'])} at reco level; $hh$ leptons are
-softer (from the $W^*$) and less isolated, so its efficiency is lower.  Reco and gen missing momentum agree for
+events survive at gen level and {pct(S['reco']['n_reco'] / S['reco']['n'])} at reco level; {LEPTON_TEXT}  Reco and gen missing momentum agree for
 muon and electron events (reco minus gen along the lepton direction: ${S['met_check']['mu']:+.1f}$ vs
 ${S['met_check']['e']:+.1f}$~GeV), which checks that the calorimeter missing momentum does not lose the muons.
 """ + tab("Event levels.", ["", "parton", r"parton+trig", "gen (particle)", "reco"], [
@@ -584,6 +588,10 @@ halves of the data rank the events almost identically with the truncated $f$ but
 
 def sec_orders(N):
     scan, tr, comp, E, ES = N["order_scan"], N["trunc_gen"], N["proj_comp"], N["ext"], N["ext_simp"]
+    EXT_END = (r"Yet this much better description of $t\bar t$ hardly changes the $hh$ separation at gen and reco level "
+               r"(Table~\ref{tab:extperf}): the limitation is not the density but the $t\bar t$-hypothesis reconstruction "
+               r"(Section~\ref{sec:washout})." if SIGNAL == "h125" else
+               r"This is a $t\bar t$-only study of the density description (Table~\ref{tab:extperf}).")
     names = ["cos_theta", "phi", "cos_theta_prime", "phi_prime", "cos_theta_tilde", "phi_tilde",
              "cos_theta_prime_tilde", "phi_prime_tilde", "cos_Theta", "Y"]
     rows = [[ANGLE_TEX[a]] + [str(scan[l][a]) for l in LEVELS] for a in names]
@@ -600,7 +608,8 @@ def sec_orders(N):
         vv = ES["levels"][l]["variants"]
         for key, lab in (("all", "all terms"), ("cv_best", "CV best")):
             r = vv[key]
-            prow.append([LVL_TEX[l] if key == "all" else "", lab, str(r["kept"]), f3(r["auc"]), pct(r["frac_negative"]["test"]), pct(r["frac_negative"]["hh"])])
+            prow.append([LVL_TEX[l] if key == "all" else "", lab, str(r["kept"])] + ([f3(r["auc"])] if SIGNAL == "h125" else [])
+                        + [pct(r["frac_negative"]["test"])] + ([pct(r["frac_negative"]["hh"])] if SIGNAL == "h125" else []))
     return rf"""
 \section{{Higher orders for gen and reco: the extended basis}}
 \label{{sec:orders}}
@@ -634,13 +643,12 @@ correlations between the two tops stay at the physics order.
             ["level", "basis"] + [ANGLE_TEX[a] for a in names[::-1]], crow, "tab:projchi2") + rf"""
 After the cross-validated truncation the extended basis describes every angle at every level with
 $\chi^2$/ndf between about 0.4 and 2 (Table~\ref{{tab:projchi2}}, Figure~\ref{{fig:extproj}}), whereas the
-paper basis is good only at parton level.  Yet this much better description of $t\bar t$ hardly changes the
-$hh$ separation at gen and reco level (Table~\ref{{tab:extperf}}): the limitation is not the density but the
-$t\bar t$-hypothesis reconstruction (Section~\ref{{sec:washout}}).  Without truncation the many high-order
+paper basis is good only at parton level.  {EXT_END}  Without truncation the many high-order
 terms add noise, with up to 13\% negative $f$.
 """ + fig(rel("osde_ext", "projections_ttbar_simplified_reco.png"), r"Extended basis at reco level after CV truncation: projections.",
-          "fig:extproj") + tab(r"Performance of the extended basis.", ["level", "terms", "number", r"AUC ($hh$ vs $t\bar t$)",
-                                                                         r"$f\le0$ ($t\bar t$ indep.)", r"$f\le0$ ($hh$)"], prow, "tab:extperf")
+          "fig:extproj") + tab(r"Performance of the extended basis" + ("." if SIGNAL == "h125" else r" ($t\bar t$ only)."),
+                               ["level", "terms", "number"] + ([r"AUC ($hh$ vs $t\bar t$)"] if SIGNAL == "h125" else [])
+                               + [r"$f\le0$ ($t\bar t$ indep.)"] + ([r"$f\le0$ ($hh$)"] if SIGNAL == "h125" else []), prow, "tab:extperf")
 
 
 def sec_sh(N):
@@ -655,8 +663,11 @@ def sec_sh(N):
                 d = (rf"${1e6 * r['delta_ise_vs_paper']:+.2f}\pm{1e6 * r['delta_ise_vs_paper_err']:.2f}$"
                      if "delta_ise_vs_paper" in r and not key.startswith("paper") else "--")
                 rows.append([LVL_TEX[l] if (key.startswith("paper") and trn == "all") else "", f"{lab}, {trn}", str(r["terms"]), d,
-                             f"{r['worst_chi2ndf']:.1f}", pct(r["frac_negative_indep"]), f3(r["auc"]) if r["auc"] else "--"])
+                             f"{r['worst_chi2ndf']:.1f}", pct(r["frac_negative_indep"])] + ([f3(r["auc"]) if r["auc"] else "--"] if SIGNAL == "h125" else []))
     sh = R["spherical harmonics|parton|CV"]
+    BASIS_END = (r"The $hh$ AUC hardly depends on the basis: once only the significant terms are kept, both bases describe the "
+                 r"same few physical features." if SIGNAL == "h125" else
+                 r"This is a $t\bar t$-only study of the density description; the signal does not enter it.")
     return rf"""
 \section{{Spherical-harmonic basis}}
 \label{{sec:sh}}
@@ -679,11 +690,10 @@ $\Delta$ISE, simply because 32\,400 terms are mostly noise.  After the cross-val
 in units of $10^{{-6}}$, i.e.\ $M$ is slightly better, about $3\sigma$; at gen and reco level they are equal
 within errors), and the spherical harmonics need fewer terms ({sh['terms']} against
 {R['paper (M functions)|parton|CV']['terms']} at parton level).  The extended basis is the best at gen and
-reco level.  The $hh$ AUC hardly depends on the basis: once only the significant terms are kept, both bases
-describe the same few physical features.
+reco level.  {BASIS_END}
 """ + tab(r"Comparison of the bases on the independent $t\bar t$ sample.  $\Delta$ISE$<0$: closer to the true density than the "
           r"paper's $M$ basis (paired).  Worst $\chi^2$/ndf of the projections excludes $Y$.",
-          ["level", "basis", "terms", r"$\Delta$ISE vs $M$ [$10^{-6}$]", r"worst $\chi^2$/ndf", r"$f\le0$", "AUC"], rows, "tab:basis") + \
+          ["level", "basis", "terms", r"$\Delta$ISE vs $M$ [$10^{-6}$]", r"worst $\chi^2$/ndf", r"$f\le0$"] + (["AUC"] if SIGNAL == "h125" else []), rows, "tab:basis") + \
         fig(rel("osde_sh", "basis_comparison.png"), r"Paired held-out ISE difference with respect to the paper basis (left) and worst "
             r"projection $\chi^2$/ndf (right), per level and basis.", "fig:basis")
 
@@ -725,6 +735,7 @@ def sec_ml(N):
         rows.append([v["group"].replace("+", " + "), k.split(" [")[0].replace("_", " ").replace("f tt", r"$f_{t\bar t}$"),
                      rf"${v['auc_test']:.3f}\pm{v['auc_err']:.3f}$", (rf"${w['auc_test']:.3f}\pm{w['auc_err']:.3f}$" if w else "--")])
     P = ml["parton"]
+    MOM_EXTRA = r"and the off-shell $W^*$ mass" if SIGNAL == "h125" else r"and the pseudo-top masses"
     pair = P["paired"]["OSDE f_tt, paper basis (CV-truncated) - normalizing flow (RealNVP, 8 couplings)"]
     gains = [P["paired"][k] for k in P["paired"] if "+y]" in k and "momenta" not in k]
     return rf"""
@@ -781,8 +792,8 @@ the same ten angles reaches {max(v['auc_test'] for v in P['results'].values() if
 upper bound for these inputs.  Adding $y$ to the supervised classifiers changes their AUC by
 {min(g['delta'] for g in gains):+.3f} to {max(g['delta'] for g in gains):+.3f}, within the uncertainty of
 $\pm0.002$: $y$ carries no information that the classifier does not already learn from the angles.  The
-momenta make the task trivial (AUC above 0.999), because they contain $m_{{b\bar b}}=m_h$ and the off-shell
-$W^*$ mass; this is the scale of what the angles alone leave out, and the starting point of
+momenta make the task trivial (AUC above 0.98), because they contain $m_{{b\bar b}}=m_h$ {MOM_EXTRA}; this is the scale of
+what the angles alone leave out, and the starting point of
 Section~\ref{{sec:momentum}}.  The controls give {f3(P['results']['control: BDT, shuffled labels']['auc_test'])}
 and {f3(P['results']['control: BDT, tt (fit) vs tt (independent)']['auc_test'])} at parton level.  At
 parton+trig level the shuffled-label control is {f3(ml['parton_trig']['results']['control: BDT, shuffled labels']['auc_test'])}
@@ -794,6 +805,12 @@ $\pm0.006$, about $3\sigma$ above 0.5; with some thirty AUCs computed, one such 
 
 def sec_washout(N):
     M, D = N["mech"], N["decomp"]
+    SOFTW = r"soft $W^*$" if SIGNAL == "h125" else r"softer $W$"
+    SOFTQ = r"soft $W^*$" if SIGNAL == "h125" else r"softer $W$'s"
+    NU_TEXT = (rf"and the $m_W$-constrained neutrino puts the off-shell leptonic $W^*$ on shell (its $p_z$ is then off by a "
+               rf"median {M['nu'][[k for k in M['nu'] if k.startswith('hh lep W*')][0]]:.0f}~GeV, against {M['nu']['tt (matched)']:.0f}~GeV for $t\bar t$)."
+               if SIGNAL == "h125" else
+               r"and the $m_W$-constrained neutrino is exact for on-shell $W$ bosons, so the neutrino costs little here.")
     OFFSHELL = (rf", and one of the two $W$ bosons is far off shell (median {M['mass']['hh W_had off-shell']['p_m_w_had'][1]:.0f}~GeV)"
                 if SIGNAL == "h125" else ", while both $W$ bosons are on shell")
     st = D["steps"]
@@ -823,14 +840,13 @@ At parton level the $hh$ ``tops'' are not tops: each pseudo-top is the $W$ from 
 quark from the other, with a mass of median {M['mass']['hh']['p_m_t_lep'][1]:.0f}~GeV{OFFSHELL}; only
 {pct(M['mass']['hh frac |m(Wb)-mt|<30 both, parton'], 0)} of the $hh$ events have both pseudo-tops within 30~GeV
 of $m_t$.  This shows in the angles: $\cos\theta$ and $\cos\tilde\theta$ peak at $-1$ for $hh$ because the
-soft $W^*$ goes backward while the $b$ carries the pseudo-top's momentum, whereas they are flat for
+{SOFTW} goes backward while the $b$ carries the pseudo-top's momentum, whereas they are flat for
 $t\bar t$; $\cos\Theta$ is isotropic for $hh$ but forward--backward peaked for $t\bar t$ by $t$-channel top
 exchange; and $\cos\theta'$ has no $V\!-\!A$ zero at $+1$ for $hh$ (Figure~\ref{{fig:mech1}}).  At gen level
 the $t\bar t$-hypothesis reconstruction removes these differences.  The $\chi^2$ builds $m_W$ and $m_t$ from
 whatever jets fit best, picking the true four jets in only {pct(M['eff']['hh']['chi2 picks right 4 jets | reco_ok'], 0)}
 of the $hh$ events against {pct(M['eff']['tt']['chi2 picks right 4 jets | reco_ok'], 0)} of $t\bar t$,
-and the $m_W$-constrained neutrino puts the off-shell leptonic $W^*$ on shell (its $p_z$ is then off by a
-median {M['nu'][[k for k in M['nu'] if k.startswith('hh lep W*')][0]]:.0f}~GeV, against {M['nu']['tt (matched)']:.0f}~GeV for $t\bar t$).
+{NU_TEXT}
 The information itself is still there at gen level: on the same events a BDT on observables that do not
 assume $t\bar t$ ($m_{{b\bar b}}$, $\Delta R_{{bb}}$, $E_T^\mathrm{{miss}}$, $m_T$, \ldots) reaches AUC
 {M['bdt']['gen: hypothesis-independent observables (reco_ok events)']:.2f}, with $m_{{b\bar b}}$ alone at
@@ -856,7 +872,7 @@ The selection costs nothing, and the ISR recoil costs $f_{{t\bar t}}$ almost not
 BDT about 0.08, because the BDT's extra power at parton level relies on the exact $p_T=0$ kinematics of the
 $t\bar t$ system).  Final-state radiation costs 0.03.  The largest loss, 0.06, is the choice of jets by the
 $\chi^2$: on the matched subset the jets and the $\chi^2$ cost nothing at all, so the whole loss is in the
-unmatched events, where the $\chi^2$ has to build the system from wrong jets; for $hh$ this is the soft $W^*$
+unmatched events, where the $\chi^2$ has to build the system from wrong jets; for the signal this is the {SOFTQ}
 quarks (median $p_T$ 27~GeV), which often make no jet.  The neutrino costs 0.03 overall and 0.05 on matched
 events, almost all of it from the choice of the $p_z$ solution with the $m_t$ rule rather than from the
 missing-momentum resolution.  Per angle (Figure~\ref{{fig:decompa}}), $\cos\Theta$ and $\cos\tilde\theta$ lose
@@ -1206,8 +1222,8 @@ def sec_bsm(N):
 \section{A heavy scalar decaying to on-shell tops}
 \label{sec:bsm}
 
-Study A used $hh$, an off-shell signal: the information that separates it from $t\bar t$ sits in the
-resonance masses.  Study B asks the opposite question, with new physics in the production and on-shell tops:
+Study A used $hh$, a signal whose pseudo-tops are far from the top mass shell: the information that
+separates it from $t\bar t$ sits in the resonance masses.  Study B asks the opposite question, with new physics in the production and on-shell tops:
 $gg\to H\to t\bar t\to b\bar b\,\ell\nu\,q\bar q'$ for a heavy CP-even scalar, generated with the \texttt{heft}
 $ggH$ coupling and SM-like decays (signal only, without the interference with QCD $gg\to t\bar t$), at
 $m_H=500$~GeV ($\Gamma_H=25$~GeV, $\Gamma/m=5\%$ as for a heavy two-Higgs-doublet scalar) and at
@@ -1392,8 +1408,8 @@ def sec_outlook(N):
 \item \textbf{Conventions to confirm with the paper.}  $y_0=2.5\min y$ was inferred from the paper's figure;
   the sign convention in the paper's text and in its caption disagree.
 \item \textbf{Neutrino.}  Solving the neutrino with the $m_{t,\ell}$ constraint instead of $m_W$ would free
-  $m_{W,\ell}$, which is the off-shell $W^*$ in half of the $hh$ events, and would remove the largest single
-  loss on correctly reconstructed events.
+  $m_{W,\ell}$ (the off-shell $W^*$ in half of the $hh(125)$ events), and would remove the largest single
+  loss on correctly reconstructed events in the off-shell case.
 \item \textbf{No single hypothesis.}  Instead of committing to one $\chi^2$ assignment, evaluate
   $y=\sum_{a}w_a\,f_{t\bar t}(\Omega_a,m_a)$ summed over jet assignments and neutrino solutions, the density of
   the observed final state under $t\bar t$ in the spirit of the matrix-element method; this removes the
@@ -1524,7 +1540,7 @@ $f_{{t\bar t}}$ by OSDE as a signal-agnostic discriminant\\[4pt]{{\large Interna
 The orthogonal-series density $f_{{t\bar t}}$ of the ten $t\bar t$ angles, fitted on $t\bar t$ only, separates
 $hh\to b\bar b\,\ell\nu\,q\bar q'$ from $t\bar t$ at parton level (AUC {N['simp']['levels']['parton']['variants']['cv_best']['auc']:.2f}) but not after reconstruction
 ({N['osde']['levels']['gen']['auc_hh_vs_tt']:.2f} at particle level, {N['osde']['levels']['reco']['auc_hh_vs_tt']:.2f} at detector level).  The loss is traced to the $t\bar t$-hypothesis
-reconstruction, which rebuilds the off-shell $hh$ events as on-shell $t\bar t$; the information survives in the
+reconstruction, which rebuilds the $hh$ events, whose pseudo-tops are off the top mass shell, as $t\bar t$; the information survives in the
 resonance masses.  Multiplying $f_{{t\bar t}}$ by one Breit--Wigner factor per resonance mass, with no fitted
 coefficients, recovers the parton-level performance at particle level ({N['reco_ext']['gen']['truncation']['>10 sigma']['angles+BW']:.2f}) and most of it at detector level
 ({N['reco_ext']['reco']['truncation']['>10 sigma']['angles+BW']:.2f}).  Only about 20 angular terms matter; realistic quark tagging changes nothing once the masses are in.
