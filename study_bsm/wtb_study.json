@@ -1,0 +1,2082 @@
+{
+ "F_SM": [
+  0.703,
+  0.296,
+  0.001
+ ],
+ "levels": {
+  "parton": {
+   "n": 10000,
+   "score": {
+    "0.02": {
+     "n_eff": 9939.749617417547,
+     "frac_cosprime_gt_0.8_sm": 0.0208,
+     "frac_cosprime_gt_0.8_bsm": 0.02551454266923362,
+     "angles, all terms": {
+      "auc": 0.5063022164055864,
+      "eff_at_bkg_1pct": 0.011415703695202678,
+      "eff_at_bkg_10pct": 0.10669125274326231
+     },
+     "angles, all terms + BW": {
+      "auc": 0.5007712502739818,
+      "eff_at_bkg_1pct": 0.010021451611205627,
+      "eff_at_bkg_10pct": 0.1004896363672741
+     },
+     "angles, >10 sigma": {
+      "auc": 0.5067264294646898,
+      "eff_at_bkg_1pct": 0.012327701912932507,
+      "eff_at_bkg_10pct": 0.10797208020025942
+     },
+     "angles, >10 sigma + BW": {
+      "auc": 0.5008805779406329,
+      "eff_at_bkg_1pct": 0.010028377030434328,
+      "eff_at_bkg_10pct": 0.10059223564951528
+     },
+     "BW masses only": {
+      "auc": 0.5001297625190773,
+      "eff_at_bkg_1pct": 0.009964066764083193,
+      "eff_at_bkg_10pct": 0.10001554797712563
+     }
+    },
+    "0.05": {
+     "n_eff": 9608.738635065263,
+     "frac_cosprime_gt_0.8_sm": 0.0208,
+     "frac_cosprime_gt_0.8_bsm": 0.03286932633922768,
+     "angles, all terms": {
+      "auc": 0.5161455329645779,
+      "eff_at_bkg_1pct": 0.013602515896129597,
+      "eff_at_bkg_10pct": 0.11723710254802643
+     },
+     "angles, all terms + BW": {
+      "auc": 0.5019780686645285,
+      "eff_at_bkg_1pct": 0.010047678976576987,
+      "eff_at_bkg_10pct": 0.10124626702455523
+     },
+     "angles, >10 sigma": {
+      "auc": 0.5172327558397766,
+      "eff_at_bkg_1pct": 0.016045891366712816,
+      "eff_at_bkg_10pct": 0.120543979997215
+     },
+     "angles, >10 sigma + BW": {
+      "auc": 0.5022605480400005,
+      "eff_at_bkg_1pct": 0.010065975638437294,
+      "eff_at_bkg_10pct": 0.10150911693597217
+     },
+     "BW masses only": {
+      "auc": 0.5003340050430418,
+      "eff_at_bkg_1pct": 0.009903690972919951,
+      "eff_at_bkg_10pct": 0.10004571377300897
+     }
+    },
+    "0.1": {
+     "n_eff": 8544.362699581887,
+     "frac_cosprime_gt_0.8_sm": 0.0208,
+     "frac_cosprime_gt_0.8_bsm": 0.04489208416068212,
+     "angles, all terms": {
+      "auc": 0.5322688093096335,
+      "eff_at_bkg_1pct": 0.017117004630428232,
+      "eff_at_bkg_10pct": 0.1347741821329026
+     },
+     "angles, all terms + BW": {
+      "auc": 0.5039609721407984,
+      "eff_at_bkg_1pct": 0.010070467161453833,
+      "eff_at_bkg_10pct": 0.10246310540968286
+     },
+     "angles, >10 sigma": {
+      "auc": 0.5344432545106146,
+      "eff_at_bkg_1pct": 0.02236519461568453,
+      "eff_at_bkg_10pct": 0.14147053131716308
+     },
+     "angles, >10 sigma + BW": {
+      "auc": 0.5045337107261483,
+      "eff_at_bkg_1pct": 0.01010892696881547,
+      "eff_at_bkg_10pct": 0.10298845205778022
+     },
+     "BW masses only": {
+      "auc": 0.5006729012154323,
+      "eff_at_bkg_1pct": 0.009793009163411132,
+      "eff_at_bkg_10pct": 0.10011142817537085
+     }
+    },
+    "0.3": {
+     "n_eff": 3478.3042442380615,
+     "frac_cosprime_gt_0.8_sm": 0.0208,
+     "frac_cosprime_gt_0.8_bsm": 0.09029473759006518,
+     "angles, all terms": {
+      "auc": 0.5935831505524176,
+      "eff_at_bkg_1pct": 0.029599457851998065,
+      "eff_at_bkg_10pct": 0.20490504368144885
+     },
+     "angles, all terms + BW": {
+      "auc": 0.5115819985634036,
+      "eff_at_bkg_1pct": 0.00989333598276406,
+      "eff_at_bkg_10pct": 0.10679610125650789
+     },
+     "angles, >10 sigma": {
+      "auc": 0.599908054854608,
+      "eff_at_bkg_1pct": 0.04939036778168376,
+      "eff_at_bkg_10pct": 0.22541711858994892
+     },
+     "angles, >10 sigma + BW": {
+      "auc": 0.513345354559544,
+      "eff_at_bkg_1pct": 0.010028574395468464,
+      "eff_at_bkg_10pct": 0.1083197800151428
+     },
+     "BW masses only": {
+      "auc": 0.5020185368838437,
+      "eff_at_bkg_1pct": 0.009217967348804632,
+      "eff_at_bkg_10pct": 0.10057452623614639
+     }
+    }
+   },
+   "coef": {
+    "0.0": {
+     "n_data": 10000,
+     "n_eff": 10000,
+     "pull_std": 0.9933316619069169,
+     "max_abs_pull": 3.8947743623785027,
+     "groups": {
+      "all terms": {
+       "chi2": 14208.810460522567,
+       "ndf": 14400,
+       "z": -1.1265951654702158
+      },
+      "production angle": {
+       "chi2": 11217.595076961741,
+       "ndf": 11520,
+       "z": -1.9922673592683835
+      },
+      "rapidity": {
+       "chi2": 11393.299631569891,
+       "ndf": 11520,
+       "z": -0.8347119679617426
+      },
+      "W helicity": {
+       "chi2": 13800.935410708487,
+       "ndf": 14000,
+       "z": -1.1896384611330846
+      },
+      "top polarization": {
+       "chi2": 3465.6039129109436,
+       "ndf": 3375,
+       "z": 1.102795708879052
+      },
+      "spin correlation": {
+       "chi2": 10747.38818982589,
+       "ndf": 11025,
+       "z": -1.8695351763008192
+      },
+      "pol. x W helicity interference": {
+       "chi2": 13318.797958923462,
+       "ndf": 13500,
+       "z": -1.1027605040399733
+      }
+     },
+     "top_terms": [
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=-1] x had[j1=1,j2=1,m'=-1,m=0] x P2(cos\u0398) x H4(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.8947743623785027,
+       "ref_signif": 0.6655609422071115
+      },
+      {
+       "term": "lep[j1=1,j2=0,m'=-1,m=0] x had[j1=1,j2=2,m'=1,m=-1] x P1(cos\u0398) x H4(Y)",
+       "physics": "tt spin correlation; top polarization (lep, transverse); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.894474507931919,
+       "ref_signif": 1.3166468922716055
+      },
+      {
+       "term": "lep[j1=0,j2=1,m'=0,m=0] x had[j1=1,j2=1,m'=-1,m=1] x P2(cos\u0398) x H3(Y)",
+       "physics": "W helicity (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.766989909473497,
+       "ref_signif": 2.2134190340338353
+      },
+      {
+       "term": "had[j1=1,j2=2,m'=-1,m=-1] x P2(cos\u0398)",
+       "physics": "top pol. x W helicity interference (had); production angle",
+       "pull": 3.743001012921761,
+       "ref_signif": 0.37349935789593947
+      },
+      {
+       "term": "lep[j1=0,j2=1,m'=0,m=0] x had[j1=1,j2=2,m'=-1,m=-1] x P2(cos\u0398) x H4(Y)",
+       "physics": "W helicity (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.6581460248191524,
+       "ref_signif": 2.109476199053807
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=1] x had[j1=0,j2=1,m'=0,m=0] x P1(cos\u0398) x H2(Y)",
+       "physics": "top pol. x W helicity interference (lep); W helicity (had); production angle; rapidity",
+       "pull": 3.5352504328392977,
+       "ref_signif": 1.5744057509565246
+      },
+      {
+       "term": "lep[j1=1,j2=1,m'=-1,m=1] x had[j1=1,j2=1,m'=1,m=-1] x H4(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); rapidity",
+       "pull": 3.4542011105468897,
+       "ref_signif": 0.8144332500575181
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=0,m=0] x had[j1=1,j2=2,m'=0,m=-1] x P2(cos\u0398)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle",
+       "pull": 3.431417341196218,
+       "ref_signif": 2.6694149488183823
+      }
+     ],
+     "F_R": 0.0
+    },
+    "0.01": {
+     "n_data": 10000,
+     "n_eff": 9986,
+     "pull_std": 0.9934179439196449,
+     "max_abs_pull": 3.9463564918227543,
+     "groups": {
+      "all terms": {
+       "chi2": 14211.22995211596,
+       "ndf": 14400,
+       "z": -1.1123381745309482
+      },
+      "production angle": {
+       "chi2": 11211.382314297882,
+       "ndf": 11520,
+       "z": -2.0331975271430727
+      },
+      "rapidity": {
+       "chi2": 11389.246408252307,
+       "ndf": 11520,
+       "z": -0.8614149211885515
+      },
+      "W helicity": {
+       "chi2": 13801.49155782234,
+       "ndf": 14000,
+       "z": -1.1863148464257023
+      },
+      "top polarization": {
+       "chi2": 3470.3176534641907,
+       "ndf": 3375,
+       "z": 1.160169531795504
+      },
+      "spin correlation": {
+       "chi2": 10752.469932268998,
+       "ndf": 11025,
+       "z": -1.8353129425697228
+      },
+      "pol. x W helicity interference": {
+       "chi2": 13314.185225225767,
+       "ndf": 13500,
+       "z": -1.1308327073509938
+      }
+     },
+     "top_terms": [
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=-1] x had[j1=1,j2=1,m'=-1,m=0] x P2(cos\u0398) x H4(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.9463564918227543,
+       "ref_signif": 0.6655609422071115
+      },
+      {
+       "term": "lep[j1=1,j2=0,m'=-1,m=0] x had[j1=1,j2=2,m'=1,m=-1] x P1(cos\u0398) x H4(Y)",
+       "physics": "tt spin correlation; top polarization (lep, transverse); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.8994263033231693,
+       "ref_signif": 1.3166468922716055
+      },
+      {
+       "term": "had[j1=1,j2=2,m'=-1,m=-1] x P2(cos\u0398)",
+       "physics": "top pol. x W helicity interference (had); production angle",
+       "pull": 3.789579688817704,
+       "ref_signif": 0.37349935789593947
+      },
+      {
+       "term": "lep[j1=0,j2=1,m'=0,m=0] x had[j1=1,j2=1,m'=-1,m=1] x P2(cos\u0398) x H3(Y)",
+       "physics": "W helicity (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.7586167921679854,
+       "ref_signif": 2.2134190340338353
+      },
+      {
+       "term": "lep[j1=0,j2=1,m'=0,m=0] x had[j1=1,j2=2,m'=-1,m=-1] x P2(cos\u0398) x H4(Y)",
+       "physics": "W helicity (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.570551703054907,
+       "ref_signif": 2.109476199053807
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=1] x had[j1=0,j2=1,m'=0,m=0] x P1(cos\u0398) x H2(Y)",
+       "physics": "top pol. x W helicity interference (lep); W helicity (had); production angle; rapidity",
+       "pull": 3.50293263774559,
+       "ref_signif": 1.5744057509565246
+      },
+      {
+       "term": "lep[j1=1,j2=1,m'=-1,m=1] x had[j1=1,j2=1,m'=1,m=-1] x H4(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); rapidity",
+       "pull": 3.4638276830599746,
+       "ref_signif": 0.8144332500575181
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=0,m=0] x had[j1=1,j2=2,m'=0,m=-1] x P2(cos\u0398)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle",
+       "pull": 3.4300343248553413,
+       "ref_signif": 2.6694149488183823
+      }
+     ],
+     "F_R": 0.01
+    },
+    "0.02": {
+     "n_data": 10000,
+     "n_eff": 9939,
+     "pull_std": 0.9939829724204189,
+     "max_abs_pull": 3.992449473335765,
+     "groups": {
+      "all terms": {
+       "chi2": 14227.353511539774,
+       "ndf": 14400,
+       "z": -1.017329189485593
+      },
+      "production angle": {
+       "chi2": 11205.722749688259,
+       "ndf": 11520,
+       "z": -2.070483182833261
+      },
+      "rapidity": {
+       "chi2": 11383.701118466483,
+       "ndf": 11520,
+       "z": -0.8979477253737058
+      },
+      "W helicity": {
+       "chi2": 13815.662015170297,
+       "ndf": 14000,
+       "z": -1.1016301662775505
+      },
+      "top polarization": {
+       "chi2": 3474.9492309257143,
+       "ndf": 3375,
+       "z": 1.2165432974068155
+      },
+      "spin correlation": {
+       "chi2": 10758.436352863686,
+       "ndf": 11025,
+       "z": -1.7951329762657686
+      },
+      "pol. x W helicity interference": {
+       "chi2": 13308.058757791256,
+       "ndf": 13500,
+       "z": -1.1681172008143557
+      }
+     },
+     "top_terms": [
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=-1] x had[j1=1,j2=1,m'=-1,m=0] x P2(cos\u0398) x H4(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.992449473335765,
+       "ref_signif": 0.6655609422071115
+      },
+      {
+       "term": "lep[j1=1,j2=0,m'=-1,m=0] x had[j1=1,j2=2,m'=1,m=-1] x P1(cos\u0398) x H4(Y)",
+       "physics": "tt spin correlation; top polarization (lep, transverse); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.8990282012806388,
+       "ref_signif": 1.3166468922716055
+      },
+      {
+       "term": "lep[j1=0,j2=1,m'=0,m=0]",
+       "physics": "W helicity (lep)",
+       "pull": 3.8862805541978225,
+       "ref_signif": 87.92912708289602
+      },
+      {
+       "term": "had[j1=1,j2=2,m'=-1,m=-1] x P2(cos\u0398)",
+       "physics": "top pol. x W helicity interference (had); production angle",
+       "pull": 3.836502546360798,
+       "ref_signif": 0.37349935789593947
+      },
+      {
+       "term": "lep[j1=0,j2=1,m'=0,m=0] x had[j1=1,j2=1,m'=-1,m=1] x P2(cos\u0398) x H3(Y)",
+       "physics": "W helicity (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.741621979914626,
+       "ref_signif": 2.2134190340338353
+      },
+      {
+       "term": "lep[j1=1,j2=1,m'=-1,m=1] x had[j1=1,j2=1,m'=1,m=-1] x H4(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); rapidity",
+       "pull": 3.4739784927013653,
+       "ref_signif": 0.8144332500575181
+      },
+      {
+       "term": "lep[j1=0,j2=1,m'=0,m=0] x had[j1=1,j2=2,m'=-1,m=-1] x P2(cos\u0398) x H4(Y)",
+       "physics": "W helicity (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.4625228926081637,
+       "ref_signif": 2.109476199053807
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=1] x had[j1=0,j2=1,m'=0,m=0] x P1(cos\u0398) x H2(Y)",
+       "physics": "top pol. x W helicity interference (lep); W helicity (had); production angle; rapidity",
+       "pull": 3.4586583256924723,
+       "ref_signif": 1.5744057509565246
+      }
+     ],
+     "F_R": 0.02
+    },
+    "0.05": {
+     "n_data": 10000,
+     "n_eff": 9608,
+     "pull_std": 0.9983180357680844,
+     "max_abs_pull": 8.57349693180044,
+     "groups": {
+      "all terms": {
+       "chi2": 14351.631425152204,
+       "ndf": 14400,
+       "z": -0.2850145605933831
+      },
+      "production angle": {
+       "chi2": 11198.86754499279,
+       "ndf": 11520,
+       "z": -2.1156458092173454
+      },
+      "rapidity": {
+       "chi2": 11363.421451131991,
+       "ndf": 11520,
+       "z": -1.0315517648893462
+      },
+      "W helicity": {
+       "chi2": 13935.024237455258,
+       "ndf": 14000,
+       "z": -0.3883044515339681
+      },
+      "top polarization": {
+       "chi2": 3485.0169234927807,
+       "ndf": 3375,
+       "z": 1.3390833489848013
+      },
+      "spin correlation": {
+       "chi2": 10778.281972031917,
+       "ndf": 11025,
+       "z": -1.6614856249257524
+      },
+      "pol. x W helicity interference": {
+       "chi2": 13286.022682085259,
+       "ndf": 13500,
+       "z": -1.3022244868484243
+      }
+     },
+     "top_terms": [
+      {
+       "term": "lep[j1=0,j2=1,m'=0,m=0]",
+       "physics": "W helicity (lep)",
+       "pull": 8.57349693180044,
+       "ref_signif": 87.92912708289602
+      },
+      {
+       "term": "had[j1=0,j2=1,m'=0,m=0]",
+       "physics": "W helicity (had)",
+       "pull": 6.887552792234711,
+       "ref_signif": 87.09132359619527
+      },
+      {
+       "term": "lep[j1=0,j2=1,m'=0,m=0] x had[j1=0,j2=1,m'=0,m=0]",
+       "physics": "W helicity (lep); W helicity (had)",
+       "pull": 5.630350660533589,
+       "ref_signif": 25.523206098782957
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=-1] x had[j1=1,j2=1,m'=-1,m=0] x P2(cos\u0398) x H4(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 4.064085148625348,
+       "ref_signif": 0.6655609422071115
+      },
+      {
+       "term": "had[j1=1,j2=2,m'=-1,m=-1] x P2(cos\u0398)",
+       "physics": "top pol. x W helicity interference (had); production angle",
+       "pull": 3.945456020918356,
+       "ref_signif": 0.37349935789593947
+      },
+      {
+       "term": "lep[j1=1,j2=0,m'=-1,m=0] x had[j1=1,j2=2,m'=1,m=-1] x P1(cos\u0398) x H4(Y)",
+       "physics": "tt spin correlation; top polarization (lep, transverse); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.86206237815473,
+       "ref_signif": 1.3166468922716055
+      },
+      {
+       "term": "lep[j1=0,j2=1,m'=0,m=0] x had[j1=1,j2=1,m'=-1,m=1] x P2(cos\u0398) x H3(Y)",
+       "physics": "W helicity (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.6458440352365953,
+       "ref_signif": 2.2134190340338353
+      },
+      {
+       "term": "had[j1=0,j2=1,m'=0,m=0] x H2(Y)",
+       "physics": "W helicity (had); rapidity",
+       "pull": 3.6306366636870377,
+       "ref_signif": 18.044582456515585
+      }
+     ],
+     "F_R": 0.05
+    },
+    "0.1": {
+     "n_data": 10000,
+     "n_eff": 8544,
+     "pull_std": 1.0113059559828022,
+     "max_abs_pull": 15.223951262885773,
+     "groups": {
+      "all terms": {
+       "chi2": 14727.455283276355,
+       "ndf": 14400,
+       "z": 1.9295487611672693
+      },
+      "production angle": {
+       "chi2": 11221.671778622196,
+       "ndf": 11520,
+       "z": -1.965409728876658
+      },
+      "rapidity": {
+       "chi2": 11333.6932211499,
+       "ndf": 11520,
+       "z": -1.2274036764491665
+      },
+      "W helicity": {
+       "chi2": 14306.235029433561,
+       "ndf": 14000,
+       "z": 1.8301043417967613
+      },
+      "top polarization": {
+       "chi2": 3489.283416694384,
+       "ndf": 3375,
+       "z": 1.391013450495035
+      },
+      "spin correlation": {
+       "chi2": 10814.136084104666,
+       "ndf": 11025,
+       "z": -1.4200314746394318
+      },
+      "pol. x W helicity interference": {
+       "chi2": 13251.799016737374,
+       "ndf": 13500,
+       "z": -1.5105030814211402
+      }
+     },
+     "top_terms": [
+      {
+       "term": "lep[j1=0,j2=1,m'=0,m=0]",
+       "physics": "W helicity (lep)",
+       "pull": 15.223951262885773,
+       "ref_signif": 87.92912708289602
+      },
+      {
+       "term": "had[j1=0,j2=1,m'=0,m=0]",
+       "physics": "W helicity (had)",
+       "pull": 13.646494967963957,
+       "ref_signif": 87.09132359619527
+      },
+      {
+       "term": "lep[j1=0,j2=1,m'=0,m=0] x had[j1=0,j2=1,m'=0,m=0]",
+       "physics": "W helicity (lep); W helicity (had)",
+       "pull": 7.721128150419822,
+       "ref_signif": 25.523206098782957
+      },
+      {
+       "term": "lep[j1=0,j2=1,m'=0,m=0] x P2(cos\u0398)",
+       "physics": "W helicity (lep); production angle",
+       "pull": 5.016433687029822,
+       "ref_signif": 32.128096441421796
+      },
+      {
+       "term": "had[j1=0,j2=1,m'=0,m=0] x H2(Y)",
+       "physics": "W helicity (had); rapidity",
+       "pull": 4.854431154987972,
+       "ref_signif": 18.044582456515585
+      },
+      {
+       "term": "lep[j1=0,j2=2,m'=0,m=0] x had[j1=0,j2=1,m'=0,m=0]",
+       "physics": "W helicity (lep); W helicity (had)",
+       "pull": 4.022288296512081,
+       "ref_signif": 21.544595184994133
+      },
+      {
+       "term": "had[j1=1,j2=2,m'=-1,m=-1] x P2(cos\u0398)",
+       "physics": "top pol. x W helicity interference (had); production angle",
+       "pull": 4.019233972203015,
+       "ref_signif": 0.37349935789593947
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=-1] x had[j1=1,j2=1,m'=-1,m=0] x P2(cos\u0398) x H4(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 4.005009430230183,
+       "ref_signif": 0.6655609422071115
+      }
+     ],
+     "F_R": 0.1
+    },
+    "0.3": {
+     "n_data": 10000,
+     "n_eff": 3478,
+     "pull_std": 1.0533447850945987,
+     "max_abs_pull": 26.85538433339725,
+     "groups": {
+      "all terms": {
+       "chi2": 15977.51451159541,
+       "ndf": 14400,
+       "z": 9.295593404744153
+      },
+      "production angle": {
+       "chi2": 11386.815756582906,
+       "ndf": 11520,
+       "z": -0.8774282450922996
+      },
+      "rapidity": {
+       "chi2": 11366.297585070879,
+       "ndf": 11520,
+       "z": -1.0126035688422712
+      },
+      "W helicity": {
+       "chi2": 15550.974338611213,
+       "ndf": 14000,
+       "z": 9.268844509258056
+      },
+      "top polarization": {
+       "chi2": 3441.0514729790975,
+       "ndf": 3375,
+       "z": 0.803952926824326
+      },
+      "spin correlation": {
+       "chi2": 10926.01479218134,
+       "ndf": 11025,
+       "z": -0.6666010636736555
+      },
+      "pol. x W helicity interference": {
+       "chi2": 13271.790323205074,
+       "ndf": 13500,
+       "z": -1.3888398646838251
+      }
+     },
+     "top_terms": [
+      {
+       "term": "lep[j1=0,j2=1,m'=0,m=0]",
+       "physics": "W helicity (lep)",
+       "pull": 26.85538433339725,
+       "ref_signif": 87.92912708289602
+      },
+      {
+       "term": "had[j1=0,j2=1,m'=0,m=0]",
+       "physics": "W helicity (had)",
+       "pull": 26.074658803043295,
+       "ref_signif": 87.09132359619527
+      },
+      {
+       "term": "lep[j1=0,j2=1,m'=0,m=0] x P2(cos\u0398)",
+       "physics": "W helicity (lep); production angle",
+       "pull": 9.071698041932988,
+       "ref_signif": 32.128096441421796
+      },
+      {
+       "term": "lep[j1=0,j2=1,m'=0,m=0] x had[j1=0,j2=2,m'=0,m=0]",
+       "physics": "W helicity (lep); W helicity (had)",
+       "pull": 8.590297699641663,
+       "ref_signif": 22.81545071294994
+      },
+      {
+       "term": "lep[j1=0,j2=2,m'=0,m=0] x had[j1=0,j2=1,m'=0,m=0]",
+       "physics": "W helicity (lep); W helicity (had)",
+       "pull": 8.35329680510494,
+       "ref_signif": 21.544595184994133
+      },
+      {
+       "term": "had[j1=0,j2=1,m'=0,m=0] x P2(cos\u0398)",
+       "physics": "W helicity (had); production angle",
+       "pull": 7.378495510964434,
+       "ref_signif": 30.90005526981848
+      },
+      {
+       "term": "had[j1=0,j2=1,m'=0,m=0] x H2(Y)",
+       "physics": "W helicity (had); rapidity",
+       "pull": 5.715630263493035,
+       "ref_signif": 18.044582456515585
+      },
+      {
+       "term": "lep[j1=0,j2=1,m'=0,m=0] x H2(Y)",
+       "physics": "W helicity (lep); rapidity",
+       "pull": 4.952686842244704,
+       "ref_signif": 17.191446205171456
+      }
+     ],
+     "F_R": 0.3
+    }
+   }
+  },
+  "gen": {
+   "n": 4134,
+   "score": {
+    "0.02": {
+     "n_eff": 4108.870635506245,
+     "frac_cosprime_gt_0.8_sm": 0.06507014997581036,
+     "frac_cosprime_gt_0.8_bsm": 0.06859345291461091,
+     "angles, all terms": {
+      "auc": 0.5010579569656579,
+      "eff_at_bkg_1pct": 0.010551895804385827,
+      "eff_at_bkg_10pct": 0.10135412072927545
+     },
+     "angles, all terms + BW": {
+      "auc": 0.500308697868663,
+      "eff_at_bkg_1pct": 0.010114012628418328,
+      "eff_at_bkg_10pct": 0.10055316629535371
+     },
+     "angles, >10 sigma": {
+      "auc": 0.5014447169050671,
+      "eff_at_bkg_1pct": 0.010314480315571813,
+      "eff_at_bkg_10pct": 0.1022490173667515
+     },
+     "angles, >10 sigma + BW": {
+      "auc": 0.5004061087698926,
+      "eff_at_bkg_1pct": 0.010081737704297057,
+      "eff_at_bkg_10pct": 0.10061022752211865
+     },
+     "BW masses only": {
+      "auc": 0.5002046465568049,
+      "eff_at_bkg_1pct": 0.0100997777172299,
+      "eff_at_bkg_10pct": 0.10057589687297884
+     }
+    },
+    "0.05": {
+     "n_eff": 3969.296522780326,
+     "frac_cosprime_gt_0.8_sm": 0.06507014997581036,
+     "frac_cosprime_gt_0.8_bsm": 0.07405425859177671,
+     "angles, all terms": {
+      "auc": 0.5027357478847682,
+      "eff_at_bkg_1pct": 0.011214224104137237,
+      "eff_at_bkg_10pct": 0.10336835468629633
+     },
+     "angles, all terms + BW": {
+      "auc": 0.5008158257918651,
+      "eff_at_bkg_1pct": 0.010029859063334255,
+      "eff_at_bkg_10pct": 0.10128537046164143
+     },
+     "angles, >10 sigma": {
+      "auc": 0.5037138307093929,
+      "eff_at_bkg_1pct": 0.010559405381695237,
+      "eff_at_bkg_10pct": 0.10564521288350533
+     },
+     "angles, >10 sigma + BW": {
+      "auc": 0.5010635333953173,
+      "eff_at_bkg_1pct": 0.009946359966361274,
+      "eff_at_bkg_10pct": 0.10142575076175714
+     },
+     "BW masses only": {
+      "auc": 0.5005532333069631,
+      "eff_at_bkg_1pct": 0.009994125252512498,
+      "eff_at_bkg_10pct": 0.10133877091900657
+     }
+    },
+    "0.1": {
+     "n_eff": 3515.143947447624,
+     "frac_cosprime_gt_0.8_sm": 0.06507014997581036,
+     "frac_cosprime_gt_0.8_bsm": 0.08288406218831022,
+     "angles, all terms": {
+      "auc": 0.505551101664985,
+      "eff_at_bkg_1pct": 0.012431614659383108,
+      "eff_at_bkg_10pct": 0.10700336358309347
+     },
+     "angles, all terms + BW": {
+      "auc": 0.5017130329957128,
+      "eff_at_bkg_1pct": 0.00985765881035822,
+      "eff_at_bkg_10pct": 0.10273802810796638
+     },
+     "angles, >10 sigma": {
+      "auc": 0.507463452431258,
+      "eff_at_bkg_1pct": 0.010968775980173177,
+      "eff_at_bkg_10pct": 0.11150117851693843
+     },
+     "angles, >10 sigma + BW": {
+      "auc": 0.5022019264321443,
+      "eff_at_bkg_1pct": 0.009688099461932284,
+      "eff_at_bkg_10pct": 0.10299934162749334
+     },
+     "BW masses only": {
+      "auc": 0.5012014374422162,
+      "eff_at_bkg_1pct": 0.009788681093525474,
+      "eff_at_bkg_10pct": 0.10282873973678058
+     }
+    },
+    "0.3": {
+     "n_eff": 1399.0079764158424,
+     "frac_cosprime_gt_0.8_sm": 0.06507014997581036,
+     "frac_cosprime_gt_0.8_bsm": 0.1150350840665616,
+     "angles, all terms": {
+      "auc": 0.517020425226423,
+      "eff_at_bkg_1pct": 0.018605278658592496,
+      "eff_at_bkg_10pct": 0.1247340537328472
+     },
+     "angles, all terms + BW": {
+      "auc": 0.5058978108423913,
+      "eff_at_bkg_1pct": 0.008801149845713827,
+      "eff_at_bkg_10pct": 0.11122201435182963
+     },
+     "angles, >10 sigma": {
+      "auc": 0.5220746792356472,
+      "eff_at_bkg_1pct": 0.012617970300074608,
+      "eff_at_bkg_10pct": 0.13715719410057906
+     },
+     "angles, >10 sigma + BW": {
+      "auc": 0.5072430925324956,
+      "eff_at_bkg_1pct": 0.00827978604367175,
+      "eff_at_bkg_10pct": 0.11175974924923218
+     },
+     "BW masses only": {
+      "auc": 0.5045669077400079,
+      "eff_at_bkg_1pct": 0.008629177036213765,
+      "eff_at_bkg_10pct": 0.11130259757846214
+     }
+    }
+   },
+   "coef": {
+    "0.0": {
+     "n_data": 4134,
+     "n_eff": 4134,
+     "pull_std": 0.9877533053858186,
+     "max_abs_pull": 4.009503981971314,
+     "groups": {
+      "all terms": {
+       "chi2": 14049.929444611025,
+       "ndf": 14400,
+       "z": -2.0628105300773742
+      },
+      "production angle": {
+       "chi2": 11318.469191455613,
+       "ndf": 11520,
+       "z": -1.3277007785324682
+      },
+      "rapidity": {
+       "chi2": 11237.810899478054,
+       "ndf": 11520,
+       "z": -1.8590839344240804
+      },
+      "W helicity": {
+       "chi2": 13670.677022668875,
+       "ndf": 14000,
+       "z": -1.9680812210867127
+      },
+      "top polarization": {
+       "chi2": 3359.059564166747,
+       "ndf": 3375,
+       "z": -0.19402080627414187
+      },
+      "spin correlation": {
+       "chi2": 10755.582554422292,
+       "ndf": 11025,
+       "z": -1.8143514546471922
+      },
+      "pol. x W helicity interference": {
+       "chi2": 13127.720190134643,
+       "ndf": 13500,
+       "z": -2.2656227729665566
+      }
+     },
+     "top_terms": [
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=-1] x had[j1=1,j2=1,m'=0,m=1] x P1(cos\u0398) x H2(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 4.009503981971314,
+       "ref_signif": 0.9616693830110742
+      },
+      {
+       "term": "lep[j1=1,j2=1,m'=0,m=-1] x had[j1=1,j2=1,m'=-1,m=0] x P2(cos\u0398) x H1(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.9365530969147566,
+       "ref_signif": 0.7396367461449604
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=0,m=0] x had[j1=1,j2=2,m'=-1,m=0] x P3(cos\u0398) x H3(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.792019190855778,
+       "ref_signif": 1.370478543972338
+      },
+      {
+       "term": "lep[j1=1,j2=1,m'=-1,m=0] x had[j1=1,j2=2,m'=-1,m=1] x P2(cos\u0398) x H4(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.729289987100619,
+       "ref_signif": 1.1103862574808059
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=-1] x had[j1=1,j2=1,m'=0,m=0] x P4(cos\u0398) x H3(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.5754044898446646,
+       "ref_signif": 1.0210059129701319
+      },
+      {
+       "term": "lep[j1=1,j2=0,m'=0,m=0] x had[j1=1,j2=2,m'=-1,m=-1] x P3(cos\u0398) x H2(Y)",
+       "physics": "tt spin correlation; top polarization (lep, longitudinal); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.5257204716101813,
+       "ref_signif": 1.1032241400278229
+      },
+      {
+       "term": "lep[j1=0,j2=2,m'=0,m=0] x had[j1=1,j2=2,m'=-1,m=0] x H1(Y)",
+       "physics": "W helicity (lep); top pol. x W helicity interference (had); rapidity",
+       "pull": 3.45984219914295,
+       "ref_signif": 0.6984505387943581
+      },
+      {
+       "term": "lep[j1=1,j2=1,m'=0,m=-1] x had[j1=1,j2=1,m'=-1,m=0] x H1(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); rapidity",
+       "pull": 3.4154536130321866,
+       "ref_signif": 1.222733845410454
+      }
+     ],
+     "F_R": 0.0
+    },
+    "0.01": {
+     "n_data": 4134,
+     "n_eff": 4128,
+     "pull_std": 0.9875360925312837,
+     "max_abs_pull": 3.975294927822882,
+     "groups": {
+      "all terms": {
+       "chi2": 14043.794132912717,
+       "ndf": 14400,
+       "z": -2.0989632009654318
+      },
+      "production angle": {
+       "chi2": 11312.400730312296,
+       "ndf": 11520,
+       "z": -1.3676802766681173
+      },
+      "rapidity": {
+       "chi2": 11235.955415153076,
+       "ndf": 11520,
+       "z": -1.8713080107358975
+      },
+      "W helicity": {
+       "chi2": 13665.920281854505,
+       "ndf": 14000,
+       "z": -1.9965081846293282
+      },
+      "top polarization": {
+       "chi2": 3351.443248952371,
+       "ndf": 3375,
+       "z": -0.2867236428959962
+      },
+      "spin correlation": {
+       "chi2": 10763.157498160317,
+       "ndf": 11025,
+       "z": -1.7633391300351504
+      },
+      "pol. x W helicity interference": {
+       "chi2": 13131.567215778403,
+       "ndf": 13500,
+       "z": -2.2422105204733573
+      }
+     },
+     "top_terms": [
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=-1] x had[j1=1,j2=1,m'=0,m=1] x P1(cos\u0398) x H2(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.975294927822882,
+       "ref_signif": 0.9616693830110742
+      },
+      {
+       "term": "lep[j1=1,j2=1,m'=0,m=-1] x had[j1=1,j2=1,m'=-1,m=0] x P2(cos\u0398) x H1(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.957460855595518,
+       "ref_signif": 0.7396367461449604
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=0,m=0] x had[j1=1,j2=2,m'=-1,m=0] x P3(cos\u0398) x H3(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.713657192554776,
+       "ref_signif": 1.370478543972338
+      },
+      {
+       "term": "lep[j1=1,j2=1,m'=-1,m=0] x had[j1=1,j2=2,m'=-1,m=1] x P2(cos\u0398) x H4(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.7135824337506005,
+       "ref_signif": 1.1103862574808059
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=-1] x had[j1=1,j2=1,m'=0,m=0] x P4(cos\u0398) x H3(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.600386752520552,
+       "ref_signif": 1.0210059129701319
+      },
+      {
+       "term": "lep[j1=1,j2=0,m'=0,m=0] x had[j1=1,j2=2,m'=-1,m=-1] x P3(cos\u0398) x H2(Y)",
+       "physics": "tt spin correlation; top polarization (lep, longitudinal); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.5663579909853937,
+       "ref_signif": 1.1032241400278229
+      },
+      {
+       "term": "lep[j1=0,j2=2,m'=0,m=0] x had[j1=1,j2=2,m'=-1,m=0] x H1(Y)",
+       "physics": "W helicity (lep); top pol. x W helicity interference (had); rapidity",
+       "pull": 3.4864435330002146,
+       "ref_signif": 0.6984505387943581
+      },
+      {
+       "term": "lep[j1=1,j2=0,m'=-1,m=0] x had[j1=1,j2=2,m'=0,m=1] x P2(cos\u0398) x H3(Y)",
+       "physics": "tt spin correlation; top polarization (lep, transverse); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.3983971171903717,
+       "ref_signif": 0.6230694264763418
+      }
+     ],
+     "F_R": 0.01
+    },
+    "0.02": {
+     "n_data": 4134,
+     "n_eff": 4108,
+     "pull_std": 0.9874343015923739,
+     "max_abs_pull": 3.9775548316329252,
+     "groups": {
+      "all terms": {
+       "chi2": 14040.948522943114,
+       "ndf": 14400,
+       "z": -2.1157311185164187
+      },
+      "production angle": {
+       "chi2": 11306.560292649958,
+       "ndf": 11520,
+       "z": -1.4061575382206566
+      },
+      "rapidity": {
+       "chi2": 11235.128746699673,
+       "ndf": 11520,
+       "z": -1.8767541673662342
+      },
+      "W helicity": {
+       "chi2": 13664.589582449997,
+       "ndf": 14000,
+       "z": -2.004460634622794
+      },
+      "top polarization": {
+       "chi2": 3343.1608730556704,
+       "ndf": 3375,
+       "z": -0.387533511970663
+      },
+      "spin correlation": {
+       "chi2": 10772.22205233865,
+       "ndf": 11025,
+       "z": -1.7022952469119916
+      },
+      "pol. x W helicity interference": {
+       "chi2": 13137.181074851593,
+       "ndf": 13500,
+       "z": -2.2080456621506785
+      }
+     },
+     "top_terms": [
+      {
+       "term": "lep[j1=1,j2=1,m'=0,m=-1] x had[j1=1,j2=1,m'=-1,m=0] x P2(cos\u0398) x H1(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.9775548316329252,
+       "ref_signif": 0.7396367461449604
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=-1] x had[j1=1,j2=1,m'=0,m=1] x P1(cos\u0398) x H2(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.9293615816248884,
+       "ref_signif": 0.9616693830110742
+      },
+      {
+       "term": "lep[j1=1,j2=1,m'=-1,m=0] x had[j1=1,j2=2,m'=-1,m=1] x P2(cos\u0398) x H4(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.6909593103537772,
+       "ref_signif": 1.1103862574808059
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=-1] x had[j1=1,j2=1,m'=0,m=0] x P4(cos\u0398) x H3(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.623107394695656,
+       "ref_signif": 1.0210059129701319
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=0,m=0] x had[j1=1,j2=2,m'=-1,m=0] x P3(cos\u0398) x H3(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.6117783370807603,
+       "ref_signif": 1.370478543972338
+      },
+      {
+       "term": "lep[j1=1,j2=0,m'=0,m=0] x had[j1=1,j2=2,m'=-1,m=-1] x P3(cos\u0398) x H2(Y)",
+       "physics": "tt spin correlation; top polarization (lep, longitudinal); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.6060893195815815,
+       "ref_signif": 1.1032241400278229
+      },
+      {
+       "term": "lep[j1=0,j2=2,m'=0,m=0] x had[j1=1,j2=2,m'=-1,m=0] x H1(Y)",
+       "physics": "W helicity (lep); top pol. x W helicity interference (had); rapidity",
+       "pull": 3.5112399153066667,
+       "ref_signif": 0.6984505387943581
+      },
+      {
+       "term": "lep[j1=1,j2=0,m'=-1,m=0] x had[j1=1,j2=2,m'=0,m=1] x P2(cos\u0398) x H1(Y)",
+       "physics": "tt spin correlation; top polarization (lep, transverse); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.3948701110534234,
+       "ref_signif": 1.912704926615377
+      }
+     ],
+     "F_R": 0.02
+    },
+    "0.05": {
+     "n_data": 4134,
+     "n_eff": 3969,
+     "pull_std": 0.9879407312004743,
+     "max_abs_pull": 4.017548494934153,
+     "groups": {
+      "all terms": {
+       "chi2": 14055.505907270235,
+       "ndf": 14400,
+       "z": -2.0299509087327
+      },
+      "production angle": {
+       "chi2": 11295.633298802019,
+       "ndf": 11520,
+       "z": -1.478145431008439
+      },
+      "rapidity": {
+       "chi2": 11239.679950324318,
+       "ndf": 11520,
+       "z": -1.8467704808056222
+      },
+      "W helicity": {
+       "chi2": 13683.319117074918,
+       "ndf": 14000,
+       "z": -1.8925302565066695
+      },
+      "top polarization": {
+       "chi2": 3320.3484986908743,
+       "ndf": 3375,
+       "z": -0.6651968904118059
+      },
+      "spin correlation": {
+       "chi2": 10802.251435900322,
+       "ndf": 11025,
+       "z": -1.5000668588042751
+      },
+      "pol. x W helicity interference": {
+       "chi2": 13161.293275223503,
+       "ndf": 13500,
+       "z": -2.061303483764238
+      }
+     },
+     "top_terms": [
+      {
+       "term": "lep[j1=1,j2=1,m'=0,m=-1] x had[j1=1,j2=1,m'=-1,m=0] x P2(cos\u0398) x H1(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 4.017548494934153,
+       "ref_signif": 0.7396367461449604
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=-1] x had[j1=1,j2=1,m'=0,m=1] x P1(cos\u0398) x H2(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.7489502539474198,
+       "ref_signif": 0.9616693830110742
+      },
+      {
+       "term": "lep[j1=1,j2=0,m'=0,m=0] x had[j1=1,j2=2,m'=-1,m=-1] x P3(cos\u0398) x H2(Y)",
+       "physics": "tt spin correlation; top polarization (lep, longitudinal); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.6888523084810703,
+       "ref_signif": 1.1032241400278229
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=-1] x had[j1=1,j2=1,m'=0,m=0] x P4(cos\u0398) x H3(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.6595056435017645,
+       "ref_signif": 1.0210059129701319
+      },
+      {
+       "term": "lep[j1=1,j2=1,m'=-1,m=0] x had[j1=1,j2=2,m'=-1,m=1] x P2(cos\u0398) x H4(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.5924439595474746,
+       "ref_signif": 1.1103862574808059
+      },
+      {
+       "term": "lep[j1=0,j2=2,m'=0,m=0] x had[j1=1,j2=2,m'=-1,m=0] x H1(Y)",
+       "physics": "W helicity (lep); top pol. x W helicity interference (had); rapidity",
+       "pull": 3.5573841311828116,
+       "ref_signif": 0.6984505387943581
+      },
+      {
+       "term": "lep[j1=1,j2=1,m'=-1,m=0] x had[j1=0,j2=1,m'=0,m=0] x H3(Y)",
+       "physics": "top pol. x W helicity interference (lep); W helicity (had); rapidity",
+       "pull": 3.4558149086508636,
+       "ref_signif": 0.5687879640897802
+      },
+      {
+       "term": "lep[j1=1,j2=0,m'=-1,m=0] x had[j1=1,j2=2,m'=0,m=1] x P2(cos\u0398) x H1(Y)",
+       "physics": "tt spin correlation; top polarization (lep, transverse); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.444665968272713,
+       "ref_signif": 1.912704926615377
+      }
+     ],
+     "F_R": 0.05
+    },
+    "0.1": {
+     "n_data": 4134,
+     "n_eff": 3515,
+     "pull_std": 0.9906796516537036,
+     "max_abs_pull": 6.165691827007904,
+     "groups": {
+      "all terms": {
+       "chi2": 14133.78317097998,
+       "ndf": 14400,
+       "z": -1.5686977088836358
+      },
+      "production angle": {
+       "chi2": 11298.962976889805,
+       "ndf": 11520,
+       "z": -1.4562092505239415
+      },
+      "rapidity": {
+       "chi2": 11260.41849941522,
+       "ndf": 11520,
+       "z": -1.7101432922754884
+      },
+      "W helicity": {
+       "chi2": 13766.08431627227,
+       "ndf": 14000,
+       "z": -1.3979135868169905
+      },
+      "top polarization": {
+       "chi2": 3292.5441546594056,
+       "ndf": 3375,
+       "z": -1.0036205886933505
+      },
+      "spin correlation": {
+       "chi2": 10850.856554786475,
+       "ndf": 11025,
+       "z": -1.1727429619968746
+      },
+      "pol. x W helicity interference": {
+       "chi2": 13213.134175830486,
+       "ndf": 13500,
+       "z": -1.7458098097217047
+      }
+     },
+     "top_terms": [
+      {
+       "term": "lep[j1=0,j2=1,m'=0,m=0]",
+       "physics": "W helicity (lep)",
+       "pull": 6.165691827007904,
+       "ref_signif": 6.40891533335794
+      },
+      {
+       "term": "lep[j1=0,j2=1,m'=0,m=0] x had[j1=0,j2=2,m'=0,m=0]",
+       "physics": "W helicity (lep); W helicity (had)",
+       "pull": 4.2502918794721065,
+       "ref_signif": 0.6136617849672279
+      },
+      {
+       "term": "lep[j1=1,j2=1,m'=0,m=-1] x had[j1=1,j2=1,m'=-1,m=0] x P2(cos\u0398) x H1(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 4.016292304845746,
+       "ref_signif": 0.7396367461449604
+      },
+      {
+       "term": "lep[j1=1,j2=0,m'=0,m=0] x had[j1=1,j2=2,m'=-1,m=-1] x P3(cos\u0398) x H2(Y)",
+       "physics": "tt spin correlation; top polarization (lep, longitudinal); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.7030667699872164,
+       "ref_signif": 1.1032241400278229
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=-1] x had[j1=1,j2=1,m'=0,m=0] x P4(cos\u0398) x H3(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.620294344401031,
+       "ref_signif": 1.0210059129701319
+      },
+      {
+       "term": "lep[j1=1,j2=1,m'=-1,m=0] x had[j1=0,j2=1,m'=0,m=0] x H3(Y)",
+       "physics": "top pol. x W helicity interference (lep); W helicity (had); rapidity",
+       "pull": 3.618068046503693,
+       "ref_signif": 0.5687879640897802
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=-1] x had[j1=1,j2=1,m'=0,m=0] x P4(cos\u0398) x H1(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.6025291274982814,
+       "ref_signif": 0.4884685858055091
+      },
+      {
+       "term": "lep[j1=0,j2=2,m'=0,m=0] x had[j1=1,j2=2,m'=-1,m=0] x H1(Y)",
+       "physics": "W helicity (lep); top pol. x W helicity interference (had); rapidity",
+       "pull": 3.555536472208481,
+       "ref_signif": 0.6984505387943581
+      }
+     ],
+     "F_R": 0.1
+    },
+    "0.3": {
+     "n_data": 4134,
+     "n_eff": 1399,
+     "pull_std": 1.0052898117533742,
+     "max_abs_pull": 12.07047914687732,
+     "groups": {
+      "all terms": {
+       "chi2": 14554.17554601162,
+       "ndf": 14400,
+       "z": 0.9084881173162929
+      },
+      "production angle": {
+       "chi2": 11445.543770608903,
+       "ndf": 11520,
+       "z": -0.490523480966328
+      },
+      "rapidity": {
+       "chi2": 11362.58480475847,
+       "ndf": 11520,
+       "z": -1.0370636568402822
+      },
+      "W helicity": {
+       "chi2": 14158.147281324478,
+       "ndf": 14000,
+       "z": 0.9451107756373558
+      },
+      "top polarization": {
+       "chi2": 3308.6515314955386,
+       "ndf": 3375,
+       "z": -0.8075678412403233
+      },
+      "spin correlation": {
+       "chi2": 10942.838358229183,
+       "ndf": 11025,
+       "z": -0.5533052766625225
+      },
+      "pol. x W helicity interference": {
+       "chi2": 13390.639356070533,
+       "ndf": 13500,
+       "z": -0.6655476842606621
+      }
+     },
+     "top_terms": [
+      {
+       "term": "lep[j1=0,j2=1,m'=0,m=0]",
+       "physics": "W helicity (lep)",
+       "pull": 12.07047914687732,
+       "ref_signif": 6.40891533335794
+      },
+      {
+       "term": "lep[j1=0,j2=1,m'=0,m=0] x had[j1=0,j2=2,m'=0,m=0]",
+       "physics": "W helicity (lep); W helicity (had)",
+       "pull": 7.885377919559341,
+       "ref_signif": 0.6136617849672279
+      },
+      {
+       "term": "had[j1=0,j2=1,m'=0,m=0]",
+       "physics": "W helicity (had)",
+       "pull": 7.317273276093686,
+       "ref_signif": 19.78203881001833
+      },
+      {
+       "term": "constant",
+       "physics": "normalization",
+       "pull": 5.026725319408584,
+       "ref_signif": 710.1561102147996
+      },
+      {
+       "term": "lep[j1=0,j2=2,m'=0,m=0]",
+       "physics": "W helicity (lep)",
+       "pull": 4.062527183176976,
+       "ref_signif": 73.23570809721502
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=0,m=-1] x had[j1=1,j2=2,m'=-1,m=-1] x P3(cos\u0398) x H4(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.7782055605590026,
+       "ref_signif": 2.6955160943723264
+      },
+      {
+       "term": "lep[j1=0,j2=1,m'=0,m=0] x P2(cos\u0398)",
+       "physics": "W helicity (lep); production angle",
+       "pull": 3.5474141626504436,
+       "ref_signif": 6.307170098975264
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=0] x had[j1=1,j2=1,m'=1,m=-1] x P4(cos\u0398)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle",
+       "pull": 3.526170707830518,
+       "ref_signif": 0.68809132721858
+      }
+     ],
+     "F_R": 0.3
+    }
+   }
+  },
+  "reco": {
+   "n": 2440,
+   "score": {
+    "0.02": {
+     "n_eff": 2429.1369507934346,
+     "frac_cosprime_gt_0.8_sm": 0.07991803278688525,
+     "frac_cosprime_gt_0.8_bsm": 0.08305431258147748,
+     "angles, all terms": {
+      "auc": 0.50047580970372,
+      "eff_at_bkg_1pct": 0.010160090369317218,
+      "eff_at_bkg_10pct": 0.10019246424894956
+     },
+     "angles, all terms + BW": {
+      "auc": 0.5010082018510349,
+      "eff_at_bkg_1pct": 0.010116567721508334,
+      "eff_at_bkg_10pct": 0.10089230505811811
+     },
+     "angles, >10 sigma": {
+      "auc": 0.5005475256128555,
+      "eff_at_bkg_1pct": 0.010730944130020457,
+      "eff_at_bkg_10pct": 0.10102028091405493
+     },
+     "angles, >10 sigma + BW": {
+      "auc": 0.5011164725562285,
+      "eff_at_bkg_1pct": 0.010139891058119604,
+      "eff_at_bkg_10pct": 0.10087987331326327
+     },
+     "BW masses only": {
+      "auc": 0.5009464782712003,
+      "eff_at_bkg_1pct": 0.01011703058389696,
+      "eff_at_bkg_10pct": 0.10083807265509166
+     }
+    },
+    "0.05": {
+     "n_eff": 2370.205949615075,
+     "frac_cosprime_gt_0.8_sm": 0.07991803278688525,
+     "frac_cosprime_gt_0.8_bsm": 0.08772971083124459,
+     "angles, all terms": {
+      "auc": 0.5012236865777889,
+      "eff_at_bkg_1pct": 0.010031479446057421,
+      "eff_at_bkg_10pct": 0.10044729762279403
+     },
+     "angles, all terms + BW": {
+      "auc": 0.5025239601838545,
+      "eff_at_bkg_1pct": 0.00991257671113011,
+      "eff_at_bkg_10pct": 0.10218839883886233
+     },
+     "angles, >10 sigma": {
+      "auc": 0.5013461316137102,
+      "eff_at_bkg_1pct": 0.01146601712917132,
+      "eff_at_bkg_10pct": 0.10260283628526429
+     },
+     "angles, >10 sigma + BW": {
+      "auc": 0.5027950573744886,
+      "eff_at_bkg_1pct": 0.009970401874935256,
+      "eff_at_bkg_10pct": 0.10216026268752995
+     },
+     "BW masses only": {
+      "auc": 0.502364255541494,
+      "eff_at_bkg_1pct": 0.0099138985957842,
+      "eff_at_bkg_10pct": 0.10205162591088085
+     }
+    },
+    "0.1": {
+     "n_eff": 2179.876353507905,
+     "frac_cosprime_gt_0.8_sm": 0.07991803278688525,
+     "frac_cosprime_gt_0.8_bsm": 0.09480341716682275,
+     "angles, all terms": {
+      "auc": 0.5024623367702624,
+      "eff_at_bkg_1pct": 0.009834984269834276,
+      "eff_at_bkg_10pct": 0.10074372251321766
+     },
+     "angles, all terms + BW": {
+      "auc": 0.504852765420146,
+      "eff_at_bkg_1pct": 0.009572866856776304,
+      "eff_at_bkg_10pct": 0.10405458723861714
+     },
+     "angles, >10 sigma": {
+      "auc": 0.5025054536273854,
+      "eff_at_bkg_1pct": 0.012611486731347163,
+      "eff_at_bkg_10pct": 0.1051682494671393
+     },
+     "angles, >10 sigma + BW": {
+      "auc": 0.50537416449889,
+      "eff_at_bkg_1pct": 0.009682149266555263,
+      "eff_at_bkg_10pct": 0.10401054798339861
+     },
+     "BW masses only": {
+      "auc": 0.5045282422237829,
+      "eff_at_bkg_1pct": 0.009575957950447304,
+      "eff_at_bkg_10pct": 0.10378822800813746
+     }
+    },
+    "0.3": {
+     "n_eff": 1126.568147012628,
+     "frac_cosprime_gt_0.8_sm": 0.07991803278688525,
+     "frac_cosprime_gt_0.8_bsm": 0.11512574574981337,
+     "angles, all terms": {
+      "auc": 0.5073646169901338,
+      "eff_at_bkg_1pct": 0.009246491411098939,
+      "eff_at_bkg_10pct": 0.10047751034729635
+     },
+     "angles, all terms + BW": {
+      "auc": 0.5119887414686572,
+      "eff_at_bkg_1pct": 0.008207119282877384,
+      "eff_at_bkg_10pct": 0.10822765890226825
+     },
+     "angles, >10 sigma": {
+      "auc": 0.5052223305182191,
+      "eff_at_bkg_1pct": 0.016320378813317316,
+      "eff_at_bkg_10pct": 0.1146839656240723
+     },
+     "angles, >10 sigma + BW": {
+      "auc": 0.5132787995721713,
+      "eff_at_bkg_1pct": 0.008454919841176039,
+      "eff_at_bkg_10pct": 0.10823647204264697
+     },
+     "BW masses only": {
+      "auc": 0.510982803803819,
+      "eff_at_bkg_1pct": 0.008221182022150603,
+      "eff_at_bkg_10pct": 0.10752999110646913
+     }
+    }
+   },
+   "coef": {
+    "0.0": {
+     "n_data": 2440,
+     "n_eff": 2440,
+     "pull_std": 1.0182297413784291,
+     "max_abs_pull": 4.594269104059491,
+     "groups": {
+      "all terms": {
+       "chi2": 14930.004947198084,
+       "ndf": 14400,
+       "z": 3.1230841018848587
+      },
+      "production angle": {
+       "chi2": 11969.87759117799,
+       "ndf": 11520,
+       "z": 2.9638288674844206
+      },
+      "rapidity": {
+       "chi2": 11991.762657561449,
+       "ndf": 11520,
+       "z": 3.1080094018921542
+      },
+      "W helicity": {
+       "chi2": 14501.099780104634,
+       "ndf": 14000,
+       "z": 2.9946439665611617
+      },
+      "top polarization": {
+       "chi2": 3659.7294041057658,
+       "ndf": 3375,
+       "z": 3.465615942527377
+      },
+      "spin correlation": {
+       "chi2": 11470.680900402953,
+       "ndf": 11025,
+       "z": 3.0013713040024212
+      },
+      "pol. x W helicity interference": {
+       "chi2": 13953.025247178224,
+       "ndf": 13500,
+       "z": 2.7570238555429665
+      }
+     },
+     "top_terms": [
+      {
+       "term": "lep[j1=1,j2=2,m'=0,m=-1] x had[j1=1,j2=0,m'=0,m=0] x P1(cos\u0398) x H2(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top polarization (had, longitudinal); production angle; rapidity",
+       "pull": 4.594269104059491,
+       "ref_signif": 2.1550713614101324
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=0,m=-1] x had[j1=1,j2=0,m'=0,m=0] x P1(cos\u0398) x H4(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top polarization (had, longitudinal); production angle; rapidity",
+       "pull": 4.3321579664739,
+       "ref_signif": 2.175441791760552
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=1] x had[j1=1,j2=1,m'=1,m=0] x P2(cos\u0398) x H3(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 4.080796385390637,
+       "ref_signif": 0.78222246756894
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=1] x had[j1=1,j2=2,m'=0,m=0] x P4(cos\u0398) x H3(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.9752904206718584,
+       "ref_signif": 1.6107391890838259
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=1] x had[j1=1,j2=1,m'=1,m=-1] x H1(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); rapidity",
+       "pull": 3.9248447589154405,
+       "ref_signif": 0.10263815588336347
+      },
+      {
+       "term": "lep[j1=1,j2=1,m'=0,m=-1] x had[j1=0,j2=1,m'=0,m=0] x P1(cos\u0398) x H2(Y)",
+       "physics": "top pol. x W helicity interference (lep); W helicity (had); production angle; rapidity",
+       "pull": 3.8929188961913943,
+       "ref_signif": 0.7063697200789923
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=0,m=0] x had[j1=1,j2=1,m'=-1,m=-1] x P3(cos\u0398)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle",
+       "pull": 3.8522080652741533,
+       "ref_signif": 0.8400188652862889
+      },
+      {
+       "term": "lep[j1=1,j2=1,m'=0,m=-1] x had[j1=1,j2=1,m'=0,m=0] x P1(cos\u0398) x H1(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.848203094351525,
+       "ref_signif": 1.723317563055846
+      }
+     ],
+     "F_R": 0.0
+    },
+    "0.01": {
+     "n_data": 2440,
+     "n_eff": 2437,
+     "pull_std": 1.018084694244494,
+     "max_abs_pull": 4.524513616637423,
+     "groups": {
+      "all terms": {
+       "chi2": 14925.743358766484,
+       "ndf": 14400,
+       "z": 3.097972451229771
+      },
+      "production angle": {
+       "chi2": 11964.82388635792,
+       "ndf": 11520,
+       "z": 2.930534663622773
+      },
+      "rapidity": {
+       "chi2": 11989.812755914201,
+       "ndf": 11520,
+       "z": 3.0951632968533715
+      },
+      "W helicity": {
+       "chi2": 14498.272809087768,
+       "ndf": 14000,
+       "z": 2.9777495833755743
+      },
+      "top polarization": {
+       "chi2": 3653.864442581915,
+       "ndf": 3375,
+       "z": 3.3942299041826423
+      },
+      "spin correlation": {
+       "chi2": 11476.487875626613,
+       "ndf": 11025,
+       "z": 3.0404775093246377
+      },
+      "pol. x W helicity interference": {
+       "chi2": 13956.462036516408,
+       "ndf": 13500,
+       "z": 2.777939489386485
+      }
+     },
+     "top_terms": [
+      {
+       "term": "lep[j1=1,j2=2,m'=0,m=-1] x had[j1=1,j2=0,m'=0,m=0] x P1(cos\u0398) x H2(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top polarization (had, longitudinal); production angle; rapidity",
+       "pull": 4.524513616637423,
+       "ref_signif": 2.1550713614101324
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=0,m=-1] x had[j1=1,j2=0,m'=0,m=0] x P1(cos\u0398) x H4(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top polarization (had, longitudinal); production angle; rapidity",
+       "pull": 4.2689529819142376,
+       "ref_signif": 2.175441791760552
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=1] x had[j1=1,j2=1,m'=1,m=0] x P2(cos\u0398) x H3(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 4.1045109998135505,
+       "ref_signif": 0.78222246756894
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=1] x had[j1=1,j2=1,m'=1,m=-1] x H1(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); rapidity",
+       "pull": 3.926736817712132,
+       "ref_signif": 0.10263815588336347
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=1] x had[j1=1,j2=2,m'=0,m=0] x P4(cos\u0398) x H3(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.920002288399151,
+       "ref_signif": 1.6107391890838259
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=0,m=0] x had[j1=1,j2=1,m'=-1,m=-1] x P3(cos\u0398)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle",
+       "pull": 3.867186090161928,
+       "ref_signif": 0.8400188652862889
+      },
+      {
+       "term": "lep[j1=1,j2=1,m'=0,m=-1] x had[j1=0,j2=1,m'=0,m=0] x P1(cos\u0398) x H2(Y)",
+       "physics": "top pol. x W helicity interference (lep); W helicity (had); production angle; rapidity",
+       "pull": 3.8668250144426355,
+       "ref_signif": 0.7063697200789923
+      },
+      {
+       "term": "lep[j1=1,j2=1,m'=0,m=-1] x had[j1=1,j2=1,m'=0,m=0] x P1(cos\u0398) x H1(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.8542142363316167,
+       "ref_signif": 1.723317563055846
+      }
+     ],
+     "F_R": 0.01
+    },
+    "0.02": {
+     "n_data": 2440,
+     "n_eff": 2429,
+     "pull_std": 1.01792725209449,
+     "max_abs_pull": 4.444397407677937,
+     "groups": {
+      "all terms": {
+       "chi2": 14921.118149305068,
+       "ndf": 14400,
+       "z": 3.0707181431083113
+      },
+      "production angle": {
+       "chi2": 11958.548829088762,
+       "ndf": 11520,
+       "z": 2.889194094000821
+      },
+      "rapidity": {
+       "chi2": 11986.669984273303,
+       "ndf": 11520,
+       "z": 3.074458470705408
+      },
+      "W helicity": {
+       "chi2": 14495.169838211199,
+       "ndf": 14000,
+       "z": 2.95920578554754
+      },
+      "top polarization": {
+       "chi2": 3646.8852884719827,
+       "ndf": 3375,
+       "z": 3.309282345553427
+      },
+      "spin correlation": {
+       "chi2": 11482.011089226693,
+       "ndf": 11025,
+       "z": 3.077672764472809
+      },
+      "pol. x W helicity interference": {
+       "chi2": 13959.564365667899,
+       "ndf": 13500,
+       "z": 2.7968196633540083
+      }
+     },
+     "top_terms": [
+      {
+       "term": "lep[j1=1,j2=2,m'=0,m=-1] x had[j1=1,j2=0,m'=0,m=0] x P1(cos\u0398) x H2(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top polarization (had, longitudinal); production angle; rapidity",
+       "pull": 4.444397407677937,
+       "ref_signif": 2.1550713614101324
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=0,m=-1] x had[j1=1,j2=0,m'=0,m=0] x P1(cos\u0398) x H4(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top polarization (had, longitudinal); production angle; rapidity",
+       "pull": 4.19712987906823,
+       "ref_signif": 2.175441791760552
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=1] x had[j1=1,j2=1,m'=1,m=0] x P2(cos\u0398) x H3(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 4.12561881132059,
+       "ref_signif": 0.78222246756894
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=1] x had[j1=1,j2=1,m'=1,m=-1] x H1(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); rapidity",
+       "pull": 3.9245836543667707,
+       "ref_signif": 0.10263815588336347
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=0,m=0] x had[j1=1,j2=1,m'=-1,m=-1] x P3(cos\u0398)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle",
+       "pull": 3.863827230706413,
+       "ref_signif": 0.8400188652862889
+      },
+      {
+       "term": "lep[j1=1,j2=1,m'=0,m=-1] x had[j1=1,j2=1,m'=0,m=0] x P1(cos\u0398) x H1(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.858386401512544,
+       "ref_signif": 1.723317563055846
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=1] x had[j1=1,j2=2,m'=0,m=0] x P4(cos\u0398) x H3(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.855366822973515,
+       "ref_signif": 1.6107391890838259
+      },
+      {
+       "term": "lep[j1=1,j2=1,m'=0,m=-1] x had[j1=0,j2=1,m'=0,m=0] x P1(cos\u0398) x H2(Y)",
+       "physics": "top pol. x W helicity interference (lep); W helicity (had); production angle; rapidity",
+       "pull": 3.833893407644749,
+       "ref_signif": 0.7063697200789923
+      }
+     ],
+     "F_R": 0.02
+    },
+    "0.05": {
+     "n_data": 2440,
+     "n_eff": 2370,
+     "pull_std": 1.0174950293147191,
+     "max_abs_pull": 4.1900301180368675,
+     "groups": {
+      "all terms": {
+       "chi2": 14908.42305937095,
+       "ndf": 14400,
+       "z": 2.995911608273416
+      },
+      "production angle": {
+       "chi2": 11936.648558512263,
+       "ndf": 11520,
+       "z": 2.74491339317643
+      },
+      "rapidity": {
+       "chi2": 11972.067111423734,
+       "ndf": 11520,
+       "z": 2.9782535986502565
+      },
+      "W helicity": {
+       "chi2": 14486.522659186616,
+       "ndf": 14000,
+       "z": 2.9075290067464494
+      },
+      "top polarization": {
+       "chi2": 3623.9358180159934,
+       "ndf": 3375,
+       "z": 3.0299502866302337
+      },
+      "spin correlation": {
+       "chi2": 11493.05337290097,
+       "ndf": 11025,
+       "z": 3.152035370814393
+      },
+      "pol. x W helicity interference": {
+       "chi2": 13964.760417939944,
+       "ndf": 13500,
+       "z": 2.8284418304581784
+      }
+     },
+     "top_terms": [
+      {
+       "term": "lep[j1=1,j2=2,m'=0,m=-1] x had[j1=1,j2=0,m'=0,m=0] x P1(cos\u0398) x H2(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top polarization (had, longitudinal); production angle; rapidity",
+       "pull": 4.1900301180368675,
+       "ref_signif": 2.1550713614101324
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=1] x had[j1=1,j2=1,m'=1,m=0] x P2(cos\u0398) x H3(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 4.160221083491853,
+       "ref_signif": 0.78222246756894
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=0,m=-1] x had[j1=1,j2=0,m'=0,m=0] x P1(cos\u0398) x H4(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top polarization (had, longitudinal); production angle; rapidity",
+       "pull": 3.974074638016675,
+       "ref_signif": 2.175441791760552
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=1] x had[j1=1,j2=1,m'=1,m=-1] x H1(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); rapidity",
+       "pull": 3.892542365763269,
+       "ref_signif": 0.10263815588336347
+      },
+      {
+       "term": "lep[j1=1,j2=1,m'=0,m=-1] x had[j1=1,j2=1,m'=0,m=0] x P1(cos\u0398) x H1(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.8554549837036545,
+       "ref_signif": 1.723317563055846
+      },
+      {
+       "term": "lep[j1=1,j2=1,m'=-1,m=1] x had[j1=1,j2=1,m'=1,m=0] x P1(cos\u0398) x H1(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.8079486337380626,
+       "ref_signif": 1.0764065228064794
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=0,m=0] x had[j1=1,j2=1,m'=-1,m=-1] x P3(cos\u0398)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle",
+       "pull": 3.742940790775847,
+       "ref_signif": 0.8400188652862889
+      },
+      {
+       "term": "lep[j1=0,j2=2,m'=0,m=0] x had[j1=1,j2=2,m'=0,m=-1] x P2(cos\u0398)",
+       "physics": "W helicity (lep); top pol. x W helicity interference (had); production angle",
+       "pull": 3.7175888937029375,
+       "ref_signif": 3.1534259100105797
+      }
+     ],
+     "F_R": 0.05
+    },
+    "0.1": {
+     "n_data": 2440,
+     "n_eff": 2179,
+     "pull_std": 1.0169995118724728,
+     "max_abs_pull": 4.148136219030514,
+     "groups": {
+      "all terms": {
+       "chi2": 14893.867830476067,
+       "ndf": 14400,
+       "z": 2.91014409949596
+      },
+      "production angle": {
+       "chi2": 11896.329814069024,
+       "ndf": 11520,
+       "z": 2.4792903414287384
+      },
+      "rapidity": {
+       "chi2": 11937.31353675979,
+       "ndf": 11520,
+       "z": 2.749294322044456
+      },
+      "W helicity": {
+       "chi2": 14476.862077726193,
+       "ndf": 14000,
+       "z": 2.849795990024936
+      },
+      "top polarization": {
+       "chi2": 3584.013291355257,
+       "ndf": 3375,
+       "z": 2.5440287665260843
+      },
+      "spin correlation": {
+       "chi2": 11496.696509508223,
+       "ndf": 11025,
+       "z": 3.1765695289075184
+      },
+      "pol. x W helicity interference": {
+       "chi2": 13963.301398341198,
+       "ndf": 13500,
+       "z": 2.819562519946232
+      }
+     },
+     "top_terms": [
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=1] x had[j1=1,j2=1,m'=1,m=0] x P2(cos\u0398) x H3(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 4.148136219030514,
+       "ref_signif": 0.78222246756894
+      },
+      {
+       "term": "lep[j1=1,j2=1,m'=0,m=-1] x had[j1=1,j2=1,m'=0,m=0] x P1(cos\u0398) x H1(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.8028657515337363,
+       "ref_signif": 1.723317563055846
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=1] x had[j1=1,j2=1,m'=1,m=-1] x H1(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); rapidity",
+       "pull": 3.762857560842103,
+       "ref_signif": 0.10263815588336347
+      },
+      {
+       "term": "lep[j1=1,j2=1,m'=-1,m=1] x had[j1=1,j2=1,m'=1,m=0] x P1(cos\u0398) x H1(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.7495371843884375,
+       "ref_signif": 1.0764065228064794
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=0,m=-1] x had[j1=1,j2=0,m'=0,m=0] x P1(cos\u0398) x H2(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top polarization (had, longitudinal); production angle; rapidity",
+       "pull": 3.7342888193606023,
+       "ref_signif": 2.1550713614101324
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=1] x had[j1=1,j2=1,m'=-1,m=0] x H3(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); rapidity",
+       "pull": 3.6962656391493667,
+       "ref_signif": 0.6683854352461316
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=0,m=-1] x had[j1=1,j2=0,m'=-1,m=0] x H2(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top polarization (had, transverse); rapidity",
+       "pull": 3.6514017602869955,
+       "ref_signif": 1.075554059017859
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=-1] x had[j1=1,j2=2,m'=-1,m=-1] x H2(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); rapidity",
+       "pull": 3.6506158550175587,
+       "ref_signif": 0.03876403724705952
+      }
+     ],
+     "F_R": 0.1
+    },
+    "0.3": {
+     "n_data": 2440,
+     "n_eff": 1126,
+     "pull_std": 1.0178114540511172,
+     "max_abs_pull": 7.444705905173984,
+     "groups": {
+      "all terms": {
+       "chi2": 14917.5758697887,
+       "ndf": 14400,
+       "z": 3.0498450608842913
+      },
+      "production angle": {
+       "chi2": 11781.685846867484,
+       "ndf": 11520,
+       "z": 1.724006890690181
+      },
+      "rapidity": {
+       "chi2": 11838.399880608667,
+       "ndf": 11520,
+       "z": 2.0976433946855586
+      },
+      "W helicity": {
+       "chi2": 14510.744172139817,
+       "ndf": 14000,
+       "z": 3.0522802329615994
+      },
+      "top polarization": {
+       "chi2": 3488.626252917972,
+       "ndf": 3375,
+       "z": 1.3830147077324564
+      },
+      "spin correlation": {
+       "chi2": 11432.796827875667,
+       "ndf": 11025,
+       "z": 2.7462466889261665
+      },
+      "pol. x W helicity interference": {
+       "chi2": 13927.148803606482,
+       "ndf": 13500,
+       "z": 2.599544834962381
+      }
+     },
+     "top_terms": [
+      {
+       "term": "lep[j1=0,j2=1,m'=0,m=0]",
+       "physics": "W helicity (lep)",
+       "pull": 7.444705905173984,
+       "ref_signif": 13.001271807508028
+      },
+      {
+       "term": "had[j1=0,j2=1,m'=0,m=0]",
+       "physics": "W helicity (had)",
+       "pull": 4.895014630589357,
+       "ref_signif": 13.522761628379445
+      },
+      {
+       "term": "lep[j1=0,j2=1,m'=0,m=0] x had[j1=0,j2=2,m'=0,m=0]",
+       "physics": "W helicity (lep); W helicity (had)",
+       "pull": 4.131762989451193,
+       "ref_signif": 4.3645399527162
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=1] x had[j1=1,j2=1,m'=1,m=0] x P2(cos\u0398) x H3(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.7777908941214524,
+       "ref_signif": 0.78222246756894
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=1] x had[j1=1,j2=1,m'=-1,m=0] x H3(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); rapidity",
+       "pull": 3.5951731303461574,
+       "ref_signif": 0.6683854352461316
+      },
+      {
+       "term": "lep[j1=1,j2=2,m'=-1,m=0] x had[j1=1,j2=1,m'=0,m=0] x P4(cos\u0398) x H1(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); production angle; rapidity",
+       "pull": 3.585383424060434,
+       "ref_signif": 0.20040120532475086
+      },
+      {
+       "term": "lep[j1=0,j2=1,m'=0,m=0] x had[j1=0,j2=1,m'=0,m=0] x P3(cos\u0398)",
+       "physics": "W helicity (lep); W helicity (had); production angle",
+       "pull": 3.5393019744784215,
+       "ref_signif": 0.6817873365926049
+      },
+      {
+       "term": "lep[j1=1,j2=1,m'=-1,m=0] x had[j1=1,j2=1,m'=0,m=0] x H4(Y)",
+       "physics": "tt spin correlation; top pol. x W helicity interference (lep); top pol. x W helicity interference (had); rapidity",
+       "pull": 3.5378632134594366,
+       "ref_signif": 1.0071727357256932
+      }
+     ],
+     "F_R": 0.3
+    }
+   }
+  }
+ }
+}

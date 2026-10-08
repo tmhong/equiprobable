@@ -1071,6 +1071,90 @@ available here; the document gives the validation path with Vitis HLS and hls4ml
         fig(rel("study_l1", "fig_precision.png"), r"AUC and per-event fidelity versus datapath width and ROM depth.", "fig:l1prec")
 
 
+def sec_wtb(N):
+    R = N.get("wtb")
+    if not R:
+        return ""
+    L = R["levels"]
+    P = L["parton"]
+    frs = [k for k in P["score"]]
+    rows = []
+    for name, lab in (("angles, >10 sigma", r"angles ($>10\sigma$)"), ("angles, >10 sigma + BW", "angles + BW")):
+        for fr in frs:
+            r = [lab if fr == frs[0] else "", rf"$F_R={float(fr):g}$"]
+            for l in ("parton", "gen", "reco"):
+                v = L[l]["score"][fr][name]
+                r.append(rf"{v['auc']:.3f} / {100 * v['eff_at_bkg_1pct']:.1f}")
+            rows.append(r)
+    cfr = [k for k in P["coef"]]
+
+    def tpull(c, term):
+        t = [x for x in c["top_terms"] if x["term"] == term]
+        return f"{t[0]['pull']:.1f}" if t else "$<$4"
+
+    crow = [[rf"$F_R={float(fr):g}$"] + sum(([tpull(L[l]["coef"][fr], "lep[j1=0,j2=1,m'=0,m=0]"), tpull(L[l]["coef"][fr], "had[j1=0,j2=1,m'=0,m=0]"),
+                                              f"{L[l]['coef'][fr]['max_abs_pull']:.1f}"] for l in ("parton", "gen", "reco")), []) for fr in cfr]
+    p05 = float(tpull(P["coef"]["0.05"], "lep[j1=0,j2=1,m'=0,m=0]").replace("$<$", ""))
+    p10 = float(tpull(P["coef"]["0.1"], "lep[j1=0,j2=1,m'=0,m=0]").replace("$<$", ""))
+    n5 = P["coef"]["0.05"]["n_eff"] * (5.3 / p05) ** 2 * (0.05 / 0.02) ** 2
+    return rf"""
+\subsection{{New physics in the top decay: a right-handed $W$}}
+\label{{sec:wtb}}
+The complementary case is new physics in the decay vertex, which changes the angles themselves: a
+right-handed $W$ helicity fraction $F_R>0$ fills the region $\cos\theta'\to+1$ where the SM ($V\!-\!A$) decay
+density vanishes, the textbook situation for a density method.  It is constrained to $F_R\lesssim0.03$ by
+the $W$ helicity and single-top measurements, so it is a benchmark rather than a discovery channel.  The
+signal is emulated by reweighting the independent $t\bar t$ sample with the parton-level $W$-decay
+distributions on both sides, $\rho(c)=\frac34(1-c^2)F_0+\frac38(1-c)^2F_L+\frac38(1+c)^2F_R$ with $F_0$
+kept and $F_L\to F_L-F_R$ ($F^\mathrm{{SM}}=({', '.join(f'{x:g}' for x in R['F_SM'])})$), so that the gen and
+reco scores of the same events carry the parton weights; the coefficients are fitted with the event weights,
+$\hat c=\sum wB^*/\sum w$, with the weighted-variance error.
+
+Table~\ref{{tab:wtbscore}} gives the anomaly score.  The tail is real but weak: at parton level $F_R=0.3$
+gives AUC {P['score']['0.3']['angles, >10 sigma']['auc']:.2f} and puts
+{100 * P['score']['0.3']['angles, >10 sigma']['eff_at_bkg_1pct']:.0f}\% of the signal into the 1\% $t\bar t$ tail, a factor
+{P['score']['0.3']['angles, >10 sigma']['eff_at_bkg_1pct'] / 0.01:.0f} enrichment; at $F_R=0.05$ only
+{100 * P['score']['0.05']['angles, >10 sigma']['eff_at_bkg_1pct']:.1f}\%; at reco level the smeared $\cos\theta'$ leaves nothing, and
+the mass factors dilute the score as they did for $H$.  The coefficient test (Table~\ref{{tab:wtbcoef}},
+Figure~\ref{{fig:wtb}}) is a different story: the $\cos\theta'$ term of the leptonic $W$, $M^{{01}}_{{00}}$, whose
+coefficient is $\langle\cos\theta'\rangle=(F_R-F_L)/2$, has a pull of {p05:.1f} at $F_R=0.05$ and {p10:.1f} at
+$F_R=0.1$ with 10k parton-level events, and the hadronic side follows; at gen level the pull is
+{tpull(L['gen']['coef']['0.1'], "lep[j1=0,j2=1,m'=0,m=0]")} at $F_R=0.1$ with 4.1k events and at reco level
+{tpull(L['reco']['coef']['0.3'], "lep[j1=0,j2=1,m'=0,m=0]")} at $F_R=0.3$ with 2.4k events, so the smearing costs sensitivity but the
+responding term is the same.  The $\chi^2$ over the whole ``$W$ helicity'' category is diluted by its thousands of
+product terms and moves only at $F_R=0.3$; the single term is the sensitive statistic.  Since the pull grows
+as $F_R\sqrt N$, $5\sigma$ at the current limit $F_R=0.02$ needs about {n5 / 1000:.0f}k parton-level events, more
+after reconstruction.  This is the $W$ helicity measurement in disguise, with the physics labelled by the term.  The contrast with
+$H\to t\bar t$ is instructive: new physics in the decay changes the shape of the most significant terms of
+$f$ and gives large pulls on a few terms, whereas a resonance in the bulk changes the production-angle
+coefficient by a few per cent.  The score finds signals in SM-forbidden regions when they are large; the
+coefficients find small deviations in the SM terms.  Both are model-agnostic; the second is the sensitive
+one for new physics that is still allowed.
+""" + tab(r"Right-handed $W$: AUC / signal efficiency (\%) at 1\% $t\bar t$ efficiency of the anomaly score.",
+          ["score", "", "parton", "gen", "reco"], rows, "tab:wtbscore") + \
+        tab(r"Right-handed $W$: coefficient test, pull of the $\cos\theta'$ term $M^{01}_{00}$ on the leptonic / hadronic side and the "
+            r"largest single pull, per level ($<$4: not among the leading terms).",
+            ["", r"parton $\ell$", "had", "max", r"gen $\ell$", "had", "max", r"reco $\ell$", "had", "max"], crow, "tab:wtbcoef") + \
+        wtb_fig(rel("study_bsm", "fig_wtb.png"), r"Right-handed $W$: $\cos\theta'$ at parton level for the SM and $F_R=0.1$, $0.3$ (left); the surprisal "
+            r"tail (middle); the significance [$\sigma$] of the $W$-helicity coefficient test versus $F_R$ at the three levels (right; solid: "
+            r"the $\chi^2$ of the ``$W$ helicity'' category as $z$, dashed: the largest single pull, dotted: $5\sigma$).", "fig:wtb")
+
+
+def wtb_fig(path, caption, label):
+    """fig_wtb.png with the suptitle and the third panel's y label (clipped by matplotlib) cropped away; the caption
+    carries the label.  Same trim fractions (left, bottom, right, top of the image) as make_slides.wtb_slides."""
+    if not os.path.exists(os.path.join(HERE, path)):
+        return fig(path, caption, label)
+    inc = [rf"\adjustbox{{trim={{{l}\width}} {{{b}\height}} {{{r}\width}} {{{t}\height}}, clip, width={w}\textwidth}}{{\includegraphics{{{path}}}}}"
+           for (l, b, r, t), w in (((0, .034, .337, .108), 0.655), ((.692, .034, 0, .108), 0.305))]
+    return rf"""
+\begin{{figure}}[htbp]\centering
+{inc[0]}\hfill{inc[1]}
+\caption{{{caption}}}\label{{{label}}}
+\end{{figure}}
+"""
+
+
 def sec_bsm(N):
     B = N.get("studyb")
     head = r"""
@@ -1116,9 +1200,11 @@ bump hunt in angle space.
 \subsection{What differs at parton level}
 Table~\ref{tab:bvars} gives, for each of the ten angles and $m_{t\bar t}$, the AUC of a one-dimensional
 likelihood ratio (a 40-bin histogram ratio fitted on half of the events and tested on the other half, so that
-non-monotonic differences count).  For $H(500)$ the production angle and $m_{t\bar t}$ carry most of the
-difference; at threshold the production angle is gone and only $m_{t\bar t}$ and the decay angles, i.e.\ the
-spin correlations, are left (Figure~\ref{fig:bparton}).
+non-monotonic differences count).  For both signals the production angle and $m_{t\bar t}$ carry the
+difference; the single decay angles show nothing, as they must, since spin correlations change the joint
+distribution and not the one-dimensional marginals (Figure~\ref{fig:bparton}).  The $H(350)$ sample has a
+median $m_{t\bar t}$ of 384~GeV because of the width and the phase space, so it sits above the threshold region
+where the QCD production angle flattens.
 """ + tab(r"One-dimensional likelihood-ratio AUC of each variable, $H\to t\bar t$ versus $t\bar t$ at parton level.",
           ["variable"] + [lab[k] for k in sigs], vrows, "tab:bvars") + \
         fig(rel("study_bsm", "fig_htt_parton.png"), r"Parton level: $m_{t\bar t}$, $\cos\Theta$ and the product "
@@ -1201,6 +1287,7 @@ $m_{{t\bar t}}$.
             tab(rf"{lab[k]} at $\epsilon=10\%$: the terms that respond.  The last column is the term's significance in the $t\bar t$ "
                 r"reference; a large pull on a term that is zero in $t\bar t$ is new physics in a channel the SM does not have.",
                 ["term", "physics", r"$|$pull$|$", r"$|\hat c|/\sigma$ in $t\bar t$"], rows, f"tab:bterms{k}")
+    out += sec_wtb(N)
     out += r"""
 \subsection{Conclusions of Study B}
 As an anomaly \emph{score}, $f_{t\bar t}$ is weak for an on-shell resonance, scalar or vector, because the
@@ -1366,6 +1453,7 @@ def main():
         "studyb": load("study_bsm", "htt_study.json"), "pileup": load("pileup", "results.json"),
         "angles_vs_bw": load("study_salvage", "angles_vs_bw.json"),
         "hh170": load("study_bsm", "hh170_study.json"), "l1": load("study_l1", "results.json"),
+        "wtb": load("study_bsm", "wtb_study.json"),
     }
     missing = [k for k, v in N.items() if v is None]
     if missing:

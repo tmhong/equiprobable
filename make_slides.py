@@ -555,6 +555,112 @@ def part_frame(title, items):
     return frame("", body).replace(r"\frametitle{}", "")
 
 
+def wtb_slides(bdir):
+    """Study B2: a right-handed W in tt̄, new physics in the decay vertex (study_bsm/wtb_study.py)."""
+    p = os.path.join(bdir, "wtb_study.json")
+    if not os.path.exists(p):
+        return []
+    R = json.load(open(p))
+    L = R["levels"]
+    frs = [k for k in L["parton"]["score"]]
+    rows = []
+    for name, lab in (("angles, >10 sigma", r"angles ($>10\sigma$)"), ("angles, >10 sigma + BW", "angles + BW"), ("BW masses only", "BW masses")):
+        for fr in frs:
+            r = [lab if fr == frs[0] else "", rf"$F_R={float(fr):g}$"]
+            for l in ("parton", "gen", "reco"):
+                v = L[l]["score"][fr][name]
+                r.append(rf"{v['auc']:.3f} / {100 * v['eff_at_bkg_1pct']:.1f}\%")
+            rows.append(r)
+    cfr = [k for k in L["parton"]["coef"]]
+
+    def tpull(c, term):
+        t = [x for x in c["top_terms"] if x["term"] == term]
+        return f"{t[0]['pull']:.1f}" if t else "$<$4"
+
+    crow = []
+    for fr in cfr:
+        r = [rf"$F_R={float(fr):g}$"]
+        for l in ("parton", "gen", "reco"):
+            c = L[l]["coef"][fr]
+            r += [tpull(c, "lep[j1=0,j2=1,m'=0,m=0]"), tpull(c, "had[j1=0,j2=1,m'=0,m=0]"), f"{c['max_abs_pull']:.1f}"]
+        crow.append(r)
+    P = L["parton"]
+    p05 = float(tpull(P["coef"]["0.05"], "lep[j1=0,j2=1,m'=0,m=0]").replace("$<$", ""))
+    p10 = float(tpull(P["coef"]["0.1"], "lep[j1=0,j2=1,m'=0,m=0]").replace("$<$", ""))
+    n05 = P["coef"]["0.05"]["n_eff"]
+    n_for_5sigma_002 = n05 * (5.3 / p05) ** 2 * (0.05 / 0.02) ** 2
+    # fig_wtb.png is one row of three panels: at slide width its fonts are ~5 pt and matplotlib clipped the y label of
+    # the third panel into the suptitle.  The slides show two crops instead (trim fractions of the image: left, bottom,
+    # right, top): panels 1-2 without the suptitle, and panel 3 without the suptitle and the clipped label, whose content
+    # goes into the text next to it.  The fractions follow the layout of wtb_study.py's figure section.
+    fpath = os.path.join(bdir, "fig_wtb.png")
+
+    def crop(trim, maxw, maxh):
+        l, b, r, t = trim
+        return (rf"\adjustbox{{trim={{{l}\width}} {{{b}\height}} {{{r}\width}} {{{t}\height}}, clip, max width={maxw}, "
+                rf"max height={maxh}}}{{\includegraphics{{{os.path.relpath(fpath, OUT_DIR)}}}}}")
+
+    if os.path.exists(fpath):
+        fig_score = frame(r"$\cos\theta'$ and the surprisal tail vs $F_R$ (parton)",
+                          r"\centering" + crop((0, .034, .337, .108), r"\textwidth", r"0.68\textheight")
+                          + "\n\n" + r"\vspace{4pt}{\footnotesize A right-handed $W$ in $t\bar t$: where the density is in its element. "
+                          r"Right: the surprisal of the score ``angles ($>10\sigma$)'' of the next table.}")
+        fig_coef = frame(r"The coefficient test vs $F_R$",
+                         r"\begin{columns}[c]\begin{column}{0.52\textwidth}\centering"
+                         + crop((.692, .034, 0, .108), r"\linewidth", r"0.74\textheight")
+                         + r"\end{column}" + "\n" + r"\begin{column}{0.46\textwidth}\small Significance [$\sigma$] of the coefficient "
+                         r"test, per level (legend):\begin{itemize}\item solid: the $\chi^2$ over the ``$W$ helicity'' category, as $z$"
+                         r"\item dashed: the largest single pull (same colour)\item dotted: $5\sigma$\end{itemize}"
+                         r"\vspace{4pt}$F_R$ axis linear below 0.01, logarithmic above. The single pulls are in the next table."
+                         r"\end{column}\end{columns}")
+    else:
+        fig_score = fig_coef = wide_figure(r"$\cos\theta'$, the surprisal tail, and the coefficient test vs $F_R$", fpath)
+    shows = [
+        rf"As an anomaly score the tail is real but weak: at parton level $F_R=0.3$ gives AUC "
+        rf"{P['score']['0.3']['angles, >10 sigma']['auc']:.2f} and {100 * P['score']['0.3']['angles, >10 sigma']['eff_at_bkg_1pct']:.0f}\% of the "
+        rf"signal in the 1\% $t\bar t$ tail (a factor {P['score']['0.3']['angles, >10 sigma']['eff_at_bkg_1pct'] / 0.01:.0f} enrichment); "
+        rf"at $F_R=0.05$ only {100 * P['score']['0.05']['angles, >10 sigma']['eff_at_bkg_1pct']:.1f}\%; at reco level the smeared "
+        rf"$\cos\theta'$ leaves nothing ({L['reco']['score']['0.3']['angles, >10 sigma']['auc']:.2f}). The masses dilute it, as for $H$",
+        rf"The coefficient test is a different story: the $\cos\theta'$ term of the leptonic $W$ ($M^{{01}}_{{00}}$, i.e.\ "
+        rf"$\langle\cos\theta'\rangle=(F_R-F_L)/2$) has pull {p05:.1f} at $F_R=0.05$ and {p10:.1f} at $F_R=0.1$ with 10k parton events, the "
+        rf"hadronic side follows; at gen ({tpull(L['gen']['coef']['0.1'], "lep[j1=0,j2=1,m'=0,m=0]")} at 0.1 with 4.1k events) and reco "
+        rf"({tpull(L['reco']['coef']['0.3'], "lep[j1=0,j2=1,m'=0,m=0]")} at 0.3 with 2.4k events) the smearing costs sensitivity but the term is the same",
+        rf"Pull $\propto F_R\sqrt N$: $5\sigma$ at the current limit $F_R=0.02$ needs $\approx{n_for_5sigma_002 / 1000:.0f}$k parton-level events "
+        r"(more after reconstruction). This is the $W$ helicity measurement in disguise, with the physics labelled by the term",
+        r"Contrast with $H\to t\bar t$: new physics in the decay changes the \emph{shape} of the most significant terms of $f$ "
+        r"(large pulls on few terms); a resonance in the bulk changes the production angle by a few per cent of its coefficient",
+        r"So: the score finds signals in SM-forbidden regions when they are large; the coefficients find small deviations in the SM "
+        r"terms. Both are model-agnostic; the second is the sensitive one for allowed new physics",
+    ]
+    return [
+        bullets(r"B2: a right-handed $W$ in $t\bar t$ (new physics in the decay vertex)", [
+            r"The textbook case for a density: the SM ($V\!-\!A$) decay density vanishes at $\cos\theta'\to+1$, and a right-handed $W$ "
+            r"helicity fraction $F_R>0$ fills exactly that region. Constrained to $F_R\lesssim0.03$ by the $W$ helicity and single-top "
+            r"measurements, so a benchmark rather than a discovery channel",
+            r"Emulated by reweighting the independent $t\bar t$ sample with the parton-level $W$-decay distributions on both sides: "
+            r"$\rho(c)=\frac34(1-c^2)F_0+\frac38(1-c)^2F_L+\frac38(1+c)^2F_R$, $F_0$ kept, $F_L\to F_L-F_R$, "
+            rf"$F^\mathrm{{SM}}=({', '.join(f'{x:g}' for x in R['F_SM'])})$; gen and reco scores of the same events carry the parton weights",
+            r"Coefficient fit with event weights, $\hat c=\sum wB^*/\sum w$, with the weighted-variance error (effective number of "
+            r"events $(\sum w)^2/\sum w^2$)",
+            r"Two uses of $f_{t\bar t}$ as before: the anomaly score (AUC, tail enrichment) and the coefficient test (pulls per term, "
+            r"$\chi^2$ per physics category)",
+        ]),
+        fig_score,
+        table(r"Anomaly score: AUC / signal efficiency at 1\% $t\bar t$ efficiency", ["score", "", "parton", "gen", "reco"], rows, fit=True,
+              note=r"1\% = no enrichment. The weighted-AUC errors are about $\pm0.005$ (parton) to $\pm0.01$ (reco)."),
+    ] + ([fig_coef] if fig_coef is not fig_score else []) + [
+        table(r"Coefficient test: pull of the $\cos\theta'$ term ($M^{01}_{00}$) vs $F_R$",
+              [r"", r"parton $\ell$", "had", "max", r"gen $\ell$", "had", "max", r"reco $\ell$", "had", "max"], crow, fit=True,
+              note=r"$\ell$ / had: the term on the leptonic / hadronic side; max: the largest pull of all terms. "
+                   r"Data: the independent $t\bar t$ sample (10k parton, 4.1k gen, 2.4k reco events) reweighted and fitted with the weights; "
+                   r"reference: the fit sample. $<$4: not among the leading terms (the largest of 14\,400 null pulls is $\approx4$). The "
+                   r"$\chi^2$ over the whole ``$W$ helicity'' category is diluted by its thousands of product terms and only moves at "
+                   r"$F_R=0.3$ ($z=+9$ at parton); the single term is the sensitive statistic."),
+        bullets(r"B2: what it shows (1/2)", shows[:3]),
+        bullets(r"B2: what it shows (2/2)", shows[3:]),
+    ]
+
+
 def study_b_slides(bdir):
     """Study B: tt̄ vs a heavy scalar H -> tt̄ (study_bsm/htt_study.py)."""
     p = os.path.join(bdir, "htt_study.json")
@@ -581,9 +687,10 @@ def study_b_slides(bdir):
             r"Scalar ($J=0$): $\cos\Theta$ isotropic vs the $t$-channel forward peak of $gg\to t\bar t$; like-helicity tops at "
             r"every mass, whereas QCD $gg$ is like-helicity only near threshold; $m_{t\bar t}$ peaks at $m_H$ on the bulk of "
             r"the QCD spectrum (median " + rf"{L['parton']['mtt_median_tt']:.0f} GeV)",
-            r"At $2m_t$: $\cos\Theta$ is isotropic for QCD too ($S$-wave), so the spin correlations are the only angular handle "
-            r"(the CMS threshold excess is this kind of object: a pseudoscalar $^1S_0$ state looks like QCD $gg$ there; a scalar "
-            r"$^3P_0$ differs in the transverse correlations)",
+            r"Near $2m_t$ the QCD $\cos\Theta$ flattens ($S$-wave) and the spin correlations become the main angular handle; our "
+            r"$H(350)$ sample has median $m_{t\bar t}=384$ GeV (width and phase space), where QCD is still forward-peaked. The CMS "
+            r"threshold excess is this kind of object: a pseudoscalar $^1S_0$ state looks like QCD $gg$ there, a scalar $^3P_0$ differs "
+            r"in the transverse correlations",
             r"Test events: " + ", ".join(rf"{LVL_TEX[l]} {L[l]['n_tt_test']} $t\bar t$" for l in L) + "; signals: "
             + ", ".join(rf"{lab[k]} {L['parton'][k]['n']}" for k in sigs) + " (parton)",
         ]),
@@ -594,8 +701,8 @@ def study_b_slides(bdir):
     rows = [[ANGLE_TEX.get(a, r"$m_{t\bar t}$")] + [f"{L['parton'][k]['single_variable_lr_auc'][a]:.3f}" for k in sigs] for a in names]
     slides.append(table(r"Which variables differ (parton; 1-D likelihood-ratio AUC vs $t\bar t$)", ["variable"] + [lab[k] for k in sigs],
                         rows, note=r"Likelihood ratio from a 40-bin histogram fitted on half the events, tested on the other half, so "
-                                   r"non-monotonic differences count. $\cos\Theta$ and $m_{t\bar t}$ carry $H(500)$; at threshold only "
-                                   r"$m_{t\bar t}$ and the decay angles (spin correlations) are left."))
+                                   r"non-monotonic differences count. $\cos\Theta$ and $m_{t\bar t}$ carry both signals; the single decay "
+                                   r"angles show nothing, as they must: spin correlations change the joint distribution, not the 1-D marginals."))
     order = ["angles, all terms", "angles, >10 sigma", "BW masses", "m_tt density", "angles (>10 sigma) + BW",
              "angles (>10 sigma) + m_tt", "angles (>10 sigma) + BW + m_tt"]
     tex = {"angles, all terms": "angles, all terms", "angles, >10 sigma": r"angles, $>10\sigma$", "BW masses": "BW masses",
@@ -676,12 +783,14 @@ def study_b_slides(bdir):
                             ["term", "physics", r"$|$pull$|$", r"$|\hat c|/\sigma$ in $t\bar t$"], rows, fit=True,
                             note=r"The last column is the term's significance in the $t\bar t$ reference: a large pull on a term that is "
                                  r"zero in $t\bar t$ is new physics in a channel the SM does not have."))
+    slides += wtb_slides(bdir)
     slides.append(bullets(r"Study B: conclusions", [
         r"As an anomaly \emph{score}, $f_{t\bar t}$ is weak for an on-shell resonance (AUC 0.5--0.6), scalar or vector: the signal "
         r"sits where $t\bar t$ is dense. A vector would change which angular terms differ (opposite-helicity correlations; top "
         r"polarization if the couplings are chiral), not the size of the modulation",
-        r"As a \emph{bump hunt in coefficient space}, the same fit is sensitive and tells the physics: the production-angle and "
-        r"spin-correlation terms respond for $H(500)$; at threshold only the spin-correlation terms do",
+        r"As a test in \emph{coefficient space}, the same fit is calibrated and physical: for $H\to t\bar t$ one term ($P_2(\cos\Theta)$) "
+        r"moves and the $m_{t\bar t}$ bump hunt is more sensitive; for new physics in the decay vertex the $W$-helicity terms move "
+        r"strongly and the coefficients are the sensitive test",
         r"Next: the test at gen/reco level with the extended basis (needs the orders the reconstruction requires); "
         r"a pseudoscalar $A$ (the CMS threshold case); a vector ($Z'$) with chiral couplings; realistic $\epsilon$ from "
         r"$\sigma\times\mathcal B$",
