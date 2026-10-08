@@ -533,7 +533,7 @@ def l1_chain(d, idx, cfg, A, dens):
     beta = A.fx(T[:, :3] * A.recip(T[:, 3])[:, None], U)
     v = A.fx(tl[:, :3] * A.recip(tl[:, 3])[:, None], U)
     bv = A.fx(np.sum(beta * v, -1), U)
-    g = A.fx(gam * A.fx(gam * A.recip(gam + 1), U), R, tag="ratio")
+    g = A.fx(A.fl(T[:, 3] * T[:, 3]) * A.recip(A.fl(MT * (T[:, 3] + MT))), R, tag="ratio")   # γ²/(γ+1)
     kk = A.fx(gam - g * bv, R, tag="ratio")
     u = A.fx(v - kk[:, None] * beta, R, tag="ratio")
     X["cos_Theta"] = np.clip(A.fx(u[:, 2] * A.rsqrt(A.fl(np.sum(u * u, -1))), U), -1, 1)
@@ -658,96 +658,138 @@ OVERHEAD = 1.3                  # control, pipeline balancing and routing on LUT
 
 
 def _ops(W, K, Kc):
-    """Cost of one operator instance: LUT, FF, DSP, BRAM36 and latency (clock cycles) at width W."""
-    lw = max(1, int(round(log2(W))))
-    rom = (lambda k: {"LUT": 0, "FF": W, "DSP": 0, "BRAM": 0.5 if W <= 18 else 1.0, "lat": 2} if k >= 512 else
-           {"LUT": max(1, k // 64) * W + (k > 64) * W, "FF": W, "DSP": 0, "BRAM": 0, "lat": 1})
-    unit = {"LUT": 3 * W * lw + 2 * W, "FF": 6 * W, "DSP": 3 if W <= 18 else 4, "BRAM": 0.5, "lat": 14}
+    """Cost of one operator instance (LUT, FF, DSP58, BRAM36) and its latency in clock cycles, at
+    datapath width W (all W <= 24 fit one 27x24 DSP58 multiplier)."""
+    lw = int(np.ceil(log2(W)))
+
+    def rom(k, w=W):                       # LUTRAM up to 256 entries, block RAM above (dual-port 1Kx18 = 0.5)
+        if k <= 256:
+            return {"LUT": 1.25 * w * int(np.ceil(k / 64)), "FF": w, "DSP": 0, "BRAM": 0, "lat": 1}
+        return {"LUT": 0, "FF": w, "DSP": 0, "BRAM": max(0.5, np.ceil(k * w / 18432) / 2), "lat": 2}
+
+    norm = 2 * W * lw                      # leading-zero count + barrel shifters (in and out)
     return {
         "mul": {"LUT": 0, "FF": W, "DSP": 1, "BRAM": 0, "lat": 3},
+        "dot2": {"LUT": 0, "FF": W, "DSP": 2, "BRAM": 0, "lat": 4},
+        "dot3": {"LUT": 0, "FF": W, "DSP": 3, "BRAM": 0, "lat": 5},
         "dot4": {"LUT": 0, "FF": W, "DSP": 4, "BRAM": 0, "lat": 6},
         "add": {"LUT": W, "FF": W, "DSP": 0, "BRAM": 0, "lat": 1},
         "cmpsel": {"LUT": 2 * W + 8, "FF": W + 8, "DSP": 0, "BRAM": 0, "lat": 1},
-        "rom_K": rom(K), "rom_Kc": rom(Kc), "rom_in": rom(256),
-        "unit": unit,                                         # reciprocal / rsqrt / sqrt / ln
-        "cordic": {"LUT": 3 * (W + 2) * (W - 2), "FF": 3 * (W + 2) * (W - 2), "DSP": 0, "BRAM": 0, "lat": W - 2},
+        "rom_K": rom(K), "rom_Kc": rom(Kc), "rom_in": rom(256), "rom_4k": rom(4096),
+        "recip": {"LUT": norm + W, "FF": 5 * W, "DSP": 2, "BRAM": 0.5, "lat": 12},
+        "rsqrt": {"LUT": norm + W, "FF": 6 * W, "DSP": 3, "BRAM": 0.5, "lat": 15},
+        "sqrt": {"LUT": norm + W, "FF": 7 * W, "DSP": 4, "BRAM": 0.5, "lat": 18},
+        "ln": {"LUT": norm + W, "FF": 3 * W, "DSP": 1, **{k: v for k, v in rom(K).items() if k == "BRAM"}, "lat": 8},
+        "cordic": {"LUT": 3 * (W + 2) * (W - 2), "FF": 3 * (W + 2) * (W - 2), "DSP": 0, "BRAM": 0, "lat": W + 1},
     }
 
 
-def resource_model(N, W, K, Kc, variant="full", arch="parallel", lanes=1, n_onedim=25, n_terms=27):
-    """Per-block operator counts -> resources and pipeline latency.
-    arch 'parallel': every operator instantiated (II = 1 clock).
-    arch 'tmux': hypotheses evaluated by `lanes` units over several clocks, the pairwise products by
-    one 4-DSP cascade, the two tops by one shared top unit and the density by one complex MAC;
-    the initiation interval must stay below the TMUX period."""
+def resource_model(N, W, K, Kc, variant="full", arch="parallel", lanes=4, n_onedim=25, n_terms=27):
+    """Analytic operator inventory per block -> LUT/FF/DSP/BRAM and pipeline latency (clock cycles).
+
+    arch 'parallel': every operator instantiated; one event in flight (II = latency, which is far below the
+        48-BC TMUX period, so no inter-event pipelining or delay lines are needed).
+    arch 'tmux': loops serialized inside the TMUX period: one object decoder, one 4-DSP pairwise unit,
+        3 χ² ROMs, `lanes` hypothesis units with running minima, one shared sqrt for the masses, one top
+        unit used for both tops, one complex MAC for the density terms.
+    LUT and FF include a factor OVERHEAD for control, multiplexers and pipeline balancing."""
     op = _ops(W, K, Kc)
-    npair_jj, npair_lj, npair_nj = comb(N, 2), N, 2 * N
+    njj, nlj, nnj = comb(N, 2), N, 2 * N + 2
     ntrip, H = comb(N, 3), comb(N, 2) * (N - 2) * (N - 3)
+    nobj = N + 1
     par = arch == "parallel"
     blocks = []
 
-    def block(name, items, lat, ii=1):
+    def block(name, items, lat, ii=1, path=True):
         r = {"LUT": 0.0, "FF": 0.0, "DSP": 0.0, "BRAM": 0.0}
         for o, cnt in items:
             for k in r:
                 r[k] += op[o][k] * cnt
         r["LUT"] *= OVERHEAD
         r["FF"] *= OVERHEAD
-        blocks.append({"block": name, **{k: round(v, 1) for k, v in r.items()}, "lat": int(lat), "ii": int(ii)})
+        blocks.append({"block": name, **{k: round(v, 1) for k, v in r.items()}, "lat": int(lat), "ii": int(ii),
+                       "critical": path})
 
-    lat = {k: v["lat"] for k, v in op.items()}
-    n_obj = N + 1
-    # decode: φ and η ROMs per object, 4 multipliers per object (time-multiplexed: one object per clock)
-    block("input decode (ROMs + 4 mul/object)", [("rom_in", 4 * n_obj), ("mul", 4 * n_obj)] if par else
-          [("rom_in", 4), ("mul", 4)], lat["rom_in"] + lat["mul"] + (0 if par else n_obj), 1 if par else n_obj)
-    npair = npair_jj + npair_lj
-    block(f"pairwise m² ({npair} jet/lepton pairs, 4-DSP dot)", [("dot4", npair)] if par else [("dot4", 1)],
-          lat["dot4"] + (0 if par else npair), 1 if par else npair)
-    block("ν p_z solver (1 recip + 3 sqrt)", [("unit", 4), ("mul", 16), ("add", 4)],
-          4 * lat["unit"] + 4 * lat["mul"] + 2)
-    block(f"ν-jet / ℓν m² ({npair_nj + 2} dots)", [("dot4", npair_nj + 2)] if par else [("dot4", 1)],
-          lat["dot4"] + (0 if par else npair_nj + 2), 1 if par else npair_nj + 2)
-    nlook = npair_jj + ntrip + 2 * N
     if par:
-        block(f"χ² terms ({nlook} ROM lookups, {ntrip + 2 * N} m² sums)",
-              [("rom_Kc", nlook), ("add", 2 * ntrip + 4 * N), ("cmpsel", N)], 2 + lat["rom_Kc"] + 1)
-        block(f"hypotheses ({H} sums) + argmin tree", [("add", 2 * H), ("cmpsel", H - 1)],
-              1 + int(np.ceil(log2(H))) + 1)
+        block(f"input decode ({nobj} objects: η/φ ROMs, 4 mul each)", [("rom_in", 4 * nobj), ("mul", 4 * nobj)], 4)
+        block(f"pairwise m² jets+lepton ({njj + nlj} 4-DSP dots)", [("dot4", njj + nlj)], 6, path=False)
     else:
-        block(f"χ² terms (3 ROMs, {nlook} lookups serial)", [("rom_Kc", 3), ("add", 6), ("cmpsel", 1)],
-              nlook // 3 + lat["rom_Kc"] + 3, nlook // 3)
-        block(f"hypotheses ({H}, {lanes} lanes) + running min", [("add", 2 * lanes), ("cmpsel", 2 * lanes)],
-              int(np.ceil(H / lanes)) + int(np.ceil(log2(max(lanes, 2)))) + 2, int(np.ceil(H / lanes)))
-    block("masses: mux + 3 sqrt + 3 BW ROMs + sum", [("unit", 3), ("rom_K", 3), ("add", 3), ("cmpsel", 1)],
-          1 + lat["unit"] + lat["rom_K"] + 2 + 1)
+        block("input decode (1 object/clock)", [("rom_in", 4), ("mul", 4)], 4 + nobj, nobj)
+        block(f"pairwise m² jets+lepton (1 dot unit, {njj + nlj} pairs)", [("dot4", 1)], 6 + njj + nlj, njj + nlj,
+              path=False)
+    block("ν p_z solver (1/pT ROM, 3 sqrt)", [("rom_4k", 1), ("dot2", 3), ("mul", 1), ("dot3", 3), ("sqrt", 3),
+                                              ("add", 4)], 4 + 3 + 5 + 18 + 4 + 5 + 18)
+    if par:
+        block(f"ν-jet and ℓν m² ({nnj} dots)", [("dot4", nnj)], 6)
+        block(f"χ² terms ({njj + ntrip + 2 * N} ROM lookups, ν choice)",
+              [("rom_Kc", njj + ntrip + 2 * N), ("add", 2 * ntrip + 4 * N), ("cmpsel", N)],
+              2 + op["rom_Kc"]["lat"] + 1)
+        block(f"{H} hypotheses + argmin tree", [("add", 2 * H), ("cmpsel", H - 1)], 2 + int(np.ceil(log2(H))))
+        block("masses: mux, 3 sqrt, 3 BW ROMs, sum", [("sqrt", 3), ("rom_K", 3), ("add", 2), ("cmpsel", 4)],
+              1 + 18 + op["rom_K"]["lat"] + 2 + 1)
+    else:
+        block(f"ν-jet and ℓν m² (1 dot unit, {nnj} pairs)", [("dot4", 1)], 6 + nnj, nnj)
+        nser = max(njj, ntrip, 2 * N)
+        block(f"χ² terms (3 ROMs, {nser} clocks)", [("rom_Kc", 3), ("add", 4), ("cmpsel", 1)],
+              2 + op["rom_Kc"]["lat"] + 1 + nser, nser)
+        nh = int(np.ceil(H / lanes))
+        block(f"{H} hypotheses ({lanes} lanes, running min)", [("add", 2 * lanes), ("cmpsel", 2 * lanes)],
+              2 + nh + int(np.ceil(log2(max(lanes, 2)))), nh)
+        block("masses: mux, 1 shared sqrt, BW ROMs, sum", [("sqrt", 1), ("rom_K", 3), ("add", 2), ("cmpsel", 4)],
+              1 + 18 + 2 + op["rom_K"]["lat"] + 2 + 1, 3)
     if variant == "full":
-        # angle unit: production (~25 mul, 2 ln, 4 recip, 1 sqrt, 1 rsqrt) + two tops (~44 mul, 3 rsqrt,
-        # 2 recip, 2 CORDIC each); time-multiplexed: one top unit used twice
+        # production: 15 mul + 2 dot3, 2 ln, 1 sqrt, 4 recip, 1 rsqrt, ~35 adders (see l1_chain)
+        block("angles: production (Y, cos Θ)", [("mul", 15), ("dot3", 2), ("ln", 2), ("sqrt", 1), ("recip", 4),
+                                                ("rsqrt", 1), ("add", 35)],
+              2 + 4 + 18 + 1 + 3 + 12 + 3 + 3 + 1 + 3 + 1 + 5 + 15 + 3)
         ntop = 2 if par else 1
-        block("angles: production (Y, cos Θ)", [("mul", 25), ("unit", 8), ("add", 20)],
-              3 * lat["unit"] + 6 * lat["mul"] + 4)
-        block(f"angles: top decay unit x{ntop}", [("mul", 44 * ntop), ("unit", 5 * ntop), ("cordic", 2 * ntop),
-                                                 ("add", 20 * ntop)],
-              2 * lat["unit"] + 8 * lat["mul"] + lat["cordic"] + 4 + (0 if par else 8), 1 if par else 2)
-        nmul_f = 4 * n_terms + 30
-        block(f"density: {n_onedim} 1-D ROMs, {n_terms} terms, adder tree",
-              [("rom_K", n_onedim), ("mul", nmul_f if par else 4), ("add", n_terms if par else 2)],
-              lat["rom_K"] + 4 * lat["mul"] + int(np.ceil(log2(n_terms))) + (0 if par else n_terms),
-              1 if par else n_terms)
-        block("-ln(f - y0) + final sum + threshold", [("unit", 1), ("add", 3), ("cmpsel", 1)], lat["unit"] + 3)
+        block(f"angles: top-decay unit x{ntop} (cos θ, φ, cos θ', φ')",
+              [("mul", 20 * ntop), ("dot2", 8 * ntop), ("dot3", 5 * ntop), ("rsqrt", 3 * ntop), ("recip", 2 * ntop),
+               ("cordic", 2 * ntop), ("rom_in", 4 * ntop), ("add", 12 * ntop)],
+              2 + 5 + 15 + 3 + 4 + 5 + 4 + 4 + (W + 1) + (0 if par else 2), 1 if par else 2)
+        nmul = 21 + 6 + 3 * n_terms
+        if par:
+            block(f"density: {n_onedim} 1-D ROMs, {n_terms} product terms, adder tree",
+                  [("rom_K", n_onedim), ("mul", nmul), ("add", n_terms)],
+                  op["rom_K"]["lat"] + 3 + 3 + 3 + 4 + 3 + int(np.ceil(log2(n_terms))))
+        else:
+            block(f"density: {n_onedim} 1-D ROMs, complex MAC over {n_terms} terms",
+                  [("rom_K", n_onedim), ("mul", 8), ("dot2", 2), ("add", 2)],
+                  op["rom_K"]["lat"] + 3 + 3 + 3 + 4 + 3 + n_terms, n_terms)
+        block("-ln(f - y0) unit, final sum, threshold", [("ln", 1), ("add", 3), ("cmpsel", 1)], 1 + 8 + 1 + 1)
     tot = {k: round(sum(b[k] for b in blocks), 1) for k in ("LUT", "FF", "DSP", "BRAM")}
-    # latency: the jet-only χ² path runs in parallel with the ν solver; the critical path is
-    # decode -> ν solver -> ν-jet m² -> χ² -> argmin -> masses (-> angles -> density -> ln)
-    L = {b["block"]: b["lat"] for b in blocks}
-    names = [b["block"] for b in blocks]
-    crit = L[names[0]] + L[names[2]] + L[names[3]] + L[names[4]] + L[names[5]] + L[names[6]]
+    # critical path: decode -> ν -> ν-jet m² -> χ² terms -> hypotheses -> masses; the full score continues
+    # after the hypothesis mux (parallel to the mass sqrt) through max(production, top) -> density -> -ln.
+    L = [b["lat"] for b in blocks]
+    to_sel = L[0] + L[2] + L[3] + L[4] + L[5]
+    crit = to_sel + L[6]
     if variant == "full":
-        crit += max(L[names[7]], L[names[8]]) + L[names[9]] + L[names[10]]
-    ii = max(b["ii"] for b in blocks)
-    return {"N": N, "W": W, "K": K, "Kchi": Kc, "variant": variant, "arch": arch, "lanes": lanes,
-            "blocks": blocks, "total": tot, "latency_clk": int(crit), "ii_clk": int(ii),
+        crit = max(crit, to_sel + 1 + max(L[7], L[8]) + L[9] + L[10])
+    # schedule (start, end) per block; lane 0 = critical path, lane 1 = concurrent
+    sched, t = [], 0
+    for i, lane in ((0, 0), (2, 0), (3, 0), (4, 0), (5, 0)):
+        sched.append({"block": blocks[i]["block"], "start": t, "end": t + L[i], "lane": lane})
+        t += L[i]
+    sched.insert(1, {"block": blocks[1]["block"], "start": L[0], "end": L[0] + L[1], "lane": 1})
+    if variant == "full":
+        sched.append({"block": blocks[6]["block"], "start": t, "end": t + L[6], "lane": 1})
+        first, second = (7, 8) if L[7] >= L[8] else (8, 7)
+        sched.append({"block": blocks[first]["block"], "start": t + 1, "end": t + 1 + L[first], "lane": 0})
+        sched.append({"block": blocks[second]["block"], "start": t + 1, "end": t + 1 + L[second], "lane": 1})
+        t += 1 + L[first]
+        for i in (9, 10):
+            sched.append({"block": blocks[i]["block"], "start": t, "end": t + L[i], "lane": 0})
+            t += L[i]
+    else:
+        sched.append({"block": blocks[6]["block"], "start": t, "end": t + L[6], "lane": 0})
+    ii = max(max(b["ii"] for b in blocks), 1)
+    if par:
+        ii = crit                      # one event in flight
+    return {"N": N, "W": W, "K": K, "Kchi": Kc, "variant": variant, "arch": arch, "lanes": lanes if not par else None,
+            "blocks": blocks, "schedule": sched, "total": tot, "latency_clk": int(crit), "ii_clk": int(ii),
             "latency_ns": round(crit / CLOCK_MHZ * 1e3, 1), "ii_ns": round(ii / CLOCK_MHZ * 1e3, 1),
-            "frac": {dev: {k: round(tot[k] / DEVICES[dev][k], 4) for k in ("LUT", "FF", "DSP", "BRAM")}
+            "tmux_period_clk": int(TMUX_BC * 25e-3 * CLOCK_MHZ),
+            "frac": {dev: {k: round(tot[k] / DEVICES[dev][k], 5) for k in ("LUT", "FF", "DSP", "BRAM")}
                      for dev in DEVICES}}
 
 
@@ -757,14 +799,16 @@ def resource_model(N, W, K, Kc, variant="full", arch="parallel", lanes=1, n_oned
 class Study:
     def __init__(self):
         self.D = {k: load(k) for k in ("tt_test", "tt_calib", "hh")}
+        add_noise(self.D)
         self.dens = DensityLUT()
         self.cache = {}
 
-    def run_float(self, name, N=6, use_btag=True, massless=False, dtype="truth", scheme=None, kind="offline"):
+    def run_float(self, name, N=6, use_btag=True, massless=False, dtype="truth", scheme=None, kind="offline",
+                  smear=False):
         out = {}
         for k, d in self.D.items():
             idx = event_set(d, kind)
-            o = float_chain(d, idx, N, use_btag, massless, dtype, scheme)
+            o = float_chain(d, idx, N, use_btag, massless, dtype, scheme, smear)
             if not o["ok"].all():
                 raise RuntimeError(f"{name}: {(~o['ok']).sum()} events without a valid hypothesis")
             o["f"] = self.dens.f(o["angles"])
@@ -773,27 +817,41 @@ class Study:
         sc = {k: score_float(out[k]["masses"], out[k]["f"], cal) for k in ("tt_test", "hh")}
         sc["chi2"] = {"tt_test": out["tt_test"]["chi2"], "hh": out["hh"]["chi2"]}
         res = {"name": name, "cfg": {"N": N, "btag": use_btag, "massless": massless, "dtype": dtype,
-                                     "inputs": scheme, "W": None, "K": None, "Kchi": None, "events": kind},
+                                     "inputs": scheme, "W": None, "K": None, "Kchi": None, "events": kind,
+                                     "smear": smear, "angles": True},
                "cal": cal, "scores": sc, "reco": out}
         self.cache[name] = res
         return res
 
-    def run_fixed(self, name, N, inputs="nominal", W=18, K=1024, Kchi=1024, kind="offline", angles=True):
+    def run_fixed(self, name, N, inputs="nominal", W=18, K=1024, Kchi=1024, kind="offline", angles=True,
+                  smear=False):
         A = Arith(W)
-        cfg = {"N": N, "inputs": inputs, "K": K, "Kchi": Kchi, "angles": angles}
+        cfg = {"N": N, "inputs": inputs, "K": K, "Kchi": Kchi, "angles": angles, "smear": smear}
         out = {k: l1_chain(d, event_set(d, kind), cfg, A, self.dens) for k, d in self.D.items()}
         cal = calibrate(out["tt_calib"]["masses"], out["tt_calib"].get("f"))
         sc = {k: score_fixed(out[k]["masses"], out[k].get("f"), cal, A, K) for k in ("tt_test", "hh")}
         sc["chi2"] = {"tt_test": out["tt_test"]["chi2"], "hh": out["hh"]["chi2"]}
         res = {"name": name, "cfg": {"N": N, "btag": False, "massless": True, "dtype": "softer", "inputs": inputs,
-                                     "W": W, "K": K, "Kchi": Kchi, "events": kind},
+                                     "W": W, "K": K, "Kchi": Kchi, "events": kind, "smear": smear, "angles": angles},
                "cal": cal, "scores": sc, "reco": out, "sat": dict(A.sat)}
         self.cache[name] = res
         return res
 
 
-def summarize(res, ref=None, boot=True):
-    """AUCs, working points, tail agreement and assignment agreement of one configuration."""
+def _same_assignment(res, ref):
+    same = {}
+    for k in ("tt_test", "hh"):
+        a, b = res["reco"][k], ref["reco"][k]
+        if len(a["sel"]) == len(b["sel"]):
+            same[k] = float(np.mean(np.all(a["sel"] == b["sel"], 1) & (a["isol"] == b["isol"])))
+    return same
+
+
+def summarize(res, ref=None, ref2=None, boot=True):
+    """AUCs, working points, tail agreement and assignment agreement of one configuration.
+    ref: the physics reference (float chain without input quantization);
+    ref2: the same inputs in float arithmetic with exact functions (arithmetic and ROM fidelity)."""
+    from scipy.stats import spearmanr
     sc = res["scores"]
     tt, hh = sc["tt_test"], sc["hh"]
     row = {"name": res["name"], "cfg": res["cfg"], "n_tt": int(len(tt["mass"])), "n_hh": int(len(hh["mass"])),
@@ -803,9 +861,10 @@ def summarize(res, ref=None, boot=True):
            "auc_chi2min": auc(sc["chi2"]["tt_test"], sc["chi2"]["hh"]),
            "cal": {k: (list(v) if isinstance(v, tuple) else v) for k, v in res["cal"].items()}}
     for key in ("full", "mass"):
-        if key not in tt:
-            continue
-        row[f"eff_tt_at_hh_{key}"] = {str(e): eff_tt_at_hh(tt[key], hh[key], e) for e in (0.9, 0.5, 0.1)}
+        if key in tt:
+            row[f"eff_tt_at_hh_{key}"] = {str(e): eff_tt_at_hh(tt[key], hh[key], e) for e in (0.9, 0.5, 0.1)}
+    if "full" in tt and boot:
+        row["dauc_full_minus_mass"] = paired_bootstrap(tt["full"], hh["full"], tt["mass"], hh["mass"])
     if "sat" in res:
         row["saturations"] = {k: v for k, v in res["sat"].items() if v}
     if ref is not None:
@@ -816,13 +875,24 @@ def summarize(res, ref=None, boot=True):
             row[f"tail_{key}"] = {str(a): tail(tt[key], hh[key], rt[key], rh[key], a) for a in (0.10, 0.05, 0.01)}
             if boot:
                 row[f"dauc_{key}"] = paired_bootstrap(tt[key], hh[key], rt[key], rh[key])
-        same = {}
-        for k in ("tt_test", "hh"):
-            a, b = res["reco"][k], ref["reco"][k]
-            if len(a["sel"]) == len(b["sel"]):
-                same[k] = float(np.mean(np.all(a["sel"] == b["sel"], 1) & (a["isol"] == b["isol"])))
-        row["same_assignment_as_ref"] = same
+        row["same_assignment_as_ref"] = _same_assignment(res, ref)
         row["ref"] = ref["name"]
+    if ref2 is not None:
+        fid = {"ref": ref2["name"], "same_assignment": _same_assignment(res, ref2)}
+        for key in ("full", "mass"):
+            if key not in tt or key not in ref2["scores"]["tt_test"]:
+                continue
+            a = np.r_[tt[key], hh[key]]
+            b = np.r_[ref2["scores"]["tt_test"][key], ref2["scores"]["hh"][key]]
+            dd = a - b - np.median(a - b)
+            fid[f"score_rms_{key}"] = float(np.sqrt(np.mean(dd ** 2)))
+            fid[f"score_q99_{key}"] = float(np.quantile(np.abs(dd), 0.99))
+            fid[f"rank_corr_{key}"] = float(spearmanr(a, b).statistic)
+            same = np.concatenate([np.all(res["reco"][k]["sel"] == ref2["reco"][k]["sel"], 1) &
+                                   (res["reco"][k]["isol"] == ref2["reco"][k]["isol"]) for k in ("tt_test", "hh")])
+            ds = a[same] - b[same]
+            fid[f"score_rms_same_assignment_{key}"] = float(np.sqrt(np.mean((ds - np.median(ds)) ** 2)))
+        row["fidelity"] = fid
     return row
 
 
@@ -851,7 +921,7 @@ def selftest(st):
             print(f"  N={N} {k:8s} same assignment {same:.4f}  max|Δm| {dm:.2e} GeV  max|Δangle| {da:.2e}  "
                   f"max|Δf|/max f {dfv:.2e}")
             ok &= same > 0.999 and dm < 1e-6 and da < 1e-6 and dfv < 1e-9
-        ra, rb = summarize(fx), summarize(fl)
+        ra, rb = summarize(fx, boot=False), summarize(fl, boot=False)
         print(f"  N={N} AUC full {ra['auc_full']:.5f} vs {rb['auc_full']:.5f}; mass {ra['auc_mass']:.5f} vs {rb['auc_mass']:.5f}")
     # bit-true units against their float functions
     A = Arith(18)
@@ -863,6 +933,9 @@ def selftest(st):
     print(f"  W=18 CORDIC atan2 max error {np.max(np.minimum(err, 2 * pi - err)):.2e} rad")
     print(f"  W=18 ln max error {np.max(np.abs(A.ln(x, 1024) - np.log(x))):.2e}")
     return ok
+
+
+RECOMMENDED = {"N": 6, "inputs": "nominal", "W": 16, "K": 256, "Kchi": 256}
 
 
 def main():
@@ -877,80 +950,112 @@ def main():
     passed = selftest(st)
     rows = []
 
-    def add(res, ref=None, boot=True):
-        r = summarize(res, ref, boot)
+    def add(res, ref=None, ref2=None, group=""):
+        r = summarize(res, ref, ref2)
+        r["group"] = group
         rows.append(r)
         f = lambda v: "  -   " if v is None else f"{v:.4f}"  # noqa: E731
-        print(f"{r['name']:46s} full {f(r['auc_full'])}  mass {f(r['auc_mass'])}  ang {f(r['auc_angles'])}  "
-              f"χ²min {r['auc_chi2min']:.4f}" + (f"  same-assign tt {r['same_assignment_as_ref'].get('tt_test', float('nan')):.3f}"
-                                                 if "same_assignment_as_ref" in r else ""), flush=True)
+        d = r.get("dauc_full") or r.get("dauc_mass")
+        sa = r.get("fidelity", {}).get("same_assignment", r.get("same_assignment_as_ref", {}))
+        print(f"{r['name']:50s} {f(r['auc_full'])} {f(r['auc_mass'])} {f(r['auc_angles'])} {r['auc_chi2min']:.4f}"
+              + (f"  {d[0]:+.4f}±{d[1]:.4f}" if d else " " * 17)
+              + (f"  {sa.get('tt_test', float('nan')):.3f}" if sa else "")
+              + (f"  rms {r['fidelity'].get('score_rms_full', r['fidelity'].get('score_rms_mass')):.4f}"
+                 if "fidelity" in r else ""), flush=True)
         return r
 
-    print("\n=== float ladder: offline reference -> L1 restrictions (offline event set) ===")
+    print(f"\n{'configuration':50s} {'full':6s} {'mass':6s} {'angles':6s} {'χ²min':6s}  ΔAUC vs float ref   same-assign  score rms")
+    print("=== float ladder: offline reference -> L1 restrictions (offline event set) ===")
     ref0 = st.run_float("offline reference (N=6, b-tag, truth d-type)")
-    add(ref0)
-    add(st.run_float("+ softer jet = down-type", 6, True, False, "softer"), ref0)
-    add(st.run_float("+ no b-tag in χ²", 6, False, False, "softer"), ref0)
+    add(ref0, group="ladder")
+    add(st.run_float("+ softer jet = down-type", 6, True, False, "softer"), ref0, group="ladder")
+    add(st.run_float("+ no b-tag in χ²", 6, False, False, "softer"), ref0, group="ladder")
+    fl = {}
     for N in (6, 5, 4):
-        add(st.run_float(f"float L1 N={N} (+ massless objects)", N, False, True, "softer"), ref0)
-    print("\n=== quantized L1 inputs, float arithmetic, exact functions ===")
+        fl[N] = st.run_float(f"float L1 N={N} (+ massless objects)", N, False, True, "softer")
+        add(fl[N], ref0, group="ladder")
+    print("=== quantized L1 inputs, float arithmetic, exact functions ===")
+    q = {}
     for N in (6, 5, 4):
-        fref = st.cache[f"float L1 N={N} (+ massless objects)"]
         for sch in ("fine", "nominal", "coarse"):
-            add(st.run_fixed(f"N={N} inputs {sch}, float arithmetic", N, sch, None, None, None), fref)
-    print("\n=== bit width W (nominal inputs, K = Kχ = 1024) ===")
+            q[(N, sch)] = st.run_fixed(f"N={N} inputs {sch}, float arithmetic", N, sch, None, None, None)
+            add(q[(N, sch)], fl[N], group="inputs")
+    print("=== datapath width W (nominal inputs, K = Kχ = 1024) ===")
     for N in (6, 5):
-        fref = st.cache[f"float L1 N={N} (+ massless objects)"]
         for W in (10, 12, 14, 16, 18, 20, 24):
-            add(st.run_fixed(f"N={N} W={W} K=1024", N, "nominal", W, 1024, 1024), fref)
-    print("\n=== ROM depth (nominal inputs, W = 18) ===")
+            add(st.run_fixed(f"N={N} W={W} K=1024", N, "nominal", W, 1024, 1024), fl[N], q[(N, "nominal")], group="W")
+    print("=== ROM depth (nominal inputs, W = 18) ===")
     for N in (6, 5):
-        fref = st.cache[f"float L1 N={N} (+ massless objects)"]
         for K in (32, 64, 256, 1024, 4096):
-            add(st.run_fixed(f"N={N} W=18 K={K} (score ROMs)", N, "nominal", 18, K, 1024), fref)
-        for Kc in (64, 256, 4096):
-            add(st.run_fixed(f"N={N} W=18 Kχ={Kc} (χ² ROMs)", N, "nominal", 18, 1024, Kc), fref)
-        add(st.run_fixed(f"N={N} W=None K=1024 Kχ=1024 (ROMs only)", N, "nominal", None, 1024, 1024), fref)
-    print("\n=== masses-only variant (no angle unit) and L1 event set ===")
+            add(st.run_fixed(f"N={N} W=18 K={K} (score ROMs)", N, "nominal", 18, K, 1024), fl[N], q[(N, "nominal")],
+                group="K")
+        for Kc in (64, 256, 1024, 4096):
+            add(st.run_fixed(f"N={N} W=18 Kχ={Kc} (χ² ROMs)", N, "nominal", 18, 1024, Kc), fl[N], q[(N, "nominal")],
+                group="Kchi")
+        add(st.run_fixed(f"N={N} W=float K=Kχ=1024 (ROMs only)", N, "nominal", None, 1024, 1024), fl[N],
+            q[(N, "nominal")], group="K")
+    print("=== recommended configurations (N=6, nominal inputs, W=16, K=Kχ=256) ===")
+    R = RECOMMENDED
+    rec_full = add(st.run_fixed("recommended: full score", R["N"], R["inputs"], R["W"], R["K"], R["Kchi"]), fl[6],
+                   q[(6, "nominal")], group="recommended")
+    rec_mass = add(st.run_fixed("recommended: masses only (no angle unit)", R["N"], R["inputs"], R["W"], R["K"],
+                                R["Kchi"], angles=False), fl[6], q[(6, "nominal")], group="recommended")
+    add(st.run_fixed("N=5, W=16, K=256, masses only", 5, "nominal", 16, 256, 256, angles=False), fl[5],
+        q[(5, "nominal")], group="recommended")
+    print("=== L1 event set (1 lepton, >= 4 jets, no b-tag requirement) ===")
     for N in (6, 5):
-        fref = st.cache[f"float L1 N={N} (+ massless objects)"]
-        add(st.run_fixed(f"N={N} W=16 K=256 masses-only", N, "nominal", 16, 256, 256, angles=False), fref)
-        add(st.run_fixed(f"N={N} W=18 K=1024 masses-only", N, "nominal", 18, 1024, 1024, angles=False), fref)
-    for N in (6, 5):
-        fl = st.run_float(f"float L1 N={N}, L1 event set", N, False, True, "softer", kind="l1")
-        add(fl)
-        add(st.run_fixed(f"N={N} W=18 K=1024, L1 event set", N, "nominal", 18, 1024, 1024, kind="l1"), fl)
-        add(st.run_fixed(f"N={N} W=16 K=256 masses-only, L1 event set", N, "nominal", 16, 256, 256, kind="l1",
-                         angles=False), fl)
+        f1 = st.run_float(f"float L1 N={N}, L1 event set", N, False, True, "softer", kind="l1")
+        add(f1, group="l1set")
+        add(st.run_fixed(f"N={N} W=16 K=256 full, L1 event set", N, "nominal", 16, 256, 256, kind="l1"), f1,
+            group="l1set")
+        add(st.run_fixed(f"N={N} W=16 K=256 masses only, L1 event set", N, "nominal", 16, 256, 256, kind="l1",
+                         angles=False), f1, group="l1set")
+    print(f"=== resolution stress test (extra σ: jets {SMEAR['jet']:.0%}, lepton {SMEAR['lep']:.0%}, "
+          f"MET {SMEAR['met']:.0f} GeV per component) ===")
+    fs = st.run_float("float L1 N=6, smeared inputs", 6, False, True, "softer", smear=True)
+    add(fs, fl[6], group="stress")
+    add(st.run_fixed("recommended full, smeared inputs", 6, "nominal", 16, 256, 256, smear=True), fs, group="stress")
+    add(st.run_fixed("recommended masses only, smeared inputs", 6, "nominal", 16, 256, 256, smear=True,
+                     angles=False), fs, group="stress")
 
     # resources and latency
     dens = st.dens
+    kw = {"n_onedim": dens.n_onedim(), "n_terms": len(dens.terms)}
     res_tab = []
     for N in (6, 5, 4):
         for variant in ("full", "masses"):
-            for W in (12, 16, 18, 24):
+            for W in (12, 14, 16, 18, 24):
                 for K in (64, 256, 1024):
-                    res_tab.append(resource_model(N, W, K, K, variant, "parallel", n_onedim=dens.n_onedim(),
-                                                  n_terms=len(dens.terms)))
-            for lanes in (1, 4):
-                res_tab.append(resource_model(N, 18, 1024, 1024, variant, "tmux", lanes, n_onedim=dens.n_onedim(),
-                                              n_terms=len(dens.terms)))
-    out = {"meta": {"date": time.strftime("%Y-%m-%d"), "density": DENSITY, "kept_terms": dens.n_kept,
-                    "real_terms": len(dens.terms), "onedim_functions": dens.n_onedim(),
+                    res_tab.append(resource_model(N, W, K, K, variant, "parallel", **kw))
+            for lanes in (1, 4, 12):
+                res_tab.append(resource_model(N, 16, 256, 256, variant, "tmux", lanes, **kw))
+    rec_res = {v: resource_model(R["N"], R["W"], R["K"], R["Kchi"], v, "parallel", **kw) for v in ("masses", "full")}
+    print("\n=== resources (analytic) of the recommended configuration, parallel, "
+          f"{CLOCK_MHZ:.0f} MHz ===")
+    for v, r in rec_res.items():
+        t = r["total"]
+        print(f"  {v:7s} LUT {t['LUT']:7.0f} FF {t['FF']:7.0f} DSP {t['DSP']:4.0f} BRAM36 {t['BRAM']:5.1f} | "
+              + " | ".join(f"{dev}: " + " ".join(f"{k} {100 * x:.2f}%" for k, x in r["frac"][dev].items())
+                           for dev in DEVICES)
+              + f" | latency {r['latency_clk']} clk = {r['latency_ns']:.0f} ns")
+    out = {"meta": {"date": time.strftime("%Y-%m-%d"), "density": os.path.relpath(DENSITY, ROOT),
+                    "kept_terms": dens.n_kept, "real_terms": len(dens.terms), "onedim_functions": dens.n_onedim(),
                     "terms": [{k: (v if k != "c" else [v.real, v.imag]) for k, v in t.items()} for t in dens.terms],
                     "samples": {"tt_test": "samples/ttbar_bblvqq/run_seed12345 (10k)",
                                 "tt_calib": "samples/ttbar_bblvqq/run_seed1001 (first 30k)",
                                 "hh": "samples/hh_bblvqq/run_seed2001 (20k)"},
                     "formats_integer_bits": FMT, "f_shift": F_SHIFT, "input_schemes": INPUT_SCHEMES,
                     "chi_windows_m2": CHI_WINDOW, "bw_windows_m": BW_WINDOW, "y_window": Y_WINDOW,
-                    "devices": DEVICES, "clock_mhz": CLOCK_MHZ, "tmux_bc": TMUX_BC, "lut_ff_overhead": OVERHEAD,
-                    "selftest_passed": bool(passed), "runtime_s": None},
-           "reference_check": {"expected": {"angles+BW": 0.6019, "masses": 0.6003, "angles": 0.5182},
+                    "smear": SMEAR, "devices": DEVICES, "clock_mhz": CLOCK_MHZ, "tmux_bc": TMUX_BC,
+                    "lut_ff_overhead": OVERHEAD, "selftest_passed": bool(passed), "recommended": RECOMMENDED},
+           "reference_check": {"expected (study_salvage/reco_extension.json)":
+                               {"angles+BW": 0.6019, "masses": 0.6003, "angles": 0.5182},
                                "obtained": {"angles+BW": rows[0]["auc_full"], "masses": rows[0]["auc_mass"],
                                             "angles": rows[0]["auc_angles"]}},
-           "rows": rows, "resources": res_tab}
+           "rows": rows, "resources": res_tab, "recommended_resources": rec_res}
     out["meta"]["runtime_s"] = round(time.time() - t0, 1)
-    json.dump(out, open(args.out, "w"), indent=1, default=float)
+    with open(args.out, "w") as fh:
+        json.dump(out, fh, indent=1, default=float)
     print(f"\nwrote {args.out} ({time.time() - t0:.0f} s)")
 
 

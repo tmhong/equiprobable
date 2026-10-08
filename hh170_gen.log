@@ -1,0 +1,10 @@
+[generate] reusing existing process directory /Users/TMHONG/Claude-code/ttbar_bblvqq/work/hh_bblvqq
+[generate] slimmed Delphes output (5 low-level branches dropped)
+[generate] Delphes card: /Users/TMHONG/Claude-code/ttbar_bblvqq/tools/MG5_aMC_v3_6_7/Delphes/cards/delphes_card_ATLAS.tcl
+[generate] running: /Users/TMHONG/Claude-code/ttbar_bblvqq/.venv/bin/python /Users/TMHONG/Claude-code/ttbar_bblvqq/work/hh_bblvqq/bin/madevent /Users/TMHONG/Claude-code/ttbar_bblvqq/work/hh_bblvqq_run_m170_seed2170.mg5
+[generate] log: /Users/TMHONG/Claude-code/ttbar_bblvqq/work/hh_bblvqq_run_m170_seed2170.log
+[generate] finished in 336s (exit code 0)
+[generate] cross section = 1.5745545000000003e-05 pb
+[generate] outputs in /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_m170_seed2170:
+    parton_events.lhe.gz: /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_m170_seed2170/parton_events.lhe.gz
+    delphes_events.root: /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_m170_seed2170/delphes_events.root

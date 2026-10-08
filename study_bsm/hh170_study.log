@@ -1,0 +1,31 @@
+[hh125] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_seed2001/parton_events.lhe.gz
+[hh125] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_seed2001/delphes_events.root
+[hh170] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_m170_seed2170/parton_events.lhe.gz
+[hh170] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_m170_seed2170/delphes_events.root
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed1001/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed12345/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_seed2001/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_m170_seed2170/parton_events.lhe.gz
+parton hh125 {"angles, all terms": [0.653, 3.8], "angles, >10 sigma": [0.67, 7.9], "BW: W masses only": [0.992, 66.7], "BW: top masses only": [0.999, 98.2], "BW: all masses": [1.0, 99.9], "angles (>10 sigma) + BW": [1.0, 99.9]}
+parton hh170 {"angles, all terms": [0.638, 3.6], "angles, >10 sigma": [0.662, 7.2], "BW: W masses only": [0.499, 2.0], "BW: top masses only": [0.995, 92.5], "BW: all masses": [0.985, 78.1], "angles (>10 sigma) + BW": [0.986, 79.6]}
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed1001/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed1001/delphes_events.root
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed12345/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed12345/delphes_events.root
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_seed2001/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_seed2001/delphes_events.root
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_m170_seed2170/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_m170_seed2170/delphes_events.root
+gen hh125 {"angles, all terms": [0.525, 1.7], "angles, >10 sigma": [0.536, 2.1], "BW: W masses only": [0.628, 2.1], "BW: top masses only": [0.684, 2.7], "BW: all masses": [0.69, 2.5], "angles (>10 sigma) + BW": [0.692, 2.3]}
+gen hh170 {"angles, all terms": [0.547, 1.9], "angles, >10 sigma": [0.565, 2.2], "BW: W masses only": [0.584, 1.5], "BW: top masses only": [0.691, 3.0], "BW: all masses": [0.68, 2.4], "angles (>10 sigma) + BW": [0.685, 2.3]}
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed1001/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed1001/delphes_events.root
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed12345/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed12345/delphes_events.root
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_seed2001/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_seed2001/delphes_events.root
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_m170_seed2170/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_m170_seed2170/delphes_events.root
+reco hh125 {"angles, all terms": [0.507, 1.3], "angles, >10 sigma": [0.518, 1.7], "BW: W masses only": [0.574, 1.2], "BW: top masses only": [0.592, 1.6], "BW: all masses": [0.6, 1.8], "angles (>10 sigma) + BW": [0.602, 1.8]}
+reco hh170 {"angles, all terms": [0.534, 0.8], "angles, >10 sigma": [0.547, 1.1], "BW: W masses only": [0.542, 0.7], "BW: top masses only": [0.61, 1.7], "BW: all masses": [0.6, 1.3], "angles (>10 sigma) + BW": [0.606, 1.4]}
+done

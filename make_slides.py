@@ -645,14 +645,16 @@ def study_b_slides(bdir):
             r"Fit the 14\,400 coefficients on the data (here: independent $t\bar t$, 10k events, plus a signal fraction $\epsilon$) "
             r"and compare with the $t\bar t$ reference (fit sample, 100k): pull $=(\hat c_\mathrm{data}-\hat c_{t\bar t})/"
             r"\sqrt{\sigma^2_\mathrm{data}+\sigma^2_{t\bar t}}$ per term, over the 14\,400 real degrees of freedom",
-            r"Model-agnostic: no signal hypothesis, no training; an \emph{excess} shows as pulls on specific terms, and the terms "
-            r"say what the physics is (production angle, spin correlation, polarization)",
+            r"Model-agnostic: no signal hypothesis, no training; an \emph{excess} shows as pulls on specific terms, which say what "
+            r"the physics is",
             rf"Calibration at $\epsilon=0$: pull std {cal['pull_std']:.2f}, $\chi^2$/ndf over all terms "
             rf"{cal['groups']['all terms']['chi2']:.0f}/{cal['groups']['all terms']['ndf']}, $z={cal['groups']['all terms']['z']:+.1f}$: "
             r"the two $t\bar t$ samples agree and the errors are right",
             r"Tests: $\chi^2$ over all terms and over each physics category (production angle, rapidity, $W$ helicity, top "
             r"polarization, spin correlation, SM-null terms), $z=(\chi^2-\mathrm{ndf})/\sqrt{2\,\mathrm{ndf}}$; and the largest "
             r"single pull (14\,400 trials: $5\sigma$ global $\approx|{\rm pull}|>5.3$)",
+        ]),
+        bullets(r"Coefficient test: result with 10k events, and how it scales", [
             r"Result with 10k events: no category $\chi^2$ responds up to $\epsilon=10\%$ (one term carries the signal, the rest "
             r"of the block is noise); the single term that moves is $P_2(\cos\Theta)$, the isotropy of the scalar decay, with pull "
             + ", ".join(rf"{lab[k]}: {p2_pull(ct[k]):.1f}" for k in sigs) + r" at $\epsilon=10\%$, just at the noise ceiling "
@@ -684,6 +686,162 @@ def study_b_slides(bdir):
         r"a pseudoscalar $A$ (the CMS threshold case); a vector ($Z'$) with chiral couplings; realistic $\epsilon$ from "
         r"$\sigma\times\mathcal B$",
     ]))
+    return slides
+
+
+def hh170_slides(bdir):
+    """Study A': hh with m_H = 170 GeV, both W on shell (study_bsm/hh170_study.py)."""
+    p = os.path.join(bdir, "hh170_study.json")
+    if not os.path.exists(p):
+        return []
+    R = json.load(open(p))
+    L, sel = R["levels"], R["selection"]
+    lab = {"hh125": r"$hh$(125)", "hh170": r"$hh$(170)"}
+    order = ["angles, all terms", "angles, >10 sigma", "BW: W masses only", "BW: top masses only", "BW: all masses", "angles (>10 sigma) + BW"]
+    tex = {"angles, all terms": "angles, all terms", "angles, >10 sigma": r"angles, $>10\sigma$", "BW: W masses only": r"BW, $W$ masses only",
+           "BW: top masses only": "BW, top masses only", "BW: all masses": "BW, all masses", "angles (>10 sigma) + BW": "angles + BW"}
+    rows = []
+    for name in order:
+        r = [tex[name]]
+        for l in ("parton", "gen", "reco"):
+            for k in ("hh125", "hh170"):
+                u = L[l][k]["scores"][name]
+                r.append(rf"{u['auc']:.3f} / {100 * u['eff_at_tt_1pct']:.0f}\%")
+        rows.append(r)
+    P = L["parton"]
+    sv = {k: P[k]["single_variable_lr_auc"] for k in ("hh125", "hh170")}
+    mvars = [m for m in P["hh125"]["mass_medians"]]
+    srow = [[ANGLE_TEX.get(a, a.replace("m_w_lep", r"$m_{W,\ell}$").replace("m_w_had", r"$m_{W,h}$").replace("m_t_lep", r"$m_{t,\ell}$").replace("m_t_had", r"$m_{t,h}$"))]
+            + [f"{sv[k][a]:.3f}" for k in ("hh125", "hh170")] for a in ["cos_Theta", "cos_theta", "cos_theta_prime", "cos_theta_tilde", "cos_theta_prime_tilde"] + mvars]
+    return [
+        section(r"Study A$'$: $hh$ with on-shell $W$ bosons ($m_H=170$ GeV)", "Study A': hh with on-shell W bosons"),
+        bullets(r"Idea: remove the off-shell $W$ handle and see what the angles do", [
+            r"Same $hh\to b\bar b\,\ell\nu\,q\bar q'$ chain (\texttt{heft}, shapes only) with $m_H=170$ GeV, just above $2m_W=160.8$ GeV, so "
+            r"both $W$s are on shell ($\Gamma_H=0.38$ GeV); 20k events, same analysis chain, nothing retrained",
+            r"Expectation: the $W$ Breit--Wigner factors go blind; the top factors still see $m_{Wb}$ (the $b$ comes from the other "
+            r"Higgs); after the $\chi^2$ a genuinely on-shell hadronic $W$ makes the signal more $t\bar t$-like; what is left is "
+            r"the angles: a scalar $\to WW$ decay is not $V\!-\!A$ (no zero at $\cos\theta'\to1$), and the pseudo-top direction differs",
+            r"Selection efficiency (trigger / gen / reco): " + "; ".join(
+                rf"{lab[k]} {100 * sel[k]['trigger']:.0f}\% / {100 * sel[k]['gen_reco_ok']:.0f}\% / {100 * sel[k]['reco_reco_ok']:.1f}\%" for k in ("hh125", "hh170"))
+            + r" (harder leptons from on-shell $W$s)",
+        ]),
+        wide_figure(r"$m_{W,\mathrm{had}}$ and $m_{t,\mathrm{had}}$: parton (top) and reco (bottom)", os.path.join(bdir, "fig_hh170.png")),
+        table(r"Which single variables differ at parton level (1-D likelihood-ratio AUC)", ["variable"] + [lab[k] for k in ("hh125", "hh170")], srow, fit=True),
+        table(r"AUC / signal efficiency at 1\% $t\bar t$ efficiency, $hh$(125) and $hh$(170) vs $t\bar t$",
+              ["score", "parton 125", "parton 170", "gen 125", "gen 170", "reco 125", "reco 170"], rows, fit=True,
+              note=r"Same $f_{t\bar t}$ fits and mass factors as before. Parton: the four masses ($W$ and top) with the PDG Breit--Wigner; "
+                   r"gen/reco: $m_{W,h}$, $m_{t,\ell}$, $m_{t,h}$ with the two-number Cauchy."),
+        bullets(r"Study A$'$: what it shows", [
+            rf"Parton: the $W$ factors alone drop from {P['hh125']['scores']['BW: W masses only']['auc']:.2f} to "
+            rf"{P['hh170']['scores']['BW: W masses only']['auc']:.2f}, the top factors stay at "
+            rf"{P['hh170']['scores']['BW: top masses only']['auc']:.2f}: the mass handle was mostly the pseudo-top masses, not the $W^*$",
+            rf"Angles alone at parton: {P['hh125']['scores']['angles, >10 sigma']['auc']:.2f} $\to$ {P['hh170']['scores']['angles, >10 sigma']['auc']:.2f}; "
+            rf"at reco: {L['reco']['hh125']['scores']['angles, >10 sigma']['auc']:.2f} $\to$ {L['reco']['hh170']['scores']['angles, >10 sigma']['auc']:.2f}",
+            rf"Angles + masses: gen {L['gen']['hh125']['scores']['angles (>10 sigma) + BW']['auc']:.2f} $\to$ "
+            rf"{L['gen']['hh170']['scores']['angles (>10 sigma) + BW']['auc']:.2f}, reco {L['reco']['hh125']['scores']['angles (>10 sigma) + BW']['auc']:.2f} $\to$ "
+            rf"{L['reco']['hh170']['scores']['angles (>10 sigma) + BW']['auc']:.2f}: unchanged. After reconstruction the $W^*$ was never the "
+            r"handle (the $\chi^2$ had already pulled $m_{jj}$ to $m_W$); the pseudo-top masses and, less, the angles are",
+            r"So the method is not relying on the off-shell $W$: an $hh$-like signal with on-shell $W$s is separated just as well, and "
+            r"selected twice as often",
+        ]),
+    ]
+
+
+def study_c_slides(pdir, ldir):
+    """Study C: pileup (pileup/results.json) and the Level-1 lookup-table design (study_l1/)."""
+    slides = []
+    PU = json.load(open(os.path.join(pdir, "results.json"))) if os.path.exists(os.path.join(pdir, "results.json")) else None
+    L1 = json.load(open(os.path.join(ldir, "results.json"))) if os.path.exists(os.path.join(ldir, "results.json")) else None
+    if not (PU or L1):
+        return []
+    slides.append(part_frame(r"Study C: towards the detector and the trigger", [
+        r"Pileup: the reco-level method (angles + masses) at $\langle\mu\rangle=0$, 50 and 200 with the Delphes ATLAS pileup card",
+        r"Level-1 trigger: the same score as a lookup-table computation on a Versal FPGA; resources, latency, precision",
+    ]))
+    if PU:
+        mus = sorted(PU["mu"], key=float)
+        g = lambda m, k, f: ("--" if PU["mu"][m].get(k) is None else f(PU["mu"][m][k]))  # noqa: E731
+        rows = [
+            [r"$t\bar t$ fit / test events (reco)"] + [f"{g(m, 'n_tt_fit', str)} / {g(m, 'n_tt_test', str)}" for m in mus],
+            [r"$hh$ events (reco)"] + [g(m, "n_hh", str) for m in mus],
+            [r"reco efficiency $t\bar t$ / $hh$"] + [f"{g(m, 'reco_eff_tt', lambda x: f'{100 * x:.0f}')} / {g(m, 'reco_eff_hh', lambda x: f'{100 * x:.0f}')}\\%" for m in mus],
+            [r"jets per event ($p_T>25$ GeV), $t\bar t$"] + [g(m, "njets_mean_tt", lambda x: f"{x:.2f}") for m in mus],
+            [r"$b$-tagged jets per event"] + [g(m, "nbjets_mean_tt", lambda x: f"{x:.2f}") for m in mus],
+            [r"all 4 $\chi^2$ jets correct, $t\bar t$"] + [g(m, "correct_jets_frac_tt", lambda x: rf"{100 * x:.1f}\%") for m in mus],
+            [r"$\nu$ $p_z$ / MET 68\% half-width [GeV]"] + [f"{g(m, 'nu_pz_half_width', lambda x: f'{x:.0f}')} / {g(m, 'met_res_half_width', lambda x: f'{x:.0f}')}" for m in mus],
+            [r"$W$: $m_{W,h}$ / $m_{t,\ell}$ / $m_{t,h}$ [GeV]"] + [" / ".join(g(m, k, lambda x: f"{x:.0f}") for k in ("W_m_w_had", "W_m_t_lep", "W_m_t_had")) for m in mus],
+            [r"AUC angles, all terms"] + [g(m, "auc_angles_all", lambda x: f"{x:.3f}") for m in mus],
+            [r"AUC angles, $>10\sigma$"] + [g(m, "auc_angles_10sigma", lambda x: f"{x:.3f}") for m in mus],
+            [r"AUC masses (BW)"] + [g(m, "auc_masses", lambda x: f"{x:.3f}") for m in mus],
+            [r"AUC angles ($>10\sigma$) + BW"] + [g(m, "auc_angles_masses", lambda x: f"{x:.3f}") for m in mus],
+            [r"$\epsilon_{hh}$ at 1\% / 10\% $t\bar t$, angles + BW"] + [f"{g(m, 'eff1_angles_10sigma_masses', lambda x: f'{100 * x:.1f}')} / {g(m, 'eff10_angles_10sigma_masses', lambda x: f'{100 * x:.0f}')}\\%" for m in mus],
+            [r"gen-level check (pileup-blind)"] + [g(m, "gen_check_auc_angles_masses", lambda x: f"{x:.3f}") for m in mus],
+        ]
+        slides += [
+            section("Pileup"),
+            bullets(r"Setup", [
+                r"Delphes ATLAS \emph{pileup} card (pileup-subtracted jets, Rho, anti-$k_t$ $R=0.6$ as in the card, no pileup-jet rejection) "
+                r"at $\langle\mu\rangle=0$ (control, same card), 50 and 200; min-bias library: 100k Pythia8 inelastic 13 TeV events",
+                r"Same hard events at every $\langle\mu\rangle$ (same seeds): $t\bar t$ fit 50k, $t\bar t$ test 10k, $hh$ 20k generated; "
+                r"gen level is pileup-blind by construction, which gives an exact cross-check",
+                r"Identical analysis per $\langle\mu\rangle$ (\texttt{pileup/analyze\_pileup.py}): reco-level $f_{t\bar t}$ refit, Cauchy mass "
+                r"factors from the fit sample, scores on the independent $t\bar t$ and on $hh$; the $\langle\mu\rangle=0$ control differs from "
+                r"the no-pileup card (jet energy scale, calorimeter, MET), so compare within this set",
+                r"Cost: Delphes 17 / 75 / 560 ms per event at $\langle\mu\rangle=0$ / 50 / 200 (single-threaded); produced in parallel jobs",
+            ]),
+            table(r"Reco level versus pileup", [""] + [rf"$\langle\mu\rangle={m}$" for m in mus], rows, fit=True),
+        ]
+        for pth, cap in PU.get("figures", []):
+            slides.append(wide_figure(cap.replace(r"\langle\mu\rangle", r"$\langle\mu\rangle$") if "$" not in cap else cap, os.path.join(HERE, pth)))
+        lo, hi = PU["mu"][mus[0]], PU["mu"][mus[-1]]
+        if lo.get("auc_angles_masses") and hi.get("auc_angles_masses"):
+            slides.append(bullets(r"Pileup: what it shows", [
+                rf"Selection: pileup jets pass the $\geq4$-jet cut, so the $t\bar t$ reco efficiency goes from {100 * lo['reco_eff_tt']:.0f}\% to "
+                rf"{100 * hi['reco_eff_tt']:.0f}\% while the fraction of events with the right four jets goes from {100 * lo['correct_jets_frac_tt']:.0f}\% to "
+                rf"{100 * hi['correct_jets_frac_tt']:.1f}\%: at $\langle\mu\rangle=200$ the $\chi^2$ almost never finds the $t\bar t$ system",
+                rf"Resolutions: $\nu$ $p_z$ {lo['nu_pz_half_width']:.0f} $\to$ {hi['nu_pz_half_width']:.0f} GeV, MET {lo['met_res_half_width']:.0f} $\to$ "
+                rf"{hi['met_res_half_width']:.0f} GeV; mass widths $W$ grow accordingly",
+                rf"Separation: masses {lo['auc_masses']:.3f} $\to$ {hi['auc_masses']:.3f}; angles + masses {lo['auc_angles_masses']:.3f} $\to$ "
+                rf"{hi['auc_angles_masses']:.3f}; the gen-level check is {lo['gen_check_auc_angles_masses']:.3f} / {hi['gen_check_auc_angles_masses']:.3f} "
+                r"(paired events, as it must be)",
+                r"Pileup-jet rejection (a card choice not made here) is the obvious lever: the physics loss is combinatorial, not resolution",
+            ]))
+    if L1:
+        rc = L1.get("reference_check", {})
+        slides += [
+            section("Level-1 trigger: a lookup-table version of angles + BW"),
+            bullets(r"Can the score run in the ATLAS Phase-II Global Trigger (AMD Versal) within 5\% of the device and 10 $\mu$s?", [
+                r"Inputs as L0 objects: 6 leading jets ($p_T,\eta,\phi$, massless), one lepton, MET; quantized like the Run-3 TOBs; no $b$-tag",
+                r"The expensive part is the $\chi^2$ jet assignment (180 assignments $\times$ 2 $\nu$ solutions), not the LUTs. Trick: for massless "
+                r"objects every hypothesis mass is a sum of shared pairwise invariants $m^2_{ij}=2p_i\!\cdot\!p_j$: 35 four-DSP dot products, "
+                r"47 small $\chi^2$ ROMs indexed by $m^2$ (no square roots), 360 adders and a comparator tree",
+                r"The ten angles need no Lorentz boosts: closed-form dimensionless expressions (aberration, ratios of the same invariants, "
+                r"perpendicular components), checked against \texttt{plotting/angles.py} to $10^{-10}$",
+                r"Density and masses as 1-D ROMs (Legendre, Hermite, Wigner-$d$, $\cos/\sin$, Breit--Wigner, $\ln$); the kept $f$ has 31 terms",
+                rf"Bit-true numpy emulation on the real reco samples; float chain reproduces the offline reference "
+                rf"(angles + BW {rc.get('obtained', {}).get('angles+BW', float('nan')):.3f} vs {rc.get('expected (study_salvage/reco_extension.json)', {}).get('angles+BW', float('nan')):.3f})",
+                r"Resources and latency are analytic (no Vivado here); validation path: Vitis HLS / hls4ml (\texttt{study\_l1/design.md} \S8)",
+            ]),
+            table(r"Recommended configurations on a Versal Premium VP1802",
+                  ["design", r"AUC", "LUT", "DSP", "BRAM", "latency (240 MHz)"], [
+                      [r"masses only ($\chi^2$ + BW); 6 jets, 16 bit, 256-entry ROMs", "0.582", r"0.83\%", r"1.45\%", r"0.10\%", r"0.43 $\mu$s"],
+                      [r"full score (+ angles)", "0.583", r"1.21\%", r"3.36\%", r"0.26\%", r"0.79 $\mu$s"],
+                      [r"offline reference ($b$-tag, truth down-type jet)", "0.602", "--", "--", "--", "--"],
+                  ], fit=True, note=r"Fixed point costs nothing in AUC for datapath width $\ge14$ bits and ROM depth $\ge64$. The loss 0.602 $\to$ 0.583 "
+                          r"is the missing $b$-tag at L1; restricting to 6 jets is free, 4 jets would cost another 0.018. Both designs are far "
+                          r"inside 5\% and 10 $\mu$s, and inside the 1.2 $\mu$s per-event budget of a GEP node. The angles add $+0.0004\pm0.0022$."),
+            wide_figure(r"AUC and per-event fidelity vs datapath width and ROM depth", os.path.join(ldir, "fig_precision.png")),
+            wide_figure(r"Resources by block, as a fraction of a VP1802", os.path.join(ldir, "fig_resources.png")),
+            wide_figure(r"Pipeline schedule at 240 MHz", os.path.join(ldir, "fig_latency.png")),
+            bullets(r"L1: conclusions", [
+                r"Feasible with large margins: $\sim$1\% of the LUTs and 1.5--3.4\% of the DSPs of a VP1802, 0.4--0.8 $\mu$s latency",
+                r"The $hh$-like tail survives quantization: at 5--10\% $t\bar t$ acceptance, $\ge95\%$ of the selected events are the same as in "
+                r"floating point; 91\% of events get the same $\chi^2$ assignment",
+                r"What limits the physics at L1 is the input, not the arithmetic: no $b$-tag, 6 jets, TOB precision. And the separation itself is "
+                r"weak at any precision (keeping 50\% of $hh$ keeps 38\% of $t\bar t$)",
+                r"Recommendation: the masses-only design; add the angular term only if the parton-level physics of $f$ is wanted in the trigger",
+            ]),
+        ]
     return slides
 
 
@@ -1326,7 +1484,9 @@ PREAMBLE = r"""\documentclass[aspectratio=169,11pt]{beamer}
   \centering{\large\color{pittroyal}\insertauthor\par}\vspace{0.25cm}
   {\small\insertinstitute\par}\vspace{0.25cm}{\small\color{pittgray}\insertdate\par}}
 % outline at the start of each section, current section highlighted
-\AtBeginSection[]{\ifnum\value{section}>1\begin{frame}{Outline}\tableofcontents[currentsection]\end{frame}\fi}
+\AtBeginSection[]{\ifnum\value{section}>1\begin{frame}{Outline}\small
+\begin{columns}[t]\begin{column}{0.5\textwidth}\tableofcontents[currentsection,sections={1-11}]\end{column}
+\begin{column}{0.5\textwidth}\tableofcontents[currentsection,sections={12-24}]\end{column}\end{columns}\end{frame}\fi}
 \usepackage{booktabs}
 \usepackage{adjustbox}
 \usepackage{amsmath,amssymb,bm}
@@ -1359,7 +1519,8 @@ def write_tex(slides, title, author, path):
         f.write(f"\\title[{SHORT_TITLE}]{{{title}}}\n\\author{{{author}}}\n\\date{{\\today}}\n")
         f.write("\\institute{PITT PACC and Department of Physics and Astronomy, University of Pittsburgh}\n")
         f.write("\\begin{document}\n\\begin{frame}[plain]\\titlepage\\end{frame}\n")
-        f.write("\\begin{frame}{Outline}\\tableofcontents\\end{frame}\n\n")
+        f.write("\\begin{frame}{Outline}\\small\\begin{columns}[t]\\begin{column}{0.5\\textwidth}\\tableofcontents[sections={1-11}]"
+                "\\end{column}\\begin{column}{0.5\\textwidth}\\tableofcontents[sections={12-24}]\\end{column}\\end{columns}\\end{frame}\n\n")
         f.write("\n".join(slides))
         f.write("\\end{document}\n")
 
@@ -1427,12 +1588,15 @@ def main():
         slides += ml_slides(os.path.join(HERE, "ml"), ml_explainer_slides())
         slides += washout_slides(os.path.join(HERE, "study_washout"))
         slides += salvage_slides(os.path.join(HERE, "study_salvage"))
-        slides += study_b_slides(os.path.join(HERE, "study_bsm"))
         slides += discriminator_slides(os.path.abspath(args.osde))
     elif args.hh or args.osde:
         sys.exit("--hh and --osde go together")
     if args.acceptance:
         slides += acceptance_slides(os.path.abspath(args.acceptance))
+    if args.hh and args.osde:
+        slides += hh170_slides(os.path.join(HERE, "study_bsm"))
+        slides += study_b_slides(os.path.join(HERE, "study_bsm"))
+        slides += study_c_slides(os.path.join(HERE, "pileup"), os.path.join(HERE, "study_l1"))
     slides.append(section("Summary"))
     slides.append(closing_slide(S, O))
     write_tex(slides, args.title, args.author, tex)

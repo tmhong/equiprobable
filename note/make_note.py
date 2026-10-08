@@ -978,6 +978,99 @@ jet is down-type.  The hadronic primed angles carry little of the $hh$ separatio
           ["down-type assignment", r"label right ($t\bar t$)", "parton: angles", "+BW", "reco: angles", "+BW"], grows, "tab:tag")
 
 
+def sec_hh170(N):
+    R = N.get("hh170")
+    head = r"""
+\section{Study A$'$: $hh$ with on-shell $W$ bosons}
+\label{sec:hh170}
+
+The off-shell $W^*$ of $hh\to b\bar b\,WW^*$ is what makes the mass handle of Section~\ref{sec:momentum} so
+effective.  To see what the angles do when that handle is removed, the same $hh\to b\bar b\,\ell\nu\,q\bar q'$
+chain is generated with $m_H=170$~GeV, just above $2m_W=160.8$~GeV, so that both $W$ bosons are on shell
+($\Gamma_H=0.38$~GeV, shapes only), and the analysis is repeated with nothing retrained.  The $W$
+Breit--Wigner factors should then go blind, the top factors should still see $m_{Wb}$ (the $b$ comes from the
+other Higgs boson), and after the $\chi^2$ reconstruction a genuinely on-shell hadronic $W$ should make the
+signal look more $t\bar t$-like; what is left is the angles, since a scalar decaying to $WW$ does not give the
+$V\!-\!A$ shape of the top decay and the pseudo-top direction still differs.
+"""
+    if not R:
+        return head + r"\emph{Status: the sample is being generated; this section is filled in from \texttt{study\_bsm/hh170\_study.json}.}" + "\n"
+    L, sel = R["levels"], R["selection"]
+    lab = {"hh125": "$hh(125)$", "hh170": "$hh(170)$"}
+    order = ["angles, all terms", "angles, >10 sigma", "BW: W masses only", "BW: top masses only", "BW: all masses", "angles (>10 sigma) + BW"]
+    tex = {"angles, all terms": "angles, all terms", "angles, >10 sigma": r"angles, $>10\sigma$", "BW: W masses only": r"BW, $W$ masses only",
+           "BW: top masses only": "BW, top masses only", "BW: all masses": "BW, all masses", "angles (>10 sigma) + BW": "angles + BW"}
+    rows = []
+    for name in order:
+        r = [tex[name]]
+        for l in ("parton", "gen", "reco"):
+            for k in ("hh125", "hh170"):
+                u = L[l][k]["scores"][name]
+                r.append(rf"{u['auc']:.3f} / {100 * u['eff_at_tt_1pct']:.0f}")
+        rows.append(r)
+    P = L["parton"]
+    return head + rf"""
+The harder leptons raise the selection efficiency: trigger / gen / reco efficiencies of
+{100 * sel['hh125']['trigger']:.0f} / {100 * sel['hh125']['gen_reco_ok']:.0f} / {100 * sel['hh125']['reco_reco_ok']:.1f}\% for $hh(125)$ become
+{100 * sel['hh170']['trigger']:.0f} / {100 * sel['hh170']['gen_reco_ok']:.0f} / {100 * sel['hh170']['reco_reco_ok']:.1f}\% for $hh(170)$.
+Table~\ref{{tab:hh170}} compares the scores.  At parton level the $W$ factors alone drop from
+{P['hh125']['scores']['BW: W masses only']['auc']:.2f} to {P['hh170']['scores']['BW: W masses only']['auc']:.2f} while the top factors stay at
+{P['hh170']['scores']['BW: top masses only']['auc']:.2f}: the mass handle was mostly the pseudo-top masses, not the $W^*$.  The angles alone
+go from {P['hh125']['scores']['angles, >10 sigma']['auc']:.2f} to {P['hh170']['scores']['angles, >10 sigma']['auc']:.2f} at parton level and
+from {L['reco']['hh125']['scores']['angles, >10 sigma']['auc']:.2f} to {L['reco']['hh170']['scores']['angles, >10 sigma']['auc']:.2f} at reco
+level; angles + masses from {L['gen']['hh125']['scores']['angles (>10 sigma) + BW']['auc']:.2f} to
+{L['gen']['hh170']['scores']['angles (>10 sigma) + BW']['auc']:.2f} at gen level and from
+{L['reco']['hh125']['scores']['angles (>10 sigma) + BW']['auc']:.2f} to {L['reco']['hh170']['scores']['angles (>10 sigma) + BW']['auc']:.2f}
+at reco level, i.e.\ unchanged.  After reconstruction the off-shell $W^*$ was never the handle, since the $\chi^2$
+had already pulled $m_{{jj}}$ to $m_W$; the pseudo-top masses and, to a lesser extent, the angles are.  The
+method therefore does not rely on the off-shell $W$: an $hh$-like signal with on-shell $W$ bosons is separated
+just as well, and selected twice as often.
+""" + tab(r"$hh(125)$ and $hh(170)$ versus $t\bar t$: AUC / signal efficiency (\%) at 1\% $t\bar t$ efficiency, with the existing fits.",
+          ["score", "parton 125", "parton 170", "gen 125", "gen 170", "reco 125", "reco 170"], rows, "tab:hh170") + \
+        fig(rel("study_bsm", "fig_hh170.png"), r"$m_{W,\mathrm{had}}$ and $m_{t,\mathrm{had}}$ at parton (top) and reco level (bottom) for "
+            r"$t\bar t$, $hh(125)$ and $hh(170)$.", "fig:hh170")
+
+
+def sec_l1(N):
+    L1 = N.get("l1")
+    if not L1:
+        return ""
+    rc = L1.get("reference_check", {})
+    obt = rc.get("obtained", {}).get("angles+BW", float("nan"))
+    exp_ = rc.get("expected (study_salvage/reco_extension.json)", {}).get("angles+BW", float("nan"))
+    return rf"""
+\section{{A lookup-table version for the Level-1 trigger}}
+\label{{sec:l1}}
+
+Can the angles + Breit--Wigner score run in the ATLAS Phase-II Global Trigger, on an AMD Versal, within
+5\% of the device and 10~$\mu$s?  The study (\texttt{{study\_l1/design.md}}, with a bit-true fixed-point
+emulation \texttt{{study\_l1/emulate.py}} run on the real reco-level samples) says yes, with large margins.  The
+inputs are L0 objects, the six leading jets ($p_T$, $\eta$, $\phi$, massless), one lepton and the missing
+transverse momentum, quantized like the Run-3 trigger objects and without $b$-tagging.  The expensive part is
+not the lookup tables but the $\chi^2$ jet assignment, 180 assignments times two neutrino solutions; it becomes
+cheap because for massless objects every hypothesis mass is a sum of shared pairwise invariants
+$m^2_{{ij}}=2p_i\cdot p_j$, so the whole combinatorics needs 35 four-DSP dot products, 47 small $\chi^2$ ROMs
+indexed by $m^2$ (no square roots), 360 adders and a comparator tree.  The ten angles need no Lorentz boosts:
+they follow from closed-form dimensionless expressions (aberration, ratios of the same invariants,
+perpendicular components), checked against \texttt{{plotting/angles.py}} to $10^{{-10}}$.  The density (31 kept
+terms) and the mass factors are one-dimensional ROMs.  The floating-point chain reproduces the offline
+reference (angles + BW AUC {obt:.3f} against {exp_:.3f}).
+
+The recommended configuration, six jets, a 16-bit datapath and 256-entry ROMs, fully parallel, costs on a
+Versal Premium VP1802 (the FPGA of the Global Common Module) 0.83\% of the LUTs, 1.45\% of the DSPs and
+0.10\% of the BRAM for the masses-only score, with a latency of 0.43~$\mu$s at 240~MHz, and 1.21\% / 3.36\% /
+0.26\% and 0.79~$\mu$s with the angular term; both are inside the 1.2~$\mu$s per-event budget of a trigger
+node.  Fixed point costs nothing in AUC for widths of 14 bits or more and ROM depths of 64 or more; the
+$hh$-like tail survives quantization (at 5--10\% $t\bar t$ acceptance, at least 95\% of the selected events are
+the same as in floating point, and 91\% of the events get the same $\chi^2$ assignment).  What limits the
+physics at L1 is the input: the AUC falls from the offline 0.602 to 0.583 because there is no $b$-tag;
+restricting to six jets is free, four jets would cost another 0.018.  The angles add $+0.0004\pm0.0022$, so the
+masses-only design is the recommendation.  The resource and latency numbers are analytic, since no Vivado is
+available here; the document gives the validation path with Vitis HLS and hls4ml.
+""" + fig(rel("study_l1", "fig_resources.png"), r"Resources by block as a fraction of a VP1802, against the 5\% budget.", "fig:l1res") + \
+        fig(rel("study_l1", "fig_precision.png"), r"AUC and per-event fidelity versus datapath width and ROM depth.", "fig:l1prec")
+
+
 def sec_bsm(N):
     B = N.get("studyb")
     head = r"""
@@ -1272,12 +1365,14 @@ def main():
         "reco_ext": load("study_salvage", "reco_extension.json"), "tagging": load("study_salvage", "tagging.json"),
         "studyb": load("study_bsm", "htt_study.json"), "pileup": load("pileup", "results.json"),
         "angles_vs_bw": load("study_salvage", "angles_vs_bw.json"),
+        "hh170": load("study_bsm", "hh170_study.json"), "l1": load("study_l1", "results.json"),
     }
     missing = [k for k, v in N.items() if v is None]
     if missing:
         print(f"[note] missing inputs: {missing}")
     body = "".join(f(N) for f in (sec_intro, sec_samples, sec_angles, sec_osde, sec_coeff, sec_orders, sec_sh,
-                                  sec_acceptance, sec_ml, sec_washout, sec_momentum, sec_bsm, sec_pileup, sec_outlook, sec_appendix))
+                                  sec_acceptance, sec_ml, sec_washout, sec_momentum, sec_hh170, sec_bsm, sec_pileup, sec_l1,
+                                  sec_outlook, sec_appendix))
     import datetime
     tex = PREAMBLE + rf"""
 \title{{\color{{pittroyal}}$t\bar t$ and $hh\to b\bar b\,\ell\nu\,q\bar q'$: samples, the ten angles, and the $t\bar t$ density

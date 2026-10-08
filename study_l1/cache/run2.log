@@ -1,0 +1,91 @@
+selftest: fixed-point code path in float mode vs float chain (plotting/angles.py)
+  N=6 tt_test  same assignment 1.0000  max|Δm| 3.04e-12 GeV  max|Δangle| 6.04e-14  max|Δf|/max f 8.42e-15
+  N=6 hh       same assignment 1.0000  max|Δm| 4.95e-12 GeV  max|Δangle| 5.66e-14  max|Δf|/max f 8.94e-15
+  N=6 AUC full 0.58316 vs 0.58316; mass 0.58222 vs 0.58222
+  N=5 tt_test  same assignment 1.0000  max|Δm| 3.04e-12 GeV  max|Δangle| 1.63e-13  max|Δf|/max f 8.42e-15
+  N=5 hh       same assignment 1.0000  max|Δm| 4.95e-12 GeV  max|Δangle| 5.66e-14  max|Δf|/max f 8.94e-15
+  N=5 AUC full 0.58133 vs 0.58133; mass 0.57861 vs 0.57861
+  N=4 tt_test  same assignment 1.0000  max|Δm| 3.88e-12 GeV  max|Δangle| 1.63e-13  max|Δf|/max f 8.42e-15
+  N=4 hh       same assignment 1.0000  max|Δm| 4.95e-12 GeV  max|Δangle| 5.66e-14  max|Δf|/max f 8.92e-15
+  N=4 AUC full 0.56482 vs 0.56482; mass 0.56402 vs 0.56402
+  W=18 recip  max rel. error 1.73e-05
+  W=18 rsqrt  max rel. error 2.50e-05
+  W=18 sqrt   max rel. error 2.49e-05
+  W=18 CORDIC atan2 max error 1.01e-04 rad
+  W=18 ln max error 4.94e-04
+
+configuration                                      full   mass   angles χ²min   ΔAUC vs float ref   same-assign  score rms
+=== float ladder: offline reference -> L1 restrictions (offline event set) ===
+offline reference (N=6, b-tag, truth d-type)       0.6019 0.6003 0.5182 0.6006                 
++ softer jet = down-type                           0.6015 0.6003 0.5154 0.6006  -0.0004±0.0002  1.000
++ no b-tag in χ²                                   0.5829 0.5818 0.5131 0.5785  -0.0190±0.0055  0.450
+float L1 N=6 (+ massless objects)                  0.5832 0.5822 0.5119 0.5797  -0.0186±0.0057  0.402
+float L1 N=5 (+ massless objects)                  0.5813 0.5786 0.5151 0.5753  -0.0207±0.0060  0.380
+float L1 N=4 (+ massless objects)                  0.5648 0.5640 0.5078 0.5606  -0.0373±0.0077  0.298
+=== quantized L1 inputs, float arithmetic, exact functions ===
+N=6 inputs fine, float arithmetic                  0.5827 0.5821 0.5102 0.5796  -0.0005±0.0004  0.981
+N=6 inputs nominal, float arithmetic               0.5827 0.5819 0.5097 0.5797  -0.0004±0.0006  0.960
+N=6 inputs coarse, float arithmetic                0.5796 0.5789 0.5104 0.5767  -0.0036±0.0016  0.848
+N=5 inputs fine, float arithmetic                  0.5810 0.5787 0.5132 0.5753  -0.0003±0.0004  0.982
+N=5 inputs nominal, float arithmetic               0.5803 0.5780 0.5122 0.5752  -0.0010±0.0007  0.961
+N=5 inputs coarse, float arithmetic                0.5784 0.5768 0.5117 0.5736  -0.0030±0.0015  0.860
+N=4 inputs fine, float arithmetic                  0.5648 0.5643 0.5072 0.5607  -0.0001±0.0004  0.989
+N=4 inputs nominal, float arithmetic               0.5647 0.5642 0.5066 0.5606  -0.0002±0.0006  0.975
+N=4 inputs coarse, float arithmetic                0.5645 0.5647 0.5079 0.5599  -0.0005±0.0013  0.901
+=== datapath width W (nominal inputs, K = Kχ = 1024) ===
+N=6 W=10 K=1024                                    0.5742 0.5765 0.4993 0.5743  -0.0081±0.0064  0.350  rms 1.6443
+N=6 W=12 K=1024                                    0.5782 0.5793 0.5044 0.5772  -0.0050±0.0031  0.700  rms 0.7757
+N=6 W=14 K=1024                                    0.5829 0.5815 0.5121 0.5793  -0.0004±0.0011  0.889  rms 0.4116
+N=6 W=16 K=1024                                    0.5827 0.5821 0.5107 0.5797  -0.0005±0.0008  0.954  rms 0.3306
+N=6 W=18 K=1024                                    0.5832 0.5824 0.5110 0.5798  +0.0001±0.0006  0.971  rms 0.3213
+N=6 W=20 K=1024                                    0.5827 0.5820 0.5110 0.5797  -0.0004±0.0006  0.974  rms 0.3213
+N=6 W=24 K=1024                                    0.5825 0.5820 0.5103 0.5797  -0.0006±0.0006  0.973  rms 0.3235
+N=5 W=10 K=1024                                    0.5762 0.5770 0.5014 0.5738  -0.0043±0.0061  0.365  rms 1.5425
+N=5 W=12 K=1024                                    0.5770 0.5771 0.5067 0.5737  -0.0043±0.0031  0.719  rms 0.7137
+N=5 W=14 K=1024                                    0.5804 0.5778 0.5146 0.5748  -0.0010±0.0011  0.896  rms 0.3938
+N=5 W=16 K=1024                                    0.5798 0.5774 0.5136 0.5752  -0.0015±0.0008  0.957  rms 0.3184
+N=5 W=18 K=1024                                    0.5806 0.5783 0.5135 0.5753  -0.0007±0.0007  0.973  rms 0.3111
+N=5 W=20 K=1024                                    0.5802 0.5780 0.5138 0.5752  -0.0011±0.0007  0.977  rms 0.3092
+N=5 W=24 K=1024                                    0.5802 0.5780 0.5135 0.5752  -0.0011±0.0007  0.975  rms 0.3107
+=== ROM depth (nominal inputs, W = 18) ===
+N=6 W=18 K=32 (score ROMs)                         0.5819 0.5777 0.5098 0.5798  -0.0016±0.0033  0.971  rms 0.8120
+N=6 W=18 K=64 (score ROMs)                         0.5840 0.5832 0.5109 0.5798  +0.0010±0.0019  0.971  rms 0.5086
+N=6 W=18 K=256 (score ROMs)                        0.5841 0.5835 0.5110 0.5798  +0.0010±0.0008  0.971  rms 0.3345
+N=6 W=18 K=1024 (score ROMs)                       0.5832 0.5824 0.5110 0.5798  +0.0001±0.0006  0.971  rms 0.3213
+N=6 W=18 K=4096 (score ROMs)                       0.5831 0.5824 0.5111 0.5798  +0.0000±0.0006  0.971  rms 0.3203
+N=6 W=18 Kχ=64 (χ² ROMs)                           0.5829 0.5822 0.5129 0.5787  -0.0003±0.0014  0.802  rms 0.4429
+N=6 W=18 Kχ=256 (χ² ROMs)                          0.5832 0.5825 0.5107 0.5809  +0.0000±0.0008  0.935  rms 0.3424
+N=6 W=18 Kχ=1024 (χ² ROMs)                         0.5832 0.5824 0.5110 0.5798  +0.0001±0.0006  0.971  rms 0.3213
+N=6 W=18 Kχ=4096 (χ² ROMs)                         0.5835 0.5828 0.5113 0.5798  +0.0004±0.0006  0.978  rms 0.3190
+N=6 W=float K=Kχ=1024 (ROMs only)                  0.5826 0.5821 0.5102 0.5797  -0.0006±0.0006  0.973  rms 0.3235
+N=5 W=18 K=32 (score ROMs)                         0.5792 0.5750 0.5115 0.5753  -0.0022±0.0032  0.973  rms 0.7548
+N=5 W=18 K=64 (score ROMs)                         0.5819 0.5798 0.5135 0.5753  +0.0009±0.0018  0.973  rms 0.4741
+N=5 W=18 K=256 (score ROMs)                        0.5817 0.5796 0.5134 0.5753  +0.0004±0.0008  0.973  rms 0.3226
+N=5 W=18 K=1024 (score ROMs)                       0.5806 0.5783 0.5135 0.5753  -0.0007±0.0007  0.973  rms 0.3111
+N=5 W=18 K=4096 (score ROMs)                       0.5805 0.5782 0.5136 0.5753  -0.0008±0.0007  0.973  rms 0.3102
+N=5 W=18 Kχ=64 (χ² ROMs)                           0.5798 0.5784 0.5124 0.5741  -0.0015±0.0015  0.812  rms 0.4192
+N=5 W=18 Kχ=256 (χ² ROMs)                          0.5805 0.5783 0.5131 0.5762  -0.0009±0.0008  0.937  rms 0.3313
+N=5 W=18 Kχ=1024 (χ² ROMs)                         0.5806 0.5783 0.5135 0.5753  -0.0007±0.0007  0.973  rms 0.3111
+N=5 W=18 Kχ=4096 (χ² ROMs)                         0.5810 0.5786 0.5143 0.5752  -0.0003±0.0007  0.978  rms 0.3096
+N=5 W=float K=Kχ=1024 (ROMs only)                  0.5802 0.5781 0.5134 0.5752  -0.0011±0.0007  0.975  rms 0.3107
+=== recommended configurations (N=6, nominal inputs, W=16, K=Kχ=256) ===
+recommended: full score                            0.5830 0.5824 0.5108 0.5801  -0.0002±0.0009  0.927  rms 0.3565
+recommended: masses only (no angle unit)             -    0.5824   -    0.5801  +0.0002±0.0008  0.927  rms 0.3807
+N=5, W=16, K=256, masses only                        -    0.5780   -    0.5756  -0.0006±0.0009  0.930  rms 0.3673
+=== L1 event set (1 lepton, >= 4 jets, no b-tag requirement) ===
+float L1 N=6, L1 event set                         0.5832 0.5823 0.5135 0.5788                 
+N=6 W=16 K=256 full, L1 event set                  0.5831 0.5825 0.5125 0.5793  -0.0001±0.0009  0.907
+N=6 W=16 K=256 masses only, L1 event set             -    0.5825   -    0.5793  +0.0003±0.0008  0.907
+float L1 N=5, L1 event set                         0.5813 0.5791 0.5159 0.5750                 
+N=5 W=16 K=256 full, L1 event set                  0.5806 0.5787 0.5142 0.5753  -0.0007±0.0009  0.913
+N=5 W=16 K=256 masses only, L1 event set             -    0.5787   -    0.5753  -0.0003±0.0008  0.913
+=== resolution stress test (extra σ: jets 10%, lepton 5%, MET 15 GeV per component) ===
+float L1 N=6, smeared inputs                       0.5713 0.5697 0.5096 0.5648  -0.0119±0.0047  0.558
+recommended full, smeared inputs                   0.5707 0.5688 0.5112 0.5649  -0.0006±0.0010  0.911
+recommended masses only, smeared inputs              -    0.5688   -    0.5649  -0.0009±0.0009  0.911
+
+=== resources (analytic) of the recommended configuration, parallel, 240 MHz ===
+  masses  LUT   28007 FF   18814 DSP  208 BRAM36   5.0 | VP1802: LUT 0.83% FF 0.28% DSP 1.45% BRAM 0.10% | VC1902: LUT 3.11% FF 1.04% DSP 10.57% BRAM 0.52% | latency 104 clk = 433 ns
+  full    LUT   40830 FF   31325 DSP  483 BRAM36  13.0 | VP1802: LUT 1.21% FF 0.47% DSP 3.36% BRAM 0.26% | VC1902: LUT 4.54% FF 1.74% DSP 24.54% BRAM 1.34% | latency 189 clk = 788 ns
+
+wrote /Users/TMHONG/Claude-code/ttbar_bblvqq/study_l1/results.json (108 s)
