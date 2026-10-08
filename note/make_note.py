@@ -39,6 +39,24 @@ LEVELS = ["parton", "parton_trig", "gen", "reco"]
 # inputs
 # ----------------------------------------------------------------------------------------------
 SIGNAL, SUF = "h125", ""
+VARIANTS = {
+    "h170": dict(tag="170", mass=r"$m_H=170$~GeV", short="170", width="0.38", lab=r"$HH(170)$",
+                 thresh=r"just above $2m_W=160.8$~GeV, so that both $W$ bosons are on shell", where=r"in a 170~GeV scalar"),
+    "h2mw": dict(tag="2mw", mass=r"$m_H=2m_W=160.8$~GeV", short=r"$2m_W$", width="0.083", lab=r"$HH(2m_W)$",
+                 thresh=r"exactly at the $WW$ threshold, where the $W$ pair has no phase space above it and the two $W$ bosons "
+                        r"share the energy with one slightly below the pole ($\Gamma_W=2.1$~GeV), i.e.\ effectively on shell",
+                 where=r"in a scalar at the $WW$ threshold"),
+}
+
+
+def variant():
+    """The on-shell variant: the main signal for a variant note, else the latest one with results (for the comparison)."""
+    if SIGNAL in VARIANTS:
+        return VARIANTS[SIGNAL]
+    for k in ("h2mw", "h170"):
+        if os.path.exists(os.path.join(ROOT, "study_bsm", f"hh{VARIANTS[k]['tag']}_study.json")):
+            return VARIANTS[k]
+    return VARIANTS["h170"]
 
 
 def load(*parts):
@@ -203,7 +221,7 @@ def sec_intro(N):
          rf"{rx['reco']['truncation']['>10 sigma']['angles+BW']:.2f}"],
     ]
     SIGNAL_INTRO = (r"$hh\to b\bar b\,WW^*\to b\bar b\,\ell\nu\,q\bar q'$" if SIGNAL == "h125"
-                    else r"$HH\to b\bar b\,WW\to b\bar b\,\ell\nu\,q\bar q'$ with $m_H=170$~GeV (both $W$ bosons on shell)")
+                    else rf"$HH\to b\bar b\,WW\to b\bar b\,\ell\nu\,q\bar q'$ with {variant()['mass']} (both $W$ bosons on shell)")
     return rf"""
 \section{{Introduction and summary}}
 \label{{sec:intro}}
@@ -253,13 +271,13 @@ def sec_samples(N):
             for lvl in ("gen", "reco")]
     wh = N["whad_split"]
     LEPTON_TEXT = (r"$hh$ leptons are softer (from the $W^*$) and less isolated, so its efficiency is lower." if SIGNAL == "h125"
-                   else r"the signal loses at the one-lepton step: the $W$ is nearly at rest in a 170~GeV scalar, whereas a top "
+                   else rf"the signal loses at the one-lepton step: the $W$ is nearly at rest {variant()['where']}, whereas a top "
                         r"gives its $W$ 68~GeV of momentum, so the signal lepton is harder than in $hh(125)$ but still softer than in "
                         r"$t\bar t$; the jet and $b$-tag steps keep more of the signal than of $t\bar t$.")
     SAMPLE_TEXT = (r"Because $h\to WW^*$ has one off-shell $W$, the $h\to\ell\nu q\bar q'$ decay is a four-body decay."
                    if SIGNAL == "h125" else
-                   r"The scalar mass is set to $m_H=170$~GeV with $\Gamma_H=0.38$~GeV (as for an SM-like scalar of that mass), "
-                   r"just above $2m_W=160.8$~GeV, so that both $W$ bosons are on shell: the signal has the same $W$ masses as "
+                   rf"The scalar mass is set to {variant()['mass']} with $\Gamma_H={variant()['width']}$~GeV (as for an SM-like scalar of "
+                   rf"that mass), {variant()['thresh']}: the signal has the same $W$ masses as "
                    r"$t\bar t$ and differs only in the pseudo-top masses $m_{Wb}$ and in the angles.")
     WHAD_TEXT = (rf"""For $hh$ the reconstruction under the $t\bar t$ hypothesis is already visible in the masses: the hadronic
 boson is the off-shell $W^*$ in {pct(1 - wh['frac_had_onshell'], 0)} of the events, with a true median mass of
@@ -267,7 +285,7 @@ boson is the off-shell $W^*$ in {pct(1 - wh['frac_had_onshell'], 0)} of the even
 {wh['offshell_gen_median']:.0f}~GeV at gen and {wh['offshell_reco_median']:.0f}~GeV at reco level).  This is
 the first sign of the effect studied in Section~\ref{{sec:washout}}.""" if (SIGNAL == "h125" and wh) else "")
     PART = (r"Study A: $t\bar t$ versus $hh\to b\bar b\,WW^*$" if SIGNAL == "h125"
-            else r"Study A: $t\bar t$ versus $HH\to b\bar b\,WW$ ($m_H=170$~GeV, on-shell $W$ bosons)")
+            else rf"Study A: $t\bar t$ versus $HH\to b\bar b\,WW$ ({variant()['mass']}, on-shell $W$ bosons)")
     return rf"""
 \part{{{PART}}}
 \section{{Samples and event levels}}
@@ -1032,7 +1050,9 @@ jet is down-type.  The hadronic primed angles carry little of the $hh$ separatio
 
 
 def sec_hh170(N):
-    R = N.get("hh170")
+    v = variant()
+    vk, short = f"hh{v['tag']}", v["short"]
+    R = load("study_bsm", f"hh{v['tag']}_study.json")
     head = (r"""
 \section{Study A$'$: $hh$ with on-shell $W$ bosons}
 \label{sec:hh170}
@@ -1044,21 +1064,21 @@ The main signal of this note has on-shell $W$ bosons.  The SM $h(125)$ variant, 
 shell, is the case the study started from; it is kept here as the comparison, with the same fits and nothing
 retrained, to show what the off-shell $W$ changes.
 """)
-    head += r"""
-The off-shell $W^*$ of $hh\to b\bar b\,WW^*$ is what makes the mass handle of Section~\ref{sec:momentum} so
+    head += rf"""
+The off-shell $W^*$ of $hh\to b\bar b\,WW^*$ is what makes the mass handle of Section~\ref{{sec:momentum}} so
 effective.  To see what the angles do when that handle is removed, the same $hh\to b\bar b\,\ell\nu\,q\bar q'$
-chain is generated with $m_H=170$~GeV, just above $2m_W=160.8$~GeV, so that both $W$ bosons are on shell
-($\Gamma_H=0.38$~GeV, shapes only), and the analysis is repeated with nothing retrained.  (With $HH(170)$ as the
+chain is generated with {v['mass']}, {v['thresh']}
+($\Gamma_H={v['width']}$~GeV, shapes only), and the analysis is repeated with nothing retrained.  (With $HH(170)$ as the
 main signal this paragraph describes the comparison in the other direction.)  The $W$
-Breit--Wigner factors should then go blind, the top factors should still see $m_{Wb}$ (the $b$ comes from the
+Breit--Wigner factors should then go blind, the top factors should still see $m_{{Wb}}$ (the $b$ comes from the
 other Higgs boson), and after the $\chi^2$ reconstruction a genuinely on-shell hadronic $W$ should make the
 signal look more $t\bar t$-like; what is left is the angles, since a scalar decaying to $WW$ does not give the
 $V\!-\!A$ shape of the top decay and the pseudo-top direction still differs.
 """
     if not R:
-        return head + r"\emph{Status: the sample is being generated; this section is filled in from \texttt{study\_bsm/hh170\_study.json}.}" + "\n"
+        return head + r"\emph{Status: the variant sample is being generated; this section is filled in from its study file.}" + "\n"
     L, sel = R["levels"], R["selection"]
-    lab = {"hh125": "$hh(125)$", "hh170": "$hh(170)$"}
+    lab = {"hh125": "$hh(125)$", vk: v["lab"]}
     order = ["angles, all terms", "angles, >10 sigma", "BW: W masses only", "BW: top masses only", "BW: all masses", "angles (>10 sigma) + BW"]
     tex = {"angles, all terms": "angles, all terms", "angles, >10 sigma": r"angles, $>10\sigma$", "BW: W masses only": r"BW, $W$ masses only",
            "BW: top masses only": "BW, top masses only", "BW: all masses": "BW, all masses", "angles (>10 sigma) + BW": "angles + BW"}
@@ -1066,7 +1086,7 @@ $V\!-\!A$ shape of the top decay and the pseudo-top direction still differs.
     for name in order:
         r = [tex[name]]
         for l in ("parton", "gen", "reco"):
-            for k in ("hh125", "hh170"):
+            for k in ("hh125", vk):
                 u = L[l][k]["scores"][name]
                 r.append(rf"{u['auc']:.3f} / {100 * u['eff_at_tt_1pct']:.0f}")
         rows.append(r)
@@ -1074,23 +1094,23 @@ $V\!-\!A$ shape of the top decay and the pseudo-top direction still differs.
     return head + rf"""
 The harder leptons raise the selection efficiency: trigger / gen / reco efficiencies of
 {100 * sel['hh125']['trigger']:.0f} / {100 * sel['hh125']['gen_reco_ok']:.0f} / {100 * sel['hh125']['reco_reco_ok']:.1f}\% for $hh(125)$ become
-{100 * sel['hh170']['trigger']:.0f} / {100 * sel['hh170']['gen_reco_ok']:.0f} / {100 * sel['hh170']['reco_reco_ok']:.1f}\% for $hh(170)$.
+{100 * sel[vk]['trigger']:.0f} / {100 * sel[vk]['gen_reco_ok']:.0f} / {100 * sel[vk]['reco_reco_ok']:.1f}\% for {v['lab']}.
 Table~\ref{{tab:hh170}} compares the scores.  At parton level the $W$ factors alone drop from
-{P['hh125']['scores']['BW: W masses only']['auc']:.2f} to {P['hh170']['scores']['BW: W masses only']['auc']:.2f} while the top factors stay at
-{P['hh170']['scores']['BW: top masses only']['auc']:.2f}: the mass handle was mostly the pseudo-top masses, not the $W^*$.  The angles alone
-go from {P['hh125']['scores']['angles, >10 sigma']['auc']:.2f} to {P['hh170']['scores']['angles, >10 sigma']['auc']:.2f} at parton level and
-from {L['reco']['hh125']['scores']['angles, >10 sigma']['auc']:.2f} to {L['reco']['hh170']['scores']['angles, >10 sigma']['auc']:.2f} at reco
+{P['hh125']['scores']['BW: W masses only']['auc']:.2f} to {P[vk]['scores']['BW: W masses only']['auc']:.2f} while the top factors stay at
+{P[vk]['scores']['BW: top masses only']['auc']:.2f}: the mass handle was mostly the pseudo-top masses, not the $W^*$.  The angles alone
+go from {P['hh125']['scores']['angles, >10 sigma']['auc']:.2f} to {P[vk]['scores']['angles, >10 sigma']['auc']:.2f} at parton level and
+from {L['reco']['hh125']['scores']['angles, >10 sigma']['auc']:.2f} to {L['reco'][vk]['scores']['angles, >10 sigma']['auc']:.2f} at reco
 level; angles + masses from {L['gen']['hh125']['scores']['angles (>10 sigma) + BW']['auc']:.2f} to
-{L['gen']['hh170']['scores']['angles (>10 sigma) + BW']['auc']:.2f} at gen level and from
-{L['reco']['hh125']['scores']['angles (>10 sigma) + BW']['auc']:.2f} to {L['reco']['hh170']['scores']['angles (>10 sigma) + BW']['auc']:.2f}
+{L['gen'][vk]['scores']['angles (>10 sigma) + BW']['auc']:.2f} at gen level and from
+{L['reco']['hh125']['scores']['angles (>10 sigma) + BW']['auc']:.2f} to {L['reco'][vk]['scores']['angles (>10 sigma) + BW']['auc']:.2f}
 at reco level, i.e.\ unchanged.  After reconstruction the off-shell $W^*$ was never the handle, since the $\chi^2$
 had already pulled $m_{{jj}}$ to $m_W$; the pseudo-top masses and, to a lesser extent, the angles are.  The
 method therefore does not rely on the off-shell $W$: an $hh$-like signal with on-shell $W$ bosons is separated
 just as well, and selected twice as often.
-""" + tab(r"$hh(125)$ and $hh(170)$ versus $t\bar t$: AUC / signal efficiency (\%) at 1\% $t\bar t$ efficiency, with the existing fits.",
-          ["score", "parton 125", "parton 170", "gen 125", "gen 170", "reco 125", "reco 170"], rows, "tab:hh170") + \
-        fig(rel("study_bsm", "fig_hh170.png"), r"$m_{W,\mathrm{had}}$ and $m_{t,\mathrm{had}}$ at parton (top) and reco level (bottom) for "
-            r"$t\bar t$, $hh(125)$ and $hh(170)$.", "fig:hh170")
+""" + tab(rf"$hh(125)$ and {v['lab']} versus $t\bar t$: AUC / signal efficiency (\%) at 1\% $t\bar t$ efficiency, with the existing fits.",
+          ["score", "parton 125", f"parton {short}", "gen 125", f"gen {short}", "reco 125", f"reco {short}"], rows, "tab:hh170") + \
+        fig(rel("study_bsm", f"fig_hh{v['tag']}.png"), rf"$m_{{W,\mathrm{{had}}}}$ and $m_{{t,\mathrm{{had}}}}$ at parton (top) and reco level (bottom) for "
+            rf"$t\bar t$, $hh(125)$ and {v['lab']}.", "fig:hh170")
 
 
 def sec_l1(N):
@@ -1492,14 +1512,15 @@ def main():
     p.add_argument("--recompute", action="store_true")
     p.add_argument("--no-compile", action="store_true")
     p.add_argument("--author", default="Tae Min Hong")
-    p.add_argument("--signal", choices=["h125", "h170"], default="h125")
-    p.add_argument("--name", default=None, help="output file stem (default: note, or note_h170 for --signal h170)")
+    p.add_argument("--signal", choices=["h125"] + list(VARIANTS), default="h125")
+    p.add_argument("--name", default=None, help="output file stem (default: note, or note_h<tag> for a variant)")
     args = p.parse_args()
-    stem = args.name or ("note" if args.signal == "h125" else "note_h170")
     global SIGNAL, SUF
-    SIGNAL, SUF = args.signal, ("" if args.signal == "h125" else "_h170")
-    if SIGNAL == "h170":
-        args.hh = os.path.join(ROOT, "samples/hh_bblvqq/run_m170_seed2170")
+    SIGNAL, SUF = args.signal, ("" if args.signal == "h125" else "_h" + VARIANTS[args.signal]["tag"])
+    stem = args.name or ("note" if args.signal == "h125" else f"note_h{VARIANTS[args.signal]['tag']}")
+    if SIGNAL in VARIANTS:
+        args.hh = {"h170": "samples/hh_bblvqq/run_m170_seed2170", "h2mw": "samples/hh_bblvqq/run_m2mw_seed2161"}[SIGNAL]
+        args.hh = os.path.join(ROOT, args.hh)
 
     N = {
         "S": sample_summary(args.sample, args.hh, args.recompute),
@@ -1521,7 +1542,7 @@ def main():
         "reco_ext": load("study_salvage", "reco_extension.json"), "tagging": load("study_salvage", "tagging.json"),
         "studyb": load("study_bsm", "htt_study.json"), "pileup": load("pileup", "results.json"),
         "angles_vs_bw": load("study_salvage", "angles_vs_bw.json"),
-        "hh170": load("study_bsm", "hh170_study.json"), "l1": load("study_l1", "results.json"),
+        "l1": load("study_l1", "results.json"),
         "wtb": load("study_bsm", "wtb_study.json"),
     }
     missing = [k for k, v in N.items() if v is None]

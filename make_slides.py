@@ -196,8 +196,8 @@ def build_hh_osde_slides(H, O, tests):
     lv = O["levels"]
     slides = [
         section(r"$hh$ samples", "hh samples"),
-        bullets(SIGTEXT[SIGNAL]["sample_title"], [
-            *SIGTEXT[SIGNAL]["sample"],
+        bullets(sigtext()["sample_title"], [
+            *sigtext()["sample"],
             rf"{H['meta'].get('nevents', '?')} events, seed {H['meta'].get('seed', '?')}; "
             rf"$\sigma\times\mathcal{{B}} = {1000 * H['meta']['cross_section_pb']:.3g}$ fb "
             r"(LO HEFT with MG defaults; \emph{not} an SM prediction, so plots use unit area)",
@@ -210,10 +210,7 @@ def build_hh_osde_slides(H, O, tests):
               [[a[0], str(a[1]), rf"{100 * a[1] / H['tt_cutflow'][0][1]:.1f}\%",
                 str(b[1]), rf"{100 * b[1] / H['hh_cutflow'][0][1]:.1f}\%"]
                for a, b in zip(H["tt_cutflow"], H["hh_cutflow"])],
-              note=(r"$hh$ leptons are softer (from $W^*$) and less isolated, so the efficiency is lower." if SIGNAL == "h125" else
-                    r"The loss is at the one-lepton step: the $W$ is nearly at rest in a 170 GeV scalar, whereas a top gives its "
-                    r"$W$ 68 GeV of momentum, so the signal lepton is harder than in $hh(125)$ but still softer than in $t\bar t$; "
-                    r"the jet and $b$-tag steps keep more of the signal than of $t\bar t$.")),
+              note=sigtext()["cutflow_note"]),
         wide_figure(r"$hh$ sample: parton, gen and reco level", os.path.join(sdir("plots_hh"), "hh_overview.png")),
         *hh_whad_slides(),
 
@@ -805,12 +802,14 @@ def study_b_slides(bdir):
 
 def hh170_slides(bdir):
     """Study A': hh with m_H = 170 GeV, both W on shell (study_bsm/hh170_study.py)."""
-    p = os.path.join(bdir, "hh170_study.json")
+    v = VARIANTS[cmp_variant()]
+    vk, short = f"hh{v['tag']}", v["short"]
+    p = os.path.join(bdir, f"hh{v['tag']}_study.json")
     if not os.path.exists(p):
         return []
     R = json.load(open(p))
     L, sel = R["levels"], R["selection"]
-    lab = {"hh125": r"$hh$(125)", "hh170": r"$hh$(170)"}
+    lab = {"hh125": r"$hh$(125)", vk: v["lab"]}
     order = ["angles, all terms", "angles, >10 sigma", "BW: W masses only", "BW: top masses only", "BW: all masses", "angles (>10 sigma) + BW"]
     tex = {"angles, all terms": "angles, all terms", "angles, >10 sigma": r"angles, $>10\sigma$", "BW: W masses only": r"BW, $W$ masses only",
            "BW: top masses only": "BW, top masses only", "BW: all masses": "BW, all masses", "angles (>10 sigma) + BW": "angles + BW"}
@@ -818,38 +817,38 @@ def hh170_slides(bdir):
     for name in order:
         r = [tex[name]]
         for l in ("parton", "gen", "reco"):
-            for k in ("hh125", "hh170"):
+            for k in ("hh125", vk):
                 u = L[l][k]["scores"][name]
                 r.append(rf"{u['auc']:.3f} / {100 * u['eff_at_tt_1pct']:.0f}\%")
         rows.append(r)
     P = L["parton"]
-    sv = {k: P[k]["single_variable_lr_auc"] for k in ("hh125", "hh170")}
+    sv = {k: P[k]["single_variable_lr_auc"] for k in ("hh125", vk)}
     mvars = [m for m in P["hh125"]["mass_medians"]]
     srow = [[ANGLE_TEX.get(a, a.replace("m_w_lep", r"$m_{W,\ell}$").replace("m_w_had", r"$m_{W,h}$").replace("m_t_lep", r"$m_{t,\ell}$").replace("m_t_had", r"$m_{t,h}$"))]
-            + [f"{sv[k][a]:.3f}" for k in ("hh125", "hh170")] for a in ["cos_Theta", "cos_theta", "cos_theta_prime", "cos_theta_tilde", "cos_theta_prime_tilde"] + mvars]
+            + [f"{sv[k][a]:.3f}" for k in ("hh125", vk)] for a in ["cos_Theta", "cos_theta", "cos_theta_prime", "cos_theta_tilde", "cos_theta_prime_tilde"] + mvars]
     return [
-        section(*SIGTEXT[SIGNAL]["variant_section"]),
-        bullets(SIGTEXT[SIGNAL]["variant_title"], [
-            *SIGTEXT[SIGNAL]["variant_bullets"],
+        section(*sigtext()["variant_section"]),
+        bullets(sigtext()["variant_title"], [
+            *sigtext()["variant_bullets"],
             r"Selection efficiency (trigger / gen / reco): " + "; ".join(
-                rf"{lab[k]} {100 * sel[k]['trigger']:.0f}\% / {100 * sel[k]['gen_reco_ok']:.0f}\% / {100 * sel[k]['reco_reco_ok']:.1f}\%" for k in ("hh125", "hh170"))
+                rf"{lab[k]} {100 * sel[k]['trigger']:.0f}\% / {100 * sel[k]['gen_reco_ok']:.0f}\% / {100 * sel[k]['reco_reco_ok']:.1f}\%" for k in ("hh125", vk))
             + r" (harder leptons from on-shell $W$s)",
         ]),
-        wide_figure(r"$m_{W,\mathrm{had}}$ and $m_{t,\mathrm{had}}$: parton (top) and reco (bottom)", os.path.join(bdir, "fig_hh170.png")),
-        table(r"Which single variables differ at parton level (1-D likelihood-ratio AUC)", ["variable"] + [lab[k] for k in ("hh125", "hh170")], srow, fit=True),
-        table(r"AUC / signal efficiency at 1\% $t\bar t$ efficiency, $hh$(125) and $hh$(170) vs $t\bar t$",
-              ["score", "parton 125", "parton 170", "gen 125", "gen 170", "reco 125", "reco 170"], rows, fit=True,
+        wide_figure(r"$m_{W,\mathrm{had}}$ and $m_{t,\mathrm{had}}$: parton (top) and reco (bottom)", os.path.join(bdir, f"fig_hh{v['tag']}.png")),
+        table(r"Which single variables differ at parton level (1-D likelihood-ratio AUC)", ["variable"] + [lab[k] for k in ("hh125", vk)], srow, fit=True),
+        table(rf"AUC / signal efficiency at 1\% $t\bar t$ efficiency, $hh$(125) and {v['lab']} vs $t\bar t$",
+              ["score", "parton 125", f"parton {short}", "gen 125", f"gen {short}", "reco 125", f"reco {short}"], rows, fit=True,
               note=r"Same $f_{t\bar t}$ fits and mass factors as before. Parton: the four masses ($W$ and top) with the PDG Breit--Wigner; "
                    r"gen/reco: $m_{W,h}$, $m_{t,\ell}$, $m_{t,h}$ with the two-number Cauchy."),
         bullets(r"Study A$'$: what it shows", [
             rf"Parton: the $W$ factors alone drop from {P['hh125']['scores']['BW: W masses only']['auc']:.2f} to "
-            rf"{P['hh170']['scores']['BW: W masses only']['auc']:.2f}, the top factors stay at "
-            rf"{P['hh170']['scores']['BW: top masses only']['auc']:.2f}: the mass handle was mostly the pseudo-top masses, not the $W^*$",
-            rf"Angles alone at parton: {P['hh125']['scores']['angles, >10 sigma']['auc']:.2f} $\to$ {P['hh170']['scores']['angles, >10 sigma']['auc']:.2f}; "
-            rf"at reco: {L['reco']['hh125']['scores']['angles, >10 sigma']['auc']:.2f} $\to$ {L['reco']['hh170']['scores']['angles, >10 sigma']['auc']:.2f}",
+            rf"{P[vk]['scores']['BW: W masses only']['auc']:.2f}, the top factors stay at "
+            rf"{P[vk]['scores']['BW: top masses only']['auc']:.2f}: the mass handle was mostly the pseudo-top masses, not the $W^*$",
+            rf"Angles alone at parton: {P['hh125']['scores']['angles, >10 sigma']['auc']:.2f} $\to$ {P[vk]['scores']['angles, >10 sigma']['auc']:.2f}; "
+            rf"at reco: {L['reco']['hh125']['scores']['angles, >10 sigma']['auc']:.2f} $\to$ {L['reco'][vk]['scores']['angles, >10 sigma']['auc']:.2f}",
             rf"Angles + masses: gen {L['gen']['hh125']['scores']['angles (>10 sigma) + BW']['auc']:.2f} $\to$ "
-            rf"{L['gen']['hh170']['scores']['angles (>10 sigma) + BW']['auc']:.2f}, reco {L['reco']['hh125']['scores']['angles (>10 sigma) + BW']['auc']:.2f} $\to$ "
-            rf"{L['reco']['hh170']['scores']['angles (>10 sigma) + BW']['auc']:.2f}: unchanged. After reconstruction the $W^*$ was never the "
+            rf"{L['gen'][vk]['scores']['angles (>10 sigma) + BW']['auc']:.2f}, reco {L['reco']['hh125']['scores']['angles (>10 sigma) + BW']['auc']:.2f} $\to$ "
+            rf"{L['reco'][vk]['scores']['angles (>10 sigma) + BW']['auc']:.2f}: unchanged. After reconstruction the $W^*$ was never the "
             r"handle (the $\chi^2$ had already pulled $m_{jj}$ to $m_W$); the pseudo-top masses and, less, the angles are",
             r"So the method is not relying on the off-shell $W$: an $hh$-like signal with on-shell $W$s is separated just as well, and "
             r"selected twice as often",
@@ -1088,7 +1087,7 @@ def salvage_slides(sdir):
             r"For $t\bar t$ the masses carry no information: each is a Breit--Wigner fixed by $M$ and $\Gamma$, and "
             r"(narrow width) $|\mathcal M|^2$ factorizes: angles $\times\prod_k \mathrm{BW}(m_k)$. So the paper could "
             r"drop them",
-            SIGTEXT[SIGNAL]["shell"],
+            sigtext()["shell"],
         ]),
         wide_figure(r"The dropped dimensions, parton level", sfile(sdir, "masses_parton.png"),
                     note=r"$t\bar t$ (blue) is the Breit--Wigner (dashed; MadGraph cuts it at $\pm15\Gamma$). $hh$ (red) "
@@ -1484,37 +1483,51 @@ def sfile(d, name):
     return cand if SUF and os.path.exists(cand) else os.path.join(d, name)
 
 
-SIGTEXT = {
-    "h125": dict(
-        part=(r"Study A: $t\bar t$ vs $hh\to b\bar b\,WW^*$ (an off-shell signal)", [
-            r"$f_{t\bar t}$ on the ten angles: fits, coefficients, bases, acceptance",
-            r"Why the separation washes out after reconstruction, and the fix: the resonance masses",
-            r"Comparison with other unsupervised methods and with supervised ML on the same inputs"]),
+VARIANTS = {
+    "h170": dict(tag="170", mass=r"$m_H=170$ GeV", short="170", width="0.38", lab=r"$HH(170)$",
+                 thresh=r"just above $2m_W=160.8$ GeV, so both $W$ bosons are on shell",
+                 where=r"in a 170 GeV scalar"),
+    "h2mw": dict(tag="2mw", mass=r"$m_H=2m_W=160.8$ GeV", short=r"$2m_W$", width="0.083", lab=r"$HH(2m_W)$",
+                 thresh=r"exactly at the $WW$ threshold: the $W$ pair has no phase space above it, so the two $W$s share the "
+                        r"energy with one slightly below the pole ($\Gamma_W=2.1$ GeV), i.e.\ effectively on shell",
+                 where=r"in a scalar at the $WW$ threshold"),
+}
+COMMON_PART = [r"$f_{t\bar t}$ on the ten angles: fits, coefficients, bases, acceptance",
+               r"Why the separation washes out after reconstruction, and the fix: the resonance masses",
+               r"Comparison with other unsupervised methods and with supervised ML on the same inputs"]
+
+
+def h125_sigtext(v):
+    """Texts for the hh(125) deck; v is the on-shell variant used for the Study A' comparison."""
+    return dict(
+        part=(r"Study A: $t\bar t$ vs $hh\to b\bar b\,WW^*$ (an off-shell signal)", COMMON_PART),
         sample_title=r"$hh\to b\bar{b}\,WW^*\to b\bar{b}\,\ell\nu\,q\bar{q}'$ sample",
         sample=[r"MadGraph5 built-in \texttt{heft} model (LO, $m_t\to\infty$), same Pythia8 + Delphes ATLAS chain",
                 r"$gg\to hh$, $h\to b\bar b$, $h\to\ell\nu q\bar q'$ (+ charge conjugate), generated as one process",
                 r"$h\to WW^*$ has one off-shell $W$, so $h\to\ell\nu q\bar{q}'$ is a 4-body decay"],
         shell=r"$hh$ is \emph{not} on that shell: one $W$ is off shell (median 32 GeV) and its ``tops'' sit at 135 GeV. "
               r"Its difference lives in exactly the dimensions we dropped",
-        variant_section=(r"Study A$'$: $hh$ with on-shell $W$ bosons ($m_H=170$ GeV)", "Study A': hh with on-shell W bosons"),
+        variant_section=(rf"Study A$'$: $hh$ with on-shell $W$ bosons ({v['mass']})", "Study A': hh with on-shell W bosons"),
         variant_title=r"Idea: remove the off-shell $W$ handle and see what the angles do",
         variant_bullets=[
-            r"Same $hh\to b\bar b\,\ell\nu\,q\bar q'$ chain (\texttt{heft}, shapes only) with $m_H=170$ GeV, just above $2m_W=160.8$ GeV, so "
-            r"both $W$s are on shell ($\Gamma_H=0.38$ GeV); 20k events, same analysis chain, nothing retrained",
+            rf"Same $hh\to b\bar b\,\ell\nu\,q\bar q'$ chain (\texttt{{heft}}, shapes only) with {v['mass']}, {v['thresh']} "
+            rf"($\Gamma_H={v['width']}$ GeV); 20k events, same analysis chain, nothing retrained",
             r"Expectation: the $W$ Breit--Wigner factors go blind; the top factors still see $m_{Wb}$ (the $b$ comes from the other "
             r"Higgs); after the $\chi^2$ a genuinely on-shell hadronic $W$ makes the signal more $t\bar t$-like; what is left is "
-            r"the angles: a scalar $\to WW$ decay is not $V\!-\!A$ (no zero at $\cos\theta'\to1$), and the pseudo-top direction differs"]),
-    "h170": dict(
-        part=(r"Study A: $t\bar t$ vs $HH\to b\bar b\,WW$\\($m_H=170$ GeV, on-shell $W$ bosons)", [
-            r"$f_{t\bar t}$ on the ten angles: fits, coefficients, bases, acceptance",
-            r"Why the separation washes out after reconstruction, and the fix: the resonance masses",
-            r"Comparison with other unsupervised methods and with supervised ML on the same inputs"]),
-        sample_title=r"$HH\to b\bar{b}\,WW\to b\bar{b}\,\ell\nu\,q\bar{q}'$ sample, $m_H=170$ GeV",
-        sample=[r"MadGraph5 built-in \texttt{heft} model (LO, $m_t\to\infty$) with the scalar mass set to 170 GeV and "
-                r"$\Gamma_H=0.38$ GeV (as for an SM-like scalar of that mass); same Pythia8 + Delphes ATLAS chain",
+            r"the angles: a scalar $\to WW$ decay is not $V\!-\!A$ (no zero at $\cos\theta'\to1$), and the pseudo-top direction differs"],
+        cutflow_note=r"$hh$ leptons are softer (from $W^*$) and less isolated, so the efficiency is lower.")
+
+
+def variant_sigtext(v):
+    """Texts for a deck whose main signal is the on-shell variant v (the comparison is then hh(125))."""
+    return dict(
+        part=(rf"Study A: $t\bar t$ vs $HH\to b\bar b\,WW$\\({v['mass']}, on-shell $W$ bosons)", COMMON_PART),
+        sample_title=rf"$HH\to b\bar{{b}}\,WW\to b\bar{{b}}\,\ell\nu\,q\bar{{q}}'$ sample, {v['mass']}",
+        sample=[rf"MadGraph5 built-in \texttt{{heft}} model (LO, $m_t\to\infty$) with the scalar mass set to {v['mass']} and "
+                rf"$\Gamma_H={v['width']}$ GeV (as for an SM-like scalar of that mass); same Pythia8 + Delphes ATLAS chain",
                 r"$gg\to HH$, $H\to b\bar b$, $H\to\ell\nu q\bar q'$ (+ charge conjugate), generated as one process",
-                r"$m_H=170$ GeV is just above $2m_W=160.8$ GeV: both $W$ bosons are on shell, so the signal has the same "
-                r"$W$ masses as $t\bar t$ and differs only in the pseudo-top masses $m_{Wb}$ and in the angles"],
+                rf"{v['mass']} is {v['thresh']}: the signal has the same $W$ masses as $t\bar t$ and differs only in the "
+                r"pseudo-top masses $m_{Wb}$ and in the angles"],
         shell=r"$HH$ is \emph{not} on that shell: its $W$s are on shell but its ``tops'' ($W$ from one Higgs plus $b$ from the other) "
               r"sit at $m_{Wb}\approx180$ GeV with a 100 GeV spread. Its difference lives in exactly the dimensions we dropped",
         variant_section=(r"Study A$'$: the off-shell case, $hh$ with $m_h=125$ GeV", "Study A': the off-shell case, hh(125)"),
@@ -1522,8 +1535,24 @@ SIGTEXT = {
         variant_bullets=[
             r"Same chain with the SM $h(125)$: $h\to WW^*$ has one off-shell $W$ (median 32 GeV), so the $W$ Breit--Wigner factors "
             r"see the signal at parton level and the leptons are softer (lower selection efficiency)",
-            r"Question: does the off-shell $W$ matter for the method? Compare every score for $hh(125)$ and $HH(170)$ with the same fits"]),
-}
+            rf"Question: does the off-shell $W$ matter for the method? Compare every score for $hh(125)$ and {v['lab']} with the same fits"],
+        cutflow_note=rf"The loss is at the one-lepton step: the $W$ is nearly at rest {v['where']}, whereas a top gives its "
+                     r"$W$ 68 GeV of momentum, so the signal lepton is harder than in $hh(125)$ but still softer than in $t\bar t$; "
+                     r"the jet and $b$-tag steps keep more of the signal than of $t\bar t$.")
+
+
+def cmp_variant():
+    """The on-shell variant compared with hh(125): the main signal itself for a variant deck, else the latest one available."""
+    if SIGNAL in VARIANTS:
+        return SIGNAL
+    for k in ("h2mw", "h170"):
+        if os.path.exists(os.path.join(HERE, "study_bsm", f"hh{VARIANTS[k]['tag']}_study.json")):
+            return k
+    return "h170"
+
+
+def sigtext():
+    return variant_sigtext(VARIANTS[SIGNAL]) if SIGNAL in VARIANTS else h125_sigtext(VARIANTS[cmp_variant()])
 
 
 def fmt(x, sig=3):
@@ -1799,11 +1828,11 @@ def main():
     p.add_argument("--acceptance", default=None, help="acceptance_plots.py output dir (adds slides)")
     p.add_argument("--no-tests", action="store_true", help="don't run the unit tests for the slides")
     p.add_argument("--no-compile", action="store_true")
-    p.add_argument("--signal", choices=["h125", "h170"], default="h125",
-                   help="main signal: hh(125) (default) or HH(170); the latter uses the *_h170 output directories/files")
+    p.add_argument("--signal", choices=["h125"] + list(VARIANTS), default="h125",
+                   help="main signal: hh(125) (default) or an on-shell variant (h170, h2mw); variants use the *_h<tag> outputs")
     args = p.parse_args()
     global SIGNAL, SUF
-    SIGNAL, SUF = args.signal, ("" if args.signal == "h125" else "_h170")
+    SIGNAL, SUF = args.signal, ("" if args.signal == "h125" else "_h" + VARIANTS[args.signal]["tag"])
 
     PLOTS_DIR, OUT_DIR = os.path.abspath(args.plots), os.path.abspath(args.out)
     os.makedirs(OUT_DIR, exist_ok=True)
@@ -1832,7 +1861,7 @@ def main():
         H["tt_cutflow"] = S["reco"]["cutflow"]
         O = json.load(open(os.path.join(args.osde, "summary.json")))
         O["_dir"] = os.path.abspath(args.osde)
-        slides.append(part_frame(*SIGTEXT[SIGNAL]["part"]))
+        slides.append(part_frame(*sigtext()["part"]))
         slides += build_hh_osde_slides(H, O, run_tests() if not args.no_tests else "not run")
         simp = os.path.join(args.osde, "simplify_summary.json")
         if os.path.exists(simp):

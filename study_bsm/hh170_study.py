@@ -36,7 +36,15 @@ from simplest import PDG, bw_surprisal, cauchy_surprisal  # noqa: E402
 from plotting import osde, style  # noqa: E402
 from plotting.angles import ANGLE_NAMES  # noqa: E402
 
-SIG = {"hh125": "samples/hh_bblvqq/run_seed2001", "hh170": "samples/hh_bblvqq/run_m170_seed2170"}
+import argparse  # noqa: E402
+
+_p = argparse.ArgumentParser()
+_p.add_argument("--tag", default="170", help="variant tag: outputs hh<tag>_study.json / fig_hh<tag>.png")
+_p.add_argument("--sample", default="samples/hh_bblvqq/run_m170_seed2170")
+_p.add_argument("--label", default=r"$hh$, $m_H=170$ ($WW$ on shell)")
+_a = _p.parse_args()
+TAG = _a.tag
+SIG = {"hh125": "samples/hh_bblvqq/run_seed2001", f"hh{TAG}": _a.sample}
 TT_FIT, TT_IND = "samples/ttbar_bblvqq/run_seed1001", "samples/ttbar_bblvqq/run_seed12345"
 OPTS = {"had_fermion": "down", "jet_assignment": "truth"}
 
@@ -100,22 +108,22 @@ def main():
             res[k] = r
             print(level, k, json.dumps({n: (round(v["auc"], 3), round(100 * v["eff_at_tt_1pct"], 1)) for n, v in r["scores"].items()}), flush=True)
         out["levels"][level] = res
-    json.dump(out, open(os.path.join(HERE, "hh170_study.json"), "w"), indent=1)
+    json.dump(out, open(os.path.join(HERE, f"hh{TAG}_study.json"), "w"), indent=1)
 
-    cols = {"tt": "#1f4e9c", "hh125": "#d1495b", "hh170": "#2a9d8f"}
-    labs = {"tt": r"$t\bar t$", "hh125": r"$hh$, $m_h=125$", "hh170": r"$hh$, $m_H=170$ ($WW$ on shell)"}
+    cols = {"tt": "#1f4e9c", "hh125": "#d1495b", f"hh{TAG}": "#2a9d8f"}
+    labs = {"tt": r"$t\bar t$", "hh125": r"$hh$, $m_h=125$", f"hh{TAG}": _a.label}
     fig, axs = plt.subplots(2, 2, figsize=(14, 9.5))
     for row, level in enumerate(("parton", "reco")):
         D = keep[level]
         for ax, m, xl, rng in zip(axs[row], ("m_w_had", "m_t_had"), [r"$m_{W,\mathrm{had}}$ [GeV]", r"$m_{t,\mathrm{had}}$ [GeV]"], [(0, 160), (50, 400)]):
             bins = np.linspace(*rng, 61)
-            for k in ("tt", "hh125", "hh170"):
+            for k in ("tt", "hh125", f"hh{TAG}"):
                 ax.hist(D[k]["m"][m], bins, density=True, histtype="step", lw=2.4, color=cols[k], label=labs[k])
             ax.set_yscale("log"); ax.set_ylim(1e-5, 30 * ax.get_ylim()[1]); ax.set_xlabel(xl + f" ({level})")
             ax.legend(fontsize=12, loc="upper center")
         axs[row][0].set_ylabel("unit area")
     fig.suptitle(r"$hh$ with on-shell $W$s: the $W$ mass handle disappears, the top-mass handle stays")
-    fig.tight_layout(); fig.savefig(os.path.join(HERE, "fig_hh170.png"), dpi=110)
+    fig.tight_layout(); fig.savefig(os.path.join(HERE, f"fig_hh{TAG}.png"), dpi=110)
     print("done")
 
 

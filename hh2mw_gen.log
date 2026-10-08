@@ -1,0 +1,5 @@
+[generate] reusing existing process directory /Users/TMHONG/Claude-code/ttbar_bblvqq/work/hh_bblvqq
+[generate] slimmed Delphes output (5 low-level branches dropped)
+[generate] Delphes card: /Users/TMHONG/Claude-code/ttbar_bblvqq/tools/MG5_aMC_v3_6_7/Delphes/cards/delphes_card_ATLAS.tcl
+[generate] running: /Users/TMHONG/Claude-code/ttbar_bblvqq/.venv/bin/python /Users/TMHONG/Claude-code/ttbar_bblvqq/work/hh_bblvqq/bin/madevent /Users/TMHONG/Claude-code/ttbar_bblvqq/work/hh_bblvqq_run_m2mw_seed2161.mg5
+[generate] log: /Users/TMHONG/Claude-code/ttbar_bblvqq/work/hh_bblvqq_run_m2mw_seed2161.log
