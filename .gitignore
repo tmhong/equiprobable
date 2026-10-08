@@ -56,3 +56,15 @@ ml_h2mw/
 acceptance_h2mw/
 slides_h2mw/*
 !slides_h2mw/slides.pdf
+
+# data files and ntuples: never commit (regenerate or keep outside git)
+*.pileup
+*.npz
+*.npy
+*.h5
+*.hdf5
+*.parquet
+*.pkl
+*.pickle
+*.feather
+*.joblib
