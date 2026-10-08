@@ -82,6 +82,92 @@
   ],
   "raw_genjet_mult": 5.796
  },
+ "pu0": {
+  "path": "/Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/test_pu0",
+  "file_MB": 71.060133,
+  "entries_in_file": 1000,
+  "kB_per_event": 71.060133,
+  "branch_MB_per_1000ev": {
+   "Event": 0.048,
+   "Event_size": 0.0,
+   "Weight": 0.007,
+   "Weight_size": 0.0,
+   "Particle": 68.976,
+   "Particle_size": 0.003,
+   "GenJet": 1.028,
+   "GenJet_size": 0.001,
+   "GenMissingET": 0.023,
+   "GenMissingET_size": 0.0,
+   "Jet": 0.788,
+   "Jet_size": 0.001,
+   "Electron": 0.034,
+   "Electron_size": 0.001,
+   "Photon": 0.014,
+   "Photon_size": 0.001,
+   "Muon": 0.036,
+   "Muon_size": 0.001,
+   "MissingET": 0.023,
+   "MissingET_size": 0.0,
+   "ScalarHT": 0.011,
+   "ScalarHT_size": 0.0,
+   "Rho": 0.019,
+   "Rho_size": 0.0
+  },
+  "missing_branches": [],
+  "n_events": 1000,
+  "xsec_pb": 135.6665,
+  "reco_njets": [
+   3.699,
+   0.040719246764362636
+  ],
+  "reco_nbjets": [
+   1.153,
+   0.02449879979083039
+  ],
+  "reco_nleptons_eq1": [
+   0.45,
+   0.015732132722552274
+  ],
+  "reco_presel": [
+   0.196,
+   0.012553246592017541
+  ],
+  "reco_ok": [
+   0.196,
+   0.012553246592017541
+  ],
+  "met_minus_nupt": {
+   "mean": 3.4029509963285536,
+   "std": 28.35224309678234,
+   "median": 2.5550813104203804,
+   "hw68": 20.179277794646
+  },
+  "gen_met_minus_nupt_hw68": 12.672774216096569,
+  "correct_of_reco_ok": [
+   0.21428571428571427,
+   0.02930899309458178
+  ],
+  "correct_of_all": [
+   0.042,
+   0.0063431853196954605
+  ],
+  "mW_had_median_reco_ok": 82.5523193592337,
+  "mt_had_median_reco_ok": 177.23986120778804,
+  "gen_njets": [
+   3.824,
+   0.04028208840969701
+  ],
+  "gen_nbjets": [
+   1.605,
+   0.019270348890104358
+  ],
+  "gen_reco_ok": [
+   0.39,
+   0.01542400726140908
+  ],
+  "raw_genjet_mult": 5.834,
+  "rho_central_mean_GeV": 0.6598959341943264
+ },
  "pu50": {
   "path": "/Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/test_pu50",
   "file_MB": 73.752548,
@@ -167,5 +253,91 @@
   ],
   "raw_genjet_mult": 5.834,
   "rho_central_mean_GeV": 43.99592384147644
+ },
+ "pu200": {
+  "path": "/Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/test_pu200",
+  "file_MB": 92.711974,
+  "entries_in_file": 1000,
+  "kB_per_event": 92.711974,
+  "branch_MB_per_1000ev": {
+   "Event": 0.052,
+   "Event_size": 0.0,
+   "Weight": 0.008,
+   "Weight_size": 0.0,
+   "Particle": 68.943,
+   "Particle_size": 0.003,
+   "GenJet": 1.032,
+   "GenJet_size": 0.001,
+   "GenMissingET": 0.023,
+   "GenMissingET_size": 0.0,
+   "Jet": 22.414,
+   "Jet_size": 0.001,
+   "Electron": 0.04,
+   "Electron_size": 0.001,
+   "Photon": 0.044,
+   "Photon_size": 0.001,
+   "Muon": 0.044,
+   "Muon_size": 0.001,
+   "MissingET": 0.023,
+   "MissingET_size": 0.0,
+   "ScalarHT": 0.011,
+   "ScalarHT_size": 0.0,
+   "Rho": 0.021,
+   "Rho_size": 0.0
+  },
+  "missing_branches": [],
+  "n_events": 1000,
+  "xsec_pb": 135.6665,
+  "reco_njets": [
+   7.695,
+   0.06842994708209015
+  ],
+  "reco_nbjets": [
+   1.018,
+   0.02445964583296893
+  ],
+  "reco_nleptons_eq1": [
+   0.483,
+   0.01580224667571039
+  ],
+  "reco_presel": [
+   0.364,
+   0.015215255502291114
+  ],
+  "reco_ok": [
+   0.332,
+   0.014892145580808697
+  ],
+  "met_minus_nupt": {
+   "mean": 36.12463090412732,
+   "std": 52.20884067263614,
+   "median": 33.34028219237113,
+   "hw68": 50.437487114161
+  },
+  "gen_met_minus_nupt_hw68": 12.672774216096569,
+  "correct_of_reco_ok": [
+   0.006024096385542169,
+   0.004246829663833253
+  ],
+  "correct_of_all": [
+   0.002,
+   0.0014127986409959489
+  ],
+  "mW_had_median_reco_ok": 84.75907671145907,
+  "mt_had_median_reco_ok": 182.1427317922988,
+  "gen_njets": [
+   3.824,
+   0.04028208840969701
+  ],
+  "gen_nbjets": [
+   1.605,
+   0.019270348890104358
+  ],
+  "gen_reco_ok": [
+   0.39,
+   0.01542400726140908
+  ],
+  "raw_genjet_mult": 5.834,
+  "rho_central_mean_GeV": 191.74689361572266
  }
 }

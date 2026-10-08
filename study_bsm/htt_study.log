@@ -1,0 +1,345 @@
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed1001/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed12345/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/Htt_bblvqq/run_seed3002/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/Htt_bblvqq/run_m350_seed3003/parton_events.lhe.gz
+parton H500 {
+ "n": 20000,
+ "mtt_median": 502.2190770900305,
+ "unsupervised": {
+  "angles, all terms": {
+   "auc": 0.5605832850000001,
+   "err": 0.004033355755347772,
+   "eff_at_tt_1pct": 0.00775,
+   "eff_at_tt_10pct": 0.1051
+  },
+  "angles, >10 sigma": {
+   "auc": 0.554644835,
+   "err": 0.004092661141148786,
+   "eff_at_tt_1pct": 0.0074,
+   "eff_at_tt_10pct": 0.097
+  },
+  "BW masses": {
+   "auc": 0.50779182,
+   "err": 0.0033932525061666167,
+   "eff_at_tt_1pct": 0.00985,
+   "eff_at_tt_10pct": 0.0994
+  },
+  "m_tt density": {
+   "auc": 0.5569467975,
+   "err": 0.0041250033766187764,
+   "eff_at_tt_1pct": 0.00065,
+   "eff_at_tt_10pct": 0.0101
+  },
+  "angles (>10 sigma) + BW": {
+   "auc": 0.51415821,
+   "err": 0.003358167901870577,
+   "eff_at_tt_1pct": 0.0109,
+   "eff_at_tt_10pct": 0.10285
+  },
+  "angles (>10 sigma) + m_tt": {
+   "auc": 0.529030005,
+   "err": 0.003839712669333757,
+   "eff_at_tt_1pct": 0.00115,
+   "eff_at_tt_10pct": 0.0145
+  },
+  "angles (>10 sigma) + BW + m_tt": {
+   "auc": 0.49336997,
+   "err": 0.0034645197540914413,
+   "eff_at_tt_1pct": 0.00865,
+   "eff_at_tt_10pct": 0.086
+  }
+ },
+ "supervised reference (angles + masses + m_tt)": 0.89418997,
+ "single_variable_lr_auc": {
+  "Y": 0.5148222898399941,
+  "cos_Theta": 0.6147977163737106,
+  "cos_theta": 0.5115893176158929,
+  "phi": 0.5009435392935013,
+  "cos_theta_prime": 0.49800155761654735,
+  "phi_prime": 0.5056667131597048,
+  "cos_theta_tilde": 0.5012133785014197,
+  "phi_tilde": 0.5061586214754336,
+  "cos_theta_prime_tilde": 0.493
+   eps 0.0: n_s 0  pull std 0.99  max|pull| 3.9  z: all terms -1.1, production angle -2.0, rapidity -0.8, W helicity -1.2, top polarization +1.1, spin correlation -1.9, pol. x W helicity interference -1.1, SM-significant (>3 sigma in tt) +1.0, SM-null (<1 sigma in tt) -4.2  top: lep[j1=1,j2=2,m'=-1,m=-1] x had[j1=1,j2=1,m'=-1,m=0] x P2(cosΘ) x H4(Y) (3.9); lep[j1=1,j2=0,m'=-1,m=0] x had[j1=1,j2=2,m'=1,m=-1] x P1(cosΘ) x H4(Y) (3.9); lep[j1=0,j2=1,m'=0,m=0] x had[j1=1,j2=1,m'=-1,m=1] x P2(cosΘ) x H3(Y) (3.8)
+   eps 0.005: n_s 50  pull std 0.99  max|pull| 3.9  z: all terms -0.9, production angle -1.8, rapidity -0.7, W helicity -1.0, top polarization +1.1, spin correlation -1.7, pol. x W helicity interference -0.9, SM-significant (>3 sigma in tt) +1.0, SM-null (<1 sigma in tt) -4.1  top: lep[j1=1,j2=0,m'=-1,m=0] x had[j1=1,j2=2,m'=1,m=-1] x P1(cosΘ) x H4(Y) (3.9); lep[j1=1,j2=2,m'=-1,m=-1] x had[j1=1,j2=1,m'=-1,m=0] x P2(cosΘ) x H4(Y) (3.7); lep[j1=0,j2=1,m'=0,m=0] x had[j1=1,j2=1,m'=-1,m=1] x P2(cosΘ) x H3(Y) (3.7)
+   eps 0.01: n_s 101  pull std 0.99  max|pull| 4.0  z: all terms -1.1, production angle -2.0, rapidity -0.7, W helicity -1.1, top polarization +1.1, spin correlation -1.8, pol. x W helicity interference -1.1, SM-significant (>3 sigma in tt) +1.0, SM-null (<1 sigma in tt) -4.2  top: lep[j1=1,j2=0,m'=-1,m=0] x had[j1=1,j2=2,m'=1,m=-1] x P1(cosΘ) x H4(Y) (4.0); lep[j1=1,j2=2,m'=-1,m=-1] x had[j1=1,j2=1,m'=-1,m=0] x P2(cosΘ) x H4(Y) (3.9); lep[j1=0,j2=1,m'=0,m=0] x had[j1=1,j2=1,m'=-1,m=1] x P2(cosΘ) x H3(Y) (3.8)
+   eps 0.02: n_s 204  pull std 0.99  max|pull| 3.9  z: all terms -1.2, production angle -2.1, rapidity -1.1, W helicity -1.3, top polarization +1.2, spin correlation -2.0, pol. x W helicity interference -1.3, SM-significant (>3 sigma in tt) +1.0, SM-null (<1 sigma in tt) -4.3  top: lep[j1=1,j2=0,m'=-1,m=0] x had[j1=1,j2=2,m'=1,m=-1] x P1(cosΘ) x H4(Y) (3.9); had[j1=1,j2=2,m'=-1,m=-1] x P2(cosΘ) (3.9); lep[j1=1,j2=2,m'=-1,m=-1] x had[j1=1,j2=1,m'=-1,m=0] x P2(cosΘ) x H4(Y) (3.8)
+   eps 0.05: n_s 526  pull std 0.99  max|pull| 4.0  z: all terms -1.4, production angle -2.3, rapidity -1.3, W helicity -1.4, top polarization +0.5, spin correlation -2.2, pol. x W helicity interference -1.4, SM-significant (>3 sigma in tt) +1.6, SM-null (<1 sigma in tt) -5.1  top: lep[j1=0,j2=1,m'=0,m=0] x had[j1=1,j2=1,m'=-1,m=1] x P2(cosΘ) x H3(Y) (4.0); lep[j1=0,j2=1,m'=0,m=0] x had[j1=1,j2=2,m'=-1,m=-1] x P2(cosΘ) x H4(Y) (3.8); lep[j1=1,j2=0,m'=-1,m=0] x had[j1=1,j2=2,m'=1,m=-1] x P1(cosΘ) x H4(Y) (3.7)
+   eps 0.1: n_s 1111  pull std 1.00  max|pull| 3.8  z: all terms -0.1, production angle -1.0, rapidity -0.2, W helicity -0.2, top polarization +1.6, spin correlation -1.0, pol. x W helicity interference -0.0, SM-significant (>3 sigma in tt) +1.3, SM-null (<1 sigma in tt) -4.0  top: lep[j1=1,j2=1,m'=0,m=-1] x had[j1=1,j2=2,m'=1,m=1] x P2(cosΘ) (3.8); lep[j1=1,j2=2,m'=-1,m=1] x had[j1=0,j2=1,m'=0,m=0] x P1(cosΘ) x H2(Y) (3.8); lep[j1=1,j2=0,m'=-1,m=0] x had[j1=1,j2=2,m'=1,m=-1] x P1(cosΘ) x H4(Y) (3.7)
+parton H350 {
+ "n": 20000,
+ "mtt_median": 384.2890766854646,
+ "unsupervised": {
+  "angles, all terms": {
+   "auc": 0.579061455,
+   "err": 0.004103071157562685,
+   "eff_at_tt_1pct": 0.00975,
+   "eff_at_tt_10pct": 0.1253
+  },
+  "angles, >10 sigma": {
+   "auc": 0.571707855,
+   "err": 0.00396318875707159,
+   "eff_at_tt_1pct": 0.01305,
+   "eff_at_tt_10pct": 0.1184
+  },
+  "BW masses": {
+   "auc": 0.512153695,
+   "err": 0.003632380947368256,
+   "eff_at_tt_1pct": 0.0106,
+   "eff_at_tt_10pct": 0.10695
+  },
+  "m_tt density": {
+   "auc": 0.4671238,
+   "err": 0.0033334428535117104,
+   "eff_at_tt_1pct": 0.00395,
+   "eff_at_tt_10pct": 0.03865
+  },
+  "angles (>10 sigma) + BW": {
+   "auc": 0.520269395,
+   "err": 0.003586201113307268,
+   "eff_at_tt_1pct": 0.0116,
+   "eff_at_tt_10pct": 0.111
+  },
+  "angles (>10 sigma) + m_tt": {
+   "auc": 0.51095908,
+   "err": 0.003582003709723931,
+   "eff_at_tt_1pct": 0.006,
+   "eff_at_tt_10pct": 0.04955
+  },
+  "angles (>10 sigma) + BW + m_tt": {
+   "auc": 0.51093049,
+   "err": 0.003738463689081302,
+   "eff_at_tt_1pct": 0.01255,
+   "eff_at_tt_10pct": 0.103
+  }
+ },
+ "supervised reference (angles + masses + m_tt)": 0.76440756,
+ "single_variable_lr_auc": {
+  "Y": 0.49872595107695233,
+  "cos_Theta": 0.6101900767095221,
+  "cos_theta": 0.49732229033884645,
+  "phi": 0.49793404294081034,
+  "cos_theta_prime": 0.5040752145613802,
+  "phi_prime": 0.49889619940365193,
+  "cos_theta_tilde": 0.49979516125202356,
+  "phi_tilde": 0.5011534463812553,
+  "cos_theta_prime_tilde": 0.49712593208
+   eps 0.0: n_s 0  pull std 0.99  max|pull| 3.9  z: all terms -1.1, production angle -2.0, rapidity -0.8, W helicity -1.2, top polarization +1.1, spin correlation -1.9, pol. x W helicity interference -1.1, SM-significant (>3 sigma in tt) +1.0, SM-null (<1 sigma in tt) -4.2  top: lep[j1=1,j2=2,m'=-1,m=-1] x had[j1=1,j2=1,m'=-1,m=0] x P2(cosΘ) x H4(Y) (3.9); lep[j1=1,j2=0,m'=-1,m=0] x had[j1=1,j2=2,m'=1,m=-1] x P1(cosΘ) x H4(Y) (3.9); lep[j1=0,j2=1,m'=0,m=0] x had[j1=1,j2=1,m'=-1,m=1] x P2(cosΘ) x H3(Y) (3.8)
+   eps 0.005: n_s 50  pull std 0.99  max|pull| 3.9  z: all terms -1.0, production angle -1.9, rapidity -0.7, W helicity -1.1, top polarization +1.1, spin correlation -1.8, pol. x W helicity interference -1.0, SM-significant (>3 sigma in tt) +0.9, SM-null (<1 sigma in tt) -4.2  top: lep[j1=0,j2=1,m'=0,m=0] x had[j1=1,j2=1,m'=-1,m=1] x P2(cosΘ) x H3(Y) (3.9); lep[j1=1,j2=0,m'=-1,m=0] x had[j1=1,j2=2,m'=1,m=-1] x P1(cosΘ) x H4(Y) (3.9); lep[j1=1,j2=2,m'=-1,m=-1] x had[j1=1,j2=1,m'=-1,m=0] x P2(cosΘ) x H4(Y) (3.8)
+   eps 0.01: n_s 101  pull std 0.99  max|pull| 3.9  z: all terms -1.1, production angle -2.0, rapidity -0.8, W helicity -1.3, top polarization +1.2, spin correlation -2.0, pol. x W helicity interference -1.2, SM-significant (>3 sigma in tt) +1.0, SM-null (<1 sigma in tt) -4.5  top: lep[j1=1,j2=2,m'=-1,m=-1] x had[j1=1,j2=1,m'=-1,m=0] x P2(cosΘ) x H4(Y) (3.9); lep[j1=1,j2=0,m'=-1,m=0] x had[j1=1,j2=2,m'=1,m=-1] x P1(cosΘ) x H4(Y) (3.9); lep[j1=0,j2=1,m'=0,m=0] x had[j1=1,j2=1,m'=-1,m=1] x P2(cosΘ) x H3(Y) (3.8)
+   eps 0.02: n_s 204  pull std 1.00  max|pull| 3.9  z: all terms -0.7, production angle -1.6, rapidity -0.5, W helicity -0.8, top polarization +1.1, spin correlation -1.6, pol. x W helicity interference -0.8, SM-significant (>3 sigma in tt) +1.2, SM-null (<1 sigma in tt) -3.9  top: lep[j1=1,j2=2,m'=-1,m=-1] x had[j1=1,j2=1,m'=-1,m=0] x P2(cosΘ) x H4(Y) (3.9); lep[j1=1,j2=0,m'=-1,m=0] x had[j1=1,j2=2,m'=1,m=-1] x P1(cosΘ) x H4(Y) (3.8); lep[j1=0,j2=1,m'=0,m=0] x had[j1=1,j2=1,m'=-1,m=1] x P2(cosΘ) x H3(Y) (3.8)
+   eps 0.05: n_s 526  pull std 0.99  max|pull| 3.9  z: all terms -1.1, production angle -2.0, rapidity -1.0, W helicity -1.1, top polarization +0.9, spin correlation -1.9, pol. x W helicity interference -1.0, SM-significant (>3 sigma in tt) +1.0, SM-null (<1 sigma in tt) -4.4  top: lep[j1=0,j2=1,m'=0,m=0] x had[j1=1,j2=1,m'=-1,m=1] x P2(cosΘ) x H3(Y) (3.9); lep[j1=1,j2=2,m'=-1,m=-1] x had[j1=1,j2=1,m'=-1,m=0] x P2(cosΘ) x H4(Y) (3.9); lep[j1=1,j2=0,m'=-1,m=0] x had[j1=1,j2=2,m'=1,m=-1] x P1(cosΘ) x H4(Y) (3.7)
+   eps 0.1: n_s 1111  pull std 1.00  max|pull| 4.0  z: all terms -0.6, production angle -1.5, rapidity -0.5, W helicity -0.8, top polarization +1.5, spin correlation -1.2, pol. x W helicity interference -0.7, SM-significant (>3 sigma in tt) +2.5, SM-null (<1 sigma in tt) -4.8  top: P2(cosΘ) (4.0); lep[j1=1,j2=1,m'=-1,m=1] x had[j1=1,j2=1,m'=1,m=-1] x H4(Y) (3.8); lep[j1=1,j2=0,m'=-1,m=0] x had[j1=1,j2=2,m'=1,m=-1] x P1(cosΘ) x H4(Y) (3.8)
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed1001/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed1001/delphes_events.root
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed12345/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed12345/delphes_events.root
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/Htt_bblvqq/run_seed3002/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/Htt_bblvqq/run_seed3002/delphes_events.root
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/Htt_bblvqq/run_m350_seed3003/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/Htt_bblvqq/run_m350_seed3003/delphes_events.root
+gen H500 {
+ "n": 10223,
+ "mtt_median": 532.122530011935,
+ "unsupervised": {
+  "angles, all terms": {
+   "auc": 0.5590569771597015,
+   "err": 0.005841389082186875,
+   "eff_at_tt_1pct": 0.013205516971534775,
+   "eff_at_tt_10pct": 0.11904529003228015
+  },
+  "angles, >10 sigma": {
+   "auc": 0.5623776054270371,
+   "err": 0.005932207657628481,
+   "eff_at_tt_1pct": 0.01379242883693632,
+   "eff_at_tt_10pct": 0.11708891714760833
+  },
+  "BW masses": {
+   "auc": 0.5406009604588835,
+   "err": 0.005384141640851405,
+   "eff_at_tt_1pct": 0.022596106817959503,
+   "eff_at_tt_10pct": 0.15054289347549643
+  },
+  "m_tt density": {
+   "auc": 0.4917831392364401,
+   "err": 0.005760009601444137,
+   "eff_at_tt_1pct": 0.011444781375330138,
+   "eff_at_tt_10pct": 0.09243861880074342
+  },
+  "angles (>10 sigma) + BW": {
+   "auc": 0.5518823321687377,
+   "err": 0.005410938779046763,
+   "eff_at_tt_1pct": 0.021715739019857183,
+   "eff_at_tt_10pct": 0.15357527144673774
+  },
+  "angles (>10 sigma) + m_tt": {
+   "auc": 0.5216805299868094,
+   "err": 0.0062147655515889565,
+   "eff_at_tt_1pct": 0.014379340702337866,
+   "eff_at_tt_10pct": 0.10388340017607356
+  },
+  "angles (>10 sigma) + BW + m_tt": {
+   "auc": 0.53348672451454,
+   "err": 0.005566679799999473,
+   "eff_at_tt_1pct": 0.023183018683361048,
+   "eff_at_tt_10pct": 0.15377090873520494
+  }
+ },
+ "supervised reference (angles + masses + m_tt)": 0.693158683326103
+}
+gen H350 {
+ "n": 8810,
+ "mtt_median": 476.7622511090284,
+ "unsupervised": {
+  "angles, all terms": {
+   "auc": 0.5493997343257404,
+   "err": 0.005144281466711466,
+   "eff_at_tt_1pct": 0.01623155505107832,
+   "eff_at_tt_10pct": 0.11872871736662884
+  },
+  "angles, >10 sigma": {
+   "auc": 0.5501100203346793,
+   "err": 0.0053953916735042014,
+   "eff_at_tt_1pct": 0.012258796821793417,
+   "eff_at_tt_10pct": 0.11316685584562997
+  },
+  "BW masses": {
+   "auc": 0.5372631762186941,
+   "err": 0.005041404972862394,
+   "eff_at_tt_1pct": 0.011804767309875142,
+   "eff_at_tt_10pct": 0.13200908059023836
+  },
+  "m_tt density": {
+   "auc": 0.5053395419178298,
+   "err": 0.00523273551385265,
+   "eff_at_tt_1pct": 0.008399545970488082,
+   "eff_at_tt_10pct": 0.10817253121452894
+  },
+  "angles (>10 sigma) + BW": {
+   "auc": 0.5456368576632856,
+   "err": 0.005140114226084201,
+   "eff_at_tt_1pct": 0.01112372304199773,
+   "eff_at_tt_10pct": 0.13461975028376844
+  },
+  "angles (>10 sigma) + m_tt": {
+   "auc": 0.5259303129497805,
+   "err": 0.005825366926251548,
+   "eff_at_tt_1pct": 0.011691259931895574,
+   "eff_at_tt_10pct": 0.1148694665153235
+  },
+  "angles (>10 sigma) + BW + m_tt": {
+   "auc": 0.5382323545999044,
+   "err": 0.00502891969622012,
+   "eff_at_tt_1pct": 0.012712826333711692,
+   "eff_at_tt_10pct": 0.1348467650397276
+  }
+ },
+ "supervised reference (angles + masses + m_tt)": 0.6377266234932266
+}
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed1001/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed1001/delphes_events.root
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed12345/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed12345/delphes_events.root
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/Htt_bblvqq/run_seed3002/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/Htt_bblvqq/run_seed3002/delphes_events.root
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/Htt_bblvqq/run_m350_seed3003/parton_events.lhe.gz
+[x] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/Htt_bblvqq/run_m350_seed3003/delphes_events.root
+reco H500 {
+ "n": 5901,
+ "mtt_median": 521.0469061984472,
+ "unsupervised": {
+  "angles, all terms": {
+   "auc": 0.5603477182250298,
+   "err": 0.0061771019437840136,
+   "eff_at_tt_1pct": 0.007625826131164209,
+   "eff_at_tt_10pct": 0.12065751567530927
+  },
+  "angles, >10 sigma": {
+   "auc": 0.5654718150021807,
+   "err": 0.0070885764414932596,
+   "eff_at_tt_1pct": 0.00847314014573801,
+   "eff_at_tt_10pct": 0.11743772241992882
+  },
+  "BW masses": {
+   "auc": 0.5331319920769194,
+   "err": 0.006707823488383477,
+   "eff_at_tt_1pct": 0.02152177597017455,
+   "eff_at_tt_10pct": 0.13319776309100154
+  },
+  "m_tt density": {
+   "auc": 0.48338125519153463,
+   "err": 0.006857591450615879,
+   "eff_at_tt_1pct": 0.009489916963226572,
+   "eff_at_tt_10pct": 0.08405355024572106
+  },
+  "angles (>10 sigma) + BW": {
+   "auc": 0.546603451485022,
+   "err": 0.006852172792290842,
+   "eff_at_tt_1pct": 0.022369089984748347,
+   "eff_at_tt_10pct": 0.1362480935434672
+  },
+  "angles (>10 sigma) + m_tt": {
+   "auc": 0.5152681818308094,
+   "err": 0.007215862705083322,
+   "eff_at_tt_1pct": 0.010506693780715132,
+   "eff_at_tt_10pct": 0.09150991357397051
+  },
+  "angles (>10 sigma) + BW + m_tt": {
+   "auc": 0.5266119801867425,
+   "err": 0.006582493636436811,
+   "eff_at_tt_1pct": 0.02423318081681071,
+   "eff_at_tt_10pct": 0.13218098627351296
+  }
+ },
+ "supervised reference (angles + masses + m_tt)": 0.6688733605168573
+}
+reco H350 {
+ "n": 4699,
+ "mtt_median": 466.8077207507879,
+ "unsupervised": {
+  "angles, all terms": {
+   "auc": 0.5419106437016595,
+   "err": 0.00794929459787408,
+   "eff_at_tt_1pct": 0.006809959565865078,
+   "eff_at_tt_10pct": 0.10661842945307512
+  },
+  "angles, >10 sigma": {
+   "auc": 0.5530067436740987,
+   "err": 0.007877686340365071,
+   "eff_at_tt_1pct": 0.008725260693764631,
+   "eff_at_tt_10pct": 0.11385401149180677
+  },
+  "BW masses": {
+   "auc": 0.5091512320375106,
+   "err": 0.006952781213083792,
+   "eff_at_tt_1pct": 0.011917429240263885,
+   "eff_at_tt_10pct": 0.11364120025537348
+  },
+  "m_tt density": {
+   "auc": 0.4951209535338876,
+   "err": 0.006265840924078009,
+   "eff_at_tt_1pct": 0.008725260693764631,
+   "eff_at_tt_10pct": 0.07469674398808257
+  },
+  "angles (>10 sigma) + BW": {
+   "auc": 0.5215305663220986,
+   "err": 0.006963877613121063,
+   "eff_at_tt_1pct": 0.011066184294530752,
+   "eff_at_tt_10pct": 0.11364120025537348
+  },
+  "angles (>10 sigma) + m_tt": {
+   "auc": 0.522210428448327,
+   "err": 0.006733276831035462,
+   "eff_at_tt_1pct": 0.010214939348797617,
+   "eff_at_tt_10pct": 0.10810810810810811
+  },
+  "angles (>10 sigma) + BW + m_tt": {
+   "auc": 0.5134992098074581,
+   "err": 0.006662171686913331,
+   "eff_at_tt_1pct": 0.014258352841030006,
+   "eff_at_tt_10pct": 0.11066184294530751
+  }
+ },
+ "supervised reference (angles + masses + m_tt)": 0.5774543076386467
+}
+done

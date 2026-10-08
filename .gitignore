@@ -34,3 +34,8 @@ note/*.toc
 note/*.fls
 note/*.fdb_latexmk
 pileup/*.root
+pileup/*.pileup
+pileup/parts/
+pileup/tmp/
+pileup/bin/
+pileup/failed_attempts/

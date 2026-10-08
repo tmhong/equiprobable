@@ -265,3 +265,17 @@ Newest entries are at the bottom. Numbers refer to the samples listed under "Sam
   Lesson: anomaly scores find signals where background is rare, not excesses where it is common.
 - Internal note: note/make_note.py → note/note.pdf (34 pages), numbers from the same JSONs as the slides.
 - Pileup (μ = 50, 200) infrastructure agent and L1-trigger LUT study agent running (Opus, local).
+
+## 2026-10-08 — Study B (tt̄ vs H→tt̄), pileup production, L1 study; usage limit reached mid-run
+
+- Deck reorganized: Study A (tt̄ vs hh, kept in full) / Study B (tt̄ vs H→tt̄, m_H = 500 and 350 GeV, Γ set by hand) / Study C (pileup, L1).
+- Study B (study_bsm/htt_study.py): anomaly score weak (angles alone AUC 0.55–0.57 at all levels; masses nothing;
+  m_tt density does not help: the resonance sits on the bulk). Coefficient test (c_data − c_tt, 14,400 real dofs,
+  calibrated: pull std 0.99 at ε=0): only P2(cosΘ) moves, pull ≈ 3.8–4.0 at ε = 10% in 10k events (noise ceiling 3.9);
+  pull ∝ ε√N → 5σ needs ε√N ≈ 150; m_tt bump hunt ≈ 7× more sensitive. Decay-vertex (F_R) benchmark dropped
+  (already constrained by single-top / W-helicity measurements; study_bsm/wtb_reweight.py kept).
+- Pileup: infrastructure done (pileup/infra_report.md); shared analysis pileup/analyze_pileup.py; productions running
+  (μ=0, 50: queue in work/pu_queue_pu0_pu50.*; μ=200: work/pu200_queue.sh, log work/pu200_queue.log). After "ALL DONE":
+  merge parts, run analyze_pileup.py per μ (commands in the agent prompts / infra report §7), write pileup/results.json
+  {"mu": {"0": {...}, "50": {...}, "200": {...}}} for note/make_note.py, then rebuild slides + note.
+- L1 trigger LUT study (study_l1/) in progress by an agent.

@@ -14,6 +14,8 @@ Examples:
 import argparse
 import json
 import os
+
+import numpy as np
 import re
 import runpy
 import shutil
@@ -546,70 +548,143 @@ def ml_slides(mdir, explainer=()):
     return out
 
 
-def bsm_slides(bdir):
-    """A BSM benchmark (H -> tt̄) for the unsupervised approach (study_bsm/htt_test.py)."""
-    p = os.path.join(bdir, "htt_test.json")
+def part_frame(title, items):
+    """A divider frame between the studies (no outline entry)."""
+    body = (r"\begin{beamercolorbox}[wd=\textwidth, sep=10pt, center]{title}{\Large\bfseries " + title + r"}\end{beamercolorbox}"
+            r"\vspace{0.6cm}\begin{itemize}" + "".join(rf"\item {i}" for i in items) + r"\end{itemize}")
+    return frame("", body).replace(r"\frametitle{}", "")
+
+
+def study_b_slides(bdir):
+    """Study B: tt̄ vs a heavy scalar H -> tt̄ (study_bsm/htt_study.py)."""
+    p = os.path.join(bdir, "htt_study.json")
     if not os.path.exists(p):
         return []
     B = json.load(open(p))
-    meta = json.load(open(os.path.join(HERE, "samples", "Htt_bblvqq", "run_seed3002", "metadata.json")))
-    order = [("unsupervised | f_tt angles (>10 sigma)", r"unsup.: $f_{t\bar t}$ angles ($>10\sigma$)"),
-             ("unsupervised | BW masses", "unsup.: BW masses"),
-             ("unsupervised | m_tt density", r"unsup.: $m_{t\bar t}$ density"),
-             ("unsupervised | angles + BW", "unsup.: angles + BW"),
-             ("unsupervised | angles + BW + m_tt", r"unsup.: angles + BW + $m_{t\bar t}$"),
-             ("supervised trained on hh | angles", r"sup., trained on $hh$: angles"),
-             ("supervised trained on hh | angles + masses + m_tt", r"sup., trained on $hh$: + masses, $m_{t\bar t}$"),
-             ("supervised trained on Htt | angles", r"sup., trained on $H\to t\bar t$: angles"),
-             ("supervised trained on Htt | angles + masses + m_tt", r"sup., trained on $H\to t\bar t$: + masses, $m_{t\bar t}$")]
-    rows = []
-    for k, lab in order:
-        r = [lab]
-        for l in ("parton", "reco"):
-            for sig in ("hh", "Htt"):
-                v = B[l][f"{sig} vs tt"].get(k)
-                r.append(rf"${v[0]:.3f}\pm{v[1]:.3f}$" if v else "--")
-        rows.append(r)
-    P, R = B["parton"], B["reco"]
-    u = lambda l, k: B[l]["Htt vs tt"][k][0]  # noqa: E731
-    return [
-        section(r"A BSM benchmark: $H\to t\bar t$", "BSM benchmark: H to ttbar"),
-        bullets(r"Where an unsupervised $f_{t\bar t}$ should win: a signal nobody trained for", [
-            r"A classifier trained on $hh$ learns what $hh$ looks like; $f_{t\bar t}$ learns only what $t\bar t$ looks like",
-            r"Benchmark: $gg\to H\to t\bar t\to b\bar b\,\ell\nu\,q\bar q'$, $m_H=500$ GeV, $\Gamma_H=25$ GeV "
-            r"($\Gamma/m=5\%$, a heavy 2HDM-like scalar); \texttt{heft} $ggH$ coupling, SM-like decays, signal only "
-            r"(no interference with QCD $t\bar t$)",
-            rf"{meta['nevents']} events; $\sigma\times\mathcal{{B}}={1000 * meta['cross_section_pb']:.3g}$ fb (LO, heft normalization; shapes only)",
-            r"Unlike $hh$: on-shell tops and $W$s. Differs from QCD $t\bar t$ only in spin structure (scalar: isotropic "
-            r"$\cos\Theta$, like-helicity tops), rapidity and $m_{t\bar t}$, \emph{not} in the resonance masses",
-            r"MG5's automatic width came out absurd ($4\times10^5$ GeV; the sample was regenerated with the width set by hand)",
-            r"Scores on the same test events: unsupervised ($f_{t\bar t}$ angles, BW masses, a 1-D $t\bar t$ density of "
-            r"$m_{t\bar t}$, combinations); a BDT trained on $hh$ vs $t\bar t$ applied to both signals; a BDT trained on "
-            r"$H\to t\bar t$ as the ceiling of a dedicated search",
+    L = B["levels"]
+    sigs = [k for k in ("H500", "H350") if k in L["parton"]]
+    lab = {"H500": r"$H(500)$", "H350": r"$H(350)$"}
+    slides = [
+        part_frame(r"Study B: $t\bar t$ vs $H\to t\bar t$ (new physics in the production)", [
+            r"An on-shell resonance: same masses as $t\bar t$, so the Breit--Wigner factors see nothing; the angles "
+            r"(production angle, spin correlations) and $m_{t\bar t}$ carry the difference",
+            r"Two masses: $m_H=500$ GeV ($\Gamma=25$ GeV) and $m_H=350$ GeV ($\Gamma=10$ GeV), just above the "
+            r"$2m_t=346$ GeV threshold where only the spin correlations remain",
+            r"Two uses of $f_{t\bar t}$: as an anomaly score (low $t\bar t$ density), and its coefficients as a bump hunt in "
+            r"angle space ($\hat c_\mathrm{data}-\hat c_{t\bar t}$)",
         ]),
-        table(r"AUC vs $t\bar t$: $hh$ and $H\to t\bar t$, parton and reco level",
-              ["score", "parton: $hh$", r"parton: $H t\bar t$", "reco: $hh$", r"reco: $H t\bar t$"], rows, fit=True,
-              note=rf"Test events: parton {P['n_test']['tt']} $t\bar t$ / {P['n_test']['hh']} $hh$ / {P['n_test']['Htt']} $H\to t\bar t$; "
-                   rf"reco {R['n_test']['tt']} / {R['n_test']['hh']} / {R['n_test']['Htt']}. Median $m_{{t\bar t}}$ at parton: "
-                   rf"$t\bar t$ {P['mtt_median']['tt']:.0f}, $hh$ {P['mtt_median']['hh']:.0f}, $H$ {P['mtt_median']['Htt']:.0f} GeV. "
-                   r"AUC $<0.5$: the score calls the signal \emph{more} $t\bar t$-like than $t\bar t$."),
-        bullets(r"What the benchmark shows", [
-            rf"The $hh$-trained classifier is useless for $H\to t\bar t$: {u('parton', 'supervised trained on hh | angles'):.2f} on the angles and "
-            rf"{u('parton', 'supervised trained on hh | angles + masses + m_tt'):.2f} with the masses (worse than random: it learned "
-            r"``on-shell masses, high $m_{t\bar t}$ = $t\bar t$'')",
-            rf"The unsupervised angular $f_{{t\bar t}}$ is weakly positive and model-agnostic: {u('parton', 'unsupervised | f_tt angles (>10 sigma)'):.2f} "
-            rf"(parton), {u('reco', 'unsupervised | f_tt angles (>10 sigma)'):.2f} (reco), from the isotropic $\cos\Theta$ and the spin structure",
-            rf"The mass factors add nothing (on-shell) and \emph{{dilute}} the angular score ({u('parton', 'unsupervised | angles + BW'):.2f}): "
-            r"the summed surprisal is dominated by the dimensions with the largest spread. For an on-shell signal use the angular part alone, "
-            r"or weight the factors",
-            rf"Limit of any density-based score: the $m_{{t\bar t}}$ resonance sits on the bulk of QCD $t\bar t$ (median 472 GeV), so "
-            rf"``low $t\bar t$ density'' cannot flag it ({u('parton', 'unsupervised | m_tt density'):.2f}); a dedicated supervised search gets "
-            rf"{u('parton', 'supervised trained on Htt | angles + masses + m_tt'):.2f}. Anomaly detection finds signals where the background is "
-            r"\emph{rare}, not excesses where it is common",
-            r"So: yes, there are signals where $f_{t\bar t}$ beats the $hh$-trained classifier (which can be below 0.5), but the margin is "
-            r"small; the strength of the approach is that it never does worse than random",
+        section(r"Study B: $t\bar t$ vs $H\to t\bar t$", "Study B: ttbar vs H to ttbar"),
+        bullets(r"Samples and what should differ", [
+            r"$gg\to H\to t\bar t\to b\bar b\,\ell\nu\,q\bar q'$ (\texttt{heft} $ggH$, SM-like decays, signal only, no interference); "
+            r"MG5's automatic width is unusable here ($4\times10^5$ GeV), so $\Gamma_H$ is set by hand",
+            r"20k events each; cross sections are LO heft normalizations and not used (shapes only)",
+            r"Scalar ($J=0$): $\cos\Theta$ isotropic vs the $t$-channel forward peak of $gg\to t\bar t$; like-helicity tops at "
+            r"every mass, whereas QCD $gg$ is like-helicity only near threshold; $m_{t\bar t}$ peaks at $m_H$ on the bulk of "
+            r"the QCD spectrum (median " + rf"{L['parton']['mtt_median_tt']:.0f} GeV)",
+            r"At $2m_t$: $\cos\Theta$ is isotropic for QCD too ($S$-wave), so the spin correlations are the only angular handle "
+            r"(the CMS threshold excess is this kind of object: a pseudoscalar $^1S_0$ state looks like QCD $gg$ there; a scalar "
+            r"$^3P_0$ differs in the transverse correlations)",
+            r"Test events: " + ", ".join(rf"{LVL_TEX[l]} {L[l]['n_tt_test']} $t\bar t$" for l in L) + "; signals: "
+            + ", ".join(rf"{lab[k]} {L['parton'][k]['n']}" for k in sigs) + " (parton)",
         ]),
+        wide_figure(r"Parton level: $m_{t\bar t}$, $\cos\Theta$ and a spin-correlation proxy", os.path.join(bdir, "fig_htt_parton.png")),
     ]
+    names = ["Y", "cos_Theta", "cos_theta", "phi", "cos_theta_prime", "phi_prime", "cos_theta_tilde", "phi_tilde",
+             "cos_theta_prime_tilde", "phi_prime_tilde", "mtt"]
+    rows = [[ANGLE_TEX.get(a, r"$m_{t\bar t}$")] + [f"{L['parton'][k]['single_variable_lr_auc'][a]:.3f}" for k in sigs] for a in names]
+    slides.append(table(r"Which variables differ (parton; 1-D likelihood-ratio AUC vs $t\bar t$)", ["variable"] + [lab[k] for k in sigs],
+                        rows, note=r"Likelihood ratio from a 40-bin histogram fitted on half the events, tested on the other half, so "
+                                   r"non-monotonic differences count. $\cos\Theta$ and $m_{t\bar t}$ carry $H(500)$; at threshold only "
+                                   r"$m_{t\bar t}$ and the decay angles (spin correlations) are left."))
+    order = ["angles, all terms", "angles, >10 sigma", "BW masses", "m_tt density", "angles (>10 sigma) + BW",
+             "angles (>10 sigma) + m_tt", "angles (>10 sigma) + BW + m_tt"]
+    tex = {"angles, all terms": "angles, all terms", "angles, >10 sigma": r"angles, $>10\sigma$", "BW masses": "BW masses",
+           "m_tt density": r"$m_{t\bar t}$ density", "angles (>10 sigma) + BW": r"angles + BW",
+           "angles (>10 sigma) + m_tt": r"angles + $m_{t\bar t}$", "angles (>10 sigma) + BW + m_tt": r"angles + BW + $m_{t\bar t}$"}
+    for k in sigs:
+        rows = []
+        for name in order:
+            r = [tex[name]]
+            for l in ("parton", "gen", "reco"):
+                u = L[l][k]["unsupervised"][name]
+                r += [rf"${u['auc']:.3f}\pm{u['err']:.3f}$", rf"{100 * u['eff_at_tt_1pct']:.1f}\% / {100 * u['eff_at_tt_10pct']:.0f}\%"]
+            rows.append(r)
+        rows.append([r"\emph{dedicated supervised BDT (reference)}"] + sum(([f"{L[l][k]['supervised reference (angles + masses + m_tt)']:.3f}", "--"]
+                                                                            for l in ("parton", "gen", "reco")), []))
+        slides.append(table(rf"$f_{{t\bar t}}$ as an anomaly score: {lab[k]} vs $t\bar t$",
+                            ["score", "parton AUC", r"$\epsilon_S$ at $\epsilon_{t\bar t}$ 1\% / 10\%", "gen AUC", r"$\epsilon_S$ 1\% / 10\%",
+                             "reco AUC", r"$\epsilon_S$ 1\% / 10\%"], rows, fit=True,
+                            note=r"$\epsilon_S$: signal efficiency when the cut keeps 1\% (10\%) of $t\bar t$; 1\% (10\%) = no enrichment. "
+                                 r"Reference: a BDT trained on this signal (angles + masses + $m_{t\bar t}$), what a dedicated search could do."))
+    P = L["parton"]
+    ct = {k: P[k]["coefficient_test"] for k in sigs}
+    cal = ct[sigs[0]]["0.0"]
+    def p2_pull(c):
+        """pull of the P2(cos Theta) term at eps = 10% (the largest pull if it is not among the listed top terms)."""
+        t = [x for x in c["0.1"]["top_terms"] if x["term"] == "P2(cosΘ)"]
+        return t[0]["pull"] if t else c["0.1"]["max_abs_pull"]
+
+    def eps_sqrtN(c):
+        """eps*sqrt(N) needed for |pull| = 5.3, from the pull at eps = 0.1 with N = n_data events (pull ~ eps sqrt N)."""
+        return 0.1 * np.sqrt(c["0.1"]["n_data"]) * 5.3 / p2_pull(c)
+    slides += [
+        bullets(r"Reading the anomaly-score table", [
+            r"The masses see nothing (on-shell), as expected; the angles alone give a weak but real separation (0.55--0.57 at "
+            r"every level, from $\cos\Theta$), and the mass factors \emph{dilute} it (the summed surprisal is dominated by the "
+            r"dimensions with the largest spread)",
+            r"$m_{t\bar t}$ as a density does not help although it is by far the most different variable (1-D AUC 0.88 / 0.73): the "
+            r"resonance sits where the $t\bar t$ density is high, and at threshold the signal even looks \emph{more} $t\bar t$-like "
+            r"than $t\bar t$ (AUC 0.47). ``Low density'' finds rarities, not excesses",
+            r"Tail enrichment at $\epsilon_{t\bar t}=1\%$ is the number that matters for an anomaly trigger or selection; "
+            + "; ".join(rf"{lab[k]}: " + ", ".join(rf"{LVL_TEX[l]} {100 * L[l][k]['unsupervised']['angles, >10 sigma']['eff_at_tt_1pct']:.1f}\%"
+                                                    for l in ("parton", "gen", "reco")) for k in sigs),
+            r"A dedicated supervised search does far better, because it knows the signal. The question for Study B is therefore "
+            r"not the score but whether the \emph{coefficients} can find the signal without knowing it",
+        ]),
+        bullets(r"The OSDE coefficients as a bump hunt in angle space", [
+            r"Fit the 14\,400 coefficients on the data (here: independent $t\bar t$, 10k events, plus a signal fraction $\epsilon$) "
+            r"and compare with the $t\bar t$ reference (fit sample, 100k): pull $=(\hat c_\mathrm{data}-\hat c_{t\bar t})/"
+            r"\sqrt{\sigma^2_\mathrm{data}+\sigma^2_{t\bar t}}$ per term, over the 14\,400 real degrees of freedom",
+            r"Model-agnostic: no signal hypothesis, no training; an \emph{excess} shows as pulls on specific terms, and the terms "
+            r"say what the physics is (production angle, spin correlation, polarization)",
+            rf"Calibration at $\epsilon=0$: pull std {cal['pull_std']:.2f}, $\chi^2$/ndf over all terms "
+            rf"{cal['groups']['all terms']['chi2']:.0f}/{cal['groups']['all terms']['ndf']}, $z={cal['groups']['all terms']['z']:+.1f}$: "
+            r"the two $t\bar t$ samples agree and the errors are right",
+            r"Tests: $\chi^2$ over all terms and over each physics category (production angle, rapidity, $W$ helicity, top "
+            r"polarization, spin correlation, SM-null terms), $z=(\chi^2-\mathrm{ndf})/\sqrt{2\,\mathrm{ndf}}$; and the largest "
+            r"single pull (14\,400 trials: $5\sigma$ global $\approx|{\rm pull}|>5.3$)",
+            r"Result with 10k events: no category $\chi^2$ responds up to $\epsilon=10\%$ (one term carries the signal, the rest "
+            r"of the block is noise); the single term that moves is $P_2(\cos\Theta)$, the isotropy of the scalar decay, with pull "
+            + ", ".join(rf"{lab[k]}: {p2_pull(ct[k]):.1f}" for k in sigs) + r" at $\epsilon=10\%$, just at the noise ceiling "
+            rf"(largest of 14\,400 null pulls $\approx$ {cal['max_abs_pull']:.1f})",
+            r"The pull of a term grows as $\epsilon\sqrt N$: $5\sigma$ global ($|$pull$|=5.3$) needs $\epsilon\sqrt N\approx$ "
+            + ", ".join(rf"{lab[k]}: {eps_sqrtN(ct[k]):.0f}" for k in sigs) + r", i.e.\ $\epsilon\approx$ "
+            + ", ".join(rf"{100 * eps_sqrtN(ct[k]) / 1e3:.1f}\% at $10^6$ events ({100 * eps_sqrtN(ct[k]) / 1e4:.2f}\% at $10^8$)" for k in sigs[:1])
+            + r"; the $m_{t\bar t}$ bump hunt is $\sim$7 times more sensitive to this signal ($S/\sqrt B$ in a $\pm\Gamma$ window)",
+        ]),
+        wide_figure(r"Significance of the coefficient test vs signal fraction", os.path.join(bdir, "fig_coefficient_test.png")),
+    ]
+    for k in sigs:
+        c = ct[k]["0.1"]
+        grow = [[g, f"{v['chi2']:.0f} / {v['ndf']}", f"{v['z']:+.1f}"] for g, v in c["groups"].items() if "SM-" not in g]
+        slides.append(table(rf"{lab[k]} at $\epsilon=10\%$: $\chi^2$ per physics category", ["terms", r"$\chi^2$ / ndf", "$z$"], grow,
+                            note=r"Which block of the expansion the signal lands in; fewer terms = less noise dilution = more sensitive."))
+        rows = [[term_tex(t["term"]), t["physics"].replace("tt", r"$t\bar t$"), f"{t['pull']:.1f}", f"{t['ref_signif']:.0f}"] for t in c["top_terms"][:8]]
+        slides.append(table(rf"Terms that respond, {lab[k]} at $\epsilon=10\%$ (largest pull {c['max_abs_pull']:.1f})",
+                            ["term", "physics", r"$|$pull$|$", r"$|\hat c|/\sigma$ in $t\bar t$"], rows, fit=True,
+                            note=r"The last column is the term's significance in the $t\bar t$ reference: a large pull on a term that is "
+                                 r"zero in $t\bar t$ is new physics in a channel the SM does not have."))
+    slides.append(bullets(r"Study B: conclusions", [
+        r"As an anomaly \emph{score}, $f_{t\bar t}$ is weak for an on-shell resonance (AUC 0.5--0.6), scalar or vector: the signal "
+        r"sits where $t\bar t$ is dense. A vector would change which angular terms differ (opposite-helicity correlations; top "
+        r"polarization if the couplings are chiral), not the size of the modulation",
+        r"As a \emph{bump hunt in coefficient space}, the same fit is sensitive and tells the physics: the production-angle and "
+        r"spin-correlation terms respond for $H(500)$; at threshold only the spin-correlation terms do",
+        r"Next: the test at gen/reco level with the extended basis (needs the orders the reconstruction requires); "
+        r"a pseudoscalar $A$ (the CMS threshold case); a vector ($Z'$) with chiral couplings; realistic $\epsilon$ from "
+        r"$\sigma\times\mathcal B$",
+    ]))
+    return slides
 
 
 def washout_slides(wdir):
@@ -1338,6 +1413,11 @@ def main():
         H["tt_cutflow"] = S["reco"]["cutflow"]
         O = json.load(open(os.path.join(args.osde, "summary.json")))
         O["_dir"] = os.path.abspath(args.osde)
+        slides.append(part_frame(r"Study A: $t\bar t$ vs $hh\to b\bar b\,WW^*$ (an off-shell signal)", [
+            r"$f_{t\bar t}$ on the ten angles: fits, coefficients, bases, acceptance",
+            r"Why the separation washes out after reconstruction, and the fix: the resonance masses",
+            r"Comparison with other unsupervised methods and with supervised ML on the same inputs",
+        ]))
         slides += build_hh_osde_slides(H, O, run_tests() if not args.no_tests else "not run")
         simp = os.path.join(args.osde, "simplify_summary.json")
         if os.path.exists(simp):
@@ -1347,7 +1427,7 @@ def main():
         slides += ml_slides(os.path.join(HERE, "ml"), ml_explainer_slides())
         slides += washout_slides(os.path.join(HERE, "study_washout"))
         slides += salvage_slides(os.path.join(HERE, "study_salvage"))
-        slides += bsm_slides(os.path.join(HERE, "study_bsm"))
+        slides += study_b_slides(os.path.join(HERE, "study_bsm"))
         slides += discriminator_slides(os.path.abspath(args.osde))
     elif args.hh or args.osde:
         sys.exit("--hh and --osde go together")

@@ -1,0 +1,9 @@
+[tt_test] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed12345/parton_events.lhe.gz
+[tt_test] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed12345/delphes_events.root
+[tt_test] 10000 events, presel 2454, reco_ok 2440 (3 s)
+[tt_calib] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed1001/parton_events.lhe.gz
+[tt_calib] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed1001/delphes_events.root
+[tt_calib] 30000 events, presel 7282, reco_ok 7247 (9 s)
+[hh] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_seed2001/parton_events.lhe.gz
+[hh] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_seed2001/delphes_events.root
+[hh] 20000 events, presel 1887, reco_ok 1878 (6 s)
