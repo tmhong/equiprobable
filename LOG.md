@@ -228,3 +228,7 @@ Newest entries are at the bottom. Numbers refer to the samples listed under "Sam
   * Information is not gone: BDT on hypothesis-free gen observables (m_bb, ΔR_bb, MET, m_T, …) 0.87.
   * Conclusion: the tt̄-hypothesis reconstruction moves hh into the tt̄-dense region of angle space.
 - Slides: new section "Why the separation washes out at gen level".
+- ML (parton and parton+trig) complete; paired OSDE − flow +0.011 ± 0.003 / +0.008 ± 0.003; y does not help
+  supervised ML (±0.002). Shuffled-label control at parton+trig 0.517 ± 0.006 (3σ; one of ~30 AUCs).
+  ROC legends enlarged; ML conclusion slides carry the paired difference and the controls.
+- Claude Doc: ML, washout and summary sections filled (all sections now complete).

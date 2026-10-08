@@ -531,12 +531,16 @@ def ml_slides(mdir):
         mom = max(v["auc_test"] for v in rr.values() if v["group"].startswith("angles+momenta"))
         out.append(bullets(rf"Answer, {LVL_TEX[l]} level", [
             rf"As an anomaly detector (no $hh$ used): OSDE $f_{{t\bar t}}$ AUC {osde_best[0]:.3f} vs "
-            rf"{other_best[0]:.3f} for the best other unsupervised method ({other_best[1].split(' (')[0]})",
+            rf"{other_best[0]:.3f} for the best other unsupervised method ({other_best[1].split(' (')[0]})"
+            + "".join(rf"; paired difference {v['delta']:+.3f} $\pm$ {v['err']:.3f}" for k, v in r.get("paired", {}).items()
+                      if k.startswith(osde_best[1]) and other_best[1] in k),
             rf"Knowing $hh$ (supervised) on the same angles: AUC {best_sup:.3f}, the upper bound for these inputs",
             rf"Adding $y$ to the supervised classifiers: AUC change {min(gain):+.3f} to {max(gain):+.3f} "
             rf"(best {best_supy:.3f}), within the $\pm${r['results'][next(iter(sup))]['auc_err']:.3f} uncertainty: "
             r"$y$ carries no information the classifier does not already learn from the angles",
             rf"Momenta (which contain $m_{{b\bar b}}=m_h$ etc.) make the task trivial: AUC {mom:.4f}",
+            rf"Controls: shuffled labels {rr['control: BDT, shuffled labels']['auc_test']:.3f}, $t\bar t$ vs $t\bar t$ "
+            rf"{rr['control: BDT, tt (fit) vs tt (independent)']['auc_test']:.3f} (expected 0.5)",
         ]))
     return out
 

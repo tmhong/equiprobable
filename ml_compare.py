@@ -509,19 +509,22 @@ def plot_rocs(rocs, level, out):
     """One legible figure per comparison: roc_<level>_{a,b,c}.png."""
     style.use()
     for key, title, sel in PANELS:
-        fig, ax = plt.subplots(figsize=(10, 7.2))
+        fig, ax = plt.subplots(figsize=(11, 7.6))
         for name, (g, fpr, tpr, auc) in rocs.items():
             if not sel(name, g):
                 continue
             col = next(c for k, c in COLORS.items() if name.startswith(k) or k in name)
             ls = "--" if ("+y" in g) else (":" if g == "control" else "-")
             lw = 3.0 if name.startswith("OSDE") else 2.0
-            ax.plot(fpr, tpr, color=col, ls=ls, lw=lw, label=f"{name}: {auc:.3f}")
+            short = (name.replace("OSDE f_tt, paper basis", "OSDE $f_{t\\bar t}$").replace(" (reconstruction error)", "")
+                     .replace(" (RealNVP, 8 couplings)", "").replace("Gaussian mixture density (32 comp.)", "Gaussian mixture")
+                     .replace("control: BDT, ", "control: ").replace("tt (fit) vs tt (independent)", "$t\\bar t$ vs $t\\bar t$"))
+            ax.plot(fpr, tpr, color=col, ls=ls, lw=lw, label=f"{short}: {auc:.3f}")
         ax.plot([0, 1], [0, 1], color="0.85", lw=1)
         ax.set_xlabel(r"$t\bar t$ efficiency (independent sample)")
         ax.set_ylabel(r"$hh$ efficiency")
         ax.set_title(f"{level.replace('_trig', '+trig')} level: {title}")
-        ax.legend(fontsize=12, frameon=False, loc="lower right")
+        ax.legend(fontsize=14.5, frameon=True, framealpha=0.9, loc="lower right")
         fig.tight_layout()
         fig.savefig(os.path.join(out, f"roc_{level}_{key}.png"), dpi=120)
         plt.close(fig)
