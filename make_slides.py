@@ -593,6 +593,51 @@ def washout_slides(wdir):
     ]
 
 
+def salvage_slides(sdir):
+    """Feasibility of adding the resonance masses to f_tt̄ (study_salvage/salvage.py)."""
+    p = os.path.join(sdir, "salvage.json")
+    if not os.path.exists(p):
+        return []
+    r = json.load(open(p))
+    lab = {"parton": "parton", "gen": r"gen ($\chi^2$)", "gen+m_bb": r"gen, + $m_{bb}$"}
+    rows = [[lab[k], str(len(v["mass_vars"])), f"{v['auc_angles']:.3f}", f"{v['auc_masses']:.3f}",
+             f"{v['auc_angles_x_masses']:.3f}", f"{v['bdt_angles']:.3f}", f"{v['bdt_angles_masses']:.3f}",
+             f"{v['tt_independence_auc']:.2f}"] for k, v in r.items()]
+    return [
+        section(r"Salvaging $y$: momentum through the off-shell directions", "Salvaging y"),
+        bullets(r"Idea: the angles live on the on-shell manifold", [
+            r"The ten angles are coordinates of $t\bar t$ phase space only when both $W$ and both tops are on shell "
+            r"(narrow width)",
+            r"Off shell there are four more directions: $m_{W,\ell}$, $m_{W,h}$, $m_{t,\ell}$, $m_{t,h}$. "
+            r"$hh$ lives there (one $W^*$, pseudo-tops at 135 GeV); $f_{t\bar t}$ never looked",
+            r"Extension in the same spirit: $f_{t\bar t}(\Omega, m)=f(\Omega)\,g(m)$, $g$ an OSDE in "
+            r"$u=\frac12+\frac1\pi\arctan\frac{m-M}{W}$ (Breit--Wigner-like map; orthonormal Legendre in $u$; "
+            r"Jacobian $du/dm$ keeps it a density in $m$)",
+            r"Score = total surprisal $-\ln(f-y_0)-\ln(g-y_0)$: surprisals add",
+        ]),
+        table(r"Feasibility: AUC ($hh$ vs $t\bar t$)", ["level", "masses", r"$f(\Omega)$", "$g(m)$",
+              r"$f\,g$", r"BDT $\Omega$", r"BDT $\Omega,m$", r"indep."], rows, fit=True,
+              note=r"$f(\Omega)$: existing paper-basis fit ($t\bar t$ leave-one-out); $g$: fit on half of 40k $t\bar t$, "
+                   r"tested on the other half. ``indep.'': BDT AUC for real vs shuffled ($\Omega$, $m$) pairs in $t\bar t$ "
+                   r"(0.5 = independent). At gen $m_{W,\ell}$ is fixed by the $\nu$ constraint, so only 3 masses."),
+        bullets(r"What it tells us", [
+            r"Parton: the masses make $hh$ trivially separable (AUC 1.000): $hh$ is never on the $t\bar t$ mass shell",
+            r"Gen: the unsupervised density improves from 0.53 (angles) to 0.69 (masses); angles add nothing on top",
+            r"Still far from supervised (0.74--0.85): the $\chi^2$ chooses jets \emph{by} their masses, so $hh$ masses are "
+            r"pulled onto the $t\bar t$ shell, and mis-assigned $t\bar t$ populates the same tails",
+            r"With $m_{bb}$, angles and masses are correlated (indep.\ 0.63): the product form fails, a joint fit is needed",
+        ]),
+        bullets(r"Proposed next steps", [
+            r"Solve the $\nu$ with the $m_{t,\ell}$ constraint instead of $m_W$: frees $m_{W,\ell}$, the leptonic $W^*$ "
+            r"(half of $hh$)",
+            r"Stop choosing one $\chi^2$ hypothesis: $y=\sum_{\text{assignments},\,\nu}w_a\,f_{t\bar t}(\Omega_a,m_a)$, "
+            r"the density of the \emph{observed} final state under $t\bar t$ (matrix-element-method style)",
+            r"Joint OSDE in $(\Omega, m)$: extend the extended block basis with Legendre-in-$u$ mass blocks",
+            r"Caveat: quick test, product form, 40k $t\bar t$; degree of $g$ chosen by held-out ISE (16 at gen = top of scan)",
+        ]),
+    ]
+
+
 def discriminator_slides(odir):
     """The paper's y and t figure (paper_style_plots.py) and the y0 sensitivity."""
     slides = [section(r"Discriminator $t$ (paper style)", "Discriminator t (paper style)")]
@@ -1053,6 +1098,7 @@ def main():
         slides += sh_slides(os.path.join(HERE, "osde_sh"))
         slides += ml_slides(os.path.join(HERE, "ml"))
         slides += washout_slides(os.path.join(HERE, "study_washout"))
+        slides += salvage_slides(os.path.join(HERE, "study_salvage"))
         slides += discriminator_slides(os.path.abspath(args.osde))
     elif args.hh or args.osde:
         sys.exit("--hh and --osde go together")

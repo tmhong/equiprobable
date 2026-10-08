@@ -1,0 +1,52 @@
+{
+ "parton": {
+  "n_tt_test": 20112,
+  "n_hh": 20000,
+  "mass_vars": [
+   "m_w_lep",
+   "m_w_had",
+   "m_t_lep",
+   "m_t_had"
+  ],
+  "degree": 6,
+  "auc_angles": 0.6476547533810659,
+  "auc_masses": 0.9998902446300716,
+  "auc_angles_x_masses": 0.9997651252983294,
+  "bdt_angles": 0.8752096874485681,
+  "bdt_angles_masses": 0.9999999299649475,
+  "tt_independence_auc": 0.48992497105198146
+ },
+ "gen": {
+  "n_tt_test": 8326,
+  "n_hh": 4416,
+  "mass_vars": [
+   "m_w_had",
+   "m_t_lep",
+   "m_t_had"
+  ],
+  "degree": 16,
+  "auc_angles": 0.5277035639188573,
+  "auc_masses": 0.6923446165234102,
+  "auc_angles_x_masses": 0.6579982232190414,
+  "bdt_angles": 0.6509304907751754,
+  "bdt_angles_masses": 0.744228132402837,
+  "tt_independence_auc": 0.519082087428211
+ },
+ "gen+m_bb": {
+  "n_tt_test": 6530,
+  "n_hh": 3378,
+  "mass_vars": [
+   "m_w_had",
+   "m_t_lep",
+   "m_t_had",
+   "h_m_bb"
+  ],
+  "degree": 16,
+  "auc_angles": 0.5428683210069298,
+  "auc_masses": 0.6730875487457352,
+  "auc_angles_x_masses": 0.6309243578619244,
+  "bdt_angles": 0.6392993294026315,
+  "bdt_angles_masses": 0.8484769720987473,
+  "tt_independence_auc": 0.6273389409244662
+ }
+}

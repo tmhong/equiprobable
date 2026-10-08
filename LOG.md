@@ -232,3 +232,15 @@ Newest entries are at the bottom. Numbers refer to the samples listed under "Sam
   supervised ML (±0.002). Shuffled-label control at parton+trig 0.517 ± 0.006 (3σ; one of ~30 AUCs).
   ROC legends enlarged; ML conclusion slides carry the paired difference and the controls.
 - Claude Doc: ML, washout and summary sections filled (all sections now complete).
+
+## 2026-10-08 — Salvaging y: momentum through the off-shell directions (study_salvage/salvage.py)
+
+- User: the method fails because hh has an off-shell W, not the same final state as on-shell tt̄.
+- Idea: the ten angles are coordinates of the on-shell (narrow-width) manifold; the missing directions
+  are the resonance masses. Extend f_tt̄(Ω) → f(Ω)·g(m), g an OSDE in Cauchy-mapped masses
+  (u = 1/2 + arctan((m−M)/W)/π, Legendre in u, Jacobian du/dm); score = summed surprisal.
+- Feasibility (AUC hh vs tt̄): parton masses 1.000 (trivial); gen (χ², 3 masses since m_W,lep is fixed by
+  the ν constraint) angles 0.528 → masses 0.692, product 0.658; supervised BDT Ω+m 0.744 (+m_bb 0.848).
+  With m_bb the product form fails (tt̄ angle–mass dependence AUC 0.63).
+- Next steps proposed: ν from the m_t,lep constraint (frees m_W,lep); sum f over jet assignments and ν
+  solutions instead of one χ² hypothesis; joint OSDE in (Ω, m).
