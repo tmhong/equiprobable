@@ -41,11 +41,24 @@ LEVELS = ["parton", "parton_trig", "gen", "reco"]
 SIGNAL, SUF = "h125", ""
 VARIANTS = {
     "h170": dict(tag="170", mass=r"$m_H=170$~GeV", short="170", width="0.38", lab=r"$HH(170)$",
-                 thresh=r"just above $2m_W=160.8$~GeV, so that both $W$ bosons are on shell", where=r"in a 170~GeV scalar"),
+                 thresh=r"just above $2m_W=160.8$~GeV, so that both $W$ bosons are on shell", where=r"in a 170~GeV scalar",
+                 wstate=r"both $W$ bosons are on shell", wshort=r"on-shell $W$ bosons",
+                 samew=r"the signal has the same $W$ masses as $t\bar t$ and differs only in the pseudo-top masses $m_{Wb}$ and in the angles",
+                 tops=r"its $W$ bosons are on shell but its pseudo-tops, the $W$ from one Higgs boson with the $b$ from the other, "
+                      r"sit near 180~GeV with a broad spread (half of them between 153 and 217~GeV)",
+                 nu=r"and the $m_W$-constrained neutrino is exact for on-shell $W$ bosons, so the neutrino costs little here."),
     "h2mw": dict(tag="2mw", mass=r"$m_H=2m_W=160.8$~GeV", short=r"$2m_W$", width="0.083", lab=r"$HH(2m_W)$",
-                 thresh=r"exactly at the $WW$ threshold, where the $W$ pair has no phase space above it and the two $W$ bosons "
-                        r"share the energy with one slightly below the pole ($\Gamma_W=2.1$~GeV), i.e.\ effectively on shell",
-                 where=r"in a scalar at the $WW$ threshold"),
+                 thresh=r"exactly at the $WW$ threshold, where the two $W$ masses add up to at most $m_H$: one $W$ sits at the "
+                        r"pole and the other just below it (median 77~GeV, with 10\% of the events below 59~GeV)",
+                 where=r"in a scalar at the $WW$ threshold",
+                 wstate=r"one $W$ boson is on shell and the other just below the pole", wshort=r"$W$ bosons at threshold",
+                 samew=r"one $W$ mass is $t\bar t$-like and the other sits below the pole, so the $W$ masses still separate the "
+                       r"signal somewhat at parton level (AUC 0.59); otherwise it differs in the pseudo-top masses $m_{Wb}$ and in the angles",
+                 tops=r"one $W$ boson is on shell and the other just below the pole, and its pseudo-tops, the $W$ from one Higgs boson "
+                      r"with the $b$ from the other, have a median at $m_t$ (173~GeV) but a broad spread (half of them between 145 "
+                      r"and 211~GeV)",
+                 nu=r"and the $m_W$-constrained neutrino is nearly exact, since the leptonic $W$ is on shell in half of the events "
+                    r"and only slightly below the pole in most of the rest."),
 }
 
 
@@ -53,7 +66,7 @@ def variant():
     """The on-shell variant: the main signal for a variant note, else the latest one with results (for the comparison)."""
     if SIGNAL in VARIANTS:
         return VARIANTS[SIGNAL]
-    for k in ("h2mw", "h170"):
+    for k in ("h170", "h2mw"):   # HH(170) first: its W masses are tt̄-like (W-factor AUC 0.50), so it isolates the angles best
         if os.path.exists(os.path.join(ROOT, "study_bsm", f"hh{VARIANTS[k]['tag']}_study.json")):
             return VARIANTS[k]
     return VARIANTS["h170"]
@@ -221,7 +234,7 @@ def sec_intro(N):
          rf"{rx['reco']['truncation']['>10 sigma']['angles+BW']:.2f}"],
     ]
     SIGNAL_INTRO = (r"$hh\to b\bar b\,WW^*\to b\bar b\,\ell\nu\,q\bar q'$" if SIGNAL == "h125"
-                    else rf"$HH\to b\bar b\,WW\to b\bar b\,\ell\nu\,q\bar q'$ with {variant()['mass']} (both $W$ bosons on shell)")
+                    else rf"$HH\to b\bar b\,WW\to b\bar b\,\ell\nu\,q\bar q'$ with {variant()['mass']} ({variant()['wstate']})")
     return rf"""
 \section{{Introduction and summary}}
 \label{{sec:intro}}
@@ -277,15 +290,14 @@ def sec_samples(N):
     SAMPLE_TEXT = (r"Because $h\to WW^*$ has one off-shell $W$, the $h\to\ell\nu q\bar q'$ decay is a four-body decay."
                    if SIGNAL == "h125" else
                    rf"The scalar mass is set to {variant()['mass']} with $\Gamma_H={variant()['width']}$~GeV (as for an SM-like scalar of "
-                   rf"that mass), {variant()['thresh']}: the signal has the same $W$ masses as "
-                   r"$t\bar t$ and differs only in the pseudo-top masses $m_{Wb}$ and in the angles.")
+                   rf"that mass), {variant()['thresh']}: {variant()['samew']}.")
     WHAD_TEXT = (rf"""For $hh$ the reconstruction under the $t\bar t$ hypothesis is already visible in the masses: the hadronic
 boson is the off-shell $W^*$ in {pct(1 - wh['frac_had_onshell'], 0)} of the events, with a true median mass of
 {wh['offshell_parton_median']:.0f}~GeV, but the $\chi^2$ picks jet pairs near $m_W$ (median
 {wh['offshell_gen_median']:.0f}~GeV at gen and {wh['offshell_reco_median']:.0f}~GeV at reco level).  This is
 the first sign of the effect studied in Section~\ref{{sec:washout}}.""" if (SIGNAL == "h125" and wh) else "")
     PART = (r"Study A: $t\bar t$ versus $hh\to b\bar b\,WW^*$" if SIGNAL == "h125"
-            else rf"Study A: $t\bar t$ versus $HH\to b\bar b\,WW$ ({variant()['mass']}, on-shell $W$ bosons)")
+            else rf"Study A: $t\bar t$ versus $HH\to b\bar b\,WW$ ({variant()['mass']}, {variant()['wshort']})")
     return rf"""
 \part{{{PART}}}
 \section{{Samples and event levels}}
@@ -830,9 +842,9 @@ def sec_washout(N):
     NU_TEXT = (rf"and the $m_W$-constrained neutrino puts the off-shell leptonic $W^*$ on shell (its $p_z$ is then off by a "
                rf"median {M['nu'][[k for k in M['nu'] if k.startswith('hh lep W*')][0]]:.0f}~GeV, against {M['nu']['tt (matched)']:.0f}~GeV for $t\bar t$)."
                if SIGNAL == "h125" else
-               r"and the $m_W$-constrained neutrino is exact for on-shell $W$ bosons, so the neutrino costs little here.")
+               variant()["nu"])
     OFFSHELL = (rf", and one of the two $W$ bosons is far off shell (median {M['mass']['hh W_had off-shell']['p_m_w_had'][1]:.0f}~GeV)"
-                if SIGNAL == "h125" else ", while both $W$ bosons are on shell")
+                if SIGNAL == "h125" else f", while {variant()['wstate']}")
     st = D["steps"]
     def s(name):
         return st[name]
@@ -917,8 +929,7 @@ do not span.  That is the subject of the next section.
 def sec_momentum(N):
     sm, sv, at, rx, tg = N["simplest"], N["salvage"], N["angle_terms"], N["reco_ext"], N["tagging"]
     SHELL = (r"one $W$ is off shell and its pseudo-tops sit near 135~GeV" if SIGNAL == "h125"
-             else r"its $W$ bosons are on shell but its pseudo-tops, the $W$ from one Higgs boson with the $b$ from the other, "
-                  r"sit near 180~GeV with a 100~GeV spread")
+             else variant()["tops"])
     P, G = sm["parton"], sm["gen"]
     mrows = [[r"angles only, $y(\Omega)$ (paper)", f3(P["angles"]), f3(G["angles"])],
              [r"$+\,m_{W,\ell}$", f3(P["angles + ... + m_w_lep"]), r"(fixed by the $\nu$ solution)"],
@@ -1060,7 +1071,7 @@ def sec_hh170(N):
 \section{Study A$'$: the off-shell case, $hh$ with $m_h=125$~GeV}
 \label{sec:hh170}
 
-The main signal of this note has on-shell $W$ bosons.  The SM $h(125)$ variant, $h\to WW^*$ with one $W$ far off
+The main signal of this note has """ + ("on-shell $W$ bosons" if SIGNAL == "h170" else r"$W$ bosons at threshold") + r""".  The SM $h(125)$ variant, $h\to WW^*$ with one $W$ far off
 shell, is the case the study started from; it is kept here as the comparison, with the same fits and nothing
 retrained, to show what the off-shell $W$ changes.
 """)

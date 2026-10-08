@@ -1058,7 +1058,7 @@ def washout_short_answer(wdir):
     mt = M["mass"]["hh"]["p_m_t_lep"][1]
     wstar = M["mass"].get("hh W_had off-shell", {}).get("p_m_w_had", [0, 0, 0])[1]
     shell = (rf"and one $W$ is off-shell ($m_{{W^*}}$ median {wstar:.0f} GeV)" if SIGNAL == "h125"
-             else r"while both $W$s are on shell")
+             else rf"while {VARIANTS[SIGNAL]['wstate']}")
     return [
         rf"At parton level the signal ``tops'' are not tops: each is the $W$ from one Higgs plus the $b$ from the other "
         rf"($m_{{Wb}}$ median {mt:.0f} GeV), {shell}",
@@ -1527,11 +1527,19 @@ def sfile(d, name):
 VARIANTS = {
     "h170": dict(tag="170", mass=r"$m_H=170$ GeV", short="170", width="0.38", lab=r"$HH(170)$",
                  thresh=r"just above $2m_W=160.8$ GeV, so both $W$ bosons are on shell",
-                 where=r"in a 170 GeV scalar"),
+                 where=r"in a 170 GeV scalar",
+                 wstate=r"both $W$s are on shell", wshort=r"on-shell $W$ bosons",
+                 samew=r"the signal has the same $W$ masses as $t\bar t$ and differs only in the pseudo-top masses $m_{Wb}$ and in the angles",
+                 tops=r"its $W$s are on shell but its ``tops'' ($W$ from one Higgs plus $b$ from the other) sit at $m_{Wb}\approx180$ GeV "
+                      r"with a broad spread (half of them in 153--217 GeV)"),
     "h2mw": dict(tag="2mw", mass=r"$m_H=2m_W=160.8$ GeV", short=r"$2m_W$", width="0.083", lab=r"$HH(2m_W)$",
-                 thresh=r"exactly at the $WW$ threshold: the $W$ pair has no phase space above it, so the two $W$s share the "
-                        r"energy with one slightly below the pole ($\Gamma_W=2.1$ GeV), i.e.\ effectively on shell",
-                 where=r"in a scalar at the $WW$ threshold"),
+                 thresh=r"exactly at the $WW$ threshold: the two $W$ masses add up to at most $m_H$, so one $W$ sits at the pole "
+                        r"and the other just below it (median 77 GeV, 10\% of events below 59 GeV)",
+                 where=r"in a scalar at the $WW$ threshold",
+                 wstate=r"one $W$ is on shell and the other just below the pole", wshort=r"$W$ bosons at threshold",
+                 samew=r"the $W$ masses still separate it a little at parton level (AUC 0.59); otherwise it differs in $m_{Wb}$ and the angles",
+                 tops=r"one $W$ is on shell, the other just below the pole, and its ``tops'' ($W$ from one Higgs plus $b$ from the other) "
+                      r"have a median at $m_t$ (173 GeV) but a broad spread (half of them in 145--211 GeV)"),
 }
 COMMON_PART = [r"$f_{t\bar t}$ on the ten angles: fits, coefficients, bases, acceptance",
                r"Why the separation washes out after reconstruction, and the fix: the resonance masses",
@@ -1562,15 +1570,13 @@ def h125_sigtext(v):
 def variant_sigtext(v):
     """Texts for a deck whose main signal is the on-shell variant v (the comparison is then hh(125))."""
     return dict(
-        part=(rf"Study A: $t\bar t$ vs $HH\to b\bar b\,WW$\\({v['mass']}, on-shell $W$ bosons)", COMMON_PART),
+        part=(rf"Study A: $t\bar t$ vs $HH\to b\bar b\,WW$\\({v['mass']}, {v['wshort']})", COMMON_PART),
         sample_title=rf"$HH\to b\bar{{b}}\,WW\to b\bar{{b}}\,\ell\nu\,q\bar{{q}}'$ sample, {v['mass']}",
         sample=[rf"MadGraph5 built-in \texttt{{heft}} model (LO, $m_t\to\infty$) with the scalar mass set to {v['mass']} and "
                 rf"$\Gamma_H={v['width']}$ GeV (as for an SM-like scalar of that mass); same Pythia8 + Delphes ATLAS chain",
                 r"$gg\to HH$, $H\to b\bar b$, $H\to\ell\nu q\bar q'$ (+ charge conjugate), generated as one process",
-                rf"{v['mass']} is {v['thresh']}: the signal has the same $W$ masses as $t\bar t$ and differs only in the "
-                r"pseudo-top masses $m_{Wb}$ and in the angles"],
-        shell=r"$HH$ is \emph{not} on that shell: its $W$s are on shell but its ``tops'' ($W$ from one Higgs plus $b$ from the other) "
-              r"sit at $m_{Wb}\approx180$ GeV with a 100 GeV spread. Its difference lives in exactly the dimensions we dropped",
+                rf"{v['mass']} is {v['thresh']}: {v['samew']}"],
+        shell=rf"$HH$ is \emph{{not}} on that shell: {v['tops']}. Its difference lives in exactly the dimensions we dropped",
         variant_section=(r"Study A$'$: the off-shell case, $hh$ with $m_h=125$ GeV", "Study A': the off-shell case, hh(125)"),
         variant_title=r"The off-shell variant: $h(125)\to WW^*$, one $W$ off shell",
         variant_bullets=[
@@ -1586,7 +1592,7 @@ def cmp_variant():
     """The on-shell variant compared with hh(125): the main signal itself for a variant deck, else the latest one available."""
     if SIGNAL in VARIANTS:
         return SIGNAL
-    for k in ("h2mw", "h170"):
+    for k in ("h170", "h2mw"):   # HH(170) first: its W masses are tt̄-like (W-factor AUC 0.50), so it isolates the angles best
         if os.path.exists(os.path.join(HERE, "study_bsm", f"hh{VARIANTS[k]['tag']}_study.json")):
             return k
     return "h170"

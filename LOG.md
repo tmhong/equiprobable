@@ -415,3 +415,18 @@ Newest entries are at the bottom. Numbers refer to the samples listed under "Sam
 - **Caveats:** the same as for HH(170).
   - Some tt̄-only sections still describe hh(125).
   - Some HH-specific wording describes off-shell W*.
+
+## 2026-10-08 — HH(170) is the reference on-shell variant again; HH(2m_W) wording corrected
+
+- **Which variant isolates the angles.** At parton level the f_tt̄ angles are the same for both (0.633 vs 0.631). The masses differ:
+  - HH(170): the W masses are tt̄-like (W-factor AUC 0.50).
+  - HH(2m_W): the lighter W sits below the pole (median 77 GeV, 10% below 59 GeV; both W within 5 GeV of the pole in 58% of events), so the W factors still see it (AUC 0.59).
+  - The top factors see both at 0.97. The pseudo-top m_Wb has a broad spread: IQR 153–217 GeV for HH(170), 145–211 GeV for HH(2m_W), against 172–174 GeV for tt̄.
+- **Change:** `cmp_variant` (deck) and `variant()` (note) now prefer h170. HH(2m_W) stays as a threshold cross-check (`--signal h2mw`).
+- **Wording:** the W-state, pseudo-top and neutrino texts are now per-variant keys in `VARIANTS` (`wstate`, `wshort`, `samew`, `tops`, `nu`). Corrected:
+  - HH(2m_W) no longer says "effectively on shell" or "same W masses as tt̄".
+  - The pseudo-top spread is no longer "180 GeV with a 100 GeV spread" for either variant.
+- `samples/Htt_bblvqq/run_m350_seed3003/metadata.json` (gitignored): process label corrected to m_H = 350 GeV, Γ_H = 10 GeV.
+- **Rebuilt all six documents:**
+  - Slides: 202 / 199 / 199 pages, 0 overfull boxes.
+  - Notes: 46 pages each.
