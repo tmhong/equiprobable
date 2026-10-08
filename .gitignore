@@ -50,3 +50,9 @@ note/*.tex
 study_salvage/*.log
 study_bsm/*.log
 pileup/*.log
+study_washout_h2mw/**/cache*
+osde_h2mw/
+ml_h2mw/
+acceptance_h2mw/
+slides_h2mw/*
+!slides_h2mw/slides.pdf

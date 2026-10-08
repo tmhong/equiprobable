@@ -381,4 +381,37 @@ Newest entries are at the bottom. Numbers refer to the samples listed under "Sam
   - The flow's hh-vs-tt̄ AUC is 0.654, equal to `ml_compare`.
   - The flow's NLL on the independent sample is within 0.04–0.15 of its training NLL.
 - Run time: 7.7 min with 3 threads.
-- Not yet in the deck or the note.
+- In the deck: two B2 slides, a table and a summary. In the note: a paragraph and Table 35 in the B2 section.
+
+## 2026-10-08 — HH(2m_W): full Study A chain
+
+- **Sample:** `samples/hh_bblvqq/run_m2mw_seed2161`, 20k events, m_H = 2m_W = 160.8 GeV, Γ_H = 0.083 GeV. The scalar sits exactly at the WW threshold.
+- **Chain:** `work/h2mw_chain.sh` (logged to `work/h2mw_chain.log`; about 95 min with 3 threads). It is the HH(170) chain with `OUT_SUFFIX=_h2mw`. Same tt̄ samples and fits, nothing retrained.
+  - The tt̄-only `order_scan.json` and `truncation_gen.*` were copied into `osde_h2mw`, as for `osde_h170`.
+  - `paper_style_plots.py` was missing from the first pass, so the deck lacked 5 slides. It was added and the deck rebuilt.
+- **Outputs:** `osde_h2mw/`, `study_washout_h2mw/`, `study_salvage/*_h2mw.*`, `plots_hh_h2mw/`, `acceptance_h2mw/`, `ml_h2mw/`, `study_bsm/hh2mw_study.json` and `fig_hh2mw.png`.
+- **Results.** HH(2m_W) first, with HH(170) in brackets.
+
+  | quantity | HH(2m_W) [HH(170)] |
+  |---|---|
+  | f_tt̄ all terms, parton / parton+trig / gen / reco | 0.636 / 0.655 / 0.541 / 0.534 [0.638 / 0.652 / 0.547 / 0.534] |
+  | f_tt̄ CV-truncated, parton / parton+trig / gen / reco | 0.649 / 0.670 / 0.544 / 0.538 [0.652 / 0.669 / 0.553 / 0.540] |
+  | trigger / gen / reco efficiency | 70.5% / 40.8% / 17.0% [73.3% / 44.4% / 20.0%] |
+  | washout, S0 → S1 → S1d → S2χ → S4 (LOO) | 0.634 → 0.643 → 0.609 → 0.567 → 0.544 [0.636 → 0.645 → 0.614 → 0.573 → 0.550] |
+  | χ² picks the right 4 jets | 14.7% [16.1%] |
+  | reco, BW masses / angles (>10σ) + BW | 0.593 / 0.602 [0.600 / 0.606] |
+  | ML parton: flow / BDT, MLP, FT-Transformer on the angles / MLP on angles + momenta | 0.643 / 0.921, 0.923, 0.927 / 0.998 [0.643 / 0.912, 0.916, 0.916 / 0.996] |
+
+  - At parton level, m_W,had still gives a 1-D AUC of 0.70, against 0.80 for hh(125). At threshold one W sits slightly below the pole.
+  - Otherwise HH(2m_W) and HH(170) agree within the errors almost everywhere.
+- **Control:** the "BDT, shuffled labels" control at parton+trig gives 0.535 ± 0.006.
+  - The other runs give 0.517 (hh125), 0.489 (h170) and 0.512 (h2mw parton).
+  - The spread across runs is larger than the quoted error, so the quoted error underestimates this control's spread. This holds for all three signals. Not investigated.
+- **Documents:**
+  - New: `slides_h2mw/slides.pdf` (199 pages) and `note/note_h2mw.pdf` (46 pages).
+  - The hh(125) deck and note now take Study A′ from HH(2m_W). `cmp_variant` prefers h2mw when `hh2mw_study.json` exists.
+  - All six documents rebuilt: slides 202 / 199 / 199 pages, notes 46 / 46 / 46; 0 overfull boxes in the decks.
+  - Build commands: as for HH(170), with `--signal h2mw --hh samples/hh_bblvqq/run_m2mw_seed2161 --osde osde_h2mw --acceptance acceptance_h2mw --out slides_h2mw`, then `note/make_note.py --signal h2mw`. All six are in `work/build_all.sh`.
+- **Caveats:** the same as for HH(170).
+  - Some tt̄-only sections still describe hh(125).
+  - Some HH-specific wording describes off-shell W*.

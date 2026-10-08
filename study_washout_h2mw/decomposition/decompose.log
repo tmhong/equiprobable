@@ -1,0 +1,46 @@
+START 1791480839 Thu Oct  8 13:33:59 EDT 2026
+{
+ "tt": {
+  "n": 100000,
+  "reco_ok": 0.41317,
+  "matched": 0.16414,
+  "matched_given_reco_ok": 0.39376043759227436,
+  "chi2_all4_correct_given_matched": 0.7979593091154957,
+  "chi2_b_lep_correct": 0.8963673243592107,
+  "chi2_b_had_correct": 0.8941545270145675,
+  "chi2_qpair_correct": 0.8707972217100006,
+  "nu_disc_negative_frac(S3)": 0.16356260372487552
+ },
+ "hh": {
+  "n": 20000,
+  "reco_ok": 0.40815,
+  "matched": 0.0836,
+  "matched_given_reco_ok": 0.20274408918289843,
+  "chi2_all4_correct_given_matched": 0.4954682779456193,
+  "chi2_b_lep_correct": 0.6380664652567976,
+  "chi2_b_had_correct": 0.636858006042296,
+  "chi2_qpair_correct": 0.740785498489426,
+  "nu_disc_negative_frac(S3)": 0.13836858006042296
+ }
+}
+parton angle recomputation max diff: 0.0
+S0 LHE parton, all                         ntt=100000 nhh= 20000  f_tt=0.627±0.002 loo=0.634 n8k=0.582 (parton f 0.627)  BDT=0.918±0.002  Y=0.497 cos_Theta=0.602 cos_theta=0.647 phi=0.566 cos_theta_pr=0.578 phi_prime=0.500 cos_theta_ti=0.648 phi_tilde=0.572 cos_theta_pr=0.582 phi_prime_ti=0.497
+S1 LHE parton, reco_ok                     ntt= 41317 nhh=  8163  f_tt=0.631±0.004 loo=0.643 n8k=0.605 (parton f 0.670)  BDT=0.909±0.003  Y=0.520 cos_Theta=0.596 cos_theta=0.640 phi=0.561 cos_theta_pr=0.588 phi_prime=0.510 cos_theta_ti=0.653 phi_tilde=0.564 cos_theta_pr=0.587 phi_prime_ti=0.505
+S1b post-ISR parton, all                   ntt=100000 nhh= 20000  f_tt=0.626±0.002 loo=0.633 n8k=0.581 (parton f 0.633)  BDT=0.863±0.002  Y=0.495 cos_Theta=0.606 cos_theta=0.631 phi=0.532 cos_theta_pr=0.577 phi_prime=0.503 cos_theta_ti=0.628 phi_tilde=0.531 cos_theta_pr=0.585 phi_prime_ti=0.497
+S1c post-ISR parton, reco_ok               ntt= 41317 nhh=  8163  f_tt=0.632±0.004 loo=0.643 n8k=0.608 (parton f 0.673)  BDT=0.826±0.004  Y=0.506 cos_Theta=0.597 cos_theta=0.618 phi=0.515 cos_theta_pr=0.583 phi_prime=0.497 cos_theta_ti=0.630 phi_tilde=0.514 cos_theta_pr=0.587 phi_prime_ti=0.506
+S1d pre-hadronization (FSR), reco_ok       ntt= 41317 nhh=  8163  f_tt=0.598±0.004 loo=0.609 n8k=0.579 (parton f 0.650)  BDT=0.773±0.005  Y=0.502 cos_Theta=0.595 cos_theta=0.587 phi=0.510 cos_theta_pr=0.581 phi_prime=0.503 cos_theta_ti=0.596 phi_tilde=0.514 cos_theta_pr=0.557 phi_prime_ti=0.508
+S1c_m post-ISR parton, reco_ok & matched   ntt= 16269 nhh=  1655  f_tt=0.595±0.008 loo=0.609 n8k=0.593 (parton f 0.655)  BDT=0.814±0.009  Y=0.480 cos_Theta=0.579 cos_theta=0.615 phi=0.534 cos_theta_pr=0.568 phi_prime=0.483 cos_theta_ti=0.645 phi_tilde=0.515 cos_theta_pr=0.542 phi_prime_ti=0.506
+R_lep post-ISR + gen lepton                ntt= 16269 nhh=  1655  f_tt=0.594±0.008 loo=0.608 n8k=0.593 (parton f 0.655)  BDT=0.817±0.009  Y=0.480 cos_Theta=0.580 cos_theta=0.619 phi=0.539 cos_theta_pr=0.563 phi_prime=0.484 cos_theta_ti=0.645 phi_tilde=0.515 cos_theta_pr=0.542 phi_prime_ti=0.506
+R_b post-ISR + matched b jets              ntt= 16269 nhh=  1655  f_tt=0.605±0.008 loo=0.619 n8k=0.603 (parton f 0.653)  BDT=0.797±0.009  Y=0.472 cos_Theta=0.581 cos_theta=0.594 phi=0.532 cos_theta_pr=0.549 phi_prime=0.489 cos_theta_ti=0.632 phi_tilde=0.527 cos_theta_pr=0.557 phi_prime_ti=0.504
+R_q post-ISR + matched light jets          ntt= 16269 nhh=  1655  f_tt=0.598±0.008 loo=0.613 n8k=0.598 (parton f 0.650)  BDT=0.798±0.009  Y=0.490 cos_Theta=0.577 cos_theta=0.615 phi=0.534 cos_theta_pr=0.568 phi_prime=0.483 cos_theta_ti=0.638 phi_tilde=0.515 cos_theta_pr=0.548 phi_prime_ti=0.508
+S2 matched jets + gen lep + true nu        ntt= 16269 nhh=  1655  f_tt=0.607±0.008 loo=0.621 n8k=0.605 (parton f 0.649)  BDT=0.790±0.010  Y=0.492 cos_Theta=0.579 cos_theta=0.600 phi=0.533 cos_theta_pr=0.559 phi_prime=0.485 cos_theta_ti=0.626 phi_tilde=0.504 cos_theta_pr=0.550 phi_prime_ti=0.479
+S2_all (S2 without reco_ok)                ntt= 16414 nhh=  1672  f_tt=0.606±0.008 loo=0.621 n8k=0.609 (parton f 0.647)  BDT=0.800±0.009  Y=0.485 cos_Theta=0.587 cos_theta=0.596 phi=0.534 cos_theta_pr=0.554 phi_prime=0.499 cos_theta_ti=0.614 phi_tilde=0.495 cos_theta_pr=0.528 phi_prime_ti=0.493
+S3a S2 + nu pz from mW (true nu pT)        ntt= 16269 nhh=  1655  f_tt=0.596±0.008 loo=0.608 n8k=0.594 (parton f 0.622)  BDT=0.753±0.010  Y=0.490 cos_Theta=0.541 cos_theta=0.582 phi=0.563 cos_theta_pr=0.548 phi_prime=0.533 cos_theta_ti=0.626 phi_tilde=0.504 cos_theta_pr=0.550 phi_prime_ti=0.479
+S3 S2 + nu from MET + mW                   ntt= 16269 nhh=  1655  f_tt=0.579±0.008 loo=0.597 n8k=0.585 (parton f 0.618)  BDT=0.745±0.010  Y=0.487 cos_Theta=0.556 cos_theta=0.588 phi=0.547 cos_theta_pr=0.542 phi_prime=0.521 cos_theta_ti=0.626 phi_tilde=0.504 cos_theta_pr=0.550 phi_prime_ti=0.479
+S2chi chi2 jets + gen lep + true nu        ntt= 41317 nhh=  8163  f_tt=0.565±0.004 loo=0.567 n8k=0.554 (parton f 0.604)  BDT=0.715±0.005  Y=0.499 cos_Theta=0.539 cos_theta=0.629 phi=0.511 cos_theta_pr=0.566 phi_prime=0.502 cos_theta_ti=0.548 phi_tilde=0.521 cos_theta_pr=0.544 phi_prime_ti=0.503
+S2chi_m (matched events)                   ntt= 16269 nhh=  1655  f_tt=0.584±0.008 loo=0.594 n8k=0.579 (parton f 0.631)  BDT=0.760±0.010  Y=0.498 cos_Theta=0.572 cos_theta=0.607 phi=0.517 cos_theta_pr=0.566 phi_prime=0.480 cos_theta_ti=0.612 phi_tilde=0.514 cos_theta_pr=0.549 phi_prime_ti=0.506
+S4 gen chi2 reconstruction                 ntt= 41317 nhh=  8163  f_tt=0.544±0.004 loo=0.544 n8k=0.533 (parton f 0.582)  BDT=0.692±0.005  Y=0.498 cos_Theta=0.520 cos_theta=0.609 phi=0.536 cos_theta_pr=0.552 phi_prime=0.514 cos_theta_ti=0.548 phi_tilde=0.521 cos_theta_pr=0.544 phi_prime_ti=0.503
+S4m (matched events)                       ntt= 16269 nhh=  1655  f_tt=0.556±0.008 loo=0.574 n8k=0.559 (parton f 0.601)  BDT=0.715±0.010  Y=0.503 cos_Theta=0.533 cos_theta=0.574 phi=0.543 cos_theta_pr=0.535 phi_prime=0.527 cos_theta_ti=0.612 phi_tilde=0.514 cos_theta_pr=0.549 phi_prime_ti=0.506
+done 573s
+EXIT=0
+END 1791481415 Thu Oct  8 13:43:35 EDT 2026

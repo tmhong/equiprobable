@@ -1219,7 +1219,41 @@ one for new physics that is still allowed.
             ["", r"parton $\ell$", "had", "max", r"gen $\ell$", "had", "max", r"reco $\ell$", "had", "max"], crow, "tab:wtbcoef") + \
         wtb_fig(rel("study_bsm", "fig_wtb.png"), r"Right-handed $W$: $\cos\theta'$ at parton level for the SM and $F_R=0.1$, $0.3$ (left); the surprisal "
             r"tail (middle); the significance [$\sigma$] of the $W$-helicity coefficient test versus $F_R$ at the three levels (right; solid: "
-            r"the $\chi^2$ of the ``$W$ helicity'' category as $z$, dashed: the largest single pull, dotted: $5\sigma$).", "fig:wtb")
+            r"the $\chi^2$ of the ``$W$ helicity'' category as $z$, dashed: the largest single pull, dotted: $5\sigma$).", "fig:wtb") + wtb_ml_note(N)
+
+
+def wtb_ml_note(N):
+    """The B2 benchmark with machine learning (study_bsm/ml_wtb.py)."""
+    M = N.get("wtb_ml")
+    if not M:
+        return ""
+    L = M["levels"]
+    cell = lambda v: rf"{v['auc']:.3f} / {100 * v['eff1']:.1f}"
+    rows = []
+    for l in ("parton", "gen", "reco"):
+        first = next(iter(L[l]["F_R"]))
+        for fr, F in L[l]["F_R"].items():
+            rows.append([l if fr == first else "", rf"$F_R={float(fr):g}$", cell(F["osde"]["angles, >10 sigma"]), cell(F["flow"]),
+                         cell(F["bdt"]), cell(F["bdt_fit_sample"]), cell(F["oracle_w"])])
+    P, G, R = (L[l]["F_R"]["0.3"] for l in ("parton", "gen", "reco"))
+    k = "auc(f_tt angles >10 sigma) - auc(flow), full sample"
+    dd = lambda F: rf"${F['paired'][k]['delta']:+.3f}\pm{F['paired'][k]['err']:.3f}$"
+    return rf"""
+Is the weak score a weakness of $f_{{t\bar t}}$?  Table~\ref{{tab:wtbml}} compares it on the same events with the normalizing
+flow of Section~\ref{{sec:ml}} (RealNVP on the ten angles, trained on SM $t\bar t$ only at each level), with a supervised
+BDT that \emph{{knows the signal}}, and with the oracle score $w$ itself (the parton-level truth).  The BDT is trained on
+weighted against unweighted copies of the same events, so it learns $E[w\,|\,x]$, the likelihood ratio: it measures what
+is reachable when the signal is known, not what an anomaly detector can do.  The flow does no better than $f_{{t\bar t}}$:
+at $F_R=0.3$ the paired difference $\mathrm{{AUC}}(f_{{t\bar t}})-\mathrm{{AUC}}(\text{{flow}})$ is {dd(P)} at parton level,
+{dd(G)} at gen and {dd(R)} at reco.  At parton level the BDT reaches the oracle ({P['bdt']['auc']:.3f} against
+{P['oracle_w']['auc']:.3f}); after reconstruction it gets {R['bdt']['auc']:.2f}, against {R['oracle_w']['auc']:.2f} for the oracle, which uses the
+parton truth and is not reachable after the smearing.  No unsupervised density does better on this signal, and even a
+classifier that knows it stays near AUC 0.6 at reco level, so the coefficient test remains the sensitive probe.  As
+checks, $F_R=0$ gives AUC 0.500 for every score and BDTs trained on event-shuffled weights give $0.50\pm0.02$.
+""" + tab(r"Right-handed $W$ with machine learning: AUC / signal efficiency (\%) at 1\% $t\bar t$ efficiency.  $f_{t\bar t}$ and the "
+          r"flow are trained on SM $t\bar t$ only and scored on the whole independent sample; BDT: trained with the signal weights on "
+          r"its first half and tested on the second; BDT (fit): trained on the reweighted fit sample; oracle: $w$ (parton truth).",
+          ["", "", r"$f_{t\bar t}$ ($>10\sigma$)", "flow", r"BDT (knows $w$)", "BDT (fit)", r"oracle $w$"], rows, "tab:wtbml")
 
 
 def wtb_fig(path, caption, label):
@@ -1544,6 +1578,7 @@ def main():
         "angles_vs_bw": load("study_salvage", "angles_vs_bw.json"),
         "l1": load("study_l1", "results.json"),
         "wtb": load("study_bsm", "wtb_study.json"),
+        "wtb_ml": load("study_bsm", "ml_wtb.json"),
     }
     missing = [k for k, v in N.items() if v is None]
     if missing:

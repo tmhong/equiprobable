@@ -1,0 +1,7 @@
+START 1791479867 Thu Oct  8 13:17:47 EDT 2026
+[hh] reading ../../samples/hh_bblvqq/run_m2mw_seed2161/parton_events.lhe.gz
+[hh] reading ../../samples/hh_bblvqq/run_m2mw_seed2161/delphes_events.root
+hh 20000 20000 34s
+saved ../../study_washout_h2mw/decomposition/cache_hh.npz 34s
+EXIT=0
+END 1791479903 Thu Oct  8 13:18:23 EDT 2026

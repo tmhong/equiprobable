@@ -1,0 +1,6 @@
+START 1791479911 Thu Oct  8 13:18:31 EDT 2026
+[hh] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_m2mw_seed2161/parton_events.lhe.gz
+[hh] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_m2mw_seed2161/delphes_events.root
+saved hh 20000 matched 0.08365 reco_ok 0.40815
+EXIT=0
+END 1791479967 Thu Oct  8 13:19:27 EDT 2026

@@ -634,6 +634,7 @@ def wtb_slides(bdir):
         r"So: the score finds signals in SM-forbidden regions when they are large; the coefficients find small deviations in the SM "
         r"terms. Both are model-agnostic; the second is the sensitive one for allowed new physics",
     ]
+    ml = wtb_ml_slides(bdir)
     return [
         bullets(r"B2: a right-handed $W$ in $t\bar t$ (new physics in the decay vertex)", [
             r"The textbook case for a density: the SM ($V\!-\!A$) decay density vanishes at $\cos\theta'\to+1$, and a right-handed $W$ "
@@ -650,7 +651,7 @@ def wtb_slides(bdir):
         fig_score,
         table(r"Anomaly score: AUC / signal efficiency at 1\% $t\bar t$ efficiency", ["score", "", "parton", "gen", "reco"], rows, fit=True,
               note=r"1\% = no enrichment. The weighted-AUC errors are about $\pm0.005$ (parton) to $\pm0.01$ (reco)."),
-    ] + ([fig_coef] if fig_coef is not fig_score else []) + [
+    ] + ml + ([fig_coef] if fig_coef is not fig_score else []) + [
         table(r"Coefficient test: pull of the $\cos\theta'$ term ($M^{01}_{00}$) vs $F_R$",
               [r"", r"parton $\ell$", "had", "max", r"gen $\ell$", "had", "max", r"reco $\ell$", "had", "max"], crow, fit=True,
               note=r"$\ell$ / had: the term on the leptonic / hadronic side; max: the largest pull of all terms. "
@@ -660,6 +661,46 @@ def wtb_slides(bdir):
                    r"$F_R=0.3$ ($z=+9$ at parton); the single term is the sensitive statistic."),
         bullets(r"B2: what it shows (1/2)", shows[:3]),
         bullets(r"B2: what it shows (2/2)", shows[3:]),
+    ]
+
+
+def wtb_ml_slides(bdir):
+    """B2 with machine learning on the same benchmark (study_bsm/ml_wtb.py): the flow and f_tt̄ never see the signal; the
+    BDT is trained with the signal weights, so it is the reachable optimum when the signal is known."""
+    p = os.path.join(bdir, "ml_wtb.json")
+    if not os.path.exists(p):
+        return []
+    L = json.load(open(p))["levels"]
+    cell = lambda v: rf"{v['auc']:.3f} / {100 * v['eff1']:.1f}\%"
+    rows = []
+    for l in ("parton", "gen", "reco"):
+        for fr, F in L[l]["F_R"].items():
+            rows.append([LVL_TEX[l] if fr == next(iter(L[l]["F_R"])) else "", rf"$F_R={float(fr):g}$",
+                         cell(F["osde"]["angles, >10 sigma"]), cell(F["flow"]), cell(F["bdt"]), cell(F["bdt_fit_sample"]),
+                         cell(F["oracle_w"])])
+    P, G, R = (L[l]["F_R"]["0.3"] for l in ("parton", "gen", "reco"))
+    d = lambda F, k: F["paired"][k]
+    k_of = "auc(f_tt angles >10 sigma) - auc(flow), full sample"
+    shows = [
+        rf"Unsupervised, trained on SM $t\bar t$ only: the normalizing flow of the ML comparison (RealNVP, ten angles) does no better "
+        rf"than $f_{{t\bar t}}$. At parton level $f_{{t\bar t}}$ is ahead by ${d(P, k_of)['delta']:+.3f}\pm{d(P, k_of)['err']:.3f}$ "
+        rf"(paired, $F_R=0.3$); at gen and reco the two agree within errors (${d(G, k_of)['delta']:+.3f}\pm{d(G, k_of)['err']:.3f}$, "
+        rf"${d(R, k_of)['delta']:+.3f}\pm{d(R, k_of)['err']:.3f}$)",
+        rf"Supervised reference, which \emph{{knows the signal}} (BDT on weighted vs unweighted copies of the same events, so it learns "
+        rf"$E[w|x]$): at parton level it reaches the oracle $w$ ({P['bdt']['auc']:.3f} vs {P['oracle_w']['auc']:.3f} at $F_R=0.3$); "
+        rf"at reco it gets {R['bdt']['auc']:.2f} against {R['oracle_w']['auc']:.2f} for the oracle, which uses the parton-level truth and is "
+        r"not reachable after the smearing",
+        r"So the weakness of the score is not a weakness of $f_{t\bar t}$: no unsupervised density does better on this signal, and even a "
+        r"classifier that knows the signal only reaches AUC $\approx0.6$ at reco. The coefficient test (next) is the sensitive probe",
+    ]
+    return [
+        table(r"B2 with ML: AUC / signal efficiency at 1\% $t\bar t$ efficiency",
+              ["", "", r"$f_{t\bar t}$ ($>10\sigma$)", "flow", r"BDT (knows $w$)", "BDT (fit)", r"oracle $w$"], rows, fit=True,
+              note=r"$f_{t\bar t}$ and flow: trained on SM $t\bar t$ only, scored on the whole independent sample. BDT: trained on the "
+                   r"first half with the signal weights, tested on the second; BDT (fit): trained on the reweighted fit sample. "
+                   r"Oracle: $w$ itself (parton truth). Checks: $F_R=0$ gives 0.500 for every score; BDTs on shuffled weights give "
+                   r"$0.50\pm0.02$."),
+        bullets(r"B2 with ML: what it shows", shows),
     ]
 
 

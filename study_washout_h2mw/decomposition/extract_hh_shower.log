@@ -1,0 +1,9 @@
+START 1791479903 Thu Oct  8 13:18:23 EDT 2026
+hh LHE 20000 1s
+hh 5000 2s
+hh 10000 4s
+hh 15000 5s
+hh 20000 6s
+all roles found: 1.0
+EXIT=0
+END 1791479911 Thu Oct  8 13:18:31 EDT 2026
