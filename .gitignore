@@ -39,3 +39,14 @@ pileup/parts/
 pileup/tmp/
 pileup/bin/
 pileup/failed_attempts/
+study_washout*/**/*.npz
+study_washout_h170/**/cache*
+osde_h170/
+ml_h170/
+acceptance_h170/
+slides_h170/*
+!slides_h170/slides.pdf
+note/*.tex
+study_salvage/*.log
+study_bsm/*.log
+pileup/*.log

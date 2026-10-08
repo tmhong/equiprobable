@@ -1,0 +1,7 @@
+[hh] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_m170_seed2170/parton_events.lhe.gz
+[hh] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_m170_seed2170/delphes_events.root
+saved hh 20000 matched 0.10475 reco_ok 0.44355
+real 67.27
+user 43.60
+sys 21.94
+exit 0

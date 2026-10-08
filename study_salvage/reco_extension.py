@@ -26,6 +26,13 @@ from plotting import osde  # noqa: E402
 from plotting.angles import ANGLE_NAMES  # noqa: E402
 
 OPTS = {"had_fermion": "down", "jet_assignment": "truth"}
+# signal sample (SIGNAL_SAMPLE, relative to the project) and output suffix (OUT_SUFFIX, e.g. "_h170");
+# defaults = hh(125) and the original file names
+HH_DEFAULT = "samples/hh_bblvqq/run_seed2001"
+HH = os.environ.get("SIGNAL_SAMPLE", HH_DEFAULT)
+SUFFIX = os.environ.get("OUT_SUFFIX", "")
+if os.path.normpath(HH) != HH_DEFAULT and not SUFFIX:
+    sys.exit("SIGNAL_SAMPLE is not hh(125): set OUT_SUFFIX (e.g. _h170) so the hh(125) outputs are not overwritten")
 MASSES = {"m_w_had": lambda e: e.w_had.mass, "m_t_lep": lambda e: e.t_lep.mass, "m_t_had": lambda e: e.t_had.mass,
           "m_w_lep": lambda e: e.w_lep.mass}
 
@@ -45,7 +52,7 @@ def main():
     levels = ["gen", "reco"]
     ref = load(os.path.join(ROOT, "samples/ttbar_bblvqq/run_seed1001"), levels, 30000)
     tt = load(os.path.join(ROOT, "samples/ttbar_bblvqq/run_seed12345"), levels)
-    hh = load(os.path.join(ROOT, "samples/hh_bblvqq/run_seed2001"), levels)
+    hh = load(os.path.join(ROOT, HH), levels)
     out = {}
     for l in levels:
         lab = np.r_[np.zeros(len(tt[l]["ang"]["Y"])), np.ones(len(hh[l]["ang"]["Y"]))]
@@ -73,7 +80,7 @@ def main():
                                        "angles+BW": roc_auc_score(lab, sa + sm)}
         out[l] = res
         print(l, json.dumps(res, indent=1), flush=True)
-    json.dump(out, open(os.path.join(HERE, "reco_extension.json"), "w"), indent=1)
+    json.dump(out, open(os.path.join(HERE, f"reco_extension{SUFFIX}.json"), "w"), indent=1)
 
 
 if __name__ == "__main__":

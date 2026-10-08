@@ -169,10 +169,10 @@ def nu_pz_slides():
 
 def hh_whad_slides():
     """Hadronic-W mass in hh, split into on-shell W and W* (hh_plots.py)."""
-    path = os.path.join(HERE, "plots_hh", "w_had_mass_split.png")
-    if not os.path.exists(path):
+    path = os.path.join(sdir("plots_hh"), "w_had_mass_split.png")
+    if not os.path.exists(path) or SIGNAL != "h125":
         return []
-    r = json.load(open(os.path.join(HERE, "plots_hh", "w_had_mass_split.json")))
+    r = json.load(open(os.path.join(sdir("plots_hh"), "w_had_mass_split.json")))
     return [wide_figure(r"$hh$: hadronic $W$ mass, on-shell $W$ vs $W^*$", path, note=(
         rf"Hadronic boson is the $W^*$ in {100 * (1 - r['frac_had_onshell']):.0f}\% of events "
         rf"(true median {r['offshell_parton_median']:.0f} GeV), but the $t\bar t$-hypothesis $\chi^2$ picks jet "
@@ -196,10 +196,8 @@ def build_hh_osde_slides(H, O, tests):
     lv = O["levels"]
     slides = [
         section(r"$hh$ samples", "hh samples"),
-        bullets(r"$hh\to b\bar{b}\,WW^*\to b\bar{b}\,\ell\nu\,q\bar{q}'$ sample", [
-            r"MadGraph5 built-in \texttt{heft} model (LO, $m_t\to\infty$), same Pythia8 + Delphes ATLAS chain",
-            r"$gg\to hh$, $h\to b\bar b$, $h\to\ell\nu q\bar q'$ (+ charge conjugate), generated as one process",
-            r"$h\to WW^*$ has one off-shell $W$, so $h\to\ell\nu q\bar{q}'$ is a 4-body decay",
+        bullets(SIGTEXT[SIGNAL]["sample_title"], [
+            *SIGTEXT[SIGNAL]["sample"],
             rf"{H['meta'].get('nevents', '?')} events, seed {H['meta'].get('seed', '?')}; "
             rf"$\sigma\times\mathcal{{B}} = {1000 * H['meta']['cross_section_pb']:.3g}$ fb "
             r"(LO HEFT with MG defaults; \emph{not} an SM prediction, so plots use unit area)",
@@ -213,7 +211,7 @@ def build_hh_osde_slides(H, O, tests):
                 str(b[1]), rf"{100 * b[1] / H['hh_cutflow'][0][1]:.1f}\%"]
                for a, b in zip(H["tt_cutflow"], H["hh_cutflow"])],
               note=r"$hh$ leptons are softer (from $W^*$) and less isolated, so the efficiency is lower."),
-        wide_figure(r"$hh$ sample: parton, gen and reco level", os.path.join(HERE, "plots_hh", "hh_overview.png")),
+        wide_figure(r"$hh$ sample: parton, gen and reco level", os.path.join(sdir("plots_hh"), "hh_overview.png")),
         *hh_whad_slides(),
 
         section(r"$f_{t\bar t}$ by OSDE", "f_ttbar by OSDE"),
@@ -821,13 +819,9 @@ def hh170_slides(bdir):
     srow = [[ANGLE_TEX.get(a, a.replace("m_w_lep", r"$m_{W,\ell}$").replace("m_w_had", r"$m_{W,h}$").replace("m_t_lep", r"$m_{t,\ell}$").replace("m_t_had", r"$m_{t,h}$"))]
             + [f"{sv[k][a]:.3f}" for k in ("hh125", "hh170")] for a in ["cos_Theta", "cos_theta", "cos_theta_prime", "cos_theta_tilde", "cos_theta_prime_tilde"] + mvars]
     return [
-        section(r"Study A$'$: $hh$ with on-shell $W$ bosons ($m_H=170$ GeV)", "Study A': hh with on-shell W bosons"),
-        bullets(r"Idea: remove the off-shell $W$ handle and see what the angles do", [
-            r"Same $hh\to b\bar b\,\ell\nu\,q\bar q'$ chain (\texttt{heft}, shapes only) with $m_H=170$ GeV, just above $2m_W=160.8$ GeV, so "
-            r"both $W$s are on shell ($\Gamma_H=0.38$ GeV); 20k events, same analysis chain, nothing retrained",
-            r"Expectation: the $W$ Breit--Wigner factors go blind; the top factors still see $m_{Wb}$ (the $b$ comes from the other "
-            r"Higgs); after the $\chi^2$ a genuinely on-shell hadronic $W$ makes the signal more $t\bar t$-like; what is left is "
-            r"the angles: a scalar $\to WW$ decay is not $V\!-\!A$ (no zero at $\cos\theta'\to1$), and the pseudo-top direction differs",
+        section(*SIGTEXT[SIGNAL]["variant_section"]),
+        bullets(SIGTEXT[SIGNAL]["variant_title"], [
+            *SIGTEXT[SIGNAL]["variant_bullets"],
             r"Selection efficiency (trigger / gen / reco): " + "; ".join(
                 rf"{lab[k]} {100 * sel[k]['trigger']:.0f}\% / {100 * sel[k]['gen_reco_ok']:.0f}\% / {100 * sel[k]['reco_reco_ok']:.1f}\%" for k in ("hh125", "hh170"))
             + r" (harder leptons from on-shell $W$s)",
@@ -999,26 +993,48 @@ def l1_figure_slides(ldir):
     ]
 
 
+def washout_short_answer(wdir):
+    """The 'short answer' bullets, with the numbers read from the mechanism and decomposition results."""
+    M = json.load(open(os.path.join(wdir, "mechanism", "results.json")))
+    D = json.load(open(os.path.join(wdir, "decomposition", "decomposition.json")))
+    st = D["steps"]
+    loo = lambda k: st[k]["osde"]["auc_loo"]  # noqa: E731
+    keys = {"S0": "S0 LHE parton, all", "S1": "S1 LHE parton, reco_ok", "S1c": "S1c post-ISR parton, reco_ok",
+            "S1d": "S1d pre-hadronization (FSR), reco_ok", "S2": "S2chi chi2 jets + gen lep + true nu", "S4": "S4 gen chi2 reconstruction"}
+    d = {k: loo(v) for k, v in keys.items() if v in st}
+    losses = [("wrong jets in the $\\chi^2$", d.get("S2", 0) - d.get("S1d", 0)), ("FSR", d.get("S1d", 0) - d.get("S1c", 0)),
+              ("$\\nu$ from $m_W$", d.get("S4", 0) - d.get("S2", 0)), ("ISR recoil", d.get("S1c", 0) - d.get("S1", 0)),
+              ("selection", d.get("S1", 0) - d.get("S0", 0))]
+    losses.sort(key=lambda x: x[1])
+    mt = M["mass"]["hh"]["p_m_t_lep"][1]
+    wstar = M["mass"].get("hh W_had off-shell", {}).get("p_m_w_had", [0, 0, 0])[1]
+    shell = (rf"and one $W$ is off-shell ($m_{{W^*}}$ median {wstar:.0f} GeV)" if SIGNAL == "h125"
+             else r"while both $W$s are on shell")
+    return [
+        rf"At parton level the signal ``tops'' are not tops: each is the $W$ from one Higgs plus the $b$ from the other "
+        rf"($m_{{Wb}}$ median {mt:.0f} GeV), {shell}",
+        r"$\Rightarrow$ the signal has $\cos\theta$, $\cos\tilde\theta$ peaked at $-1$, isotropic $\cos\Theta$ "
+        r"(no $t$-channel), and no $V\!-\!A$ zero in $\cos\theta'$",
+        rf"At gen level the $t\bar t$-hypothesis reconstruction rebuilds $m_W$ and $m_t$ from whatever jets fit: the $\chi^2$ picks "
+        rf"the true jets in {100 * M['eff']['hh']['chi2 picks right 4 jets | reco_ok']:.0f}\% of the signal "
+        rf"({100 * M['eff']['tt']['chi2 picks right 4 jets | reco_ok']:.0f}\% of $t\bar t$)"
+        + (r"; the $m_W$-constrained $\nu$ puts the leptonic $W^*$ on shell" if SIGNAL == "h125" else ""),
+        r"Ranked losses in $f_{t\bar t}$ AUC: " + ", ".join(rf"{n} ({v:+.2f})" for n, v in losses[:3])
+        + "; " + " and ".join(n for n, v in losses[3:]) + " cost nothing"
+        if losses[3][1] > -0.015 else r"Ranked losses in $f_{t\bar t}$ AUC: " + ", ".join(rf"{n} ({v:+.2f})" for n, v in losses),
+        rf"The information is \textbf{{not}} gone: a BDT on hypothesis-free gen observables ($m_{{bb}}$, $\Delta R_{{bb}}$, MET, $m_T$, "
+        rf"\ldots) gives AUC {M['bdt']['gen: hypothesis-independent observables (reco_ok events)']:.2f} on the same events",
+    ]
+
+
 def washout_slides(wdir):
     """Why the parton-level hh/tt̄ separation washes out at gen level (study_washout/)."""
     m, d = os.path.join(wdir, "mechanism", "figures"), os.path.join(wdir, "decomposition")
-    if not os.path.exists(os.path.join(d, "decomposition_chain.png")):
+    if not os.path.exists(os.path.join(d, "slide_chain_main.png")):
         return []
     return [
         section(r"Why the separation washes out at gen level", "Washout parton to gen"),
-        bullets(r"Short answer", [
-            r"At parton level the $hh$ ``tops'' are not tops: each is the $W$ from one Higgs plus the $b$ from the other "
-            r"($m_{Wb}$ median 135 GeV), and one $W$ is off-shell ($m_{W^*}$ median 32 GeV)",
-            r"$\Rightarrow$ $hh$ has $\cos\theta$, $\cos\tilde\theta$ peaked at $-1$, isotropic $\cos\Theta$ "
-            r"(no $t$-channel), and no $V\!-\!A$ zero in $\cos\theta'$",
-            r"At gen level the $t\bar t$-hypothesis reconstruction rebuilds $m_W$ and $m_t$ from whatever jets fit: "
-            r"the $\chi^2$ picks the true jets in 8\% of $hh$ (34\% of $t\bar t$); the $m_W$-constrained $\nu$ puts "
-            r"the leptonic $W^*$ on shell",
-            r"Ranked losses in $f_{t\bar t}$ AUC: wrong jets in the $\chi^2$ ($-0.06$) $>$ FSR ($-0.03$) "
-            r"$\approx$ $\nu$ from $m_W$ ($-0.03$); selection and ISR recoil cost nothing",
-            r"The information is \textbf{not} gone: a BDT on hypothesis-free gen observables ($m_{bb}$, "
-            r"$\Delta R_{bb}$, MET, $m_T$, \ldots) gives AUC 0.87 on the same events",
-        ]),
+        bullets(r"Short answer", washout_short_answer(wdir)),
         wide_figure(r"Parton level: what separates $hh$ from $t\bar t$", os.path.join(m, "fig1_parton_signatures.png")),
         wide_figure(r"Step by step from parton to gen: all selected events", os.path.join(d, "slide_chain_main.png"),
                     note=r"Green: parton-level $f_{t\bar t}$ applied unchanged; orange: $f_{t\bar t}$ refit at each step; blue: "
@@ -1049,7 +1065,7 @@ def washout_slides(wdir):
 
 def salvage_slides(sdir):
     """Momentum in the density method: the resonance masses (study_salvage/)."""
-    p, q = os.path.join(sdir, "simplest.json"), os.path.join(sdir, "salvage.json")
+    p, q = sfile(sdir, "simplest.json"), sfile(sdir, "salvage.json")
     if not os.path.exists(p):
         return []
     r, rf_ = json.load(open(p)), (json.load(open(q)) if os.path.exists(q) else {})
@@ -1063,10 +1079,9 @@ def salvage_slides(sdir):
             r"For $t\bar t$ the masses carry no information: each is a Breit--Wigner fixed by $M$ and $\Gamma$, and "
             r"(narrow width) $|\mathcal M|^2$ factorizes: angles $\times\prod_k \mathrm{BW}(m_k)$. So the paper could "
             r"drop them",
-            r"$hh$ is \emph{not} on that shell: one $W$ is off shell (median 32 GeV) and its ``tops'' sit at 135 GeV. "
-            r"Its difference lives in exactly the dimensions we dropped",
+            SIGTEXT[SIGNAL]["shell"],
         ]),
-        wide_figure(r"The dropped dimensions, parton level", os.path.join(sdir, "masses_parton.png"),
+        wide_figure(r"The dropped dimensions, parton level", sfile(sdir, "masses_parton.png"),
                     note=r"$t\bar t$ (blue) is the Breit--Wigner (dashed; MadGraph cuts it at $\pm15\Gamma$). $hh$ (red) "
                          r"is spread over 100 GeV."),
         bullets(r"The extension: one factor per mass, no new coefficients", [
@@ -1080,7 +1095,7 @@ def salvage_slides(sdir):
             r"A fitted OSDE correction to this shape (Legendre in $u=\frac12+\frac1\pi\arctan\frac{m-M}{W}$) "
             + (rf"changes the gen AUC by only {rf_['gen']['auc_masses'] - G['masses_only']:+.3f}" if rf_ else "is not needed"),
         ]),
-        wide_figure(r"The same dimensions at gen level ($\chi^2$ reconstruction)", os.path.join(sdir, "masses_gen.png"),
+        wide_figure(r"The same dimensions at gen level ($\chi^2$ reconstruction)", sfile(sdir, "masses_gen.png"),
                     note=r"Resolution widens the $t\bar t$ shell (dashed: two-number model); $hh$ is still wider, mainly in "
                          r"the tails. $m_{W,\ell}$ is missing: the $\nu$ solution sets it to $m_W$ by construction."),
         table(r"Result: AUC ($hh$ vs $t\bar t$), unsupervised", ["", "parton", r"gen ($\chi^2$)"], [
@@ -1109,7 +1124,7 @@ def salvage_slides(sdir):
 
 def angles_vs_bw_bullet(sdir):
     """How much the angles add on top of the mass factors (study_salvage/angles_vs_bw.py)."""
-    p = os.path.join(sdir, "angles_vs_bw.json")
+    p = sfile(sdir, "angles_vs_bw.json")
     if not os.path.exists(p):
         return []
     r = json.load(open(p))
@@ -1124,7 +1139,7 @@ def angles_vs_bw_bullet(sdir):
 
 def angle_term_slides(sdir):
     """With the mass factors in, how many angular terms are needed (study_salvage/angle_terms.py)."""
-    p = os.path.join(sdir, "angle_terms.json")
+    p = sfile(sdir, "angle_terms.json")
     if not os.path.exists(p):
         return []
     r = json.load(open(p))
@@ -1186,7 +1201,7 @@ def noise_reco_tag_slides(sdir):
                        r"0.46 at 12.5k): most of the full expansion is noise."),
             wide_figure(r"Truncation gain vs fit-sample size", os.path.join(sdir, "truncation_noise.png")),
         ]
-    p = os.path.join(sdir, "reco_extension.json")
+    p = sfile(sdir, "reco_extension.json")
     if os.path.exists(p):
         r = json.load(open(p))
         rows = []
@@ -1203,7 +1218,7 @@ def noise_reco_tag_slides(sdir):
                               rf"$m_{{t,\ell}}$ {g['m_t_lep']['W']:.0f}/{rc['m_t_lep']['W']:.0f}, $m_{{t,h}}$ "
                               rf"{g['m_t_had']['W']:.0f}/{rc['m_t_had']['W']:.0f} GeV. Reco loses to jet resolution and "
                               r"wrong-jet combinatorics; still $0.51\to0.60$."))
-    p = os.path.join(sdir, "tagging.json")
+    p = sfile(sdir, "tagging.json")
     if os.path.exists(p):
         r = json.load(open(p))
         names = [("truth (paper assumption)", "perfect up/down tag (paper)"), ("ideal c-tag (eps_c 100%, no mistag)", "ideal c-tag"),
@@ -1389,7 +1404,7 @@ def closing_slide(S, O=None):
         p = os.path.join(HERE, *parts)
         return json.load(open(p)) if os.path.exists(p) else None
 
-    nu, wh = load("plots", "nu_pz.json"), load("plots_hh", "w_had_mass_split.json")
+    nu, wh = load("plots", "nu_pz.json"), (load("plots_hh", "w_had_mass_split.json") if SIGNAL == "h125" else None)
     C = load("osde", "simplify_summary.json")
     items = [
         r"$t\bar t$ samples (parton, gen, reco; ATLAS card, no pileup) produced and validated; "
@@ -1444,6 +1459,62 @@ def closing_slide(S, O=None):
 # Helpers that turn content into Beamer frames
 # ============================================================================
 PLOTS_DIR = None   # set in main(); figures() looks plots up here
+SIGNAL, SUF = "h125", ""   # main signal: hh(125) or hh(170); outputs of the latter carry the suffix _h170
+
+
+def sdir(name):
+    """Output directory of the main signal: <name> for hh(125); <name>_h170 for HH(170).  Signal-specific directories
+    are never silently replaced by the hh(125) ones: a missing _h170 directory makes its section skip."""
+    return os.path.join(HERE, name + SUF)
+
+
+def sfile(d, name):
+    """File of the main signal inside d: <base>_h170.<ext> if it exists, else <base>.<ext> (tt̄-only files have no suffix)."""
+    base, ext = os.path.splitext(name)
+    cand = os.path.join(d, base + SUF + ext)
+    return cand if SUF and os.path.exists(cand) else os.path.join(d, name)
+
+
+SIGTEXT = {
+    "h125": dict(
+        part=(r"Study A: $t\bar t$ vs $hh\to b\bar b\,WW^*$ (an off-shell signal)", [
+            r"$f_{t\bar t}$ on the ten angles: fits, coefficients, bases, acceptance",
+            r"Why the separation washes out after reconstruction, and the fix: the resonance masses",
+            r"Comparison with other unsupervised methods and with supervised ML on the same inputs"]),
+        sample_title=r"$hh\to b\bar{b}\,WW^*\to b\bar{b}\,\ell\nu\,q\bar{q}'$ sample",
+        sample=[r"MadGraph5 built-in \texttt{heft} model (LO, $m_t\to\infty$), same Pythia8 + Delphes ATLAS chain",
+                r"$gg\to hh$, $h\to b\bar b$, $h\to\ell\nu q\bar q'$ (+ charge conjugate), generated as one process",
+                r"$h\to WW^*$ has one off-shell $W$, so $h\to\ell\nu q\bar{q}'$ is a 4-body decay"],
+        shell=r"$hh$ is \emph{not} on that shell: one $W$ is off shell (median 32 GeV) and its ``tops'' sit at 135 GeV. "
+              r"Its difference lives in exactly the dimensions we dropped",
+        variant_section=(r"Study A$'$: $hh$ with on-shell $W$ bosons ($m_H=170$ GeV)", "Study A': hh with on-shell W bosons"),
+        variant_title=r"Idea: remove the off-shell $W$ handle and see what the angles do",
+        variant_bullets=[
+            r"Same $hh\to b\bar b\,\ell\nu\,q\bar q'$ chain (\texttt{heft}, shapes only) with $m_H=170$ GeV, just above $2m_W=160.8$ GeV, so "
+            r"both $W$s are on shell ($\Gamma_H=0.38$ GeV); 20k events, same analysis chain, nothing retrained",
+            r"Expectation: the $W$ Breit--Wigner factors go blind; the top factors still see $m_{Wb}$ (the $b$ comes from the other "
+            r"Higgs); after the $\chi^2$ a genuinely on-shell hadronic $W$ makes the signal more $t\bar t$-like; what is left is "
+            r"the angles: a scalar $\to WW$ decay is not $V\!-\!A$ (no zero at $\cos\theta'\to1$), and the pseudo-top direction differs"]),
+    "h170": dict(
+        part=(r"Study A: $t\bar t$ vs $HH\to b\bar b\,WW$\\($m_H=170$ GeV, on-shell $W$ bosons)", [
+            r"$f_{t\bar t}$ on the ten angles: fits, coefficients, bases, acceptance",
+            r"Why the separation washes out after reconstruction, and the fix: the resonance masses",
+            r"Comparison with other unsupervised methods and with supervised ML on the same inputs"]),
+        sample_title=r"$HH\to b\bar{b}\,WW\to b\bar{b}\,\ell\nu\,q\bar{q}'$ sample, $m_H=170$ GeV",
+        sample=[r"MadGraph5 built-in \texttt{heft} model (LO, $m_t\to\infty$) with the scalar mass set to 170 GeV and "
+                r"$\Gamma_H=0.38$ GeV (as for an SM-like scalar of that mass); same Pythia8 + Delphes ATLAS chain",
+                r"$gg\to HH$, $H\to b\bar b$, $H\to\ell\nu q\bar q'$ (+ charge conjugate), generated as one process",
+                r"$m_H=170$ GeV is just above $2m_W=160.8$ GeV: both $W$ bosons are on shell, so the signal has the same "
+                r"$W$ masses as $t\bar t$ and differs only in the pseudo-top masses $m_{Wb}$ and in the angles"],
+        shell=r"$HH$ is \emph{not} on that shell: its $W$s are on shell but its ``tops'' ($W$ from one Higgs plus $b$ from the other) "
+              r"sit at $m_{Wb}\approx180$ GeV with a 100 GeV spread. Its difference lives in exactly the dimensions we dropped",
+        variant_section=(r"Study A$'$: the off-shell case, $hh$ with $m_h=125$ GeV", "Study A': the off-shell case, hh(125)"),
+        variant_title=r"The off-shell variant: $h(125)\to WW^*$, one $W$ off shell",
+        variant_bullets=[
+            r"Same chain with the SM $h(125)$: $h\to WW^*$ has one off-shell $W$ (median 32 GeV), so the $W$ Breit--Wigner factors "
+            r"see the signal at parton level and the leptons are softer (lower selection efficiency)",
+            r"Question: does the off-shell $W$ matter for the method? Compare every score for $hh(125)$ and $HH(170)$ with the same fits"]),
+}
 
 
 def fmt(x, sig=3):
@@ -1719,7 +1790,11 @@ def main():
     p.add_argument("--acceptance", default=None, help="acceptance_plots.py output dir (adds slides)")
     p.add_argument("--no-tests", action="store_true", help="don't run the unit tests for the slides")
     p.add_argument("--no-compile", action="store_true")
+    p.add_argument("--signal", choices=["h125", "h170"], default="h125",
+                   help="main signal: hh(125) (default) or HH(170); the latter uses the *_h170 output directories/files")
     args = p.parse_args()
+    global SIGNAL, SUF
+    SIGNAL, SUF = args.signal, ("" if args.signal == "h125" else "_h170")
 
     PLOTS_DIR, OUT_DIR = os.path.abspath(args.plots), os.path.abspath(args.out)
     os.makedirs(OUT_DIR, exist_ok=True)
@@ -1748,19 +1823,15 @@ def main():
         H["tt_cutflow"] = S["reco"]["cutflow"]
         O = json.load(open(os.path.join(args.osde, "summary.json")))
         O["_dir"] = os.path.abspath(args.osde)
-        slides.append(part_frame(r"Study A: $t\bar t$ vs $hh\to b\bar b\,WW^*$ (an off-shell signal)", [
-            r"$f_{t\bar t}$ on the ten angles: fits, coefficients, bases, acceptance",
-            r"Why the separation washes out after reconstruction, and the fix: the resonance masses",
-            r"Comparison with other unsupervised methods and with supervised ML on the same inputs",
-        ]))
+        slides.append(part_frame(*SIGTEXT[SIGNAL]["part"]))
         slides += build_hh_osde_slides(H, O, run_tests() if not args.no_tests else "not run")
         simp = os.path.join(args.osde, "simplify_summary.json")
         if os.path.exists(simp):
             slides += coefficient_slides(json.load(open(simp)), os.path.abspath(args.osde))
         slides += extended_slides(os.path.abspath(args.osde), os.path.join(HERE, "osde_ext"))
         slides += sh_slides(os.path.join(HERE, "osde_sh"))
-        slides += ml_slides(os.path.join(HERE, "ml"), ml_explainer_slides())
-        slides += washout_slides(os.path.join(HERE, "study_washout"))
+        slides += ml_slides(sdir("ml"), ml_explainer_slides())
+        slides += washout_slides(sdir("study_washout"))
         slides += salvage_slides(os.path.join(HERE, "study_salvage"))
         slides += discriminator_slides(os.path.abspath(args.osde))
     elif args.hh or args.osde:

@@ -1,11 +1,19 @@
 """Summary figure of decomposition.json."""
 import json
+import os
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-R = json.load(open("decomposition.json"))["steps"]
+# OUT_SUFFIX (e.g. "_h170"): read and write in the sibling study_washout<SUFFIX>/decomposition; SIGNAL_LABEL: legend name
+HERE = os.path.dirname(os.path.abspath(__file__))
+SUFFIX = os.environ.get("OUT_SUFFIX", "")
+OUT = os.path.join(os.path.dirname(os.path.dirname(HERE)), "study_washout" + SUFFIX, "decomposition") if SUFFIX else HERE
+SIG = os.environ.get("SIGNAL_LABEL", "hh")
+DJ = json.load(open(os.path.join(OUT, "decomposition.json")))
+R = DJ["steps"]
+FM = {s: 100 * DJ["info"][s]["matched_given_reco_ok"] for s in ("tt", "hh")}   # % of reco_ok events with all 4 partons matched
 ANG = ["Y", "cos_Theta", "cos_theta", "phi", "cos_theta_prime", "phi_prime",
        "cos_theta_tilde", "phi_tilde", "cos_theta_prime_tilde", "phi_prime_tilde"]
 ALAB = ["Y", "cosΘ", "cosθ", "φ", "cosθ′", "φ′", "cosθ̃", "φ̃", "cosθ̃′", "φ̃′"]
@@ -25,6 +33,7 @@ SUB = [("S1c_m post-ISR parton, reco_ok & matched", "post-ISR\nparton"),
        ("S2chi_m (matched events)", "χ² jets\n+ true ν"),
        ("S4m (matched events)", "S4\nfull gen")]
 C = {"bdt": "#2a78d6", "loo": "#eb6834", "pf": "#1baf7a"}
+YTOP = 0.92 if max(R[k]["bdt"][0] for k, _ in MAIN + SUB) < 0.89 else 1.0   # legend headroom if the BDT runs high
 plt.rcParams.update({"font.size": 13, "axes.spines.top": False, "axes.spines.right": False})
 fig = plt.figure(figsize=(17, 11))
 gs = fig.add_gridspec(2, 2, height_ratios=[1, 0.85], width_ratios=[1, 1.35], hspace=0.45, wspace=0.18)
@@ -40,8 +49,8 @@ def chain(ax, steps, title):
     ax.plot(x, pf, color=C["pf"], lw=2, marker="^", ms=8, ls="--", label="f_tt̄ fit at parton level, applied here")
     ax.axhline(0.5, color="#888", lw=1, ls=":")
     ax.set_xticks(x, [l for _, l in steps], fontsize=11)
-    ax.set_ylabel("AUC (hh vs tt̄)")
-    ax.set_ylim(0.46, 0.92)
+    ax.set_ylabel(f"AUC ({SIG} vs tt̄)")
+    ax.set_ylim(0.46, YTOP)
     ax.grid(axis="y", color="#ddd", lw=0.8)
     ax.set_title(title, fontsize=14, loc="left")
     for i, k in enumerate(steps):
@@ -52,7 +61,8 @@ ax1 = fig.add_subplot(gs[0, 0])
 chain(ax1, MAIN, "(a) main chain (S1→S4 on gen reco_ok events)")
 ax1.legend(loc="upper right", fontsize=11, frameon=False)
 ax2 = fig.add_subplot(gs[0, 1])
-chain(ax2, SUB, "(b) reco_ok events with all 4 partons matched to distinct GenJets\n     (39% of tt̄, 12% of hh)")
+chain(ax2, SUB, "(b) reco_ok events with all 4 partons matched to distinct GenJets\n"
+                f"     ({FM['tt']:.0f}% of tt̄, {FM['hh']:.0f}% of {SIG})")
 
 ax3 = fig.add_subplot(gs[1, :])
 M = np.array([[R[k]["single"][a] for a in ANG] for k, _ in MAIN])
@@ -65,16 +75,17 @@ for i in range(M.shape[0]):
                  color="white" if M[i, j] > 0.6 else "black")
 ax3.set_title("(c) single-angle AUC (BDT on one angle) along the main chain", fontsize=14, loc="left")
 cb = fig.colorbar(im, ax=ax3, fraction=0.025, pad=0.01); cb.set_label("AUC")
-fig.text(0.01, 0.005, "numbers at the bottom: n(tt̄) / n(hh) events.  Error bars: Hanley–McNeil (half-split test sizes).",
+fig.text(0.01, 0.005, f"numbers at the bottom: n(tt̄) / n({SIG}) events.  Error bars: Hanley–McNeil (half-split test sizes).",
          fontsize=10, color="#555")
-fig.savefig("decomposition_summary.png", dpi=130, bbox_inches="tight")
+fig.savefig(os.path.join(OUT, "decomposition_summary.png"), dpi=130, bbox_inches="tight")
 print("ok")
 
 
 # ---- slide versions: one message per figure, large fonts
 plt.rcParams.update({"font.size": 18})
 for name, steps, title in (("slide_chain_main", MAIN, "selected events (main chain)"),
-                           ("slide_chain_matched", SUB, "events with all 4 partons matched to jets (39% tt̄, 12% hh)")):
+                           ("slide_chain_matched", SUB, f"events with all 4 partons matched to jets ({FM['tt']:.0f}% tt̄, "
+                                                        f"{FM['hh']:.0f}% {SIG})")):
     f, ax = plt.subplots(figsize=(13, 6.6))
     chain(ax, steps, title)
     ax.tick_params(axis="x", labelsize=15)
@@ -82,7 +93,7 @@ for name, steps, title in (("slide_chain_main", MAIN, "selected events (main cha
     for t in ax.texts:
         t.set_fontsize(12)
     ax.legend(loc="upper right", fontsize=16, frameon=True, framealpha=0.9)
-    f.savefig(name + ".png", dpi=110, bbox_inches="tight")
+    f.savefig(os.path.join(OUT, name + ".png"), dpi=110, bbox_inches="tight")
 f, ax = plt.subplots(figsize=(15, 7.4))
 im = ax.imshow(M.T, cmap="Blues", vmin=0.5, vmax=0.66, aspect="auto")
 ax.set_yticks(range(len(ANG)), ALAB)
@@ -92,5 +103,5 @@ for i in range(M.shape[0]):
         ax.text(i, j, f"{M[i, j]:.2f}", ha="center", va="center", fontsize=15,
                 color="white" if M[i, j] > 0.6 else "black")
 f.colorbar(im, ax=ax, fraction=0.03, pad=0.01).set_label("single-angle AUC")
-f.savefig("slide_angles.png", dpi=110, bbox_inches="tight")
+f.savefig(os.path.join(OUT, "slide_angles.png"), dpi=110, bbox_inches="tight")
 print("slides ok")

@@ -41,6 +41,12 @@ from plotting import osde  # noqa: E402
 from plotting.angles import ANGLE_NAMES  # noqa: E402
 
 OPTS = {"had_fermion": "down", "jet_assignment": "truth"}
+# signal sample (SIGNAL_SAMPLE) and output suffix (OUT_SUFFIX, e.g. "_h170"); defaults = hh(125), tagging.json
+HH_DEFAULT = "samples/hh_bblvqq/run_seed2001"
+HH = os.environ.get("SIGNAL_SAMPLE", HH_DEFAULT)
+SUFFIX = os.environ.get("OUT_SUFFIX", "")
+if os.path.normpath(HH) != HH_DEFAULT and not SUFFIX:
+    sys.exit("SIGNAL_SAMPLE is not hh(125): set OUT_SUFFIX (e.g. _h170) so the hh(125) outputs are not overwritten")
 WPS = {"c-tag tight (eps_c 30%, b 11%, light 1.4%)": (0.30, 0.11, 0.014),
        "c-tag loose (eps_c 45%, b 30%, light 8%)": (0.45, 0.30, 0.08),
        "ideal c-tag (eps_c 100%, no mistag)": (1.0, 0.0, 0.0)}
@@ -106,7 +112,7 @@ def main():
     for level, fname in (("parton", "f_ttbar_parton.npz"), ("reco", "f_ttbar_reco.npz")):
         ref = extract(os.path.join(ROOT, "samples/ttbar_bblvqq/run_seed1001"), level, 30000)
         tt = extract(os.path.join(ROOT, "samples/ttbar_bblvqq/run_seed12345"), level)
-        hh = extract(os.path.join(ROOT, "samples/hh_bblvqq/run_seed2001"), level)
+        hh = extract(os.path.join(ROOT, HH), level)
         p_s = float(np.mean(ref["softer_is_down"]))
         lab = np.r_[np.zeros(len(tt["fl_h"])), np.ones(len(hh["fl_h"]))]
         # mass surprisal (labelling independent)
@@ -149,7 +155,7 @@ def main():
         res["masses only (BW)"] = roc_auc_score(lab, sm)
         out[level] = res
         print(level, json.dumps(res, indent=1), flush=True)
-    json.dump(out, open(os.path.join(HERE, "tagging.json"), "w"), indent=1)
+    json.dump(out, open(os.path.join(HERE, f"tagging{SUFFIX}.json"), "w"), indent=1)
 
 
 if __name__ == "__main__":

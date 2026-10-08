@@ -15,6 +15,7 @@ Both are normalized to unit area, so the ratio compares shapes.
 Example:
   python paper_style_plots.py --dir osde          # paper basis   -> osde/tt_hh_dNdy_dNdt_<level>.{pdf,png}
   python paper_style_plots.py --dir osde_ext      # extended basis
+  python paper_style_plots.py --dir osde --t-vs-y0 parton   # also t_vs_y0_parton.png (shape of t vs y0)
 """
 import argparse
 import os
@@ -148,6 +149,32 @@ def make(scores, level, out_base, title=None, y0_factor=2.5, edge_quantile=0.005
     return y0, s0, s1
 
 
+def t_vs_y0(scores, level, path, factors=(1.05, 1.5, 3.0)):
+    """Shape of t for several y0, with the paper's min / max endpoints (edge quantile 0): s'_1 is set by the
+    most negative event, so y0 just below min y squeezes t toward 1.  ROC / AUC do not depend on y0.
+    Same samples as make(): tt̄ = fit sample (leave-one-out), hh."""
+    tt, hh = scores["train"], scores["hh"]
+    edges = np.linspace(0, 1, 51)
+    fig, axs = plt.subplots(1, len(factors), figsize=(5.4 * len(factors), 4.2))
+    out = []
+    for i, (ax, k) in enumerate(zip(np.atleast_1d(axs), factors)):
+        t, (y0, s0, s1) = transform({"tt": tt, "hh": hh}, k, 0.0)
+        ax.hist(t["tt"], edges, density=True, histtype="stepfilled", facecolor=CMAP(0.55), edgecolor=TT_DARK, lw=1.8,
+                label=r"$t\bar{t}$")
+        ax.hist(t["hh"], edges, density=True, histtype="step", color=HH, lw=2.2, label=r"$hh$")
+        ax.set_title(rf"$y_0$ = {k:g} x min $y$  ($s'_1$={s1:.1f})", fontsize=13)
+        ax.set_xlabel("$t$")
+        if i == 0:
+            ax.legend(frameon=False, loc="upper right", fontsize=16)
+        out.append((k, y0, s0, s1))
+    fig.suptitle(f"{level.replace('parton_trig', 'parton+trig')} level: shape of $t$ depends on the choice of $y_0$ "
+                 "(ROC/AUC do not)", fontsize=15)
+    fig.tight_layout()
+    fig.savefig(path, dpi=120, bbox_inches="tight")
+    plt.close(fig)
+    return out
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--dir", default="osde", help="osde_fit.py output directory (scores_<level>.npz)")
@@ -157,6 +184,9 @@ def main():
     p.add_argument("--y0-factor", type=float, default=2.5,
                    help="y0 = factor x (most negative y). 2.5 reproduces the paper figure (its y axis starts at "
                         "y0 ~ 2.5 x min y and t is populated continuously from 0); 1 is singular")
+    p.add_argument("--t-vs-y0", metavar="LEVEL", default=None,
+                   help="also draw t_vs_y0_<LEVEL>.png: t for y0 = 1.05, 1.5, 3 x min y with the paper's min/max "
+                        "endpoints (off by default)")
     args = p.parse_args()
     for lvl in args.levels.split(","):
         path = os.path.join(args.dir, f"scores_{lvl}.npz")
@@ -166,6 +196,10 @@ def main():
         y0, s0, s1 = make({k: z[k] for k in z.files}, lvl, os.path.join(args.dir, f"tt_hh_dNdy_dNdt_{lvl}"),
                           title=f"{lvl.replace('parton_trig', 'parton+trig')} level", y0_factor=args.y0_factor, edge_quantile=args.edge_quantile)
         print(f"{args.dir} {lvl}: y0={y0:.3e}  s'0={s0:.2f}  s'1={s1:.2f}")
+    if args.t_vs_y0:
+        z = np.load(os.path.join(args.dir, f"scores_{args.t_vs_y0}.npz"))
+        res = t_vs_y0({k: z[k] for k in z.files}, args.t_vs_y0, os.path.join(args.dir, f"t_vs_y0_{args.t_vs_y0}.png"))
+        print(f"{args.dir} t_vs_y0_{args.t_vs_y0}.png: " + ", ".join(f"y0={k:g}x min y: s'1={s1:.1f}" for k, _, _, s1 in res))
 
 
 if __name__ == "__main__":

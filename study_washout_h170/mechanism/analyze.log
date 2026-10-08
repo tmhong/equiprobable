@@ -1,0 +1,220 @@
+parton (LHE)                             N= 20000/ 40000 BDT=0.913 Y=0.503 cos_Theta=0.611 cos_theta=0.645 phi=0.562 cos_theta=0.590 phi_prime=0.495 cos_theta=0.649 phi_tilde=0.565 cos_theta=0.588 phi_prime=0.504
+parton after shower recoil               N= 20000/ 40000 BDT=0.859 Y=0.509 cos_Theta=0.613 cos_theta=0.631 phi=0.529 cos_theta=0.589 phi_prime=0.497 cos_theta=0.632 phi_tilde=0.532 cos_theta=0.589 phi_prime=0.498
++ gen selection (reco_ok)                N=  8871/ 16526 BDT=0.829 Y=0.506 cos_Theta=0.601 cos_theta=0.626 phi=0.525 cos_theta=0.595 phi_prime=0.504 cos_theta=0.632 phi_tilde=0.527 cos_theta=0.593 phi_prime=0.504
+truth-matched jets + true ν              N=  2095/  6500 BDT=0.804 Y=0.518 cos_Theta=0.600 cos_theta=0.618 phi=0.526 cos_theta=0.574 phi_prime=0.508 cos_theta=0.643 phi_tilde=0.531 cos_theta=0.567 phi_prime=0.497
+truth jets + m_W-constrained ν           N=  2095/  6500 BDT=0.775 Y=0.517 cos_Theta=0.586 cos_theta=0.603 phi=0.549 cos_theta=0.559 phi_prime=0.539 cos_theta=0.643 phi_tilde=0.531 cos_theta=0.567 phi_prime=0.497
+χ² (gen)                                 N=  8871/ 16526 BDT=0.688 Y=0.497 cos_Theta=0.541 cos_theta=0.609 phi=0.535 cos_theta=0.561 phi_prime=0.502 cos_theta=0.568 phi_tilde=0.517 cos_theta=0.549 phi_prime=0.511
+{'parton (LHE)': 0.9125371000000001, 'parton after shower recoil': 0.8588028612499999, '+ gen selection (reco_ok)': 0.829312369001747, 'truth-matched jets + true ν': 0.8037932807049752, 'truth jets + m_W-constrained ν': 0.7745819717275564, 'χ² (gen)': 0.6878216025568957, 'parton-after-shower, matched-event subset': 0.8236287130530567, 'χ², matched-event subset': 0.747121005453047}
+f_tt AUC {'parton': 0.638427825, 'gen': 0.5471428157730568}
+{
+ "eff": {
+  "hh": {
+   "reco_ok": 0.44355,
+   "all4_matched+lep": 0.10475,
+   "reco_ok & all4 matched in leading 6": 0.22365009581783338,
+   "chi2 picks right 4 jets | reco_ok": 0.16142486754593618,
+   "chi2 picks right W_had jets | reco_ok": 0.16390485852778716,
+   "chi2 fully right (pairing too) | reco_ok": 0.11734866418667568,
+   "truth b_had pT>25,|eta|<2.5": 0.90355,
+   "truth b_lep pT>25,|eta|<2.5": 0.9054,
+   "truth q_down pT>25,|eta|<2.5": 0.7377,
+   "truth q_up pT>25,|eta|<2.5": 0.743
+  },
+  "tt": {
+   "reco_ok": 0.41315,
+   "all4_matched+lep": 0.1625,
+   "reco_ok & all4 matched in leading 6": 0.38333535035701316,
+   "chi2 picks right 4 jets | reco_ok": 0.3376497640082295,
+   "chi2 picks right W_had jets | reco_ok": 0.3400096817136633,
+   "chi2 fully right (pairing too) | reco_ok": 0.3121142442212272,
+   "truth b_had pT>25,|eta|<2.5": 0.858025,
+   "truth b_lep pT>25,|eta|<2.5": 0.859525,
+   "truth q_down pT>25,|eta|<2.5": 0.721,
+   "truth q_up pT>25,|eta|<2.5": 0.789675
+  }
+ },
+ "hyp_indep": {
+  "h_m_bb": 0.5396504848473,
+  "h_dR_bb": 0.5734306995687228,
+  "h_pt_bb": 0.6390835217002089,
+  "h_m_jj": 0.5654887950902119,
+  "h_m_ljj": 0.5366247050808884,
+  "h_dR_l_jj": 0.6308396719448119,
+  "h_mT_WW": 0.5579874079472578,
+  "h_mtw": 0.5302998565928223,
+  "h_met": 0.5754201408484158,
+  "h_lep_pt": 0.5447064328785474,
+  "h_HT": 0.5929247720562016,
+  "h_njets": 0.5305518754138839,
+  "h_nbjets": 0.5183963302965565,
+  "h_dR_lb_min": 0.5193079233642324
+ },
+ "bdt": {
+  "parton (LHE)": 0.9125371000000001,
+  "parton after shower recoil": 0.8588028612499999,
+  "+ gen selection (reco_ok)": 0.829312369001747,
+  "truth-matched jets + true ν": 0.8037932807049752,
+  "truth jets + m_W-constrained ν": 0.7745819717275564,
+  "χ² (gen)": 0.6878216025568957,
+  "parton-after-shower, matched-event subset": 0.8236287130530567,
+  "χ², matched-event subset": 0.747121005453047,
+  "gen: hypothesis-independent observables (reco_ok events)": 0.8640893803832859,
+  "gen: m_bb, dR_bb, m_ljj, dR_l,jj only": 0.7948074102544174,
+  "gen: χ² angles + χ² masses + chi2": 0.7718385786794689
+ },
+ "mass": {
+  "hh": {
+   "p_m_t_lep": [
+    141.99664368840578,
+    180.0124712414496,
+    244.73341953398878
+   ],
+   "p_m_t_had": [
+    140.97454060176878,
+    179.4973001072945,
+    243.516452771788
+   ],
+   "p_m_w_lep": [
+    77.91944384407729,
+    80.21133777610856,
+    81.62466050934032
+   ],
+   "p_m_w_had": [
+    78.00435244784961,
+    80.21845537639867,
+    81.61044267811609
+   ],
+   "c_m_t_lep": [
+    155.7661842985348,
+    185.4764755196484,
+    253.41367752660256
+   ],
+   "c_m_t_had": [
+    157.86048328908507,
+    199.49004323241726,
+    319.83937658940516
+   ],
+   "c_m_w_had": [
+    69.74636458157424,
+    88.85495873290085,
+    159.79484973237948
+   ],
+   "c_m_w_lep": [
+    80.39999836056012,
+    80.40007625628519,
+    81.54213354374717
+   ],
+   "p_m_bb": [
+    169.68072488363404,
+    170.00388965292944,
+    170.3370269924794
+   ],
+   "c_chi2": [
+    3.6570385266752066,
+    21.851700088879387,
+    247.5762490268373
+   ]
+  },
+  "tt": {
+   "p_m_t_lep": [
+    171.76320642773746,
+    173.01652731583727,
+    174.31413541484173
+   ],
+   "p_m_t_had": [
+    171.78607652990223,
+    173.01630247653316,
+    174.3566433175534
+   ],
+   "p_m_w_lep": [
+    78.6123008494281,
+    80.39877391030447,
+    82.14325900091113
+   ],
+   "p_m_w_had": [
+    78.54718258380178,
+    80.39720972181311,
+    82.10200964651385
+   ],
+   "c_m_t_lep": [
+    158.775789505868,
+    173.89806192365288,
+    197.87693668007375
+   ],
+   "c_m_t_had": [
+    159.7906502765467,
+    181.87070603278647,
+    257.9576491907295
+   ],
+   "c_m_w_had": [
+    72.5635532239004,
+    85.9456787430963,
+    129.65396860789397
+   ],
+   "c_m_w_lep": [
+    80.3999975543921,
+    80.40007333637894,
+    80.40074213021386
+   ],
+   "p_m_bb": [
+    69.2492333688252,
+    137.89372646766446,
+    247.95978291381644
+   ],
+   "c_chi2": [
+    1.0362162157469001,
+    6.171178143793668,
+    89.89375005204035
+   ]
+  },
+  "hh W_had off-shell": {
+   "frac": 0.49805,
+   "p_m_w_had": [
+    75.31203947637053,
+    79.35582109862865,
+    80.49968000292048
+   ],
+   "c_m_w_had": [
+    68.99151358069196,
+    88.75327746268945,
+    162.69201650676717
+   ],
+   "p_m_w_lep": [
+    79.90079935801786,
+    80.91686541558184,
+    82.58089944739616
+   ],
+   "reco_ok": 0.4388113643208513
+  },
+  "hh W_lep off-shell": {
+   "frac": 0.50195,
+   "p_m_w_had": [
+    79.88329137958456,
+    80.91197562439629,
+    82.53945500975838
+   ],
+   "c_m_w_had": [
+    70.63658867627615,
+    89.02624235445941,
+    156.2156163853067
+   ],
+   "p_m_w_lep": [
+    75.15137877596534,
+    79.33670611363944,
+    80.52843220801194
+   ],
+   "reco_ok": 0.4482518179101504
+  },
+  "hh frac |m(Wb)-mt|<30 both, parton": 0.32185,
+  "tt frac |m(Wb)-mt|<30 both, parton": 1.0
+ },
+ "nu": {
+  "hh lep W* (matched): median |Δpz| m_W-ν vs true": 28.838737547358434,
+  "hh lep W on-shell (matched)": 22.027947696275703,
+  "tt (matched)": 16.92040227691941
+ }
+}
+real 19.07
+user 17.54
+sys 0.46
+exit 0

@@ -10,12 +10,16 @@ from sklearn.model_selection import cross_val_predict, StratifiedKFold
 HERE = os.path.dirname(os.path.abspath(__file__)); PROJ = os.path.abspath(os.path.join(HERE, "../.."))
 sys.path.insert(0, PROJ)
 from plotting import angles as A, osde
-FIG = os.path.join(HERE, "figures"); os.makedirs(FIG, exist_ok=True)
+# OUT_SUFFIX (e.g. "_h170"): signal data (data_hh.npz) and outputs in the sibling study_washout<SUFFIX>/mechanism;
+# the tt̄ data (data_tt.npz) is always read from here.  Default: everything here, as before.
+SUFFIX = os.environ.get("OUT_SUFFIX", "")
+OUT = os.path.join(PROJ, "study_washout" + SUFFIX, "mechanism") if SUFFIX else HERE
+FIG = os.path.join(OUT, "figures"); os.makedirs(FIG, exist_ok=True)
 plt.rcParams.update({"font.size": 16, "axes.labelsize": 18, "axes.titlesize": 18, "xtick.labelsize": 15,
                      "ytick.labelsize": 15, "legend.fontsize": 15, "lines.linewidth": 2.2,
                      "axes.spines.top": False, "axes.spines.right": False})
 C_TT, C_HH = "#1f4e9c", "#d1495b"
-hh = dict(np.load(os.path.join(HERE, "data_hh.npz"))); tt = dict(np.load(os.path.join(HERE, "data_tt.npz")))
+hh = dict(np.load(os.path.join(OUT, "data_hh.npz"))); tt = dict(np.load(os.path.join(HERE, "data_tt.npz")))
 NAMES = A.ANGLE_NAMES
 LAB = {"Y": "Y", "cos_Theta": r"cos$\Theta$", "cos_theta": r"cos$\theta$", "phi": r"$\phi$",
        "cos_theta_prime": r"cos$\theta'$", "phi_prime": r"$\phi'$", "cos_theta_tilde": r"cos$\tilde\theta$",
@@ -134,4 +138,4 @@ cm = ["c_m_t_lep", "c_m_t_had", "c_m_w_had", "c_chi2"]
 R["bdt"]["gen: χ² angles + χ² masses + chi2"] = bdt_auc(np.c_[angs(hh, "c", mh), np.stack([hh[k][mh] for k in cm], 1)],
                                                         np.c_[angs(tt, "c", mt), np.stack([tt[k][mt] for k in cm], 1)])
 print(json.dumps({k: R[k] for k in ("eff", "hyp_indep", "bdt", "mass", "nu")}, indent=1, ensure_ascii=False))
-json.dump(R, open(os.path.join(HERE, "results.json"), "w"), indent=1, ensure_ascii=False)
+json.dump(R, open(os.path.join(OUT, "results.json"), "w"), indent=1, ensure_ascii=False)

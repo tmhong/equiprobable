@@ -21,7 +21,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
 sys.path.insert(0, HERE)
-from reco_extension import load  # noqa: E402
+from reco_extension import load, HH, SUFFIX  # noqa: E402  (SIGNAL_SAMPLE / OUT_SUFFIX, see reco_extension.py)
 from plotting.angles import ANGLE_NAMES  # noqa: E402
 
 MASSES = ["m_w_had", "m_t_lep", "m_t_had"]
@@ -40,8 +40,8 @@ def main():
     levels = ["gen", "reco"]
     ref = load(os.path.join(ROOT, "samples/ttbar_bblvqq/run_seed1001"), levels, 30000)
     tt = load(os.path.join(ROOT, "samples/ttbar_bblvqq/run_seed12345"), levels)
-    hh = load(os.path.join(ROOT, "samples/hh_bblvqq/run_seed2001"), levels)
-    rx = json.load(open(os.path.join(HERE, "reco_extension.json")))
+    hh = load(os.path.join(ROOT, HH), levels)
+    rx = json.load(open(os.path.join(HERE, f"reco_extension{SUFFIX}.json")))
     out = {}
     rng = np.random.default_rng(5)
     for l in levels:
@@ -66,7 +66,7 @@ def main():
         res["BDT (angles+masses) - (masses): paired"] = [float(np.mean(d)), float(np.std(d))]
         out[l] = res
         print(l, json.dumps(res, indent=1), flush=True)
-    json.dump(out, open(os.path.join(HERE, "angles_vs_bw.json"), "w"), indent=1)
+    json.dump(out, open(os.path.join(HERE, f"angles_vs_bw{SUFFIX}.json"), "w"), indent=1)
 
 
 if __name__ == "__main__":

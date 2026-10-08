@@ -1,0 +1,8 @@
+[hh] reading ../../samples/hh_bblvqq/run_m170_seed2170/parton_events.lhe.gz
+[hh] reading ../../samples/hh_bblvqq/run_m170_seed2170/delphes_events.root
+hh 20000 20000 41s
+saved ../../study_washout_h170/decomposition/cache_hh.npz 42s
+real 43.52
+user 28.78
+sys 13.61
+exit 0

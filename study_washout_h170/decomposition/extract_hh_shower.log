@@ -1,0 +1,10 @@
+hh LHE 20000 1s
+hh 5000 2s
+hh 10000 4s
+hh 15000 6s
+hh 20000 7s
+all roles found: 1.0
+real 9.84
+user 7.57
+sys 1.56
+exit 0

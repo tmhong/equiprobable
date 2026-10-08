@@ -1,12 +1,12 @@
 """Where does the reco_ok-sample loss sit: events with all four partons truth-matched to distinct
 jets vs the rest?  Uses the parton-level f_tt̄ (fit on half of the LHE tt̄) and per-subset LOO fits."""
-import json, numpy as np
+import json, os, numpy as np
 from sklearn.metrics import roc_auc_score
-from decompose import load, steps_for, ANGLE_NAMES, osde, RNG_SEED
+from decompose import load, steps_for, ANGLE_NAMES, osde, RNG_SEED, OUT   # OUT: see OUT_SUFFIX in decompose.py
 
-dt, dh = load("tt"), load("hh")
+dt, dh = load("tt"), load("hh", OUT)
 st, _ = steps_for(dt, load("tt_shower"))
-sh, _ = steps_for(dh, load("hh_shower"))
+sh, _ = steps_for(dh, load("hh_shower", OUT))
 X0 = {a: dt[f"p_ang_{a}"] for a in ANGLE_NAMES}
 half = np.random.default_rng(RNG_SEED).permutation(len(X0["Y"]))[: len(X0["Y"]) // 2]
 fp = osde.TTbarDensity().fit({k: v[half] for k, v in X0.items()})
@@ -30,4 +30,4 @@ for step in ["S1 LHE parton, reco_ok", "S1c post-ISR parton, reco_ok", "S1d pre-
         row[sub] = {"n_tt": int(gt2.sum()), "n_hh": int(gh.sum()), "auc_parton_f": round(auc_p, 4), "auc_loo": round(auc_l, 4)}
     out[step] = row
     print(f"{step:40s}", row)
-json.dump(out, open("split_check.json", "w"), indent=1)
+json.dump(out, open(os.path.join(OUT, "split_check.json"), "w"), indent=1)

@@ -1,10 +1,13 @@
 """Extract per-event arrays (parton, truth-matched gen, chi2 gen) for the washout mechanism study.
-usage: python extract.py NAME PATH MAXEV   -> data_NAME.npz"""
+usage: python extract.py NAME PATH MAXEV   -> data_NAME.npz
+       OUT_SUFFIX=_h170 python extract.py hh PATH MAXEV   -> ../../study_washout_h170/mechanism/data_hh.npz"""
 import os, sys
 os.environ.setdefault("OMP_NUM_THREADS", "4")
 import numpy as np, awkward as ak
 PROJ = "/Users/TMHONG/Claude-code/ttbar_bblvqq"
 sys.path.insert(0, PROJ)
+SUFFIX = os.environ.get("OUT_SUFFIX", "")      # non-empty: write into the sibling study_washout<SUFFIX>/mechanism
+OUT = os.path.join(PROJ, "study_washout" + SUFFIX, "mechanism") if SUFFIX else os.path.dirname(__file__)
 import make_plots
 from plotting import angles as A, physics as P
 
@@ -197,5 +200,7 @@ out["h_lep_pt"] = np.hypot(lep[:, 0], lep[:, 1])
 out["h_HT"] = np.nansum(np.where(np.isfinite(jpt), jpt, 0), 1)
 out["h_njets"] = nj; out["h_nbjets"] = nb
 out["h_dR_lb_min"] = np.where(nb >= 1, np.fmin(dR(lep, b1), np.where(nb >= 2, dR(lep, b2), 99)), np.nan)
-np.savez_compressed(os.path.join(os.path.dirname(__file__), f"data_{name}.npz"), **{k: v for k, v in out.items() if v is not None})
+if OUT:
+    os.makedirs(OUT, exist_ok=True)
+np.savez_compressed(os.path.join(OUT, f"data_{name}.npz"), **{k: v for k, v in out.items() if v is not None})
 print("saved", name, n, "matched", matched.mean(), "reco_ok", out["g_reco_ok"].mean())

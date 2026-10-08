@@ -21,6 +21,8 @@ from salvage import surprisal  # noqa: E402
 from plotting import osde  # noqa: E402
 from plotting.angles import ANGLE_NAMES  # noqa: E402
 
+# OUT_SUFFIX (e.g. "_h170"): signal data from study_washout<SUFFIX>/mechanism/data_hh.npz, output simplest<SUFFIX>.json
+SUFFIX = os.environ.get("OUT_SUFFIX", "")
 PDG = {"m_w_lep": (80.4, 2.085), "m_w_had": (80.4, 2.085), "m_t_lep": (172.5, 1.42), "m_t_had": (172.5, 1.42)}
 
 
@@ -35,7 +37,7 @@ def cauchy_surprisal(m, M, W):
 
 def main():
     tt = np.load(os.path.join(ROOT, "study_washout/mechanism/data_tt.npz"))
-    hh = np.load(os.path.join(ROOT, "study_washout/mechanism/data_hh.npz"))
+    hh = np.load(os.path.join(ROOT, f"study_washout{SUFFIX}/mechanism/data_hh.npz"))
     out = {}
     for lvl, pre, mkey, masses, fname in (("parton", "p_", None, list(PDG), "f_ttbar_parton.npz"),
                                           ("gen", "c_", "g_reco_ok", ["m_w_had", "m_t_lep", "m_t_had"], "f_ttbar_gen.npz")):
@@ -65,7 +67,7 @@ def main():
             res[f"angles + ... + {v}"] = roc_auc_score(lab, cum)
         out[lvl] = res
         print(lvl, json.dumps({k: round(v, 3) for k, v in res.items()}, indent=1))
-    json.dump(out, open(os.path.join(HERE, "simplest.json"), "w"), indent=1)
+    json.dump(out, open(os.path.join(HERE, f"simplest{SUFFIX}.json"), "w"), indent=1)
 
 
 if __name__ == "__main__":

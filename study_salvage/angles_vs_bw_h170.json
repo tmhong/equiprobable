@@ -1,0 +1,24 @@
+{
+ "gen": {
+  "unsupervised masses only": 0.6797067705433527,
+  "unsupervised angles(>10 sigma) + BW": 0.6853251984568146,
+  "BDT masses": 0.7092594761687263,
+  "BDT angles": 0.6989853653727277,
+  "BDT angles+masses": 0.7707759401789379,
+  "BDT (angles+masses) - (masses): paired": [
+   0.061345400786475233,
+   0.003812394212431896
+  ]
+ },
+ "reco": {
+  "unsupervised masses only": 0.5997365997421256,
+  "unsupervised angles(>10 sigma) + BW": 0.6064357053682896,
+  "BDT masses": 0.5801905747935474,
+  "BDT angles": 0.6239174025846477,
+  "BDT angles+masses": 0.6729317908383328,
+  "BDT (angles+masses) - (masses): paired": [
+   0.09287566351931939,
+   0.010739543532235479
+  ]
+ }
+}

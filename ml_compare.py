@@ -314,7 +314,9 @@ def main():
     p.add_argument("--config", default=os.path.join(HERE, "plot_config.py"))
     p.add_argument("--quick", action="store_true", help="few epochs (testing only)")
     p.add_argument("--replot", action="store_true", help="only redraw the ROC figures from saved curves")
+    p.add_argument("--threads", type=int, default=8, help="torch intra-op threads (default 8, as before)")
     args = p.parse_args()
+    torch.set_num_threads(args.threads)
     if args.replot:
         replot(args.level, args.out)
         return

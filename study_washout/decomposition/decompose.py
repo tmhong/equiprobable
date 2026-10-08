@@ -20,14 +20,18 @@ from plotting.angles import decay_angles, production_angles, ANGLE_NAMES
 from plotting import osde
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+# OUT_SUFFIX (e.g. "_h170"): signal caches (cache_hh*.npz) and outputs in the sibling study_washout<SUFFIX>/decomposition;
+# the tt̄ caches are always read from here.  Default: everything here, as before.
+SUFFIX = os.environ.get("OUT_SUFFIX", "")
+OUT = os.path.join(os.path.dirname(os.path.dirname(HERE)), "study_washout" + SUFFIX, "decomposition") if SUFFIX else HERE
 M_TOP, M_W = 172.5, 80.4
 RNG_SEED = 7
 N_FIX = 8000          # tt̄ fit events for the equal-statistics f_tt̄ AUC
 PHI = {"phi", "phi_prime", "phi_tilde", "phi_prime_tilde"}
 
 
-def load(name):
-    return dict(np.load(os.path.join(HERE, f"cache_{name}.npz")))
+def load(name, d=HERE):
+    return dict(np.load(os.path.join(d, f"cache_{name}.npz")))
 
 
 def angles(bl, bh, qd, qu, lep, nu):
@@ -218,9 +222,9 @@ def osde_auc(Xt, Xh, rng, f_fixed=None):
 
 def main():
     t0 = time.time()
-    dt, dh = load("tt"), load("hh")
+    dt, dh = load("tt"), load("hh", OUT)
     st, it = steps_for(dt, load("tt_shower"))
-    sh, ih = steps_for(dh, load("hh_shower"))
+    sh, ih = steps_for(dh, load("hh_shower", OUT))
     print(json.dumps({"tt": it, "hh": ih}, indent=1))
     # sanity: recomputing parton angles from the parton momenta reproduces the stored ones
     p = {k: dt[f"p_{k}"] for k in ["b_lep", "b_had", "q_down", "q_up", "lep", "nu"]}
@@ -255,7 +259,7 @@ def main():
               f"±{r['osde']['err']:.3f} loo={r['osde']['auc_loo']:.3f} n8k={r['osde']['auc_nfix']:.3f} (parton f {r['osde']['auc_parton_f']:.3f})  "
               f"BDT={r['bdt'][0]:.3f}±{r['bdt'][1]:.3f}  "
               + " ".join(f"{a[:12]}={v:.3f}" for a, v in r["single"].items()), flush=True)
-    json.dump(results, open(os.path.join(HERE, "decomposition.json"), "w"), indent=1)
+    json.dump(results, open(os.path.join(OUT, "decomposition.json"), "w"), indent=1)
     print(f"done {time.time()-t0:.0f}s")
 
 

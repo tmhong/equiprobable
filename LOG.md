@@ -307,3 +307,50 @@ Newest entries are at the bottom. Numbers refer to the samples listed under "Sam
   - Legibility pass: fig_wtb shown as two crops; the L1 figures shown row by row with legible captions; long titles shortened to one line; the pileup table fits on one slide.
   - 0 overfull boxes.
   - The review corrected the "Pileup: what it shows" slide: only W(m_t,lep) grows with pileup, and the angle-only AUC falls below 0.5 at μ = 200 (0.476).
+
+## 2026-10-08 — HH(170) as the main study
+
+- **Main signal is now HH(170):** m_H = 170 GeV and Γ_H = 0.38 GeV, so both W bosons are on shell. The sample is `samples/hh_bblvqq/run_m170_seed2170` (20k events).
+  - The full Study A chain was rerun on it with the same tt̄ samples. hh(125) becomes the off-shell variant (Study A′).
+  - `make_slides.py` and `note/make_note.py` take `--signal h125|h170` (default h125). With h170 they read the `*_h170` directories and files (`sdir`/`sfile` helpers; the signal-specific slide text is in `SIGTEXT`).
+  - A missing `_h170` directory skips its section; it never falls back to the hh(125) outputs.
+- **f_tt̄ (OSDE, paper basis):** AUC of HH(170) vs the independent tt̄ sample, hh(125) in brackets.
+
+  | level | all terms | CV-truncated |
+  |---|---|---|
+  | parton | 0.638 [0.653] | 0.652 [0.665] |
+  | parton+trig | 0.652 [0.669] | 0.669 [0.685] |
+  | gen | 0.547 [0.525] | 0.553 [0.525] |
+  | reco | 0.534 [0.507] | 0.540 [0.505] |
+
+- **Acceptance (parton+trig / gen / reco):** 73.3% / 44.4% / 20.0%, against 50.7% / 22.1% / 9.4% for hh(125). The leptons from on-shell W bosons are harder.
+- **Washout chain:** f_tt̄ is refit at each step (LOO AUC).
+  - S0 parton 0.636 → S1 selected 0.645 → S1c post-ISR 0.644 → S1d pre-hadronization (FSR) 0.614 → S2χ (χ² jets + gen lepton + true ν) 0.573 → S4 gen χ² reconstruction 0.550.
+  - The χ² picks the right four jets in 16% of HH(170) events, against 8% for hh(125).
+- **Mass extension at reco:** BW masses alone give 0.600; angles (>10σ) + BW give 0.606.
+- **ML at parton level:**
+  - OSDE (CV-truncated) 0.649 against 0.643 for the normalizing flow; the paired difference is +0.006 ± 0.003.
+  - Supervised on the angles: 0.916. With the momenta added: 0.996.
+- **Outputs:** `osde_h170/`, `plots_hh_h170/`, `acceptance_h170/`, `ml_h170/`, `study_washout_h170/` and `study_salvage/*_h170.{json,png}`.
+  - Deck: `slides_h170/slides.pdf` (199 pages).
+  - Note: `note/note_h170.pdf` (45 pages).
+- **Build both versions:**
+  ```
+  # hh(125), the default
+  .venv/bin/python make_slides.py --sample samples/ttbar_bblvqq/run_seed12345 --hh samples/hh_bblvqq/run_seed2001 --osde osde --acceptance acceptance --no-tests
+  .venv/bin/python note/make_note.py
+  # HH(170)
+  .venv/bin/python make_slides.py --signal h170 --sample samples/ttbar_bblvqq/run_seed12345 --hh samples/hh_bblvqq/run_m170_seed2170 --osde osde_h170 --acceptance acceptance_h170 --no-tests --out slides_h170
+  .venv/bin/python note/make_note.py --signal h170
+  ```
+- **Known caveat:** some parts of the HH(170) versions still refer to hh(125), because their tt̄-only fits were reused rather than refit:
+  - the extended-basis and spherical-harmonic sections, and the AUC column of the basis comparison;
+  - the tt̄-only inputs copied into `osde_h170` (`truncation_gen.*`, `order_scan.json`).
+- **Final check:**
+  - Both decks build with 0 overfull boxes and no missing figures.
+  - The pages that differ from the hh(125) deck were read at 75 dpi. One layout fix: the Study A divider title is split into two balanced lines.
+  - The note has 5 overfull hboxes (4.8–34 pt) in the outlook and appendix, from long `\texttt` file names. The hh(125) note has the same ones.
+- **Open: wording left unchanged** (physics text, for review):
+  - The slide "Answer, parton+trig level" says that adding y changes the supervised AUC "within the ±0.002 uncertainty". For HH(170) the paired gains are +0.009 ± 0.001 (MLP) and +0.007 ± 0.001 (FT-Transformer).
+  - The cutflow note ("softer (from W*)") and the prompt-lepton bullet (h → WW*) still describe hh(125).
+  - In `note_h170`, parts of the abstract and of the introduction, sample, ML and washout sections still describe the off-shell W*. The numbers in them are the HH(170) ones.

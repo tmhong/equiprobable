@@ -19,8 +19,9 @@ from simplest import PDG, bw_surprisal, cauchy_surprisal  # noqa: E402
 from plotting import osde  # noqa: E402
 from plotting.angles import ANGLE_NAMES  # noqa: E402
 
+SUFFIX = os.environ.get("OUT_SUFFIX", "")   # e.g. "_h170": signal from study_washout_h170/, output angle_terms_h170.json
 tt = np.load(os.path.join(ROOT, "study_washout/mechanism/data_tt.npz"))
-hh = np.load(os.path.join(ROOT, "study_washout/mechanism/data_hh.npz"))
+hh = np.load(os.path.join(ROOT, f"study_washout{SUFFIX}/mechanism/data_hh.npz"))
 out = {}
 for lvl, pre, mk, masses in (("parton", "p_", None, list(PDG)), ("gen", "c_", "g_reco_ok", ["m_w_had", "m_t_lep", "m_t_had"])):
     mt = tt[mk].astype(bool) if mk else np.ones(len(tt["p_Y"]), bool)
@@ -49,4 +50,4 @@ for lvl, pre, mk, masses in (("parton", "p_", None, list(PDG)), ("gen", "c_", "g
     out[lvl] = res
     for k, v in res.items():
         print(f"{lvl:7s} {k:20s} terms {v['terms']:6d}  angles {v['angles_only']:.3f}  angles+BW {v['with_masses']:.3f}")
-json.dump(out, open(os.path.join(HERE, "angle_terms.json"), "w"), indent=1)
+json.dump(out, open(os.path.join(HERE, f"angle_terms{SUFFIX}.json"), "w"), indent=1)

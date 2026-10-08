@@ -38,9 +38,34 @@ LEVELS = ["parton", "parton_trig", "gen", "reco"]
 # ----------------------------------------------------------------------------------------------
 # inputs
 # ----------------------------------------------------------------------------------------------
+SIGNAL, SUF = "h125", ""
+
+
 def load(*parts):
+    """JSON of the main signal: tries the _h170 variant of the directory or file first when SIGNAL is h170."""
+    if SUF:
+        d = os.path.join(ROOT, parts[0] + SUF, *parts[1:])          # sibling directory
+        if os.path.exists(d):
+            return json.load(open(d))
+        base, ext = os.path.splitext(parts[-1])
+        q = os.path.join(ROOT, *parts[:-1], base + SUF + ext)      # suffixed file
+        if os.path.exists(q):
+            return json.load(open(q))
     p = os.path.join(ROOT, *parts)
     return json.load(open(p)) if os.path.exists(p) else None
+
+
+def srel(*parts):
+    """Figure path of the main signal relative to the note directory (sibling dir or suffixed file when h170)."""
+    if SUF:
+        d = os.path.join(ROOT, parts[0] + SUF, *parts[1:])
+        if os.path.exists(d):
+            return os.path.relpath(d, HERE)
+        base, ext = os.path.splitext(parts[-1])
+        q = os.path.join(ROOT, *parts[:-1], base + SUF + ext)
+        if os.path.exists(q):
+            return os.path.relpath(q, HERE)
+    return os.path.relpath(os.path.join(ROOT, *parts), HERE)
 
 
 def rel(*parts):
@@ -62,7 +87,7 @@ def _jsonable(o):
 
 def sample_summary(sample, hh, recompute):
     """plotting.summary numbers for the tt̄ (independent) sample and the hh reco cutflow, cached."""
-    cache = os.path.join(HERE, "sample_summary.json")
+    cache = os.path.join(HERE, f"sample_summary{SUF}.json")
     if os.path.exists(cache) and not recompute:
         return json.load(open(cache))
     import make_plots
@@ -224,8 +249,20 @@ def sec_samples(N):
     mres = [[lvl] + [rf"${S[lvl][k][0]:.0f}\pm{S[lvl][k][1]:.0f}$" for k in ("m_thad", "m_thad_correct", "m_whad", "m_whad_correct")]
             for lvl in ("gen", "reco")]
     wh = N["whad_split"]
+    SAMPLE_TEXT = (r"Because $h\to WW^*$ has one off-shell $W$, the $h\to\ell\nu q\bar q'$ decay is a four-body decay."
+                   if SIGNAL == "h125" else
+                   r"The scalar mass is set to $m_H=170$~GeV with $\Gamma_H=0.38$~GeV (as for an SM-like scalar of that mass), "
+                   r"just above $2m_W=160.8$~GeV, so that both $W$ bosons are on shell: the signal has the same $W$ masses as "
+                   r"$t\bar t$ and differs only in the pseudo-top masses $m_{Wb}$ and in the angles.")
+    WHAD_TEXT = (rf"""For $hh$ the reconstruction under the $t\bar t$ hypothesis is already visible in the masses: the hadronic
+boson is the off-shell $W^*$ in {pct(1 - wh['frac_had_onshell'], 0)} of the events, with a true median mass of
+{wh['offshell_parton_median']:.0f}~GeV, but the $\chi^2$ picks jet pairs near $m_W$ (median
+{wh['offshell_gen_median']:.0f}~GeV at gen and {wh['offshell_reco_median']:.0f}~GeV at reco level).  This is
+the first sign of the effect studied in Section~\ref{{sec:washout}}.""" if (SIGNAL == "h125" and wh) else "")
+    PART = (r"Study A: $t\bar t$ versus $hh\to b\bar b\,WW^*$" if SIGNAL == "h125"
+            else r"Study A: $t\bar t$ versus $HH\to b\bar b\,WW$ ($m_H=170$~GeV, on-shell $W$ bosons)")
     return rf"""
-\part{{Study A: $t\bar t$ versus $hh\to b\bar b\,WW^*$}}
+\part{{{PART}}}
 \section{{Samples and event levels}}
 \label{{sec:samples}}
 
@@ -243,8 +280,7 @@ seed {N['meta_fit']['seed']}), on which every density is fitted, and the \emph{{
 
 The $hh$ sample ({mh['nevents'] // 1000}k events) uses MadGraph's built-in \texttt{{heft}} model (effective
 $ggh$ and $gghh$ couplings in the $m_t\to\infty$ limit): $gg\to hh$, $h\to b\bar b$, $h\to\ell\nu q\bar q'$
-generated as one process.  Because $h\to WW^*$ has one off-shell $W$, the $h\to\ell\nu q\bar q'$ decay is a
-four-body decay.  Its cross section times branching ratio, ${1000 * mh['cross_section_pb']:.3g}$~fb, is the
+generated as one process.  {SAMPLE_TEXT}  Its cross section times branching ratio, ${1000 * mh['cross_section_pb']:.3g}$~fb, is the
 LO HEFT value with MadGraph defaults and not an SM prediction, so all $hh$ distributions are shown at unit
 area.  For $t\bar t$-hypothesis quantities $hh$ goes through exactly the same reconstruction; at parton level
 the pairing of the $b$ quarks with the $W$ bosons is the one closest to the $t\bar t$ hypothesis (both
@@ -306,12 +342,8 @@ taking the smaller $|p_z|$ ({pct(nu['choice']['frac_smaller_picks_closer'], 0)})
 """ + figs2([rel("plots", "nu_pz_a.png"), rel("plots", "nu_pz_b.png")],
             r"Neutrino $\Delta p_z=p_z^{\nu,\mathrm{reco}}-p_z^{\nu,\mathrm{parton}}$ at gen and reco level (left) and "
             r"at reco level split by the correctness of the jet assignment (right).", "fig:nupz") + rf"""
-For $hh$ the reconstruction under the $t\bar t$ hypothesis is already visible in the masses: the hadronic
-boson is the off-shell $W^*$ in {pct(1 - wh['frac_had_onshell'], 0)} of the events, with a true median mass of
-{wh['offshell_parton_median']:.0f}~GeV, but the $\chi^2$ picks jet pairs near $m_W$ (median
-{wh['offshell_gen_median']:.0f}~GeV at gen and {wh['offshell_reco_median']:.0f}~GeV at reco level).  This is
-the first sign of the effect studied in Section~\ref{{sec:washout}}.
-""" + fig(rel("plots_hh", "hh_overview.png"), r"The $hh$ sample at parton, gen and reco level: $m_{b\bar b}$, the hadronic "
+{WHAD_TEXT}
+""" + fig(srel("plots_hh", "hh_overview.png"), r"The $hh$ sample at parton, gen and reco level: $m_{b\bar b}$, the hadronic "
           r"$W$ mass and the $\chi^2$-reconstructed top mass.", "fig:hhoverview")
 
 
@@ -442,13 +474,13 @@ curing this loss is the subject of Sections~\ref{{sec:washout}} and~\ref{{sec:mo
           ["level", r"$N_\mathrm{fit}$", r"$N_\mathrm{indep}$", r"$N_{hh}$", r"$|\hat c|>3\sigma$", r"$\int f$",
            r"$f\le0$: $t\bar t$ / $hh$", r"$\langle s\rangle$: $t\bar t$ / $hh$", "AUC"], rows, "tab:osde")
     for l in ("parton", "reco"):
-        out += fig(rel("osde", f"projections_ttbar_{l}.png"),
+        out += fig(srel("osde", f"projections_ttbar_{l}.png"),
                    rf"$f^{{\mathrm{{{LVL_TEX[l]}}}}}_{{t\bar t}}$: one-dimensional projections (black) against the fit sample, "
                    rf"production angles and leptonic top.", f"fig:proj_{l}")
-        out += fig(rel("osde", f"scores_{l}.png"), rf"$y=f^{{\mathrm{{{LVL_TEX[l]}}}}}_{{t\bar t}}$ for $t\bar t$ (independent "
+        out += fig(srel("osde", f"scores_{l}.png"), rf"$y=f^{{\mathrm{{{LVL_TEX[l]}}}}}_{{t\bar t}}$ for $t\bar t$ (independent "
                    r"sample and fit sample with LOO) and $hh$, linear (left, shaded: $y<0$) and logarithmic (right; the "
                    r"left-most bin holds all events with $y\le0$).", f"fig:scoresy_{l}")
-        out += fig(rel("osde", f"scores_{l}_s.png"), rf"{LVL_TEX[l]} level: surprisal $s'=-\ln(y-y_0)$ (left) and the ROC "
+        out += fig(srel("osde", f"scores_{l}_s.png"), rf"{LVL_TEX[l]} level: surprisal $s'=-\ln(y-y_0)$ (left) and the ROC "
                    r"curve from a scan over $y_\mathrm{cut}$ (right).", f"fig:scores_{l}")
     out += rf"""
 \subsection{{The Hermite scale}}
@@ -469,9 +501,9 @@ is monotonic.  Second, the endpoints $s'_0$ and $s'_1$ are taken as the 0.5\% an
 over $t\bar t$ and $hh$ together, with the events beyond put into the first and last bins, so that $t$ fills
 $[0,1]$ with no empty bins.  Figure~\ref{{fig:tplot}} shows $y$ and $t$ in the style of the paper at parton
 level; the same figures for the other levels are in \texttt{{osde/}}.
-""" + fig(rel("osde", "tt_hh_dNdy_dNdt_parton.pdf"), r"$y=f^\mathrm{parton}_{t\bar t}$ and $t$ for $t\bar t$ (fit sample, LOO) "
+""" + fig(srel("osde", "tt_hh_dNdy_dNdt_parton.pdf"), r"$y=f^\mathrm{parton}_{t\bar t}$ and $t$ for $t\bar t$ (fit sample, LOO) "
           r"and $hh$ at unit area, with the ratio $hh/(hh+t\bar t)$ below, drawn as in the paper.", "fig:tplot", 0.8)
-    out += fig(rel("osde", "t_vs_y0_parton.png"), r"Shape of $t$ for different choices of $y_0$ at parton level.", "fig:tvsy0", 0.75)
+    out += fig(srel("osde", "t_vs_y0_parton.png"), r"Shape of $t$ for different choices of $y_0$ at parton level.", "fig:tvsy0", 0.75)
     return out
 
 
@@ -514,7 +546,7 @@ $\mathrm{{ISE}}-\int f^2=\sum_\mathrm{{kept}}|\hat c|^2-2\,\mathrm{{Re}}\sum_\ma
 The minimum is at $t={P['t_cv']:g}$ and keeps {', '.join(str(v[l]['cv_best']['kept']) for l in LEVELS)} of the
 14\,400 terms at parton, parton+trig, gen and reco level (Figure~\ref{{fig:cv}}); the curve is flat out to
 $5\sigma$ ({', '.join(str(v[l]['5sigma']['kept']) for l in LEVELS)} terms).
-""" + figs2([rel("osde", "simplify_parton.png"), rel("osde", "simplify_reco.png")],
+""" + figs2([srel("osde", "simplify_parton.png"), srel("osde", "simplify_reco.png")],
             r"Cross-validated error versus the number of coefficients kept, parton (left) and reco level (right).", "fig:cv") + \
         tab(r"Performance of the truncated $f_{t\bar t}$.  The simplified density has fewer negative values and the same or "
             r"better $hh$ separation with 1--3\% of the terms.",
@@ -675,10 +707,10 @@ nearly flat efficiency.  The reco efficiency of $t\bar t$ after each cumulative 
 {', '.join(f"{pct(e)}" for n, e in ah['cutflow_reco'])}.  For $hh$ the dotted curves show the effect that
 dominates everything else: the $t\bar t$-hypothesis $\chi^2$ turns the flat parton-level $\cos\Theta$ into
 $t\bar t$-like peaks at $\pm1$.  The reconstruction, more than the acceptance, makes $hh$ look like $t\bar t$.
-""" + fig(rel("acceptance", "acceptance_tt_shapes.png"), r"$t\bar t$: parton-level angles with no cuts, after the gen selection and "
+""" + fig(srel("acceptance", "acceptance_tt_shapes.png"), r"$t\bar t$: parton-level angles with no cuts, after the gen selection and "
           r"after the reco selection (unit area), with the angles measured at reco level overlaid (dotted) and the efficiency "
           r"below each panel.", "fig:acc") + \
-        fig(rel("acceptance", "acceptance_hh_shapes.png"), r"The same for $hh$.", "fig:acchh")
+        fig(srel("acceptance", "acceptance_hh_shapes.png"), r"The same for $hh$.", "fig:acchh")
 
 
 def sec_ml(N):
@@ -755,13 +787,15 @@ Section~\ref{{sec:momentum}}.  The controls give {f3(P['results']['control: BDT,
 and {f3(P['results']['control: BDT, tt (fit) vs tt (independent)']['auc_test'])} at parton level.  At
 parton+trig level the shuffled-label control is {f3(ml['parton_trig']['results']['control: BDT, shuffled labels']['auc_test'])}
 $\pm0.006$, about $3\sigma$ above 0.5; with some thirty AUCs computed, one such fluctuation is not surprising.
-""" + fig(rel("ml", "roc_parton_a.png"), r"ROC curves at parton level, unsupervised and supervised methods on the ten angles.",
-          "fig:roc", 0.75) + fig(rel("ml", "roc_parton_b.png"), r"ROC curves at parton level: does adding $y$ help a supervised classifier?",
+""" + fig(srel("ml", "roc_parton_a.png"), r"ROC curves at parton level, unsupervised and supervised methods on the ten angles.",
+          "fig:roc", 0.75) + fig(srel("ml", "roc_parton_b.png"), r"ROC curves at parton level: does adding $y$ help a supervised classifier?",
                                  "fig:rocb", 0.75)
 
 
 def sec_washout(N):
     M, D = N["mech"], N["decomp"]
+    OFFSHELL = (rf", and one of the two $W$ bosons is far off shell (median {M['mass']['hh W_had off-shell']['p_m_w_had'][1]:.0f}~GeV)"
+                if SIGNAL == "h125" else ", while both $W$ bosons are on shell")
     st = D["steps"]
     def s(name):
         return st[name]
@@ -786,8 +820,7 @@ def sec_washout(N):
 
 \subsection{{Short answer}}
 At parton level the $hh$ ``tops'' are not tops: each pseudo-top is the $W$ from one Higgs boson plus the $b$
-quark from the other, with a mass of median {M['mass']['hh']['p_m_t_lep'][1]:.0f}~GeV, and one of the two $W$
-bosons is far off shell (median {M['mass']['hh W_had off-shell']['p_m_w_had'][1]:.0f}~GeV); only
+quark from the other, with a mass of median {M['mass']['hh']['p_m_t_lep'][1]:.0f}~GeV{OFFSHELL}; only
 {pct(M['mass']['hh frac |m(Wb)-mt|<30 both, parton'], 0)} of the $hh$ events have both pseudo-tops within 30~GeV
 of $m_t$.  This shows in the angles: $\cos\theta$ and $\cos\tilde\theta$ peak at $-1$ for $hh$ because the
 soft $W^*$ goes backward while the $b$ carries the pseudo-top's momentum, whereas they are flat for
@@ -802,7 +835,7 @@ The information itself is still there at gen level: on the same events a BDT on 
 assume $t\bar t$ ($m_{{b\bar b}}$, $\Delta R_{{bb}}$, $E_T^\mathrm{{miss}}$, $m_T$, \ldots) reaches AUC
 {M['bdt']['gen: hypothesis-independent observables (reco_ok events)']:.2f}, with $m_{{b\bar b}}$ alone at
 about 0.76 (likelihood-ratio AUC); the $\chi^2$ value itself also differs (median 21.6 for $hh$ against 6.2 for $t\bar t$).
-""" + fig(rel("study_washout", "mechanism", "figures", "fig1_parton_signatures.png"),
+""" + fig(srel("study_washout", "mechanism", "figures", "fig1_parton_signatures.png"),
           r"Parton level: what distinguishes $hh$ from $t\bar t$ in the angles and the pseudo-top masses.", "fig:mech1") + rf"""
 \subsection{{Step-by-step decomposition}}
 Two independent studies agree.  The first follows the physics mechanism (Figures~\ref{{fig:mech1}}--\ref{{fig:mech3}});
@@ -829,11 +862,11 @@ events, almost all of it from the choice of the $p_z$ solution with the $m_t$ ru
 missing-momentum resolution.  Per angle (Figure~\ref{{fig:decompa}}), $\cos\Theta$ and $\cos\tilde\theta$ lose
 their separation at the jet choice, $\cos\theta'$ at the neutrino, and ISR recoil mainly costs $\phi$,
 $\tilde\phi$ and $Y$.  At the end no single angle has an AUC above 0.57.
-""" + fig(rel("study_washout", "decomposition", "slide_chain_main.png"), r"AUC along the chain from parton to gen level, all selected events.",
-          "fig:decomp", 0.85) + fig(rel("study_washout", "decomposition", "slide_angles.png"), r"Single-angle AUC along the chain.",
-                                    "fig:decompa", 0.95) + fig(rel("study_washout", "mechanism", "figures", "fig2_chi2_mass_pull.png"),
+""" + fig(srel("study_washout", "decomposition", "slide_chain_main.png"), r"AUC along the chain from parton to gen level, all selected events.",
+          "fig:decomp", 0.85) + fig(srel("study_washout", "decomposition", "slide_angles.png"), r"Single-angle AUC along the chain.",
+                                    "fig:decompa", 0.95) + fig(srel("study_washout", "mechanism", "figures", "fig2_chi2_mass_pull.png"),
                                                                r"The $\chi^2$ builds $W$ and top masses that $hh$ does not have.", "fig:mech2") + \
-        fig(rel("study_washout", "mechanism", "figures", "fig3_angle_morphing.png"),
+        fig(srel("study_washout", "mechanism", "figures", "fig3_angle_morphing.png"),
             r"$hh$ angles become $t\bar t$-like: $\cos\Theta$, $\cos\theta'$ and $\cos\theta$ for $hh$ with true jets and the true "
             r"neutrino, with the $m_W$-constrained neutrino, and after the full $\chi^2$, against $t\bar t$.", "fig:mech3") + r"""
 \subsection{Conclusion}
@@ -847,6 +880,9 @@ do not span.  That is the subject of the next section.
 
 def sec_momentum(N):
     sm, sv, at, rx, tg = N["simplest"], N["salvage"], N["angle_terms"], N["reco_ext"], N["tagging"]
+    SHELL = (r"one $W$ is off shell and its pseudo-tops sit near 135~GeV" if SIGNAL == "h125"
+             else r"its $W$ bosons are on shell but its pseudo-tops, the $W$ from one Higgs boson with the $b$ from the other, "
+                  r"sit near 180~GeV with a 100~GeV spread")
     P, G = sm["parton"], sm["gen"]
     mrows = [[r"angles only, $y(\Omega)$ (paper)", f3(P["angles"]), f3(G["angles"])],
              [r"$+\,m_{W,\ell}$", f3(P["angles + ... + m_w_lep"]), r"(fixed by the $\nu$ solution)"],
@@ -891,10 +927,9 @@ $m_{{t,\ell}}$, $m_{{t,h}}$, and 4 production variables ($m_{{t\bar t}}$, the tw
 transverse momentum and an overall azimuth).  For $t\bar t$ the four masses carry no information: each is a
 Breit--Wigner fixed by $M$ and $\Gamma$, and in the narrow-width limit the matrix element factorizes into the
 angular part times $\prod_k\mathrm{{BW}}(m_k)$, so the paper could rightly drop them.  $hh$ is not on that
-shell: one $W$ is off shell and its pseudo-tops sit near 135~GeV (Figure~\ref{{fig:massp}}).  The difference
-between $hh$ and $t\bar t$ lives in exactly the dimensions that were dropped, which is the user's observation
-that the off-shell $W$ makes $hh$ a different final state from on-shell $t\bar t$.
-""" + fig(rel("study_salvage", "masses_parton.png"), r"The dropped dimensions at parton level: $t\bar t$ (blue) sits on the "
+shell: {SHELL} (Figure~\ref{{fig:massp}}).  The difference between the signal and $t\bar t$ lives in exactly the
+dimensions that were dropped.
+""" + fig(srel("study_salvage", "masses_parton.png"), r"The dropped dimensions at parton level: $t\bar t$ (blue) sits on the "
           r"Breit--Wigner (dashed; MadGraph cuts it at $\pm15\Gamma$), $hh$ (red) is spread over 100~GeV.", "fig:massp") + rf"""
 \subsection{{The extension}}
 The extension keeps $y(\Omega)$ as it is and multiplies it by one factor per resonance mass,
@@ -911,7 +946,7 @@ $u=\frac12+\frac1\pi\arctan\frac{{m-M}}{{W}}$ with the Jacobian $du/dm$, was als
 (\texttt{{study\_salvage/salvage.py}}): it changes the gen-level AUC by only
 {sv['gen']['auc_masses'] - G['masses_only']:+.3f}, so it is not needed.  At gen and reco level only three
 masses are available, because the neutrino solution fixes $m_{{W,\ell}}=m_W$ by construction.
-""" + fig(rel("study_salvage", "masses_gen.png"), r"The same dimensions at gen level after the $\chi^2$ reconstruction: the "
+""" + fig(srel("study_salvage", "masses_gen.png"), r"The same dimensions at gen level after the $\chi^2$ reconstruction: the "
           r"$t\bar t$ shell is widened by the resolution (dashed: the two-number model); $hh$ is still wider, mainly in the tails.",
           "fig:massg") + rf"""
 \subsection{{Results}}
@@ -980,14 +1015,23 @@ jet is down-type.  The hadronic primed angles carry little of the $hh$ separatio
 
 def sec_hh170(N):
     R = N.get("hh170")
-    head = r"""
+    head = (r"""
 \section{Study A$'$: $hh$ with on-shell $W$ bosons}
 \label{sec:hh170}
+""" if SIGNAL == "h125" else r"""
+\section{Study A$'$: the off-shell case, $hh$ with $m_h=125$~GeV}
+\label{sec:hh170}
 
+The main signal of this note has on-shell $W$ bosons.  The SM $h(125)$ variant, $h\to WW^*$ with one $W$ far off
+shell, is the case the study started from; it is kept here as the comparison, with the same fits and nothing
+retrained, to show what the off-shell $W$ changes.
+""")
+    head += r"""
 The off-shell $W^*$ of $hh\to b\bar b\,WW^*$ is what makes the mass handle of Section~\ref{sec:momentum} so
 effective.  To see what the angles do when that handle is removed, the same $hh\to b\bar b\,\ell\nu\,q\bar q'$
 chain is generated with $m_H=170$~GeV, just above $2m_W=160.8$~GeV, so that both $W$ bosons are on shell
-($\Gamma_H=0.38$~GeV, shapes only), and the analysis is repeated with nothing retrained.  The $W$
+($\Gamma_H=0.38$~GeV, shapes only), and the analysis is repeated with nothing retrained.  (With $HH(170)$ as the
+main signal this paragraph describes the comparison in the other direction.)  The $W$
 Breit--Wigner factors should then go blind, the top factors should still see $m_{Wb}$ (the $b$ comes from the
 other Higgs boson), and after the $\chi^2$ reconstruction a genuinely on-shell hadronic $W$ should make the
 signal look more $t\bar t$-like; what is left is the angles, since a scalar decaying to $WW$ does not give the
@@ -1430,13 +1474,20 @@ def main():
     p.add_argument("--recompute", action="store_true")
     p.add_argument("--no-compile", action="store_true")
     p.add_argument("--author", default="Tae Min Hong")
+    p.add_argument("--signal", choices=["h125", "h170"], default="h125")
+    p.add_argument("--name", default=None, help="output file stem (default: note, or note_h170 for --signal h170)")
     args = p.parse_args()
+    stem = args.name or ("note" if args.signal == "h125" else "note_h170")
+    global SIGNAL, SUF
+    SIGNAL, SUF = args.signal, ("" if args.signal == "h125" else "_h170")
+    if SIGNAL == "h170":
+        args.hh = os.path.join(ROOT, "samples/hh_bblvqq/run_m170_seed2170")
 
     N = {
         "S": sample_summary(args.sample, args.hh, args.recompute),
         "meta_tt": load("samples/ttbar_bblvqq/run_seed12345/metadata.json"),
         "meta_fit": load("samples/ttbar_bblvqq/run_seed1001/metadata.json"),
-        "meta_hh": load("samples/hh_bblvqq/run_seed2001/metadata.json"),
+        "meta_hh": json.load(open(os.path.join(args.hh, "metadata.json"))),
         "osde": load("osde", "summary.json"), "simp": load("osde", "simplify_summary.json"),
         "order_scan": load("osde", "order_scan.json"), "trunc_gen": load("osde", "truncation_gen.json"),
         "ext": load("osde_ext", "summary.json"), "ext_simp": load("osde_ext", "simplify_summary.json"),
@@ -1484,18 +1535,18 @@ study are included.
 {body}
 \end{{document}}
 """
-    out = os.path.join(HERE, "note.tex")
+    out = os.path.join(HERE, f"{stem}.tex")
     with open(out, "w") as f:
         f.write(tex)
     print(f"[note] wrote {out}")
     if not args.no_compile:
-        res = subprocess.run(["latexmk", "-pdf", "-interaction=nonstopmode", "-halt-on-error", "note.tex"],
+        res = subprocess.run(["latexmk", "-pdf", "-interaction=nonstopmode", "-halt-on-error", f"{stem}.tex"],
                              cwd=HERE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         if res.returncode:
             print("\n".join(res.stdout.splitlines()[-30:]))
-            sys.exit("[note] LaTeX failed, see note/note.log")
-        subprocess.run(["latexmk", "-c", "note.tex"], cwd=HERE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        print(f"[note] wrote {os.path.join(HERE, 'note.pdf')}")
+            sys.exit(f"[note] LaTeX failed, see note/{stem}.log")
+        subprocess.run(["latexmk", "-c", f"{stem}.tex"], cwd=HERE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        print(f"[note] wrote {os.path.join(HERE, stem + '.pdf')}")
 
 
 if __name__ == "__main__":

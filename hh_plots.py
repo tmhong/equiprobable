@@ -4,11 +4,15 @@ hh-specific plots.  In h -> W W* one W is off-shell (m_h < 2 m_W), so the hadron
 decaying "W" is either the on-shell W or the W*.  At parton level the on-shell one is the
 heavier: hadronic W on-shell  <=>  m(q q') > m(l nu).  Events are aligned between levels,
 so the same parton-level classification is applied to the gen and reco events.
+With --mh > 2 m_W (e.g. the m_h = 170 GeV sample) both W are on shell: the split is then
+heavier vs lighter W (labels only; the classification is the same).  --mh also places the
+parton m_bb marker (default 125 GeV).
 
 Output: <out>/w_had_mass_split.png (+ .json with the fractions)
 
 Example:
   python hh_plots.py --sample samples/hh_bblvqq/run_seed2001 --out plots_hh
+  python hh_plots.py --sample samples/hh_bblvqq/run_m170_seed2170 --mh 170 --out plots_hh_h170
 """
 import argparse
 import json
@@ -27,6 +31,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 import make_plots  # noqa: E402
+from plotting.physics import M_W  # noqa: E402
 
 LEVELS = {"parton": ("#1f4e9c", ":"), "gen": ("#d1495b", "--"), "reco": ("#2a9d8f", "-")}
 
@@ -36,6 +41,9 @@ def main():
     p.add_argument("--sample", required=True)
     p.add_argument("--config", default=os.path.join(HERE, "plot_config.py"))
     p.add_argument("--out", default=os.path.join(HERE, "plots_hh"))
+    p.add_argument("--mh", type=float, default=125.0,
+                   help="Higgs mass of the sample in GeV (default 125): position of the parton m_bb marker; for "
+                        "m_h > 2 m_W both W are on shell and the split is labelled heavier / lighter W")
     args = p.parse_args()
 
     cfg = runpy.run_path(args.config)
@@ -44,13 +52,19 @@ def main():
     P = ev["parton"]
     m_qq, m_lv = np.asarray(P.w_had.mass, float), np.asarray(P.w_lep.mass, float)
     onshell = m_qq > m_lv                      # hadronic boson is the on-shell W
+    both_onshell = args.mh > 2 * M_W           # h -> WW with both W on shell: "on-shell" = the heavier W
 
     bins = np.linspace(0, 200, 51)
     style.use()
     fig, axs = plt.subplots(1, 2, figsize=(14, 5.8), sharey=False)
     res = {"frac_had_onshell": float(onshell.mean())}
-    for ax, case, title in ((axs[0], onshell, r"hadronic $W$ on-shell"),
-                            (axs[1], ~onshell, r"hadronic $W^*$ off-shell")):
+    if both_onshell:
+        res["note"] = (f"m_h = {args.mh:g} GeV > 2 m_W: both W on shell; 'onshell' = hadronic W is the heavier W, "
+                       "'offshell' = it is the lighter W")
+    titles = ((r"hadronic $W$ = heavier $W$", r"hadronic $W$ = lighter $W$") if both_onshell else
+              (r"hadronic $W$ on-shell", r"hadronic $W^*$ off-shell"))
+    for ax, case, title in ((axs[0], onshell, titles[0]),
+                            (axs[1], ~onshell, titles[1])):
         for lvl, (col, ls) in LEVELS.items():
             E = ev[lvl]
             sel = case if lvl == "parton" else case & np.asarray(E.reco_ok)
@@ -65,7 +79,8 @@ def main():
         ax.set_ylabel("normalized")
         ax.legend(fontsize=13, frameon=False)
         ax.set_xlim(bins[0], bins[-1])
-    fig.suptitle(r"$hh\to b\bar b\,WW^*$: hadronic $W$ mass by case (gen/reco: $\chi^2$-selected jets)")
+    fig.suptitle((rf"$hh\to b\bar b\,WW$ ($m_h={args.mh:g}$ GeV)" if both_onshell else r"$hh\to b\bar b\,WW^*$")
+                 + r": hadronic $W$ mass by case (gen/reco: $\chi^2$-selected jets)")
     fig.tight_layout()
     os.makedirs(args.out, exist_ok=True)
     path = os.path.join(args.out, "w_had_mass_split.png")
@@ -73,10 +88,10 @@ def main():
     with open(os.path.splitext(path)[0] + ".json", "w") as f:
         json.dump(res, f, indent=1)
     print(json.dumps(res, indent=1))
-    overview(ev, args.out)
+    overview(ev, args.out, args.mh)
 
 
-def overview(ev, out):
+def overview(ev, out, mh=125.0):
     """One readable 1x3 figure: m_bb, leading-lepton pT, number of b-jets (parton/gen/reco)."""
     import awkward as ak
     style.use()
@@ -97,7 +112,7 @@ def overview(ev, out):
             ymax = max(ymax, h.max())
         axs[0].stairs(h, bins, color=col, ls=ls, lw=1.6, label=f"{lvl} (median {np.median(m):.0f} GeV)")
     axs[0].set_ylim(0, 1.35 * ymax)
-    axs[0].annotate(r"parton: $\delta$ at $m_h$" + "\n(off scale)", xy=(125, 1.3 * ymax), xytext=(185, 0.75 * ymax),
+    axs[0].annotate(r"parton: $\delta$ at $m_h$" + "\n(off scale)", xy=(mh, 1.3 * ymax), xytext=(mh + 60, 0.75 * ymax),
                     fontsize=13, color=LEVELS["parton"][0], arrowprops=dict(arrowstyle="->", color=LEVELS["parton"][0]))
     axs[0].set_xlabel(r"$m_{b\bar b}$ [GeV]  (gen/reco: two leading b-jets)")
     # leading lepton pT
@@ -118,7 +133,9 @@ def overview(ev, out):
     for ax in axs:
         ax.set_ylabel("normalized")
         ax.legend(fontsize=14, frameon=False)
-    fig.suptitle(r"$hh\to b\bar b\,WW^*\to b\bar b\,\ell\nu\,q\bar q'$ at parton, gen and reco level", fontsize=17)
+    decay = (rf"WW\to b\bar b\,\ell\nu\,q\bar q'$ ($m_h={mh:g}$ GeV)" if mh > 2 * M_W
+             else r"WW^*\to b\bar b\,\ell\nu\,q\bar q'$")
+    fig.suptitle(r"$hh\to b\bar b\," + decay + " at parton, gen and reco level", fontsize=17)
     fig.tight_layout()
     fig.savefig(os.path.join(out, "hh_overview.png"), dpi=120)
 

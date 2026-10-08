@@ -15,21 +15,28 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
 from plotting import style  # noqa: E402
 
+# OUT_SUFFIX (e.g. "_h170"): signal from study_washout<SUFFIX>/mechanism, output masses_<level><SUFFIX>.png;
+# SIGNAL_LABEL: signal name in the legend and titles.  Defaults: hh(125), as before.
+SUFFIX = os.environ.get("OUT_SUFFIX", "")
+SIG = os.environ.get("SIGNAL_LABEL")
 tt = np.load(os.path.join(ROOT, "study_washout/mechanism/data_tt.npz"))
-hh = np.load(os.path.join(ROOT, "study_washout/mechanism/data_hh.npz"))
+hh = np.load(os.path.join(ROOT, f"study_washout{SUFFIX}/mechanism/data_hh.npz"))
+WSTAR = np.median(np.minimum(hh["p_m_w_had"], hh["p_m_w_lep"])) < 60   # one W off shell (h125) or both on shell
 COLS = [("m_w_had", r"$m_{W,\mathrm{had}}$ [GeV]", (0, 160), 80.4, 2.085),
         ("m_t_lep", r"$m_{t,\mathrm{lep}}$ [GeV]", (50, 350), 172.5, 1.42),
         ("m_t_had", r"$m_{t,\mathrm{had}}$ [GeV]", (50, 350), 172.5, 1.42)]
 style.use()
-for lvl, pre, mk, title in (("parton", "p_", None, "parton level: tt̄ sits on the mass shell (Breit–Wigner), hh does not"),
-                            ("gen", "c_", "g_reco_ok", r"gen level ($\chi^2$): shell smeared by resolution; hh still wider")):
+S = SIG or "hh"
+for lvl, pre, mk, title in (("parton", "p_", None, f"parton level: tt̄ sits on the mass shell (Breit–Wigner), {S} does not" if WSTAR
+                             else f"parton level: tt̄ sits on the mass shell (Breit–Wigner); {S} only in the W masses"),
+                            ("gen", "c_", "g_reco_ok", rf"gen level ($\chi^2$): shell smeared by resolution; {S} still wider")):
     fig, axs = plt.subplots(1, 3, figsize=(16, 5.4))
     for ax, (v, xl, rng, M, G) in zip(axs, COLS):
         xt = tt[pre + v] if mk is None else tt[pre + v][tt[mk].astype(bool)]
         xh = hh[pre + v] if mk is None else hh[pre + v][hh[mk].astype(bool)]
         bins = np.linspace(*rng, 61)
         ax.hist(xt, bins, density=True, histtype="step", lw=2.6, color="#1f4e9c", label=r"$t\bar t$")
-        ax.hist(xh, bins, density=True, histtype="step", lw=2.6, color="#d1495b", label=r"$hh$")
+        ax.hist(xh, bins, density=True, histtype="step", lw=2.6, color="#d1495b", label=SIG or r"$hh$")
         x = np.linspace(*rng, 6000)
         if lvl == "parton":
             y = 1 / ((x ** 2 - M ** 2) ** 2 + M ** 2 * G ** 2) * x
@@ -49,5 +56,5 @@ for lvl, pre, mk, title in (("parton", "p_", None, "parton level: tt̄ sits on t
     axs[0].set_ylabel("unit area")
     fig.suptitle(title.replace("tt̄", r"$t\bar t$"))
     fig.tight_layout()
-    fig.savefig(os.path.join(HERE, f"masses_{lvl}.png"), dpi=110)
+    fig.savefig(os.path.join(HERE, f"masses_{lvl}{SUFFIX}.png"), dpi=110)
 print("ok")
