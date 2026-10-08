@@ -482,7 +482,7 @@ def sh_slides(sdir):
     return slides
 
 
-def ml_slides(mdir):
+def ml_slides(mdir, explainer=()):
     """Is the OSDE approach helping?  Unsupervised and supervised ML on the same inputs (ml_compare.py)."""
     out = []
     res = {}
@@ -505,6 +505,7 @@ def ml_slides(mdir):
         r"$t\bar t$ training events)",
         r"Controls: shuffled labels and $t\bar t$-vs-$t\bar t$ must give AUC $\approx0.5$; train vs test AUC",
     ]))
+    out += list(explainer)
     for l, r in res.items():
         for key, what in (("a", "unsupervised vs supervised, angles"), ("b", "does $y$ help?"),
                           ("c", "angles + momenta")):
@@ -594,46 +595,90 @@ def washout_slides(wdir):
 
 
 def salvage_slides(sdir):
-    """Feasibility of adding the resonance masses to f_tt̄ (study_salvage/salvage.py)."""
-    p = os.path.join(sdir, "salvage.json")
+    """Momentum in the density method: the resonance masses (study_salvage/)."""
+    p, q = os.path.join(sdir, "simplest.json"), os.path.join(sdir, "salvage.json")
     if not os.path.exists(p):
         return []
-    r = json.load(open(p))
-    lab = {"parton": "parton", "gen": r"gen ($\chi^2$)", "gen+m_bb": r"gen, + $m_{bb}$"}
-    rows = [[lab[k], str(len(v["mass_vars"])), f"{v['auc_angles']:.3f}", f"{v['auc_masses']:.3f}",
-             f"{v['auc_angles_x_masses']:.3f}", f"{v['bdt_angles']:.3f}", f"{v['bdt_angles_masses']:.3f}",
-             f"{v['tt_independence_auc']:.2f}"] for k, v in r.items()]
+    r, rf_ = json.load(open(p)), (json.load(open(q)) if os.path.exists(q) else {})
+    P, G = r["parton"], r["gen"]
     return [
-        section(r"Salvaging $y$: momentum through the off-shell directions", "Salvaging y"),
-        bullets(r"Idea: the angles live on the on-shell manifold", [
-            r"The ten angles are coordinates of $t\bar t$ phase space only when both $W$ and both tops are on shell "
-            r"(narrow width)",
-            r"Off shell there are four more directions: $m_{W,\ell}$, $m_{W,h}$, $m_{t,\ell}$, $m_{t,h}$. "
-            r"$hh$ lives there (one $W^*$, pseudo-tops at 135 GeV); $f_{t\bar t}$ never looked",
-            r"Extension in the same spirit: $f_{t\bar t}(\Omega, m)=f(\Omega)\,g(m)$, $g$ an OSDE in "
-            r"$u=\frac12+\frac1\pi\arctan\frac{m-M}{W}$ (Breit--Wigner-like map; orthonormal Legendre in $u$; "
-            r"Jacobian $du/dm$ keeps it a density in $m$)",
-            r"Score = total surprisal $-\ln(f-y_0)-\ln(g-y_0)$: surprisals add",
+        section(r"Adding momentum to $y$: the resonance masses", "Momentum in y"),
+        bullets(r"Motivation: what the ten angles leave out", [
+            r"6 final-state particles = 18 momentum components = 10 paper variables ($Y$, $\Theta$, 8 decay angles) "
+            r"+ 4 \textbf{resonance masses} ($m_{W,\ell}, m_{W,h}, m_{t,\ell}, m_{t,h}$) + $m_{t\bar t}$, "
+            r"$\vec p_T^{\,t\bar t}$, overall azimuth",
+            r"For $t\bar t$ the masses carry no information: each is a Breit--Wigner fixed by $M$ and $\Gamma$, and "
+            r"(narrow width) $|\mathcal M|^2$ factorizes: angles $\times\prod_k \mathrm{BW}(m_k)$. So the paper could "
+            r"drop them",
+            r"$hh$ is \emph{not} on that shell: one $W$ is off shell (median 32 GeV) and its ``tops'' sit at 135 GeV. "
+            r"Its difference lives in exactly the dimensions we dropped",
         ]),
-        table(r"Feasibility: AUC ($hh$ vs $t\bar t$)", ["level", "masses", r"$f(\Omega)$", "$g(m)$",
-              r"$f\,g$", r"BDT $\Omega$", r"BDT $\Omega,m$", r"indep."], rows, fit=True,
-              note=r"$f(\Omega)$: existing paper-basis fit ($t\bar t$ leave-one-out); $g$: fit on half of 40k $t\bar t$, "
-                   r"tested on the other half. ``indep.'': BDT AUC for real vs shuffled ($\Omega$, $m$) pairs in $t\bar t$ "
-                   r"(0.5 = independent). At gen $m_{W,\ell}$ is fixed by the $\nu$ constraint, so only 3 masses."),
-        bullets(r"What it tells us", [
-            r"Parton: the masses make $hh$ trivially separable (AUC 1.000): $hh$ is never on the $t\bar t$ mass shell",
-            r"Gen: the unsupervised density improves from 0.53 (angles) to 0.69 (masses); angles add nothing on top",
-            r"Still far from supervised (0.74--0.85): the $\chi^2$ chooses jets \emph{by} their masses, so $hh$ masses are "
-            r"pulled onto the $t\bar t$ shell, and mis-assigned $t\bar t$ populates the same tails",
-            r"With $m_{bb}$, angles and masses are correlated (indep.\ 0.63): the product form fails, a joint fit is needed",
+        wide_figure(r"The dropped dimensions, parton level", os.path.join(sdir, "masses_parton.png"),
+                    note=r"$t\bar t$ (blue) is the Breit--Wigner (dashed; MadGraph cuts it at $\pm15\Gamma$). $hh$ (red) "
+                         r"is spread over 100 GeV."),
+        bullets(r"The extension: one factor per mass, no new coefficients", [
+            r"$y_{\rm ext}(\Omega, m) = y(\Omega)\times\prod_{k=1}^{4}\mathrm{BW}_k(m_k)$ \quad (the $t\bar t$ "
+            r"density on the full phase space)",
+            r"In surprisal (what $t$ is built from) the factors simply add: "
+            r"$s_{\rm ext} = s(\Omega) + \sum_k \ln\!\big[(m_k^2-M_k^2)^2+M_k^2\Gamma_k^2\big] + \text{const}$",
+            r"Parton level: $M$, $\Gamma$ from the PDG. Nothing is fitted",
+            r"Gen/reco level: resolution replaces $\Gamma$; use the same shape with $M$, $W$ = median and half "
+            r"interquartile range of $t\bar t$: two numbers per mass",
+            r"A fitted OSDE correction to this shape (Legendre in $u=\frac12+\frac1\pi\arctan\frac{m-M}{W}$) "
+            + (rf"changes the gen AUC by only {rf_['gen']['auc_masses'] - G['masses_only']:+.3f}" if rf_ else "is not needed"),
         ]),
-        bullets(r"Proposed next steps", [
-            r"Solve the $\nu$ with the $m_{t,\ell}$ constraint instead of $m_W$: frees $m_{W,\ell}$, the leptonic $W^*$ "
-            r"(half of $hh$)",
-            r"Stop choosing one $\chi^2$ hypothesis: $y=\sum_{\text{assignments},\,\nu}w_a\,f_{t\bar t}(\Omega_a,m_a)$, "
-            r"the density of the \emph{observed} final state under $t\bar t$ (matrix-element-method style)",
-            r"Joint OSDE in $(\Omega, m)$: extend the extended block basis with Legendre-in-$u$ mass blocks",
-            r"Caveat: quick test, product form, 40k $t\bar t$; degree of $g$ chosen by held-out ISE (16 at gen = top of scan)",
+        wide_figure(r"The same dimensions at gen level ($\chi^2$ reconstruction)", os.path.join(sdir, "masses_gen.png"),
+                    note=r"Resolution widens the $t\bar t$ shell (dashed: two-number model); $hh$ is still wider, mainly in "
+                         r"the tails. $m_{W,\ell}$ is missing: the $\nu$ solution sets it to $m_W$ by construction."),
+        table(r"Result: AUC ($hh$ vs $t\bar t$), unsupervised", ["", "parton", r"gen ($\chi^2$)"], [
+            [r"angles only, $y(\Omega)$ (paper)", f"{P['angles']:.3f}", f"{G['angles']:.3f}"],
+            [r"$+\,m_{W,\ell}$", f"{P['angles + ... + m_w_lep']:.3f}", "(fixed by $\\nu$)"],
+            [r"$+\,m_{W,h}$", f"{P['angles + ... + m_w_had']:.3f}", f"{G['angles + ... + m_w_had']:.3f}"],
+            [r"$+\,m_{t,\ell}$", f"{P['angles + ... + m_t_lep']:.3f}", f"{G['angles + ... + m_t_lep']:.3f}"],
+            [r"$+\,m_{t,h}$ (all masses)", f"{P['angles + ... + m_t_had']:.3f}", f"{G['angles + ... + m_t_had']:.3f}"],
+        ], note=rf"\textbf{{Gen level with the masses ({G['angles + ... + m_t_had']:.2f}) beats the parton-level angles "
+                rf"({P['angles']:.2f})}}: the parton-level performance is regained. Rows add one mass at a time. "
+                r"Test: half of 40k $t\bar t$ (not used to set $M$, $W$; angles scored leave-one-out), 20k / 4.4k $hh$."),
+        bullets(r"Momentum in $y$: summary and next steps", [
+            r"Physics: $hh$ differs from $t\bar t$ mostly \emph{off} the $t\bar t$ mass shell; the angles alone cannot see it",
+            r"Simplest fix: multiply $y$ by one Breit--Wigner per resonance (2 numbers each at gen). Nothing else changes; "
+            r"$t$ is built from the summed surprisal as before",
+            rf"Parton: {P['angles']:.2f} $\to$ {P['angles + ... + m_t_had']:.2f}; gen: {G['angles']:.2f} $\to$ "
+            rf"{G['angles + ... + m_t_had']:.2f}",
+            r"Next: solve the $\nu$ with the $m_{t,\ell}$ constraint (frees $m_{W,\ell}$ at gen); add $m_{t\bar t}$; "
+            r"reco level",
+        ]),
+    ]
+
+
+def ml_explainer_slides():
+    """Plain-language description of the ML methods used in the comparison."""
+    return [
+        bullets(r"The ML methods in plain words: unsupervised (see only $t\bar t$)", [
+            r"\textbf{Same job as $f_{t\bar t}$}: learn the $t\bar t$ density from $t\bar t$ events; low density "
+            r"$\Rightarrow$ not $t\bar t$",
+            r"\textbf{Gaussian mixture}: $f_{t\bar t}$ = a sum of 32 Gaussian blobs in the 10-D angle space; blob "
+            r"positions and widths fitted to $t\bar t$",
+            r"\textbf{Autoencoder}: a network squeezes the 10 angles through a few numbers and rebuilds them; trained on "
+            r"$t\bar t$, so events it rebuilds badly are unusual. Not a density",
+            r"\textbf{Normalizing flow}: learn a smooth, invertible map $z=T(x)$ that turns the $t\bar t$ distribution into "
+            r"a plain Gaussian. Then $f_{t\bar t}(x)=\mathcal N(T(x))\,|\det\partial T/\partial x|$",
+            r"The mass map used later ($u=\frac12+\frac1\pi\arctan\frac{m-M}{W}$, density $g_u\,du/dm$) is exactly a "
+            r"1-D flow; the normalizing flow learns the same thing in 10-D. RealNVP stacks 8 simple steps, each shifting and rescaling half of the "
+            r"variables by amounts computed from the other half, so the Jacobian stays easy",
+        ]),
+        bullets(r"The ML methods in plain words: supervised (see $t\bar t$ \emph{and} $hh$)", [
+            r"\textbf{Different job}: learn $P(hh\,|\,x)$ from labelled examples. The best possible is the ratio "
+            r"$f_{hh}/f_{t\bar t}$; $f_{t\bar t}$ alone assumes nothing about $hh$ (as if $f_{hh}$ were flat)",
+            r"\textbf{BDT}: a few hundred small decision trees (``if $\cos\theta<-0.6$ and $|Y|>1$\ldots''), each "
+            r"fixing the mistakes of the previous ones",
+            r"\textbf{MLP}: a neural network; layers of weighted sums with a simple non-linearity in between",
+            r"\textbf{FT-Transformer}: each input variable becomes a vector (``token''); attention lets every variable "
+            r"look at every other one, so it learns which combinations matter",
+            r"\textbf{Particle Transformer}: the tokens are the six particles' four-momenta; attention is told each pair's "
+            r"invariant mass and $\Delta R$, so it sees $m_{b\bar b}=m_h$ directly",
+            r"Why they win: they know what $hh$ looks like. Our goal is different: a $t\bar t$-only (unsupervised) "
+            r"$y$ that flags anything non-$t\bar t$",
         ]),
     ]
 
@@ -1096,7 +1141,7 @@ def main():
             slides += coefficient_slides(json.load(open(simp)), os.path.abspath(args.osde))
         slides += extended_slides(os.path.abspath(args.osde), os.path.join(HERE, "osde_ext"))
         slides += sh_slides(os.path.join(HERE, "osde_sh"))
-        slides += ml_slides(os.path.join(HERE, "ml"))
+        slides += ml_slides(os.path.join(HERE, "ml"), ml_explainer_slides())
         slides += washout_slides(os.path.join(HERE, "study_washout"))
         slides += salvage_slides(os.path.join(HERE, "study_salvage"))
         slides += discriminator_slides(os.path.abspath(args.osde))

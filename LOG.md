@@ -244,3 +244,9 @@ Newest entries are at the bottom. Numbers refer to the samples listed under "Sam
   With m_bb the product form fails (tt̄ angle–mass dependence AUC 0.63).
 - Next steps proposed: ν from the m_t,lep constraint (frees m_W,lep); sum f over jet assignments and ν
   solutions instead of one χ² hypothesis; joint OSDE in (Ω, m).
+- Simplest version (study_salvage/simplest.py): y_ext = y(Ω) × Π_k BW(m_k); surprisals add.
+  Parton: PDG M, Γ, nothing fitted: AUC 0.648 → 1.000. Gen (χ²): Cauchy with tt̄ median, half-IQR
+  (2 numbers per mass): 0.528 → 0.689, i.e. gen with masses exceeds the parton-level angles (0.648).
+  Fitted Legendre correction adds only +0.004. Figures masses_{parton,gen}.png.
+- Slides: momentum section rewritten (motivation by 18-component counting, the one-line extension,
+  result table); plain-language ML explainer (unsupervised incl. normalizing flow; supervised).
