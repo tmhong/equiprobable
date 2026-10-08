@@ -354,3 +354,31 @@ Newest entries are at the bottom. Numbers refer to the samples listed under "Sam
   - The slide "Answer, parton+trig level" says that adding y changes the supervised AUC "within the ±0.002 uncertainty". For HH(170) the paired gains are +0.009 ± 0.001 (MLP) and +0.007 ± 0.001 (FT-Transformer).
   - The cutflow note ("softer (from W*)") and the prompt-lepton bullet (h → WW*) still describe hh(125).
   - In `note_h170`, parts of the abstract and of the introduction, sample, ML and washout sections still describe the off-shell W*. The numbers in them are the HH(170) ones.
+
+## 2026-10-08 — B2 (right-handed W): ML comparison
+
+- `study_bsm/ml_wtb.py` → `study_bsm/ml_wtb.json` (+ `ml_wtb.log`). Same signal as `wtb_study.py`: the independent tt̄ sample reweighted to F_R. Compared:
+  - the normalizing flow of `ml_compare.py`, trained on SM tt̄ only;
+  - f_tt̄ angles (>10σ), recomputed here and identical to `wtb_study.json`;
+  - a supervised BDT that knows w(F_R), the reachable optimum when the signal is known;
+  - the oracle w (parton truth).
+- Weighted AUC; the signal efficiency at 1% tt̄ efficiency is in brackets.
+
+  | level | F_R | f_tt̄ angles | flow | BDT (knows w) | oracle w |
+  |---|---|---|---|---|---|
+  | parton | 0.1 | 0.534 (2.2%) | 0.528 (1.6%) | 0.579 (3.5%) | 0.578 (3.4%) |
+  | parton | 0.3 | 0.600 (4.9%) | 0.583 (3.3%) | 0.731 (9.2%) | 0.729 (9.1%) |
+  | gen | 0.3 | 0.522 (1.3%) | 0.523 (1.0%) | 0.603 (1.9%) | 0.714 (8.9%) |
+  | reco | 0.3 | 0.505 (1.6%) | 0.508 (0.9%) | 0.579 (1.4%) | 0.705 (7.8%) |
+
+  - At parton level, f_tt̄ beats the flow (paired +0.017 ± 0.001 at F_R = 0.3). At gen and reco the two are equal within errors.
+  - The BDT reaches the oracle at parton level. At gen and reco it stays far below it, because the parton-truth weight is lost in the smearing.
+  - So the anomaly scores are weak for this signal at every level, whichever method is used. The coefficient test (`wtb_study.py`) is still the sensitive probe.
+- Checks pass:
+  - F_R = 0 gives AUC 0.500 for every score.
+  - BDTs trained on shuffled weights give 0.495–0.500 ± 0.02.
+  - n_eff and the f_tt̄ AUC equal `wtb_study.json`.
+  - The flow's hh-vs-tt̄ AUC is 0.654, equal to `ml_compare`.
+  - The flow's NLL on the independent sample is within 0.04–0.15 of its training NLL.
+- Run time: 7.7 min with 3 threads.
+- Not yet in the deck or the note.
