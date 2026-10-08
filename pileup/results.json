@@ -81,6 +81,47 @@
     "3sigma": 334
    },
    "err_angles_masses": 0.008176018376343396
+  },
+  "200": {
+   "n_tt_fit": 15973,
+   "n_tt_test": 3221,
+   "n_hh": 3906,
+   "reco_eff_tt": 0.3221,
+   "reco_eff_hh": 0.1953,
+   "gen_eff_tt": 0.4103,
+   "njets_mean_tt": 7.7524,
+   "njets_mean_hh": 7.54625,
+   "nbjets_mean_tt": 1.0129,
+   "correct_jets_frac_tt": 0.011487115802545793,
+   "nu_pz_half_width": 124.416989473326,
+   "met_res_half_width": 47.83295155171836,
+   "W_m_w_had": 12.9448350765161,
+   "W_m_t_lep": 32.64951731952128,
+   "W_m_t_had": 26.66715253364275,
+   "W_m_w_had_hh": 12.389916525424262,
+   "W_m_t_lep_hh": 29.478049456997155,
+   "W_m_t_had_hh": 27.32298188844365,
+   "auc_angles_all": 0.4744969210472811,
+   "err_angles_all": 0.005987869282911016,
+   "auc_angles_10sigma": 0.4758899490399426,
+   "err_angles_10sigma": 0.00592180895316991,
+   "auc_masses": 0.49922066418646327,
+   "err_masses": 0.0067004627527805375,
+   "auc_angles_masses": 0.4972691055704746,
+   "err_angles_10sigma_masses": 0.006739126602620269,
+   "eff1_masses": 0.011008704557091653,
+   "eff10_masses": 0.10599078341013825,
+   "eff1_angles_10sigma_masses": 0.010752688172043012,
+   "eff10_angles_10sigma_masses": 0.09805427547363031,
+   "gen_check_auc_angles_masses": 0.6982330557918702,
+   "gen_check_err": 0.005639225102956574,
+   "n_terms": {
+    "all": 14400,
+    "10sigma": 112,
+    "5sigma": 345,
+    "3sigma": 757
+   },
+   "err_angles_masses": 0.006739126602620269
   }
  },
  "figures": [
@@ -95,7 +136,11 @@
   [
    "pileup/figures/masses_pu50.png",
    "Resonance masses at reco level for $\\langle\\mu\\rangle=50$ ($t\\bar t$ and $hh$, with the two-number Cauchy model)."
+  ],
+  [
+   "pileup/figures/masses_pu200.png",
+   "Resonance masses at reco level for $\\langle\\mu\\rangle=200$ ($t\\bar t$ and $hh$, with the two-number Cauchy model)."
   ]
  ],
- "summary_tex": "From $\\langle\\mu\\rangle=0$ to 50 the reco selection efficiency of $t\\bar t$ goes from 20\\% to 28\\% (pileup jets pass the $\\geq4$-jet cut; the card has no pileup-jet rejection), the mean jet multiplicity from 3.7 to 4.4, the fraction of events with all four $\\chi^2$ jets correct from 18\\% to 5.8\\%, and the neutrino $p_z$ half-width from 65 to 92~GeV.  The $hh$ separation of the masses goes from AUC 0.616 to 0.540 and that of angles + masses from 0.617 to 0.538; the gen-level check is 0.698, 0.698 at the three pileup levels, as it must be for paired events that do not see pileup at gen level."
+ "summary_tex": "From $\\langle\\mu\\rangle=0$ to 200 the reco selection efficiency of $t\\bar t$ goes from 20\\% to 32\\% (pileup jets pass the $\\geq4$-jet cut; the card has no pileup-jet rejection), the mean jet multiplicity from 3.7 to 7.8, the fraction of events with all four $\\chi^2$ jets correct from 18\\% to 1.1\\%, and the neutrino $p_z$ half-width from 65 to 124~GeV.  The $hh$ separation of the masses goes from AUC 0.616 to 0.499 and that of angles + masses from 0.617 to 0.497; the gen-level check is 0.698, 0.698, 0.698 at the three pileup levels, as it must be for paired events that do not see pileup at gen level."
 }

@@ -596,9 +596,7 @@ def wtb_slides(bdir):
     fpath = os.path.join(bdir, "fig_wtb.png")
 
     def crop(trim, maxw, maxh):
-        l, b, r, t = trim
-        return (rf"\adjustbox{{trim={{{l}\width}} {{{b}\height}} {{{r}\width}} {{{t}\height}}, clip, max width={maxw}, "
-                rf"max height={maxh}}}{{\includegraphics{{{os.path.relpath(fpath, OUT_DIR)}}}}}")
+        return crop_image(fpath, trim, f"max width={maxw}, max height={maxh}")
 
     if os.path.exists(fpath):
         fig_score = frame(r"$\cos\theta'$ and the surprisal tail vs $F_R$ (parton)",
@@ -898,10 +896,27 @@ def study_c_slides(pdir, ldir):
                 r"the no-pileup card (jet energy scale, calorimeter, MET), so compare within this set",
                 r"Cost: Delphes 17 / 75 / 560 ms per event at $\langle\mu\rangle=0$ / 50 / 200 (single-threaded); produced in parallel jobs",
             ]),
-            table(r"Reco level versus pileup", [""] + [rf"$\langle\mu\rangle={m}$" for m in mus], rows, fit=True),
+            table(r"Reco level versus pileup", [""] + [rf"$\langle\mu\rangle={m}$" for m in mus], rows, fit=True, max_rows=14),
         ]
+
+        def split_caption(c):
+            """The captions are written for the note; on a slide a final parenthetical goes below the figure, so that
+            the title stays on one line."""
+            c = c.strip().rstrip(".")
+            depth = 0
+            for i in range(len(c) - 1, -1, -1) if c.endswith(")") else ():
+                depth += {")": 1, "(": -1}.get(c[i], 0)
+                if depth == 0:
+                    if c[:i].strip():
+                        rest = c[i + 1:-1]
+                        return c[:i].strip(), rest[:1].upper() + rest[1:] + "."
+                    break
+            return c, None
+
         for pth, cap in PU.get("figures", []):
-            slides.append(wide_figure(cap.replace(r"\langle\mu\rangle", r"$\langle\mu\rangle$") if "$" not in cap else cap, os.path.join(HERE, pth)))
+            cap = cap.replace(r"\langle\mu\rangle", r"$\langle\mu\rangle$") if "$" not in cap else cap
+            head, note = split_caption(cap)
+            slides.append(wide_figure(head, os.path.join(HERE, pth), note=note))
         lo, hi = PU["mu"][mus[0]], PU["mu"][mus[-1]]
         if lo.get("auc_angles_masses") and hi.get("auc_angles_masses"):
             slides.append(bullets(r"Pileup: what it shows", [
@@ -909,7 +924,11 @@ def study_c_slides(pdir, ldir):
                 rf"{100 * hi['reco_eff_tt']:.0f}\% while the fraction of events with the right four jets goes from {100 * lo['correct_jets_frac_tt']:.0f}\% to "
                 rf"{100 * hi['correct_jets_frac_tt']:.1f}\%: at $\langle\mu\rangle=200$ the $\chi^2$ almost never finds the $t\bar t$ system",
                 rf"Resolutions: $\nu$ $p_z$ {lo['nu_pz_half_width']:.0f} $\to$ {hi['nu_pz_half_width']:.0f} GeV, MET {lo['met_res_half_width']:.0f} $\to$ "
-                rf"{hi['met_res_half_width']:.0f} GeV; mass widths $W$ grow accordingly",
+                rf"{hi['met_res_half_width']:.0f} GeV (and a MET bias of +36 GeV at $\langle\mu\rangle=200$); only $W(m_{{t,\ell}})$ grows "
+                rf"({lo['W_m_t_lep']:.0f} $\to$ {hi['W_m_t_lep']:.0f} GeV): with 7--8 jets the $\chi^2$ always finds $t\bar t$-like masses, for "
+                r"$t\bar t$ and for $hh$ alike",
+                rf"The angle-only AUC even drops below 0.5 ({hi['auc_angles_10sigma']:.3f} at $\langle\mu\rangle=200$): the reco $f$ is dominated by "
+                r"wrong-jet combinations, so the genuine $t\bar t$ structure becomes the atypical part",
                 rf"Separation: masses {lo['auc_masses']:.3f} $\to$ {hi['auc_masses']:.3f}; angles + masses {lo['auc_angles_masses']:.3f} $\to$ "
                 rf"{hi['auc_angles_masses']:.3f}; the gen-level check is {lo['gen_check_auc_angles_masses']:.3f} / {hi['gen_check_auc_angles_masses']:.3f} "
                 r"(paired events, as it must be)",
@@ -919,8 +938,9 @@ def study_c_slides(pdir, ldir):
         rc = L1.get("reference_check", {})
         slides += [
             section("Level-1 trigger: a lookup-table version of angles + BW"),
-            bullets(r"Can the score run in the ATLAS Phase-II Global Trigger (AMD Versal) within 5\% of the device and 10 $\mu$s?", [
-                r"Inputs as L0 objects: 6 leading jets ($p_T,\eta,\phi$, massless), one lepton, MET; quantized like the Run-3 TOBs; no $b$-tag",
+            bullets(r"Can the score run in the ATLAS Phase-II Global Trigger (AMD Versal)?", [
+                r"Budget: 5\% of the device and 10 $\mu$s. Inputs as L0 objects: 6 leading jets ($p_T,\eta,\phi$, massless), one lepton, "
+                r"MET; quantized like the Run-3 TOBs; no $b$-tag",
                 r"The expensive part is the $\chi^2$ jet assignment (180 assignments $\times$ 2 $\nu$ solutions), not the LUTs. Trick: for massless "
                 r"objects every hypothesis mass is a sum of shared pairwise invariants $m^2_{ij}=2p_i\!\cdot\!p_j$: 35 four-DSP dot products, "
                 r"47 small $\chi^2$ ROMs indexed by $m^2$ (no square roots), 360 adders and a comparator tree",
@@ -939,9 +959,7 @@ def study_c_slides(pdir, ldir):
                   ], fit=True, note=r"Fixed point costs nothing in AUC for datapath width $\ge14$ bits and ROM depth $\ge64$. The loss 0.602 $\to$ 0.583 "
                           r"is the missing $b$-tag at L1; restricting to 6 jets is free, 4 jets would cost another 0.018. Both designs are far "
                           r"inside 5\% and 10 $\mu$s, and inside the 1.2 $\mu$s per-event budget of a GEP node. The angles add $+0.0004\pm0.0022$."),
-            wide_figure(r"AUC and per-event fidelity vs datapath width and ROM depth", os.path.join(ldir, "fig_precision.png")),
-            wide_figure(r"Resources by block, as a fraction of a VP1802", os.path.join(ldir, "fig_resources.png")),
-            wide_figure(r"Pipeline schedule at 240 MHz", os.path.join(ldir, "fig_latency.png")),
+            *l1_figure_slides(ldir),
             bullets(r"L1: conclusions", [
                 r"Feasible with large margins: $\sim$1\% of the LUTs and 1.5--3.4\% of the DSPs of a VP1802, 0.4--0.8 $\mu$s latency",
                 r"The $hh$-like tail survives quantization: at 5--10\% $t\bar t$ acceptance, $\ge95\%$ of the selected events are the same as in "
@@ -952,6 +970,33 @@ def study_c_slides(pdir, ldir):
             ]),
         ]
     return slides
+
+
+def l1_figure_slides(ldir):
+    """The L1 figures (study_l1/make_figures.py) are drawn for a ~10-inch page; whole on a slide their text is ~4 pt.
+    They are shown as horizontal bands of the same images (a row of panels, the legend, caption lines) at a common
+    scale.  Trim fractions (left, bottom, right, top) follow the pixel layout of make_figures.py.  The static caption
+    of fig_resources is typeset here (same text as in make_figures.py); the precision caption, which has computed
+    numbers, is cropped from the image; fig_latency is wide, so a typeset caption would shrink the chart: its bands
+    are only stacked without the white space."""
+    prec, res, lat = (os.path.join(ldir, f) for f in ("fig_precision.png", "fig_resources.png", "fig_latency.png"))
+    # fig_precision.png (2255 x 1861 px): panel rows at y 20-747 and 840-1568; caption lines at 1622, 1665, 1715, 1758, 1801
+    top, bottom = (0, .5959, 0, 0), (0, .1548, 0, .4487)
+    cap123, cap1, cap45 = (0, .0580, 0, .8689), (0, .1075, 0, .8689), (0, .0113, 0, .9420)
+    # fig_resources.png (2920 x 1822 px): panel rows at y 20-702 and 814-1497, legend 1570-1668, caption 1719-1796
+    rtop, rbottom, rleg = (0, .6114, 0, 0), (0, .1751, 0, .4435), (0, .0812, 0, .8584)
+    res_cap = (r"Analytic estimate (no synthesis): $N=6$ jets, $W=16$, $K=K_\chi=256$; time-mux = loops serialized inside the "
+               r"48-BC TMUX period (4 hypothesis lanes). LUT/FF include $\times1.3$ for control and balancing. VP1802: 3.36\,M LUT, "
+               r"6.72\,M FF, 14\,352 DSP, 4\,941 BRAM36; VC1902: 0.90\,M, 1.80\,M, 1\,968, 967.")
+    # fig_latency.png (2696 x 1462 px): chart down to y 1116, legend 1180-1278, caption 1316-1436
+    lchart, lleg, lcap = (0, .2339, 0, 0), (0, .1231, 0, .8044), (0, .0150, 0, .8974)
+    return [
+        cropped_figure(r"Precision: AUC vs datapath width $W$ and ROM depth $K$ (1/2)", prec, [top, cap123]),
+        cropped_figure(r"Precision: per-event fidelity vs $W$ and $K$ (2/2)", prec, [bottom, cap1, cap45]),
+        cropped_figure(r"Resources by block, as a fraction of a VP1802 (1/2)", res, [rtop, rleg], note=res_cap),
+        cropped_figure(r"Resources by block, as a fraction of a VP1802 (2/2)", res, [rbottom, rleg], note=res_cap),
+        cropped_figure(r"Pipeline schedule at 240 MHz", lat, [lchart, lleg, lcap], maxh=0.82),
+    ]
 
 
 def washout_slides(wdir):
@@ -1467,6 +1512,26 @@ def wide_figure(title, path, note=None):
             rf"{{{os.path.relpath(path, OUT_DIR)}}}")
     if note:
         body += f"\n\n\\vspace{{2pt}}{{\\footnotesize {note}}}"
+    return frame(title, body)
+
+
+def crop_image(path, trim, opts):
+    """One region of an image (adjustbox): trim = (left, bottom, right, top) as fractions of the image size."""
+    l, b, r, t = trim
+    return (rf"\adjustbox{{trim={{{l}\width}} {{{b}\height}} {{{r}\width}} {{{t}\height}}, clip, {opts}}}"
+            rf"{{\includegraphics{{{os.path.relpath(path, OUT_DIR)}}}}}")
+
+
+def cropped_figure(title, path, trims, note=None, maxh=0.78):
+    """Several horizontal bands of one image stacked at a common scale (e.g. one row of a 2x2 figure plus its legend
+    or caption lines), so a dense figure can be shown over several slides with legible fonts."""
+    if not os.path.exists(path):
+        return wide_figure(title, path)
+    bands = r"\\[3pt]".join(crop_image(path, t, "width=10cm") for t in trims)
+    body = (rf"\centering\adjustbox{{width=\textwidth, max totalheight={maxh}\textheight}}"
+            rf"{{\begin{{tabular}}{{@{{}}c@{{}}}}{bands}\end{{tabular}}}}")
+    if note:
+        body += f"\n\n\\vspace{{3pt}}{{\\scriptsize {note}\\par}}"
     return frame(title, body)
 
 

@@ -41,25 +41,39 @@ def main():
     mus = sorted(per, key=float)
     x = [float(m) for m in mus]
     style.use()
-    fig, axs = plt.subplots(1, 3, figsize=(17, 5.4))
-    for key, lab, col, mk in (("auc_masses", "masses (BW)", "#2a9d8f", "s"), ("auc_angles_masses", r"angles ($>10\sigma$) + BW", "#1f4e9c", "o"),
-                              ("auc_angles_10sigma", r"angles ($>10\sigma$)", "#d1495b", "^"), ("auc_angles_all", "angles, all terms", "#e9a03b", "v")):
-        err = {"auc_masses": "err_masses", "auc_angles_masses": "err_angles_10sigma_masses", "auc_angles_10sigma": "err_angles_10sigma",
-               "auc_angles_all": "err_angles_all"}[key]
-        axs[0].errorbar(x, [per[m][key] for m in mus], [per[m][err] for m in mus], marker=mk, ms=9, lw=2.2, capsize=4, color=col, label=lab)
-    axs[0].axhline(0.5, color="0.6", lw=1); axs[0].set_ylabel(r"AUC ($hh$ vs $t\bar t$, reco)"); axs[0].legend(fontsize=13, frameon=False)
-    for key, lab, col in (("reco_eff_tt", r"reco selection, $t\bar t$", "#1f4e9c"), ("reco_eff_hh", r"reco selection, $hh$", "#d1495b"),
-                          ("correct_jets_frac_tt", r"all 4 $\chi^2$ jets correct, $t\bar t$", "#2a9d8f")):
-        axs[1].plot(x, [100 * per[m][key] for m in mus], "o-", ms=9, lw=2.2, color=col, label=lab)
-    axs[1].set_ylabel("per cent"); axs[1].legend(fontsize=13, frameon=False)
-    for key, lab, col in (("njets_mean_tt", r"jets / event, $t\bar t$", "#1f4e9c"), ("nu_pz_half_width", r"$\nu$ $p_z$ 68\% half-width [10 GeV]", "#d1495b"),
-                          ("met_res_half_width", r"MET resolution [10 GeV]", "#2a9d8f")):
-        sc = 0.1 if "width" in key else 1.0
-        axs[2].plot(x, [sc * per[m][key] for m in mus], "o-", ms=9, lw=2.2, color=col, label=lab)
-    axs[2].legend(fontsize=13, frameon=False)
+    # Sized for a 16:9 slide (~150 x 65 mm, see plotting/style.py): 15.5 x 6 in is scaled by ~0.38, so the
+    # 16-20 pt text below lands at ~6-7.6 pt.  One unit per panel; distinct markers as well as colours.
+    BLUE, RED, TEAL, ORANGE = "#1f4e9c", "#d1495b", "#2a9d8f", "#e9a03b"
+    fig, axs = plt.subplots(1, 3, figsize=(15.5, 6.0))
+    kw = dict(ms=9, lw=2.2)
+    for key, err, lab, col, mk in (("auc_masses", "err_masses", "masses (BW)", TEAL, "s"),
+                                   ("auc_angles_masses", "err_angles_10sigma_masses", r"angles ($>10\sigma$) + BW", BLUE, "o"),
+                                   ("auc_angles_10sigma", "err_angles_10sigma", r"angles ($>10\sigma$)", RED, "^"),
+                                   ("auc_angles_all", "err_angles_all", "angles, all terms", ORANGE, "v")):
+        axs[0].errorbar(x, [per[m][key] for m in mus], [per[m][err] for m in mus], marker=mk, capsize=4, color=col, label=lab, **kw)
+    axs[0].axhline(0.5, color="0.6", lw=1, zorder=0)
+    axs[0].set_ylabel(r"AUC ($hh$ vs $t\bar t$)")
+    axs[0].set_title("separation")
+    for key, lab, col, mk in (("reco_eff_tt", r"$t\bar t$ selected", BLUE, "o"), ("reco_eff_hh", r"$hh$ selected", RED, "s"),
+                              ("correct_jets_frac_tt", r"$t\bar t$, 4 $\chi^2$ jets right", TEAL, "^")):
+        axs[1].plot(x, [100 * per[m][key] for m in mus], marker=mk, color=col, label=lab, **kw)
+    axs[1].set_ylabel("per cent of events")
+    # the mean jet multiplicity that drives the selection, as a row of labels at the same <mu> (not a second scale)
+    top = axs[1].secondary_xaxis("top")
+    top.set_xticks(x, [f"{per[m]['njets_mean_tt']:.1f}" for m in mus])
+    top.set_xlabel(r"mean jets / $t\bar t$ event", fontsize=17)
+    for key, lab, col, mk in (("nu_pz_half_width", r"$\nu$ $p_z$", RED, "o"), ("met_res_half_width", r"MET $-$ $p_T^\nu$", TEAL, "s")):
+        axs[2].plot(x, [per[m][key] for m in mus], marker=mk, color=col, label=lab, **kw)
+    axs[2].set_ylabel("68% half-width [GeV]")
+    axs[2].set_title(r"resolution ($t\bar t$, selected)")
+    pad = 0.12 * (x[-1] - x[0]) or 10.0  # (a single <mu> would give a zero span)
     for ax in axs:
         ax.set_xlabel(r"mean pileup $\langle\mu\rangle$"); ax.set_xticks(x)
-    fig.suptitle(r"Reco level versus pileup (Delphes ATLAS pileup card, same hard events at every $\langle\mu\rangle$)")
+        ax.set_xlim(x[0] - pad, x[-1] + pad)
+        y0, y1 = ax.get_ylim(); ax.set_ylim(y0, y1 + 0.45 * (y1 - y0))  # headroom: legends sit above the data
+        ax.legend(fontsize=16, frameon=False, loc="upper left" if ax is not axs[0] else "upper right", handlelength=1.6)
+    axs[1].set_ylim(0, None); axs[2].set_ylim(0, None)
+    fig.suptitle(r"Reco level versus pileup (Delphes ATLAS pileup card; same hard events at every $\langle\mu\rangle$)")
     fig.tight_layout()
     os.makedirs(os.path.join(HERE, "figures"), exist_ok=True)
     figp = os.path.join(HERE, "figures", "summary_vs_mu.png")

@@ -279,3 +279,31 @@ Newest entries are at the bottom. Numbers refer to the samples listed under "Sam
   merge parts, run analyze_pileup.py per μ (commands in the agent prompts / infra report §7), write pileup/results.json
   {"mu": {"0": {...}, "50": {...}, "200": {...}}} for note/make_note.py, then rebuild slides + note.
 - L1 trigger LUT study (study_l1/) in progress by an agent.
+
+## 2026-10-08 — Study A′ (hh at m_H = 170), B2 (right-handed W), pileup at μ = 0/50/200, L1 headline
+
+- **Study A′** (`study_bsm/hh170_study.py` → `hh170_study.json`): hh with m_H = 170 GeV, so both W bosons are on shell, compared with hh(125). Same chain, nothing retrained.
+  - Parton-level W Breit–Wigner factor: AUC 0.99 → 0.50. It goes blind, as expected.
+  - Reco level, angles + masses: AUC 0.602 → 0.606.
+  - Reco selection efficiency: 9.4% → 20%.
+- **B2, right-handed W** (`study_bsm/wtb_study.py` → `wtb_study.json`): the independent tt̄ sample is reweighted to a W helicity fraction F_R (F_0 kept, F_L → F_L − F_R). The coefficients are fitted with event weights.
+  - As an anomaly score it is weak: AUC 0.60 at F_R = 0.3 at parton level (4.9% of the signal in the 1% tt̄ tail), and nothing at reco level.
+  - The coefficient test is the sensitive one. The cos θ′ term (M^01_00, ⟨cos θ′⟩ = (F_R − F_L)/2) has pull 8.6 at F_R = 0.05 and 15 at F_R = 0.1 with 10k parton events. 5σ at F_R = 0.02 needs ≈ 23k parton-level events.
+- **Pileup** (`pileup/results.json`, review in `pileup/summary.md`): the consistency, independent-recomputation and physics checks pass.
+
+  | ⟨μ⟩ | 0 | 50 | 200 |
+  |---|---|---|---|
+  | reco efficiency tt̄ / hh | 19.7% / 7.6% | 27.6% / 13.4% | 32.2% / 19.5% |
+  | all four χ² jets correct (tt̄) | 17.5% | 5.8% | 1.1% |
+  | AUC masses (BW) | 0.616 | 0.540 | 0.499 |
+  | AUC angles (>10σ) + masses | 0.617 | 0.538 | 0.497 |
+  | gen check (angles + masses) | 0.698 | 0.698 | 0.698 |
+
+  - The loss comes from jet combinatorics, not resolution. The card has no pileup-jet rejection, and with ~7.8 jets per event the χ² builds W and top masses in any event.
+  - The gen check does not change with ⟨μ⟩, so all of the loss happens at reconstruction.
+- **L1** (`study_l1/design.md`): the masses-only (χ² + BW) design on a Versal Premium VP1802 uses 0.83% of the LUTs and 1.45% of the DSPs, with 0.43 µs latency at 240 MHz. Its AUC is 0.582 against 0.602 offline; the loss is the missing b-tag at L1.
+- **Slides and note:**
+  - B2 section added.
+  - Legibility pass: fig_wtb shown as two crops; the L1 figures shown row by row with legible captions; long titles shortened to one line; the pileup table fits on one slide.
+  - 0 overfull boxes.
+  - The review corrected the "Pileup: what it shows" slide: only W(m_t,lep) grows with pileup, and the angle-only AUC falls below 0.5 at μ = 200 (0.476).
