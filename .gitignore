@@ -68,3 +68,6 @@ slides_h2mw/*
 *.pickle
 *.feather
 *.joblib
+
+# paper figures: latexdiff build output of paper_figs/Makefile
+paper_figs/build/
