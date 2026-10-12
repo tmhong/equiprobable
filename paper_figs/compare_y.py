@@ -77,9 +77,9 @@ Y_AXIS = r"$y = f_{t\bar{t}}(x,\phi)$"         # x-axis title of the last panel,
 S_AXIS = r"$s = -\ln y$"                        # ... and binned in -ln y
 NAME_I, NAME_J = r"$t\bar{t}$", r"$hh$"
 SHORT_I, SHORT_J = None, None      # shorter names for the ratio and the efficiencies (None: the names)
-TOY_NAMES = (r"$\mathrm{Toy}\ \frac{1}{2} \to 1, \frac{1}{2}$", r"$\mathrm{Toy}\ 0 \to \frac{1}{2}, \frac{1}{2}$",
-             r"N_{\frac{1}{2}}", r"N_0")   # legends, then the ratio's names
-TOY_SUBS = (r"\frac{1}{2}", r"0")   # the toy's types as subscripts (f_1/2) and on the efficiency axes (Toy 1/2)   # the toy's
+TOY_NAMES = (r"$\mathrm{Toy}\ 1 \to \frac{1}{2}, \frac{1}{2}$", r"$\mathrm{Toy}\ 0 \to \frac{1}{2}, \frac{1}{2}$",
+             r"N_1", r"N_0")   # legends, then the ratio's names (type i: TOY_SPIN = 1; see below)
+TOY_SUBS = (r"1", r"0")   # the toy's types as subscripts (f_1/2) and on the efficiency axes (Toy 1/2)   # the toy's
 
 # binning
 X1_COS = True                      # plot x1 = cos(theta), not theta; dOmega = d(cos theta) dphi, so y per solid
@@ -97,7 +97,7 @@ N_BINS_Y = 12                      # about this many round-numbered bins in the 
 N_BINS_Y_DATA = 40                 # ... or this many when y is not a function of (x1, x2), as for real events
                                    # (no contours to match, so finer bins show the two types' shapes better)
 Y_EDGES = S_EDGES = None           # ... unless you give the bin edges (in y, and in -ln y)
-HIGHLIGHT_RANGE = (0.10, 0.12)     # the hatched band in y, between these two contours, and its bins in the
+HIGHLIGHT_RANGE = (0.05, 0.07)     # the hatched band in y, between these two contours, and its bins in the
                                    # last panel (snapped to the nearest bin edges); None = HIGHLIGHT_AT
 HIGHLIGHT_AT = None                # with HIGHLIGHT_RANGE = None: a value of y (or -ln y) whose one bin gets
                                    # hatched; None = the middle: the bin of the median type-i event
@@ -149,7 +149,7 @@ T_ENDS = (0.001, 0.995)            # s' = -ln(y + y_min), from 0 to 1; s'min and
                                    # all events (one extreme event would otherwise squeeze the rest), and t is
                                    # clipped to [0, 1] beyond them
 Z_STEP = 0.125                      # the toy's bins (and axis values) in z
-Y_RESCALE = True                   # the toy's y shown as y' = (y - y0)/(y1 - y0), from 0 to 1, with y0 = 0 and
+Y_RESCALE = False                  # the toy's y shown as y' = (y - y0)/(y1 - y0), from 0 to 1, with y0 = 0 and
 HIGHLIGHT_RANGE_SCALED = (0.625, 0.75)   # y1 its largest value; then the hatched band is given in y'
 Y_SHIFT = True                     # if some y are negative (a truncated series), use y' = y + y_min instead,
                                    # y_min = -(the lowest y of both types), so y' starts at 0 and -ln y' exists
@@ -225,7 +225,11 @@ TOY_SEED = 11                      # the seed they are drawn with               
 N_TOY_FILE = 50_000                # events per type written by --write-toy
 
 
-TOY_ALPHA_P = 1.0               # toy type i: analysing power times polarisation, |alpha P| <= 1 (the W in a top
+TOY_SPIN = 1                    # toy type i: 1 = a spin-1 particle decaying to two spin-1/2 ones (the same final
+                                # state as type j, which differs only in the parent's spin); 1/2 = the dipole below
+TOY_HELICITY = (0.7, 0.3, 0.0)  # spin 1: fractions F_0, F_-, F_+ of helicity 0, -1, +1 along TOY_POL (a W from a
+                                # top decay: F_0 = 0.7, F_- = 0.3, F_+ = 0)
+TOY_ALPHA_P = 1.0               # spin 1/2: analysing power times polarisation, |alpha P| <= 1 (the W in a top
 TOY_POL = (120.0, 180.0)        # decay has alpha = 0.39); the polarisation's direction, polar and azimuthal, degrees
 
 
@@ -240,6 +244,13 @@ def toy_f_i(theta, phi):
     tp, pp = np.radians(TOY_POL[0]), np.radians(TOY_POL[1])
     cos_to_p = (np.sin(tp) * np.cos(pp) * np.sin(theta) * np.cos(phi)
                 + np.sin(tp) * np.sin(pp) * np.sin(theta) * np.sin(phi) + np.cos(tp) * np.cos(theta))
+    if TOY_SPIN == 1:
+        # spin 1 -> 1/2 + 1/2 (as W -> l nu), c the cosine of the angle to the spin axis P:
+        #   (1/N) dN/dc = 3/4 F_0 (1 - c^2) + 3/8 F_- (1 - c)^2 + 3/8 F_+ (1 + c)^2,  per solid angle / 2pi.
+        # Its contours are circles around P too; it vanishes at c = 1 when F_+ = 0.
+        f0, fm, fp = TOY_HELICITY
+        c = cos_to_p
+        return (0.75 * f0 * (1 - c**2) + 0.375 * fm * (1 - c)**2 + 0.375 * fp * (1 + c)**2) / (2 * np.pi)
     return (1 + TOY_ALPHA_P * cos_to_p) / (4 * np.pi)
 
 
@@ -283,7 +294,7 @@ def toy_events():
     import hashlib
     import inspect
     recipe = (inspect.getsource(toy_f_i) + inspect.getsource(toy_f_j)
-              + repr((N_TOY, TOY_ALPHA_P, TOY_POL, X1_COS, PER_SIN, X1_RANGE, X2_RANGE, SOLID_ANGLE)))
+              + repr((N_TOY, TOY_SPIN, TOY_HELICITY, TOY_ALPHA_P, TOY_POL, X1_COS, PER_SIN, X1_RANGE, X2_RANGE, SOLID_ANGLE)))
     path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                         "toy_events_%s.npz" % hashlib.sha1(recipe.encode()).hexdigest()[:10])
     if TOY_CACHE and os.path.exists(path):
