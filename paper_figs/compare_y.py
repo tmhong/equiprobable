@@ -97,7 +97,9 @@ N_BINS_Y = 12                      # about this many round-numbered bins in the 
 N_BINS_Y_DATA = 40                 # ... or this many when y is not a function of (x1, x2), as for real events
                                    # (no contours to match, so finer bins show the two types' shapes better)
 Y_EDGES = S_EDGES = None           # ... unless you give the bin edges (in y, and in -ln y)
-HIGHLIGHT_RANGE = (0.05, 0.07)     # the hatched band in y, between these two contours, and its bins in the
+TOY_Y_EDGES = (0.0, 0.02, 0.04, 0.06, 0.08, 0.10)   # the toy's bins in y: they stop below the toy's largest y
+                                   # (0.106, on a ring where grad f = 0 and dV/d(-ln y) diverges); None = automatic
+HIGHLIGHT_RANGE = (0.04, 0.06)     # the hatched band in y, between these two contours, and its bins in the
                                    # last panel (snapped to the nearest bin edges); None = HIGHLIGHT_AT
 HIGHLIGHT_AT = None                # with HIGHLIGHT_RANGE = None: a value of y (or -ln y) whose one bin gets
                                    # hatched; None = the middle: the bin of the median type-i event
@@ -159,7 +161,7 @@ MAP_Y_WITHOUT_CONTOURS = True      # without contours (real events): colour the 
 HATCH_WITHOUT_CONTOURS = False     # without contours (y depends on more than x1 and x2, as for real events):
                                    # still hatch a bin and show its type-i events as white dots
 RATIO_OF = "j/i"                   # that ratio: "j/i" = hh/ttbar, or "i/j" = ttbar/hh
-RATIO_PROJECTIONS = True           # the same ratio for dN/dx (axis on its right) and dN/dphi (axis below it);
+RATIO_PROJECTIONS = False          # the same ratio for dN/dx (axis on its right) and dN/dphi (axis below it);
 RATIO_GAP = 0.3                    # RATIO_GAP: inches added between the columns for the dN/dx ratio's values
 INF_MIN_SHARE = 0.001              # ... and at least this share of them (not just the sample's last few)
 INF_MIN_EVENTS = 5                 # past the last event of the bottom type, this many of the top type make the
@@ -700,6 +702,8 @@ if edges_b is None:
     edges_b = round_edges(lo, hi, N_BINS_Y)
     if rescale:                             # round bins in y', from 0 to 1
         edges_b = ry0 + (ry1 - ry0) * np.arange(0.0, 1.0 + 1e-9, Z_STEP)   # 0, 0.2, ..., 1
+if is_toy and not LOG and TOY_Y_EDGES is not None:
+    edges_b = TOY_Y_EDGES
 edges_b = np.asarray(edges_b, dtype=float)
 use_range = HIGHLIGHT_RANGE is not None
 if use_range:                              # the bins from one edge to another: HL0 up to (not incl.) HL1
@@ -771,8 +775,8 @@ else:
 LEFT, RIGHT, BOTTOM, TOP = 0.85, 0.75, 0.45, 0.7
 CB_PAD, CB_H = 0.07, 0.09                                      # colour bar above the top-left panel
 show_ratio = B is not None and (RATIO_CURVE is True or (RATIO_CURVE == "data" and not contour_mode))
-if show_ratio and RATIO_PROJECTIONS:
-    GAP_X += RATIO_GAP                       # room for the dN/dx ratio's values between the columns
+if show_ratio:
+    GAP_X += RATIO_GAP                       # room between the columns (the dN/dx ratio's values; the dN/dy title)
 color_r = RATIO_COLOR                       # the same everywhere, clear of the red dV curve
 short_i = SHORT_I if SHORT_I else NAME_I.strip("$")
 short_j = SHORT_J if SHORT_J else NAME_J.strip("$")
@@ -1339,6 +1343,8 @@ if volume:
               r"$\dfrac{\mathrm{d}V}{\mathrm{d}(-\ln y)}$")
     if VOLUME_CURVE:
         axy.plot(mid_fine, curve, color=CURVE_COLOR, lw=1.0, zorder=5, solid_capstyle="round", label=name_v)
+        if is_toy:                      # keep the whole curve in the panel (it rises steeply below y_max)
+            axy.set_ylim(top=max(axy.get_ylim()[1], 1.06 * np.nanmax(curve)))
     else:
         axy.plot(mid_b, from_volume, "o", color=CURVE_COLOR, ms=3.2, zorder=5, label=name_v)
     legend_y = axy.legend(loc="upper left", bbox_to_anchor=(0.5, TITLE_TOP), borderaxespad=0, borderpad=0,
@@ -1611,8 +1617,10 @@ if show_ratio:                              # the ratio axes' titles near their 
         if RATIO_PROJECTIONS and ax_r is ax2r:
             (title_at_plot_top if is_toy else title_above_top_value)(ax_r)    # top right: level with the
                                             # top value (toy), or just above it (events)
-        else:
+        elif RATIO_PROJECTIONS:
             ax_r.set_ylabel("")             # the bottom plots: no title, all their values kept
+        else:                               # only the last panel has a ratio: its title at its top
+            title_at_plot_top(ax_r) if is_toy else title_above_top_value(ax_r)
 
 # ---- arrows between the panels (figure coordinates, from the inch layout) ----
 def at_inch(x, y):
