@@ -1,0 +1,18 @@
+{
+ "sample": "/Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed1001",
+ "dr_max": 0.4,
+ "n_all": 5000,
+ "n_presel": 1203,
+ "n_all4_matched": 821,
+ "n_matched_presel": 351,
+ "n_chi2_reco_ok": 1198,
+ "n_both": 351,
+ "chi2_all_roles_right_of_matched": 0.6267806267806267,
+ "chi2_same_jets_of_matched": 0.8034188034188035,
+ "per_parton_match_frac": {
+  "b_had": 0.6602,
+  "b_lep": 0.647,
+  "q_down": 0.5528,
+  "q_up": 0.6158
+ }
+}

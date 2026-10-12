@@ -430,3 +430,10 @@ Newest entries are at the bottom. Numbers refer to the samples listed under "Sam
 - **Rebuilt all six documents:**
   - Slides: 202 / 199 / 199 pages, 0 overfull boxes.
   - Notes: 46 pages each.
+
+## 2026-10-12 — Study T: reco with perfect (ΔR-matched) jet assignment (`study_truthmatch/`)
+- Delphes reco jets matched one-to-one to the LHE b_had, b_lep, q_down, q_up (greedy, ΔR < 0.4); preselection as usual; ν from E_T^miss + m_W, root with m(ℓνb_lep) closest to m_t. Angles cached as `angles_down_dRmatch.npz` next to each sample; fit with `osde_fit.py --levels reco --config study_truthmatch/config_dRmatch.py --out study_truthmatch/osde_dRmatch` (same basis as the paper).
+- Matching: 7.1% of tt̄ (7072 of 100k; 29% of the χ²-reco events), 3.5% of HH(170) (698). χ² gets all four roles right in 64% (tt̄) / 42% (HH) of the matched events.
+- AUC HH(170) vs tt̄: parton 0.638, parton+trig 0.652, gen χ² 0.547, reco χ² 0.534, reco χ² on the matched events 0.536, **reco matched 0.573** (vs independent tt̄ 0.574, vs pu0 tt̄ 0.569). Smaller basis (3,3; 5184 terms): χ² 0.538, matched 0.579. tt̄_R (F_R=0.3): χ² 0.510, matched 0.526.
+- Corner with matched-jet masses: BW mass score alone AUC 0.737; q<0.2 corner ×3.4±0.4 (χ² jets: ×1.7).
+- Results: `study_truthmatch/results.json`, `results_small.json`, `summary*.png`, `corner_matched*.png`.

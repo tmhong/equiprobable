@@ -1,0 +1,5 @@
+[osde] angles from cache samples/ttbar_bblvqq/run_seed1001/angles_down_truth.npz
+[osde] angles from cache samples/hh_bblvqq/run_m170_seed2170/angles_down_truth.npz
+[osde] angles from cache samples/ttbar_bblvqq/run_seed12345/angles_down_truth.npz
+[osde] reco: N_train=24030  significant(>3σ)=154/5184  ∫f=1.007  f<=0: train 2.8%, hh 3.5%, test 3.5%  AUC(hh vs tt)=0.539
+[osde] outputs in study_truthmatch/osde_chi2_small

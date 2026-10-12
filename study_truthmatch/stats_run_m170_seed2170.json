@@ -1,0 +1,18 @@
+{
+ "sample": "/Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_m170_seed2170",
+ "dr_max": 0.4,
+ "n_all": 20000,
+ "n_presel": 4026,
+ "n_all4_matched": 2246,
+ "n_matched_presel": 698,
+ "n_chi2_reco_ok": 4005,
+ "n_both": 698,
+ "chi2_all_roles_right_of_matched": 0.42120343839541546,
+ "chi2_same_jets_of_matched": 0.7320916905444126,
+ "per_parton_match_frac": {
+  "b_had": 0.58075,
+  "b_lep": 0.5722,
+  "q_down": 0.45295,
+  "q_up": 0.4665
+ }
+}

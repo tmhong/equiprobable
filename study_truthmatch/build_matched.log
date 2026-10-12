@@ -1,0 +1,80 @@
+[run_seed1001] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed1001/parton_events.lhe.gz
+[run_seed1001] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed1001/delphes_events.root
+{
+ "sample": "/Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed1001",
+ "dr_max": 0.4,
+ "n_all": 100000,
+ "n_presel": 24140,
+ "n_all4_matched": 16348,
+ "n_matched_presel": 7072,
+ "n_chi2_reco_ok": 24030,
+ "n_both": 7061,
+ "chi2_all_roles_right_of_matched": 0.6365953830902138,
+ "chi2_same_jets_of_matched": 0.7997450786007647,
+ "per_parton_match_frac": {
+  "b_had": 0.66448,
+  "b_lep": 0.66026,
+  "q_down": 0.54052,
+  "q_up": 0.6167
+ }
+}
+[run_seed12345] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed12345/parton_events.lhe.gz
+[run_seed12345] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed12345/delphes_events.root
+{
+ "sample": "/Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed12345",
+ "dr_max": 0.4,
+ "n_all": 10000,
+ "n_presel": 2454,
+ "n_all4_matched": 1600,
+ "n_matched_presel": 698,
+ "n_chi2_reco_ok": 2440,
+ "n_both": 696,
+ "chi2_all_roles_right_of_matched": 0.6350574712643678,
+ "chi2_same_jets_of_matched": 0.8017241379310345,
+ "per_parton_match_frac": {
+  "b_had": 0.6635,
+  "b_lep": 0.6598,
+  "q_down": 0.5341,
+  "q_up": 0.6159
+ }
+}
+[pu0_fit] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/pu0_fit/parton_events.lhe.gz
+[pu0_fit] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/pu0_fit/delphes_events.root
+{
+ "sample": "/Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/pu0_fit",
+ "dr_max": 0.4,
+ "n_all": 50000,
+ "n_presel": 10262,
+ "n_all4_matched": 7013,
+ "n_matched_presel": 2894,
+ "n_chi2_reco_ok": 10217,
+ "n_both": 2890,
+ "chi2_all_roles_right_of_matched": 0.6262975778546713,
+ "chi2_same_jets_of_matched": 0.7930795847750866,
+ "per_parton_match_frac": {
+  "b_had": 0.64302,
+  "b_lep": 0.64438,
+  "q_down": 0.51922,
+  "q_up": 0.59726
+ }
+}
+[run_m170_seed2170] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_m170_seed2170/parton_events.lhe.gz
+[run_m170_seed2170] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_m170_seed2170/delphes_events.root
+{
+ "sample": "/Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_m170_seed2170",
+ "dr_max": 0.4,
+ "n_all": 20000,
+ "n_presel": 4026,
+ "n_all4_matched": 2246,
+ "n_matched_presel": 698,
+ "n_chi2_reco_ok": 4005,
+ "n_both": 698,
+ "chi2_all_roles_right_of_matched": 0.42120343839541546,
+ "chi2_same_jets_of_matched": 0.7320916905444126,
+ "per_parton_match_frac": {
+  "b_had": 0.58075,
+  "b_lep": 0.5722,
+  "q_down": 0.45295,
+  "q_up": 0.4665
+ }
+}

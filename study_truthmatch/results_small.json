@@ -1,0 +1,84 @@
+{
+ "fr": 0.3,
+ "matching": {
+  "run_seed1001": {
+   "n_all": 100000,
+   "n_matched": 7072,
+   "eff_matched": 0.07072,
+   "n_chi2": 24030,
+   "matched_of_chi2": 0.2942987931751977,
+   "chi2_all_roles_right_of_matched": 0.6365953830902138
+  },
+  "run_seed12345": {
+   "n_all": 10000,
+   "n_matched": 698,
+   "eff_matched": 0.0698,
+   "n_chi2": 2440,
+   "matched_of_chi2": 0.2860655737704918,
+   "chi2_all_roles_right_of_matched": 0.6350574712643678
+  },
+  "pu0_fit": {
+   "n_all": 50000,
+   "n_matched": 2894,
+   "eff_matched": 0.05788,
+   "n_chi2": 10217,
+   "matched_of_chi2": 0.28325340119408826,
+   "chi2_all_roles_right_of_matched": 0.6262975778546713
+  },
+  "run_m170_seed2170": {
+   "n_all": 20000,
+   "n_matched": 698,
+   "eff_matched": 0.0349,
+   "n_chi2": 4005,
+   "matched_of_chi2": 0.17428214731585517,
+   "chi2_all_roles_right_of_matched": 0.42120343839541546
+  }
+ },
+ "auc_hh": {
+  "parton": 0.638427825,
+  "parton_trig": 0.6523399799898294,
+  "gen_chi2": 0.5471428157730568,
+  "reco_chi2_all": 0.5380638849793979,
+  "reco_chi2_on_matched_events": 0.537904442214367,
+  "reco_matched": 0.5790635655849291,
+  "reco_matched_vs_test_tt": 0.5818630388913063,
+  "reco_matched_vs_pu0_tt": 0.5704669081173775
+ },
+ "auc_ttR": {
+  "reco_chi2_all": 0.5091718436952531,
+  "reco_chi2_on_matched_events": 0.5095493836540215,
+  "reco_matched": 0.5285614776772176
+ },
+ "auc_hh_cos_theta_alone": {
+  "reco_matched": 0.6189486525820379,
+  "reco_chi2_all": 0.6098150927653375
+ },
+ "corner_matched": {
+  "0.2": {
+   "tt": 0.035633484162895926,
+   "hh": 0.14040114613180515,
+   "enrichment": 3.940146450175104,
+   "err": 0.39801489625527414,
+   "angles_alone_same_tt": 1.2061672806658479,
+   "masses_alone_same_tt": 5.387547186974121
+  },
+  "0.3": {
+   "tt": 0.0847002262443439,
+   "hh": 0.24785100286532952,
+   "enrichment": 2.9262141774016865,
+   "err": 0.22247594416983146,
+   "angles_alone_same_tt": 1.3531626253880633,
+   "masses_alone_same_tt": 4.110231474616242
+  }
+ },
+ "corr_qOmega_qm_tt": -0.030397785172902477,
+ "auc_hh_masses_alone_matched": 0.7371412665793671,
+ "auc_hh_product_matched": 0.7236981834005367,
+ "n": {
+  "tt_fit": 7072,
+  "hh": 698,
+  "tt_test": 698,
+  "tt_pu0": 2894,
+  "n_coefficients": 5184
+ }
+}

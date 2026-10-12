@@ -1,0 +1,5 @@
+[osde] angles from cache samples/ttbar_bblvqq/run_seed1001/angles_down_dRmatch.npz
+[osde] angles from cache samples/hh_bblvqq/run_m170_seed2170/angles_down_dRmatch.npz
+[osde] angles from cache samples/ttbar_bblvqq/run_seed12345/angles_down_dRmatch.npz
+[osde] reco: N_train=7072  significant(>3σ)=143/14400  ∫f=0.982  f<=0: train 8.4%, hh 12.6%, test 9.0%  AUC(hh vs tt)=0.574
+[osde] outputs in study_truthmatch/osde_dRmatch

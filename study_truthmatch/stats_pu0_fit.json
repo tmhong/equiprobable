@@ -1,0 +1,18 @@
+{
+ "sample": "/Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/pu0_fit",
+ "dr_max": 0.4,
+ "n_all": 50000,
+ "n_presel": 10262,
+ "n_all4_matched": 7013,
+ "n_matched_presel": 2894,
+ "n_chi2_reco_ok": 10217,
+ "n_both": 2890,
+ "chi2_all_roles_right_of_matched": 0.6262975778546713,
+ "chi2_same_jets_of_matched": 0.7930795847750866,
+ "per_parton_match_frac": {
+  "b_had": 0.64302,
+  "b_lep": 0.64438,
+  "q_down": 0.51922,
+  "q_up": 0.59726
+ }
+}
