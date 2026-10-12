@@ -27,6 +27,8 @@ from plotting.angles import ANGLE_NAMES  # noqa: E402
 from wtb_reweight import weights  # noqa: E402
 
 SAMPLES = {"tt": "run_seed1001", "hh": "run_m170_seed2170", "h1": "run_seed2001"}
+HH_LBL = r"$HH_{170}$"    # short legend label
+HH_C = M.AMBER          # the amber of the toy figure (compare_y.py LINE_J), now that hh(125) is not drawn
 
 
 def load(fit_dir):
@@ -60,18 +62,16 @@ def fig2(x, f, y, w_r, path, with_h1=False):
         r, c = divmod(i, 2)
         ax = M.place(fig, T + c * (P + GX + T), B + (1 - r) * (P + GY), P, P, W, H)
         h_tt, _ = np.histogram(x["tt"][a], edges, density=True)
-        h_r, _ = np.histogram(x["tt"][a], edges, weights=w_r, density=True)
         h_hh, _ = np.histogram(x["hh"][a], edges, density=True)
         h_h1 = np.histogram(x["h1"][a], edges, density=True)[0] if with_h1 else np.zeros(len(edges) - 1)
         cols = cmap(0.15 + 0.55 * np.clip((u_bins[a] - lo_u) / (hi_u - lo_u), 0, 1))
         ax.bar(0.5 * (edges[1:] + edges[:-1]), h_tt, width=np.diff(edges), color=cols, edgecolor=cols, lw=0.3)
         ax.stairs(h_tt, edges, color=M.NAVY, lw=1.0)
         ax.plot(grid, f.projection(a, grid), color=M.INK, lw=1.2)
-        ax.stairs(h_r, edges, color=M.GRAY, lw=1.2, ls=(0, (4, 2)))
-        ax.stairs(h_hh, edges, color=M.HH170_C, lw=1.3)
+        ax.stairs(h_hh, edges, color=HH_C, lw=1.3)
         if with_h1:
             ax.stairs(h_h1, edges, color=M.HH125_C, lw=1.3)
-        top = max(h_tt.max(), h_r.max(), h_hh.max(), h_h1.max())
+        top = max(h_tt.max(), h_hh.max(), h_h1.max())
         ax.set_xlim(-1, 1)
         ax.set_ylim(0, (1.75 if i == 1 else 1.08) * top)
         ax.set_xticks([-1, -0.5, 0, 0.5, 1])
@@ -79,12 +79,46 @@ def fig2(x, f, y, w_r, path, with_h1=False):
         M.upright_ylabel(ax, M.dndx("x"))
         M.finish(ax)
     h = [plt.Rectangle((0, 0), 1, 1, fc=cmap(0.45), ec=M.NAVY, lw=1.0), plt.Line2D([], [], color=M.INK, lw=1.2),
-         plt.Line2D([], [], color=M.GRAY, lw=1.2, ls=(0, (4, 2))), plt.Line2D([], [], color=M.HH170_C, lw=1.3)]
-    labs = [M.TT_L, r"$f_{t\bar{t}}$", r"$t\bar{t}_R$", M.HH_L]
+         plt.Line2D([], [], color=HH_C, lw=1.3)]
+    labs = [M.TT_L, r"$f_{t\bar{t}}$", HH_LBL]
     if with_h1:
         h.append(plt.Line2D([], [], color=M.HH125_C, lw=1.3)); labs.append(M.H1_L)
     fig.axes[1].legend(h, labs, loc="upper right", ncol=1, handlelength=1.4, handletextpad=0.4,
                        labelspacing=0.2, borderaxespad=0.25)
+    for ext in ("pdf", "png"):
+        fig.savefig(f"{path}.{ext}", dpi=150)
+    plt.close(fig)
+    return W
+
+
+def fig3_plot(path, panels):
+    """As make_paper_figs.fig3_plot: y and υ side by side, tt̄ filled with the white-to-navy gradient in υ,
+    HH(170) as a line; no tt̄_R."""
+    from matplotlib.colors import LinearSegmentedColormap
+    cmap = LinearSegmentedColormap.from_list("tt", ["#ffffff", M.NAVY])
+    P = M.PANEL_DATA
+    T, GX, B, RT, TOP = 0.75, 0.12, 0.62, 0.15, 0.12
+    W = T + P + GX + T + P + RT
+    H = B + P + TOP
+    fig = plt.figure(figsize=(W, H))
+    for col, (v, edges, sym, xlab, shade_bins) in enumerate(panels):
+        ax = M.place(fig, T + col * (P + GX + T), B, P, P, W, H)
+        clip = lambda u: np.clip(u, edges[0], edges[-1] - 1e-9 * (edges[-1] - edges[0]))
+        wd = np.diff(edges)
+        h = {k: np.histogram(clip(v[k]), edges)[0] / len(v[k]) for k in ("tt", "hh")}
+        colors = cmap(0.08 + 0.92 * shade_bins)
+        for i in range(len(wd)):
+            ax.fill_between([edges[i], edges[i + 1]], 0, h["tt"][i] / wd[i], color=colors[i], lw=0)
+        ax.stairs(h["tt"] / wd, edges, color=M.NAVY, lw=1.0)
+        ax.stairs(h["hh"] / wd, edges, color=HH_C, lw=1.3)
+        ax.set_xlim(edges[0], edges[-1])
+        ax.set_ylim(0, 1.08 * max((hh / wd).max() for hh in h.values()))
+        ax.set_xlabel(xlab)
+        M.upright_ylabel(ax, M.dndx(sym))
+        M.finish(ax)
+    hs = [plt.Rectangle((0, 0), 1, 1, fc=cmap(0.45), ec=M.NAVY, lw=1.0), plt.Line2D([], [], color=HH_C, lw=1.3)]
+    fig.axes[0].legend(hs, [M.TT_L, HH_LBL], loc="upper right", bbox_to_anchor=(1.03, 1.0), handlelength=1.3,
+                       handletextpad=0.4, labelspacing=0.25, borderaxespad=0.1)
     for ext in ("pdf", "png"):
         fig.savefig(f"{path}.{ext}", dpi=150)
     plt.close(fig)
@@ -111,7 +145,7 @@ def fig3(y, w_r, path, with_h1=False):
     v_t = {"tt": t["tt"], "hh": t["hh"], **({"h1": t["x"]} if with_h1 else {})}
     panels = [(v_y, y_edges, "y", rf"$y\ \ [10^{{{expo}}}]$", shade(ups_of_y(yc))),
               (v_t, t_edges, r"\upsilon", r"$\upsilon$", shade(tc))]
-    return M.fig3_plot(path, A.fr, panels, w_r, n_eff_r, with_h1), n_eff_r
+    return fig3_plot(path, panels), n_eff_r
 
 
 def roc_and_ratio(y_tt, y_s, q_edges):
@@ -137,7 +171,7 @@ def fig_levels(y_matched, path):
           ("parton_trig", "parton + trigger", "-", M.INK),
           ("gen", r"gen, $\chi^2$", (0, (5, 2)), M.GRAY),
           ("reco", r"reco, $\chi^2$", "-", M.GRAY),
-          ("matched", r"reco, matched", "-", M.HH170_C)]
+          ("matched", r"reco, matched", "-", HH_C)]
     q_edges = np.linspace(0, 1, 11)
     curves = {}
     for key, *_ in lv:
