@@ -1,0 +1,207 @@
+#!/usr/bin/env python3
+"""
+Paper figures for reco level with Delta-R-matched jets (study T), in the style of paper_figs/make_paper_figs.py.
+
+  fig2_osde_projections_recomatched   Fig. 2: four angles, tt̄ (matched reco) with the f_tt̄ projection; tt̄_R,
+                                      HH(170), hh(125) overlaid (matched reco too)
+  fig3_discriminator_recomatched      Fig. 3: y and υ for tt̄ (LOO), tt̄_R, HH(170), hh(125)
+  figA_levels_hh170                   appendix: HH(170) vs tt̄ at every level (parton, parton+trigger, gen chi2,
+                                      reco chi2, reco matched): ROC, and the HH/tt̄ density ratio vs the tt̄ quantile q
+
+Run: OMP_NUM_THREADS=3 .venv/bin/python study_truthmatch/paper_figs_matched.py [--fr 0.3]
+"""
+import argparse
+import json
+import os
+import sys
+
+import numpy as np
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(HERE)
+sys.path[:0] = [ROOT, os.path.join(ROOT, "paper_figs"), os.path.join(ROOT, "study_bsm")]
+import make_paper_figs as M  # noqa: E402  (also sets the paper's rcParams)
+from make_paper_figs import plt  # noqa: E402
+from plotting import osde  # noqa: E402
+from plotting.angles import ANGLE_NAMES  # noqa: E402
+from wtb_reweight import weights  # noqa: E402
+
+SAMPLES = {"tt": "run_seed1001", "hh": "run_m170_seed2170", "h1": "run_seed2001"}
+
+
+def load(fit_dir):
+    D = {k: np.load(os.path.join(HERE, f"data_{s}.npz")) for k, s in SAMPLES.items()}
+    x = {k: {a: D[k][f"m_{a}"][D[k]["ok"]] for a in ANGLE_NAMES} for k in D}
+    f = osde.load_density(os.path.join(fit_dir, "f_ttbar_reco.npz"))
+    y = {"tt": f.loo(x["tt"]), "hh": f(x["hh"]), "h1": f(x["h1"])}
+    stored = np.load(os.path.join(fit_dir, "scores_reco.npz"))["train"]
+    assert np.corrcoef(y["tt"], stored)[0, 1] > 0.999
+    ok = D["tt"]["ok"]
+    w_r = weights(D["tt"]["p_cos_theta_prime"][ok], D["tt"]["p_cos_theta_prime_tilde"][ok], A.fr)
+    return D, x, f, y, w_r
+
+
+def fig2(x, f, y, w_r, path, with_h1=False):
+    """As make_paper_figs.fig2, with the matched-reco samples."""
+    from matplotlib.colors import LinearSegmentedColormap
+    cmap = LinearSegmentedColormap.from_list("tt", ["#ffffff", M.NAVY])
+    ups = M.npad_upsilon({"tt": y["tt"], "x": y["h1"]}, {"tt": y["tt"]})[0]["tt"]
+    edges = np.linspace(-1, 1, 25)
+    u_bins = {a: np.histogram(x["tt"][a], edges, weights=ups)[0] / np.maximum(np.histogram(x["tt"][a], edges)[0], 1)
+              for a, _ in M.ANG2}
+    lo_u = min(v.min() for v in u_bins.values()); hi_u = max(v.max() for v in u_bins.values())
+    grid = np.linspace(-1, 1, 401)
+    P = M.PANEL_DATA
+    T, GX, B, GY, TOP = 0.68, 0.10, 0.55, 0.60, 0.08
+    W = T + P + GX + T + P + 0.12
+    H = B + P + GY + P + TOP
+    fig = plt.figure(figsize=(W, H))
+    for i, (a, sym) in enumerate(M.ANG2):
+        r, c = divmod(i, 2)
+        ax = M.place(fig, T + c * (P + GX + T), B + (1 - r) * (P + GY), P, P, W, H)
+        h_tt, _ = np.histogram(x["tt"][a], edges, density=True)
+        h_r, _ = np.histogram(x["tt"][a], edges, weights=w_r, density=True)
+        h_hh, _ = np.histogram(x["hh"][a], edges, density=True)
+        h_h1 = np.histogram(x["h1"][a], edges, density=True)[0] if with_h1 else np.zeros(len(edges) - 1)
+        cols = cmap(0.15 + 0.55 * np.clip((u_bins[a] - lo_u) / (hi_u - lo_u), 0, 1))
+        ax.bar(0.5 * (edges[1:] + edges[:-1]), h_tt, width=np.diff(edges), color=cols, edgecolor=cols, lw=0.3)
+        ax.stairs(h_tt, edges, color=M.NAVY, lw=1.0)
+        ax.plot(grid, f.projection(a, grid), color=M.INK, lw=1.2)
+        ax.stairs(h_r, edges, color=M.GRAY, lw=1.2, ls=(0, (4, 2)))
+        ax.stairs(h_hh, edges, color=M.HH170_C, lw=1.3)
+        if with_h1:
+            ax.stairs(h_h1, edges, color=M.HH125_C, lw=1.3)
+        top = max(h_tt.max(), h_r.max(), h_hh.max(), h_h1.max())
+        ax.set_xlim(-1, 1)
+        ax.set_ylim(0, (1.75 if i == 1 else 1.08) * top)
+        ax.set_xticks([-1, -0.5, 0, 0.5, 1])
+        ax.set_xlabel(rf"$x = {sym}$")
+        M.upright_ylabel(ax, M.dndx("x"))
+        M.finish(ax)
+    h = [plt.Rectangle((0, 0), 1, 1, fc=cmap(0.45), ec=M.NAVY, lw=1.0), plt.Line2D([], [], color=M.INK, lw=1.2),
+         plt.Line2D([], [], color=M.GRAY, lw=1.2, ls=(0, (4, 2))), plt.Line2D([], [], color=M.HH170_C, lw=1.3)]
+    labs = [M.TT_L, r"$f_{t\bar{t}}$", r"$t\bar{t}_R$", M.HH_L]
+    if with_h1:
+        h.append(plt.Line2D([], [], color=M.HH125_C, lw=1.3)); labs.append(M.H1_L)
+    fig.axes[1].legend(h, labs, loc="upper right", ncol=1, handlelength=1.4, handletextpad=0.4,
+                       labelspacing=0.2, borderaxespad=0.25)
+    for ext in ("pdf", "png"):
+        fig.savefig(f"{path}.{ext}", dpi=150)
+    plt.close(fig)
+    return W
+
+
+def fig3(y, w_r, path, with_h1=False):
+    """As make_paper_figs.fig3 (extra=True), with the matched-reco scores."""
+    y_tt, y_hh, y_h1 = y["tt"], y["hh"], y["h1"]
+    n_eff_r = w_r.sum() ** 2 / (w_r ** 2).sum()
+    t, _ = M.npad_upsilon({"tt": y_tt, "x": y_h1}, {"tt": y_tt, "hh": y_hh, "x": y_h1})
+    expo = int(np.floor(np.log10(np.percentile(y_tt, 99))))
+    scale = 10.0 ** expo
+    ylo = np.percentile(np.r_[y_tt, y_hh], 0.05)
+    yhi = np.percentile(np.r_[y_tt, y_hh], 99.7)
+    y_edges = np.linspace(ylo - 0.05 * (yhi - ylo), yhi, 41) / scale
+    t_edges = np.linspace(0, 1, 34)
+    order = np.argsort(y_tt)
+    ups_of_y = lambda yv: np.interp(yv * scale, y_tt[order], t["tt"][order])
+    lo, hi = np.percentile(t["tt"], [5, 60])
+    shade = lambda u: np.clip((u - lo) / (hi - lo), 0, 1)
+    yc, tc = 0.5 * (y_edges[1:] + y_edges[:-1]), 0.5 * (t_edges[1:] + t_edges[:-1])
+    v_y = {"tt": y_tt / scale, "hh": y_hh / scale, **({"h1": y_h1 / scale} if with_h1 else {})}
+    v_t = {"tt": t["tt"], "hh": t["hh"], **({"h1": t["x"]} if with_h1 else {})}
+    panels = [(v_y, y_edges, "y", rf"$y\ \ [10^{{{expo}}}]$", shade(ups_of_y(yc))),
+              (v_t, t_edges, r"\upsilon", r"$\upsilon$", shade(tc))]
+    return M.fig3_plot(path, A.fr, panels, w_r, n_eff_r, with_h1), n_eff_r
+
+
+def roc_and_ratio(y_tt, y_s, q_edges):
+    """Low y = anomalous.  ROC: tt̄ and signal efficiencies of y < cut; ratio: signal / tt̄ density in bins of the
+    tt̄ quantile q of y (tt̄ is uniform in q)."""
+    s = np.sort(y_tt)
+    q_s = np.searchsorted(s, y_s, side="right") / len(s)
+    eff_t = np.linspace(0, 1, 201)
+    eff_s = np.array([np.mean(q_s <= e) for e in eff_t])
+    h = np.histogram(np.clip(q_s, 0, 1 - 1e-9), q_edges)[0] / len(q_s) / np.diff(q_edges)
+    err = np.sqrt(np.histogram(np.clip(q_s, 0, 1 - 1e-9), q_edges)[0]) / len(q_s) / np.diff(q_edges)
+    return eff_t, eff_s, h, err
+
+
+def auc(y_tt, y_s):
+    x = np.r_[y_s, y_tt]
+    r = x.argsort().argsort() + 1.0
+    return 1 - (r[:len(y_s)].sum() - len(y_s) * (len(y_s) + 1) / 2) / (len(y_s) * len(y_tt))
+
+
+def fig_levels(y_matched, path):
+    lv = [("parton", "parton", (0, (1, 1.2)), M.INK),
+          ("parton_trig", "parton + trigger", "-", M.INK),
+          ("gen", r"gen, $\chi^2$", (0, (5, 2)), M.GRAY),
+          ("reco", r"reco, $\chi^2$", "-", M.GRAY),
+          ("matched", r"reco, matched", "-", M.HH170_C)]
+    q_edges = np.linspace(0, 1, 11)
+    curves = {}
+    for key, *_ in lv:
+        if key == "matched":
+            yt, ys = y_matched["tt"], y_matched["hh"]
+        else:
+            sc = np.load(os.path.join(ROOT, "osde_h170", f"scores_{key}.npz"))
+            yt, ys = sc["train"], sc["hh"]
+        curves[key] = (*roc_and_ratio(yt, ys, q_edges), auc(yt, ys), len(ys))
+    P = M.PANEL_DATA
+    T, GX, B, RT, TOP = 0.75, 0.55, 0.62, 0.15, 1.05           # room for the legend above the panels
+    W = T + P + GX + T + P + RT
+    H = B + P + TOP
+    fig = plt.figure(figsize=(W, H))
+    ax1 = M.place(fig, T, B, P, P, W, H)
+    ax2 = M.place(fig, T + P + GX + T, B, P, P, W, H)
+    ax1.plot([0, 1], [0, 1], color=M.GRAY, lw=0.5, ls=":")
+    qc = 0.5 * (q_edges[1:] + q_edges[:-1])
+    ax2.axhline(1, color=M.GRAY, lw=0.5, ls=":")
+    for key, lab, ls, col in lv:
+        eff_t, eff_s, h, err, a, _ = curves[key]
+        lw = 1.6 if key in ("matched", "parton_trig") else 1.2
+        ax1.plot(eff_t, eff_s, color=col, ls=ls, lw=lw)
+        ax2.plot([], [], color=col, ls=ls, lw=lw, label=f"{lab}  (${a:.3f}$)")
+        ax2.stairs(h, q_edges, color=col, ls=ls, lw=lw, baseline=None)
+        if key == "matched":
+            ax2.fill_between(q_edges, np.r_[h - err, (h - err)[-1]], np.r_[h + err, (h + err)[-1]], step="post",
+                             color=col, alpha=0.18, lw=0)
+    ax1.set_xlim(0, 1); ax1.set_ylim(0, 1)
+    ax1.set_xlabel(r"$t\bar{t}$ efficiency")
+    ax1.set_ylabel(r"$HH$ efficiency")
+    fig.legend(*ax2.get_legend_handles_labels(), loc="upper center", ncol=2, bbox_to_anchor=(0.5, 1.0),
+               fontsize=M.FONT * 0.86, handlelength=1.8, columnspacing=1.2, labelspacing=0.15, borderaxespad=0.1)
+    ax2.set_xlim(0, 1)
+    ax2.set_ylim(0.4, 2.6)
+    ax2.set_xlabel(r"$t\bar{t}$ quantile $q$ of $y$")
+    ax2.set_ylabel(r"$HH$ / $t\bar{t}$ density")
+    for ax in (ax1, ax2):
+        M.finish(ax, no_values_y=False)
+    for ext in ("pdf", "png"):
+        fig.savefig(f"{path}.{ext}", dpi=150)
+    plt.close(fig)
+    return {k: {"auc": float(v[4]), "n_hh": int(v[5]), "ratio_lowest_q_bin": float(v[2][0])} for k, v in curves.items()}, W
+
+
+def main():
+    global A
+    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("--fr", type=float, default=0.3)
+    p.add_argument("--fit", default=os.path.join(HERE, "osde_dRmatch"))
+    A = p.parse_args()
+    D, x, f, y, w_r = load(A.fit)
+    col = 0.95 * 3.375
+    incl = lambda w: f"width={w * (col / M.DATA_WIDTH_IN) / 3.375:.3f}\\linewidth"
+    W2 = fig2(x, f, y, w_r, os.path.join(HERE, "fig2_osde_projections_recomatched"))
+    W3, neff = fig3(y, w_r, os.path.join(HERE, "fig3_discriminator_recomatched"))
+    lev, WA = fig_levels(y, os.path.join(HERE, "figA_levels_hh170"))
+    info = {"n": {k: int(len(v["Y"])) for k, v in x.items()}, "ttR_n_eff": float(neff),
+            "auc_hh170": float(auc(y["tt"], y["hh"])), "auc_hh125": float(auc(y["tt"], y["h1"])),
+            "auc_ttR": None, "levels_hh170": lev,
+            "include": {"fig2": incl(W2), "fig3": incl(W3), "figA": incl(WA)}}
+    json.dump(info, open(os.path.join(HERE, "paper_figs_matched.json"), "w"), indent=1)
+    print(json.dumps(info, indent=1))
+
+
+if __name__ == "__main__":
+    main()

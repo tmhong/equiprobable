@@ -1,0 +1,43 @@
+{
+ "n": {
+  "tt": 7072,
+  "hh": 698,
+  "h1": 149
+ },
+ "ttR_n_eff": 4040.9640029012867,
+ "auc_hh170": 0.57288317299589,
+ "auc_hh125": 0.5274568009960825,
+ "auc_ttR": null,
+ "levels_hh170": {
+  "parton": {
+   "auc": 0.6358771745,
+   "n_hh": 20000,
+   "ratio_lowest_q_bin": 2.246
+  },
+  "parton_trig": {
+   "auc": 0.6485442757199935,
+   "n_hh": 14662,
+   "ratio_lowest_q_bin": 2.3359705360796617
+  },
+  "gen": {
+   "auc": 0.550108708425851,
+   "n_hh": 8871,
+   "ratio_lowest_q_bin": 1.3685041145304926
+  },
+  "reco": {
+   "auc": 0.5341538536671026,
+   "n_hh": 4005,
+   "ratio_lowest_q_bin": 1.2159800249687889
+  },
+  "matched": {
+   "auc": 0.57288317299589,
+   "n_hh": 698,
+   "ratio_lowest_q_bin": 1.5042979942693409
+  }
+ },
+ "include": {
+  "fig2": "width=0.893\\linewidth",
+  "fig3": "width=0.923\\linewidth",
+  "figA": "width=0.991\\linewidth"
+ }
+}
