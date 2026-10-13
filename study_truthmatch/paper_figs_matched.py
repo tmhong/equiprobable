@@ -168,10 +168,9 @@ def auc(y_tt, y_s):
 
 def fig_levels(y_matched, path):
     lv = [("parton", "parton", (0, (1, 1.2)), M.INK),
-          ("parton_trig", "parton + trigger", "-", M.INK),
-          ("gen", r"gen, $\chi^2$", (0, (5, 2)), M.GRAY),
-          ("reco", r"reco, $\chi^2$", "-", M.GRAY),
-          ("matched", r"reco, matched", "-", HH_C)]
+          ("gen", r"generator, $\chi^2$", (0, (5, 2)), M.GRAY),
+          ("reco", r"reconstructed, $\chi^2$", "-", M.GRAY),
+          ("matched", r"reconstructed, truth matched", "-", HH_C)]
     q_edges = np.linspace(0, 1, 11)
     curves = {}
     for key, *_ in lv:
@@ -193,7 +192,7 @@ def fig_levels(y_matched, path):
     ax2.axhline(1, color=M.GRAY, lw=0.5, ls=":")
     for key, lab, ls, col in lv:
         eff_t, eff_s, h, err, a, _ = curves[key]
-        lw = 1.6 if key in ("matched", "parton_trig") else 1.2
+        lw = 1.6 if key in ("matched", "parton") else 1.2
         ax1.plot(eff_t, eff_s, color=col, ls=ls, lw=lw)
         ax2.plot([], [], color=col, ls=ls, lw=lw, label=f"{lab}  (${a:.3f}$)")
         ax2.stairs(h, q_edges, color=col, ls=ls, lw=lw, baseline=None)
