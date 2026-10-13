@@ -54,3 +54,10 @@ The same rule is evaluated with ΔR-matched jets (`study_truthmatch`): a pass th
 
 Expected yields at 140 fb⁻¹ (σ_tt̄ = 832 pb, BR(e/μ+jets) = 0.288 from the PDG W branching ratios; corrected from 0.291 before any result) are reported for context: S/B in the tail and
 Z = S/√(B + (δB)²) with δ = 0, 5% and 10%.
+
+## Erratum (added 2026-10-13, after the results; the rule above is unchanged)
+- The stop point (300, 120) is not "at the edge" of the exclusion: ATLAS (arXiv:2012.03799) excludes the
+  Δm = m_t diagonal up to m_t̃ = 600 GeV. It serves as a kinematic benchmark only.
+- The experiments generate η_t with Γ = 2.8 GeV; 7 GeV is the Fuks et al. (2021) value. In lepton+jets CMS measures
+  5.1 ± 0.9 pb (arXiv:2608.19546); 8.8 pb is the dilepton value. Neither affects R.
+- Criterion (b) has no E_T^miss handle, an omission for a benchmark with invisible particles (see VERDICT.md).

@@ -1,0 +1,218 @@
+{
+ "parton_trig": {
+  "etat": {
+   "wp0.01": {
+    "inclusive": 1.453,
+    "conditional_on_mtt_decile": 0.852,
+    "cond_err": 0.11,
+    "n_used": 55543
+   },
+   "wp0.1": {
+    "inclusive": 1.308,
+    "conditional_on_mtt_decile": 0.887,
+    "cond_err": 0.032,
+    "n_used": 55543
+   }
+  },
+  "H350": {
+   "wp0.01": {
+    "inclusive": 1.463,
+    "conditional_on_mtt_decile": 1.076,
+    "cond_err": 0.12,
+    "n_used": 14219
+   },
+   "wp0.1": {
+    "inclusive": 1.374,
+    "conditional_on_mtt_decile": 1.108,
+    "cond_err": 0.035,
+    "n_used": 14219
+   }
+  },
+  "stop": {
+   "wp0.01": {
+    "inclusive": 0.757,
+    "conditional_on_mtt_decile": 0.726,
+    "cond_err": 0.05,
+    "n_used": 45052
+   },
+   "wp0.1": {
+    "inclusive": 0.818,
+    "conditional_on_mtt_decile": 0.751,
+    "cond_err": 0.016,
+    "n_used": 45052
+   }
+  },
+  "nospin": {
+   "wp0.01": {
+    "inclusive": 1.122,
+    "conditional_on_mtt_decile": 1.108,
+    "cond_err": 0.065,
+    "n_used": 43052
+   },
+   "wp0.1": {
+    "inclusive": 1.076,
+    "conditional_on_mtt_decile": 1.075,
+    "cond_err": 0.021,
+    "n_used": 43052
+   }
+  },
+  "tt_indep": {
+   "wp0.01": {
+    "inclusive": 0.865,
+    "conditional_on_mtt_decile": 0.865,
+    "cond_err": 0.114,
+    "n_used": 7170
+   },
+   "wp0.1": {
+    "inclusive": 0.964,
+    "conditional_on_mtt_decile": 0.96,
+    "cond_err": 0.035,
+    "n_used": 7170
+   }
+  }
+ },
+ "gen": {
+  "etat": {
+   "wp0.01": {
+    "inclusive": 1.391,
+    "conditional_on_mtt_decile": 1.425,
+    "cond_err": 0.095,
+    "n_used": 31849
+   },
+   "wp0.1": {
+    "inclusive": 1.252,
+    "conditional_on_mtt_decile": 1.124,
+    "cond_err": 0.025,
+    "n_used": 31849
+   }
+  },
+  "H350": {
+   "wp0.01": {
+    "inclusive": 1.464,
+    "conditional_on_mtt_decile": 1.407,
+    "cond_err": 0.151,
+    "n_used": 8810
+   },
+   "wp0.1": {
+    "inclusive": 1.297,
+    "conditional_on_mtt_decile": 1.254,
+    "cond_err": 0.038,
+    "n_used": 8810
+   }
+  },
+  "stop": {
+   "wp0.01": {
+    "inclusive": 1.432,
+    "conditional_on_mtt_decile": 1.384,
+    "cond_err": 0.099,
+    "n_used": 29263
+   },
+   "wp0.1": {
+    "inclusive": 1.126,
+    "conditional_on_mtt_decile": 1.146,
+    "cond_err": 0.025,
+    "n_used": 29263
+   }
+  },
+  "nospin": {
+   "wp0.01": {
+    "inclusive": 0.941,
+    "conditional_on_mtt_decile": 1.05,
+    "cond_err": 0.103,
+    "n_used": 24759
+   },
+   "wp0.1": {
+    "inclusive": 1.07,
+    "conditional_on_mtt_decile": 1.078,
+    "cond_err": 0.027,
+    "n_used": 24759
+   }
+  },
+  "tt_indep": {
+   "wp0.01": {
+    "inclusive": 1.258,
+    "conditional_on_mtt_decile": 1.209,
+    "cond_err": 0.19,
+    "n_used": 4134
+   },
+   "wp0.1": {
+    "inclusive": 1.081,
+    "conditional_on_mtt_decile": 1.091,
+    "cond_err": 0.052,
+    "n_used": 4134
+   }
+  }
+ },
+ "reco": {
+  "etat": {
+   "wp0.01": {
+    "inclusive": 1.306,
+    "conditional_on_mtt_decile": 1.155,
+    "cond_err": 0.13,
+    "n_used": 15844
+   },
+   "wp0.1": {
+    "inclusive": 1.275,
+    "conditional_on_mtt_decile": 1.093,
+    "cond_err": 0.036,
+    "n_used": 15844
+   }
+  },
+  "H350": {
+   "wp0.01": {
+    "inclusive": 1.213,
+    "conditional_on_mtt_decile": 1.064,
+    "cond_err": 0.186,
+    "n_used": 4699
+   },
+   "wp0.1": {
+    "inclusive": 1.224,
+    "conditional_on_mtt_decile": 1.141,
+    "cond_err": 0.052,
+    "n_used": 4699
+   }
+  },
+  "stop": {
+   "wp0.01": {
+    "inclusive": 1.747,
+    "conditional_on_mtt_decile": 1.633,
+    "cond_err": 0.143,
+    "n_used": 16599
+   },
+   "wp0.1": {
+    "inclusive": 1.13,
+    "conditional_on_mtt_decile": 1.134,
+    "cond_err": 0.035,
+    "n_used": 16599
+   }
+  },
+  "nospin": {
+   "wp0.01": {
+    "inclusive": 0.976,
+    "conditional_on_mtt_decile": 1.052,
+    "cond_err": 0.124,
+    "n_used": 14449
+   },
+   "wp0.1": {
+    "inclusive": 1.056,
+    "conditional_on_mtt_decile": 1.04,
+    "cond_err": 0.031,
+    "n_used": 14449
+   }
+  },
+  "tt_indep": {
+   "wp0.01": {
+    "inclusive": 1.27,
+    "conditional_on_mtt_decile": 1.311,
+    "cond_err": 0.273,
+    "n_used": 2440
+   },
+   "wp0.1": {
+    "inclusive": 1.18,
+    "conditional_on_mtt_decile": 1.168,
+    "cond_err": 0.073,
+    "n_used": 2440
+   }
+  }
+ }
+}

@@ -442,3 +442,24 @@ Newest entries are at the bottom. Numbers refer to the samples listed under "Sam
 - 80k more HH(170) (seeds 2171-2174, same cards as run_m170_seed2170; `study_truthmatch/generate_hh170_more.sh`), Delta-R matched: 3451 of 1e5 events (3.45%); combined as `study_truthmatch/data_run_m170_all.npz`.
 - Truth-matched AUC 0.574 +- 0.006 (vs independent tt 0.575, pu0 tt 0.569); chi2 on the same matched events 0.547 (was 0.536 with 698 events), so about 1/3 of the gain from 0.534 is the selection of matchable events, 2/3 the jet assignment.
 - Corner (q < 0.2): x3.6 +- 0.2; masses alone x5.3 +- 0.2, angles alone x1.3 +- 0.1 at the same 3.9% of tt. HH y<=0: 11.5%. Lowest q decile ratio 1.39.
+
+## 2026-10-13: go/no-go test for a PRL (study_gonogo/): NO-GO
+- **Request:** the PRL review (~/Claude-code/review/PRL_review_2026-10-13.md) asked for a go/no-go test: does f_tt̄ flag a signal that differs from tt̄ in spin structure rather than mass, at reco level, better than mass handles and as well as a flow?
+- **Rule:** fixed before any result in `study_gonogo/CRITERIA.md` (commit 2f0f6f5). Primary detector f_tt̄ with |c|/σ > 2.5. At ε_tt̄ = 1% or 10%, R = ε_S/ε_tt̄ ≥ 2, beating the BW masses, the m_tt̄ density and the best m_tt̄ window by > 2σ, and not 2σ below the flow.
+- **New samples** (`generate_samples.py`, `study_gonogo/generate_gonogo.sh`):
+  - η_t(343, CP-odd, HC model), 80k events;
+  - stop pair (300, 120), MSSM_SLHA2, t̃ width 0.0556 GeV set by hand, `cards/delphes_card_ATLAS_lsp.tcl`, 60k events;
+  - tt̄ without spin correlations (MadSpin none), 2 × 30k events.
+  Parton-level validation ⟨cos φ⟩: tt̄ +0.079, η_t +0.338, no-spin −0.006, stop −0.003, H350 −0.120.
+- **Result:** NO-GO, 0 of 12 cells at reco (χ²) and truth-matched. Reco R@1%:
+  - η_t: f_tt̄ 1.31 vs m_tt̄ window 6.40;
+  - stop: f_tt̄ 1.75 ± 0.12 vs BW 1.47 and m_T 5.96;
+  - H350: 1.21 vs 2.40;
+  - the supervised angle BDT reaches only 1.57 (η_t) and 1.09 (no-spin).
+- **Verified** (`study_gonogo/verify/`):
+  - independent recomputation within 0.12σ; exact LOO;
+  - the η_t angular enrichment vanishes at fixed m_tt̄;
+  - the stop reco excess is an E_T^miss artifact (0.96 with the neutralinos removed from MET; 0.76 with the true ν).
+  Full write-up in `study_gonogo/VERDICT.md`.
+- **Corrections:** the stop point is already excluded by ATLAS (diagonal up to 600 GeV); the experiments' η_t uses Γ = 2.8 GeV; CMS lepton+jets measures 5.1 ± 0.9 pb.
+- **Consequence:** there is no per-event spin-structure niche, so there is no PRL claim on this basis; the paper goes to PRD.

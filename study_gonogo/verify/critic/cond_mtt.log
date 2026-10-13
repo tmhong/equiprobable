@@ -1,0 +1,10 @@
+reco        etat      R@0.01 incl 1.31 cond 1.16   R@0.1 incl 1.27 cond 1.09
+reco        H350      R@0.01 incl 1.21 cond 1.06   R@0.1 incl 1.22 cond 1.14
+reco        stop      R@0.01 incl 1.75 cond 1.63   R@0.1 incl 1.13 cond 1.13
+reco        tt_indep  R@0.01 incl 1.27 cond 1.31   R@0.1 incl 1.18 cond 1.17
+reco        nospin    R@0.01 incl 0.98 cond 1.05   R@0.1 incl 1.06 cond 1.04
+parton_trig etat      R@0.01 incl 1.45 cond 0.85   R@0.1 incl 1.31 cond 0.89
+parton_trig H350      R@0.01 incl 1.46 cond 1.08   R@0.1 incl 1.37 cond 1.11
+parton_trig stop      R@0.01 incl 0.76 cond 0.73   R@0.1 incl 0.82 cond 0.75
+parton_trig tt_indep  R@0.01 incl 0.86 cond 0.86   R@0.1 incl 0.96 cond 0.96
+parton_trig nospin    R@0.01 incl 1.12 cond 1.11   R@0.1 incl 1.08 cond 1.08

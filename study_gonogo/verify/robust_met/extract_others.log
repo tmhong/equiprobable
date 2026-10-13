@@ -1,0 +1,9 @@
+[run_seed4001] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/etat_bblvqq/run_seed4001/parton_events.lhe.gz
+[run_seed4001] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/etat_bblvqq/run_seed4001/delphes_events.root
+etat: 15844 of 80000 events, identical to study_gonogo cache: True
+[run_seed12345] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed12345/parton_events.lhe.gz
+[run_seed12345] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed12345/delphes_events.root
+tt_indep: 2440 of 10000 events, identical to study_gonogo cache: True
+[run_m350_seed3003] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/Htt_bblvqq/run_m350_seed3003/parton_events.lhe.gz
+[run_m350_seed3003] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/Htt_bblvqq/run_m350_seed3003/delphes_events.root
+H350: 4699 of 20000 events, identical to study_gonogo cache: True

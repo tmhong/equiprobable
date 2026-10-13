@@ -1,0 +1,5 @@
+etat      n= 15844  5-fold R@1%/10% 1.70/1.43 (seeds 1.60,1.81)   results.json 2-fold 1.57+-0.14/1.48
+stop      n= 16599  5-fold R@1%/10% 2.98/1.88 (seeds 3.12,2.84)   results.json 2-fold 2.60+-0.18/1.78
+H350      n=  4699  5-fold R@1%/10% 1.11/1.27 (seeds 0.92,1.30)   results.json 2-fold 1.09+-0.16/1.18
+nospin    n= 14449  5-fold R@1%/10% 1.03/1.05 (seeds 0.98,1.09)   results.json 2-fold 1.09+-0.12/1.00
+tt_indep  n=  2440  5-fold R@1%/10% 0.86/1.06 (seeds 0.98,0.74)   results.json 2-fold 1.27+-0.24/1.20

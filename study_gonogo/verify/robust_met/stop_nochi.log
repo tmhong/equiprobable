@@ -1,0 +1,4 @@
+[run_seed4002] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/stop_bblvqq/run_seed4002/parton_events.lhe.gz
+[run_seed4002] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/stop_bblvqq/run_seed4002/delphes_events.root
+neutralinos per event: [    0     0 60000]
+selected 16599 of 60000 (standard pipeline: 16599)

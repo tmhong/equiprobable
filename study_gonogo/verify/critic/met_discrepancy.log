@@ -1,0 +1,11 @@
+LHE events 60000 chi per event [    0     0 60000]
+first 20000 events: |pT(chichi)| LHE median 37.6, Delphes median 49.7
+|LHE - Delphes| chichi pT vector: median 26.90, 90% 88.47 GeV
+corr px LHE vs Delphes 0.5994105408546935
+corr pz LHE vs Delphes 0.9889670294484357 median |dpz| 11.250366024820323
+n 16599 16599 16599
+R@0.01: nominal 1.747  robust-oracle 0.964  physics-oracle 1.554
+R@0.1: nominal 1.130  robust-oracle 0.956  physics-oracle 1.115
+corr(robust oracle, physics oracle) 0.8133748555993783  corr(nominal, physics oracle) 0.8163466651036192  corr(nominal, robust oracle) 0.7438816876000202
+frac events with identical score: rob==nom 0.00259051750105428  phy==nom 0.008313753840592807
+met_orig median 70.42237854003906 robust oracle met median 46.772455742873

@@ -1,0 +1,3 @@
+[run_seed1001] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed1001/parton_events.lhe.gz
+[run_seed1001] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/ttbar_bblvqq/run_seed1001/delphes_events.root
+tt_fit: 24030 of 100000 events, identical to study_gonogo cache: True
