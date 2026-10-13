@@ -1385,9 +1385,9 @@ for axis in (axx1.yaxis, axx2.yaxis, axy.yaxis):            # the (1/N) dN/d... 
         axis.set_major_formatter(NullFormatter())
     if MINOR_TICKS:
         axis.set_minor_locator(AutoMinorLocator())
-if is_toy and not rescale and not LOG:      # dN/dy (the toy in y): two values, 0 and 12 per unit y, the 12
-    axy.yaxis.set_major_locator(FixedLocator([0.0, 12.0]))      # high enough to leave its title beside the axis
-    axy.yaxis.set_major_formatter(FixedFormatter(["$0$", "$12$"]))
+if is_toy and not rescale and not LOG:      # dN/dy (the toy in y): ticks at 0 and 12 per unit y, only the 0
+    axy.yaxis.set_major_locator(FixedLocator([0.0, 12.0]))      # labelled, so the title sits right beside the axis
+    axy.yaxis.set_major_formatter(FixedFormatter(["$0$", ""]))
     if MINOR_TICKS:
         axy.yaxis.set_minor_locator(MultipleLocator(3.0))
 if rescale:                                 # dN/dz: two values, 0 and 1 per unit z, to read heights off
