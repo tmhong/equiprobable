@@ -167,9 +167,11 @@ def auc(y_tt, y_s):
 
 
 def fig_levels(y_matched, path):
-    lv = [("parton", "parton", (0, (1, 1.2)), M.INK),
-          ("gen", r"generator, $\chi^2$", (0, (5, 2)), M.GRAY),
-          ("reco", r"reconstructed, $\chi^2$", "-", M.GRAY),
+    from matplotlib.colors import LinearSegmentedColormap
+    blues = LinearSegmentedColormap.from_list("tt", ["#ffffff", M.NAVY])
+    lv = [("parton", "parton", (0, (1, 1.2)), M.NAVY),
+          ("gen", r"generator, $\chi^2$", (0, (5, 2)), blues(0.7)),
+          ("reco", r"reconstructed, $\chi^2$", "-", blues(0.45)),
           ("matched", r"reconstructed, truth matched", "-", HH_C)]
     q_edges = np.linspace(0, 1, 11)
     curves = {}
@@ -181,34 +183,28 @@ def fig_levels(y_matched, path):
             yt, ys = sc["train"], sc["hh"]
         curves[key] = (*roc_and_ratio(yt, ys, q_edges), auc(yt, ys), len(ys))
     P = M.PANEL_DATA
-    T, GX, B, RT, TOP = 0.75, 0.55, 0.62, 0.15, 1.05           # room for the legend above the panels
-    W = T + P + GX + T + P + RT
+    T, GX, B, RT, TOP = 0.75, 0.55, 0.62, 4.0, 0.12            # one panel (the ROC curves bunch up); legend on its right
+    W = T + P + RT
     H = B + P + TOP
     fig = plt.figure(figsize=(W, H))
-    ax1 = M.place(fig, T, B, P, P, W, H)
-    ax2 = M.place(fig, T + P + GX + T, B, P, P, W, H)
-    ax1.plot([0, 1], [0, 1], color=M.GRAY, lw=0.5, ls=":")
+    ax2 = M.place(fig, T, B, P, P, W, H)
     qc = 0.5 * (q_edges[1:] + q_edges[:-1])
     ax2.axhline(1, color=M.GRAY, lw=0.5, ls=":")
     for key, lab, ls, col in lv:
         eff_t, eff_s, h, err, a, _ = curves[key]
         lw = 1.6 if key in ("matched", "parton") else 1.2
-        ax1.plot(eff_t, eff_s, color=col, ls=ls, lw=lw)
         ax2.plot([], [], color=col, ls=ls, lw=lw, label=f"{lab}  (${a:.3f}$)")
         ax2.stairs(h, q_edges, color=col, ls=ls, lw=lw, baseline=None)
         if key == "matched":
             ax2.fill_between(q_edges, np.r_[h - err, (h - err)[-1]], np.r_[h + err, (h + err)[-1]], step="post",
                              color=col, alpha=0.18, lw=0)
-    ax1.set_xlim(0, 1); ax1.set_ylim(0, 1)
-    ax1.set_xlabel(r"$t\bar{t}$ efficiency")
-    ax1.set_ylabel(r"$HH$ efficiency")
-    fig.legend(*ax2.get_legend_handles_labels(), loc="upper center", ncol=2, bbox_to_anchor=(0.5, 1.0),
-               fontsize=M.FONT * 0.86, handlelength=1.8, columnspacing=1.2, labelspacing=0.15, borderaxespad=0.1)
+    ax2.legend(loc="center left", bbox_to_anchor=(1.04, 0.5), handlelength=1.8, labelspacing=0.35, borderaxespad=0.0,
+               title=r"$\mathrm{level\ (AUC)}$", alignment="left")
     ax2.set_xlim(0, 1)
-    ax2.set_ylim(0.4, 2.6)
+    ax2.set_ylim(0.4, 2.5)
     ax2.set_xlabel(r"$t\bar{t}$ quantile $q$ of $y$")
     ax2.set_ylabel(r"$HH$ / $t\bar{t}$ density")
-    for ax in (ax1, ax2):
+    for ax in (ax2,):
         M.finish(ax, no_values_y=False)
     for ext in ("pdf", "png"):
         fig.savefig(f"{path}.{ext}", dpi=150)

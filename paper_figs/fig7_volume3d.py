@@ -51,8 +51,13 @@ def main():
     ax = M.place(fig, T, B, P, P, W, H)
     c = np.linspace(-1, 1, 801)
     ax.axhspan(Y1, Y2, color=RED, alpha=0.12, lw=0)
-    ax.plot(c, f(c), color=M.NAVY, lw=1.6, zorder=3, label=r"$\mathrm{Toy}\ 1 \to \frac{1}{2}, \frac{1}{2}$")
-    ax.axhline(1 / (4 * np.pi), color=M.AMBER, lw=1.4, zorder=2, label=r"$\mathrm{Toy}\ 0 \to \frac{1}{2}, \frac{1}{2}$")
+    # the area under f shaded white-to-navy in y, as the density panels of Figs. 2-4
+    from matplotlib.colors import LinearSegmentedColormap
+    cmap = LinearSegmentedColormap.from_list("tt", ["#ffffff", M.NAVY])
+    yc = f(c)
+    for k in range(len(c) - 1):
+        ax.fill_between(c[k:k + 2], 0, yc[k:k + 2], color=cmap(0.1 + 0.6 * yc[k] / yc.max()), lw=0, zorder=1)
+    ax.plot(c, yc, color=M.NAVY, lw=1.6, zorder=3)
     seg = np.linspace(c1, c2, 50)
     ax.plot(seg, f(seg), color=RED, lw=3.0, zorder=4, solid_capstyle="butt")
     for cc, yy in ((c1, Y2), (c2, Y1)):
@@ -72,13 +77,12 @@ def main():
                                                                    shrinkA=0, shrinkB=0))
     ax.text(xr + 0.05, 0.5 * (Y1 + Y2), rf"$\Delta y = {Y2 - Y1:.2f}$", ha="left", va="center", color=RED)
     ax.set_xlim(-1, 1)
-    ax.set_ylim(0, 0.125)
+    ax.set_ylim(0, 0.115)
     ax.set_xticks([-1, -0.5, 0, 0.5, 1])
     ax.set_yticks([0, 0.05, 0.1])
     ax.set_xlabel(r"$c = \cos\theta_P$")
     ax.set_ylabel(r"$y$", rotation=0, ha="right", va="center", labelpad=6)
     M.finish(ax, no_values_y=False)
-    ax.legend(loc="upper right", handlelength=1.4, handletextpad=0.4, labelspacing=0.2, borderaxespad=0.2)
     for ext in ("pdf", "png"):
         fig.savefig(os.path.join(HERE, f"fig7_toy_collapsed.{ext}"), dpi=200)
     json.dump(nums, open(os.path.join(HERE, "fig7_toy_collapsed.json"), "w"), indent=1)
