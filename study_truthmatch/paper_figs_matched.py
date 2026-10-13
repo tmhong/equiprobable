@@ -206,8 +206,8 @@ def fig_levels(y_matched, path):
     ax2.legend(loc="upper right", handlelength=2.0, labelspacing=0.2, borderaxespad=0.3)
     ax2.set_xlim(0, 1)
     ax2.set_ylim(0.3, 2.5)
-    ax2.set_xlabel(r"$t\bar{t}$ quantile $q$ of $y$")
-    ax2.set_ylabel(r"$HH$ / $t\bar{t}$ density")
+    ax2.set_xlabel(r"$t\bar{t}$ quantile $q$ of $y_{t\bar{t}}$")
+    ax2.set_ylabel(r"Normalized $H\!H/t\bar{t}$ ratio")
     for ax in (ax2,):
         M.finish(ax, no_values_y=False)
     for ext in ("pdf", "png"):
