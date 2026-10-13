@@ -196,13 +196,16 @@ def fig_levels(y_matched, path):
         # histograms in bins of 0.1 in q, drawn as smooth (shape-preserving) curves through the bin centres
         from scipy.interpolate import PchipInterpolator
         qq = np.linspace(qc[0], qc[-1], 200)
-        ax2.plot(qq, PchipInterpolator(qc, h)(qq), color=col, ls=ls, lw=lw)
+        if key == "parton":                         # the reference: as a histogram
+            ax2.stairs(h, q_edges, color=col, ls=ls, lw=lw, baseline=None)
+        else:
+            ax2.plot(qq, PchipInterpolator(qc, h)(qq), color=col, ls=ls, lw=lw)
         if key == "matched":
             ax2.fill_between(qq, PchipInterpolator(qc, h - err)(qq), PchipInterpolator(qc, h + err)(qq),
                              color=col, alpha=0.2, lw=0)
     ax2.legend(loc="upper right", handlelength=2.0, labelspacing=0.2, borderaxespad=0.3)
     ax2.set_xlim(0, 1)
-    ax2.set_ylim(0.4, 2.5)
+    ax2.set_ylim(0.3, 2.5)
     ax2.set_xlabel(r"$t\bar{t}$ quantile $q$ of $y$")
     ax2.set_ylabel(r"$HH$ / $t\bar{t}$ density")
     for ax in (ax2,):
