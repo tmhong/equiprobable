@@ -25,7 +25,7 @@ from plotting import osde  # noqa: E402
 from plotting.angles import ANGLE_NAMES  # noqa: E402
 from wtb_reweight import weights  # noqa: E402
 
-TT, TT_TEST, PU0, HH = "run_seed1001", "run_seed12345", "pu0_fit", "run_m170_seed2170"
+TT, TT_TEST, PU0, HH = "run_seed1001", "run_seed12345", "pu0_fit", "run_m170_all"
 MASSES = ("m_w_had", "m_t_lep", "m_t_had")
 
 

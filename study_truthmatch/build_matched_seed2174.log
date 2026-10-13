@@ -1,0 +1,20 @@
+[run_m170_seed2174] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_m170_seed2174/parton_events.lhe.gz
+[run_m170_seed2174] reading /Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_m170_seed2174/delphes_events.root
+{
+ "sample": "/Users/TMHONG/Claude-code/ttbar_bblvqq/samples/hh_bblvqq/run_m170_seed2174",
+ "dr_max": 0.4,
+ "n_all": 20000,
+ "n_presel": 4008,
+ "n_all4_matched": 2208,
+ "n_matched_presel": 672,
+ "n_chi2_reco_ok": 3984,
+ "n_both": 671,
+ "chi2_all_roles_right_of_matched": 0.39642324888226527,
+ "chi2_same_jets_of_matched": 0.7228017883755589,
+ "per_parton_match_frac": {
+  "b_had": 0.578,
+  "b_lep": 0.5765,
+  "q_down": 0.45785,
+  "q_up": 0.46695
+ }
+}

@@ -437,3 +437,8 @@ Newest entries are at the bottom. Numbers refer to the samples listed under "Sam
 - AUC HH(170) vs tt̄: parton 0.638, parton+trig 0.652, gen χ² 0.547, reco χ² 0.534, reco χ² on the matched events 0.536, **reco matched 0.573** (vs independent tt̄ 0.574, vs pu0 tt̄ 0.569). Smaller basis (3,3; 5184 terms): χ² 0.538, matched 0.579. tt̄_R (F_R=0.3): χ² 0.510, matched 0.526.
 - Corner with matched-jet masses: BW mass score alone AUC 0.737; q<0.2 corner ×3.4±0.4 (χ² jets: ×1.7).
 - Results: `study_truthmatch/results.json`, `results_small.json`, `summary*.png`, `corner_matched*.png`.
+
+## 2026-10-12 — Study T with 1e5 HH(170)
+- 80k more HH(170) (seeds 2171-2174, same cards as run_m170_seed2170; `study_truthmatch/generate_hh170_more.sh`), Delta-R matched: 3451 of 1e5 events (3.45%); combined as `study_truthmatch/data_run_m170_all.npz`.
+- Truth-matched AUC 0.574 +- 0.006 (vs independent tt 0.575, pu0 tt 0.569); chi2 on the same matched events 0.547 (was 0.536 with 698 events), so about 1/3 of the gain from 0.534 is the selection of matchable events, 2/3 the jet assignment.
+- Corner (q < 0.2): x3.6 +- 0.2; masses alone x5.3 +- 0.2, angles alone x1.3 +- 0.1 at the same 3.9% of tt. HH y<=0: 11.5%. Lowest q decile ratio 1.39.

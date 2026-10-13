@@ -1,11 +1,11 @@
 {
  "n": {
   "tt": 7072,
-  "hh": 698,
+  "hh": 3451,
   "h1": 149
  },
  "ttR_n_eff": 4040.9640029012867,
- "auc_hh170": 0.57288317299589,
+ "auc_hh170": 0.5735915289816973,
  "auc_hh125": 0.5274568009960825,
  "auc_ttR": null,
  "levels_hh170": {
@@ -25,14 +25,14 @@
    "ratio_lowest_q_bin": 1.2159800249687889
   },
   "matched": {
-   "auc": 0.57288317299589,
-   "n_hh": 698,
-   "ratio_lowest_q_bin": 1.5042979942693409
+   "auc": 0.5735915289816973,
+   "n_hh": 3451,
+   "ratio_lowest_q_bin": 1.3851057664445088
   }
  },
  "include": {
   "fig2": "width=0.893\\linewidth",
   "fig3": "width=0.923\\linewidth",
-  "figA": "width=0.700\\linewidth"
+  "figA": "width=0.653\\linewidth"
  }
 }

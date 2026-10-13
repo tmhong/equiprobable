@@ -1,0 +1,11 @@
+{
+ "n_all": 100000,
+ "n_presel": 19787,
+ "n_all4_matched": 11197,
+ "n_matched_presel": 3451,
+ "n_chi2_reco_ok": 19675,
+ "n_both": 3448,
+ "chi2_all_roles_right_of_matched": 0.4095127610208817,
+ "sample": "samples/hh_bblvqq/run_m170_seed2170..2174 (combined)",
+ "dr_max": 0.4
+}

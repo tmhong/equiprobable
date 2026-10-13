@@ -26,7 +26,7 @@ from plotting import osde  # noqa: E402
 from plotting.angles import ANGLE_NAMES  # noqa: E402
 from wtb_reweight import weights  # noqa: E402
 
-SAMPLES = {"tt": "run_seed1001", "hh": "run_m170_seed2170", "h1": "run_seed2001"}
+SAMPLES = {"tt": "run_seed1001", "hh": "run_m170_all", "h1": "run_seed2001"}
 HH_LBL = r"$HH_{170}$"    # short legend label
 HH_C = M.AMBER          # the amber of the toy figure (compare_y.py LINE_J), now that hh(125) is not drawn
 
