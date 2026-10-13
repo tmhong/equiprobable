@@ -170,9 +170,9 @@ def fig_levels(y_matched, path):
     from matplotlib.colors import LinearSegmentedColormap
     blues = LinearSegmentedColormap.from_list("tt", ["#ffffff", M.NAVY])
     lv = [("parton", "parton", (0, (1, 1.2)), M.NAVY),
-          ("gen", r"generator, $\chi^2$", (0, (5, 2)), blues(0.7)),
-          ("reco", r"reconstructed, $\chi^2$", "-", blues(0.45)),
-          ("matched", r"reconstructed, truth matched", "-", HH_C)]
+          ("gen", r"generator", (0, (5, 2)), blues(0.7)),
+          ("reco", r"reconstructed", "-", blues(0.45)),
+          ("matched", r"$\quad$''$\quad$ truth-matched", "-", HH_C)]      # ditto: reconstructed, truth-matched
     q_edges = np.linspace(0, 1, 11)
     curves = {}
     for key, *_ in lv:
@@ -182,8 +182,8 @@ def fig_levels(y_matched, path):
             sc = np.load(os.path.join(ROOT, "osde_h170", f"scores_{key}.npz"))
             yt, ys = sc["train"], sc["hh"]
         curves[key] = (*roc_and_ratio(yt, ys, q_edges), auc(yt, ys), len(ys))
-    P = M.PANEL_DATA
-    T, GX, B, RT, TOP = 0.75, 0.55, 0.62, 4.0, 0.12            # one panel (the ROC curves bunch up); legend on its right
+    P = 3.3                                                     # one panel (the ROC curves bunch up), legend below
+    T, GX, B, RT, TOP = 0.95, 0.55, 1.62, 0.2, 0.12
     W = T + P + RT
     H = B + P + TOP
     fig = plt.figure(figsize=(W, H))
@@ -193,13 +193,13 @@ def fig_levels(y_matched, path):
     for key, lab, ls, col in lv:
         eff_t, eff_s, h, err, a, _ = curves[key]
         lw = 1.6 if key in ("matched", "parton") else 1.2
-        ax2.plot([], [], color=col, ls=ls, lw=lw, label=f"{lab}  (${a:.3f}$)")
+        ax2.plot([], [], color=col, ls=ls, lw=lw, label=lab)
         ax2.stairs(h, q_edges, color=col, ls=ls, lw=lw, baseline=None)
         if key == "matched":
             ax2.fill_between(q_edges, np.r_[h - err, (h - err)[-1]], np.r_[h + err, (h + err)[-1]], step="post",
                              color=col, alpha=0.18, lw=0)
-    ax2.legend(loc="center left", bbox_to_anchor=(1.04, 0.5), handlelength=1.8, labelspacing=0.35, borderaxespad=0.0,
-               title=r"$\mathrm{level\ (AUC)}$", alignment="left")
+    fig.legend(*ax2.get_legend_handles_labels(), loc="lower left", bbox_to_anchor=((T + 0.05) / W, 0.02), ncol=1,
+               handlelength=2.0, labelspacing=0.25, borderaxespad=0.0)
     ax2.set_xlim(0, 1)
     ax2.set_ylim(0.4, 2.5)
     ax2.set_xlabel(r"$t\bar{t}$ quantile $q$ of $y$")
