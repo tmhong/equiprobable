@@ -52,5 +52,5 @@ account of where the information is lost.
 The same rule is evaluated with ΔR-matched jets (`study_truthmatch`): a pass there but not with χ² jets is a
 "conditional GO" (the niche exists if jet assignment is solved), reported but not a GO.
 
-Expected yields at 140 fb⁻¹ (σ_tt̄ = 832 pb, BR(e/μ+jets) = 0.291) are reported for context: S/B in the tail and
+Expected yields at 140 fb⁻¹ (σ_tt̄ = 832 pb, BR(e/μ+jets) = 0.288 from the PDG W branching ratios; corrected from 0.291 before any result) are reported for context: S/B in the tail and
 Z = S/√(B + (δB)²) with δ = 0, 5% and 10%.

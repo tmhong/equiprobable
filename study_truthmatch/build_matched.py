@@ -138,7 +138,8 @@ def build(path, dr_max, max_events):
     out = {"ok": ok, "chi_ok": chi_ok, "chi_right": chi_right,
            **{f"m_{a}": v for a, v in ang_m.items()}, **{f"c_{a}": v for a, v in ang_c.items()},
            **{f"p_{a}": v for a, v in ang_p.items()},
-           "m_m_w_had": mass(w_had), "m_m_t_lep": mass(t_lep), "m_m_t_had": mass(t_had),
+           "m_m_w_had": mass(w_had), "m_m_t_lep": mass(t_lep), "m_m_t_had": mass(t_had), "m_mtt": mass(t_lep + t_had),
+           "c_mtt": mass(arr4(reco.t_lep) + arr4(reco.t_had)), "n_generated": np.array(n),
            "c_m_w_had": mass(arr4(reco.w_had)), "c_m_t_lep": mass(arr4(reco.t_lep)), "c_m_t_had": mass(arr4(reco.t_had)),
            "parton_lep_trigger": np.asarray(parton.lep_trigger, bool)}
     suffix = "" if max_events is None else f"_test{max_events}"

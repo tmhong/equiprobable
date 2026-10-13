@@ -1,0 +1,37 @@
+[parton_trig] tt̄ 71322 (of 71322), etat 55543, stop 45052, H350 14219, nospin 43052, tt_indep 7170
+  etat      n= 55543  AUC cv 0.566 flow 0.548  R@1%/10%: osde_cv 1.45/1.31  osde_all 0.95/1.20  bw 1.91/1.78  mtt_dens 0.13/0.08  mtt_window 51.44/8.15  flow 1.06/1.11  osde_cv+bw 2.12/1.79  bdt_angles 1.80/1.72  bdt_all 60.00/8.77
+     rule: wp 0.01: fail (R 1.45+-0.07); wp 0.1: fail (R 1.31+-0.02)
+  stop      n= 45052  AUC cv 0.508 flow 0.494  R@1%/10%: osde_cv 0.76/0.82  osde_all 0.96/0.87  bw 0.78/0.86  mtt_dens 0.46/0.48  mtt_window 2.76/2.02  flow 0.68/0.77  osde_cv+bw 0.82/0.82  bdt_angles 1.61/1.50  bdt_all 3.41/2.35
+     rule: wp 0.01: fail (R 0.76+-0.04); wp 0.1: fail (R 0.82+-0.02)
+  H350      n= 14219  AUC cv 0.583 flow 0.542  R@1%/10%: osde_cv 1.46/1.37  osde_all 1.12/1.33  bw 1.20/1.12  mtt_dens 0.56/0.45  mtt_window 10.46/4.50  flow 0.91/1.05  osde_cv+bw 1.58/1.33  bdt_angles 1.41/1.58  bdt_all 11.91/4.51
+     rule: wp 0.01: fail (R 1.46+-0.12); wp 0.1: fail (R 1.37+-0.03)
+  nospin    n= 43052  AUC cv 0.512 flow 0.503  R@1%/10%: osde_cv 1.12/1.08  osde_all 1.14/1.09  bw 0.00/0.00  mtt_dens 1.00/0.94  mtt_window 1.01/1.01  flow 0.88/1.00  osde_cv+bw 0.20/0.32  bdt_angles 1.02/1.01  bdt_all 100.00/10.00
+  tt_indep  n=  7170  AUC cv 0.498 flow 0.498  R@1%/10%: osde_cv 0.86/0.96  osde_all 0.91/0.95  bw 1.09/0.98  mtt_dens 0.93/0.91  mtt_window 0.95/1.00  flow 0.85/0.93  osde_cv+bw 1.07/0.97  bdt_angles 1.10/0.92  bdt_all 0.89/1.02
+[gen] tt̄ 41317 (of 100000), etat 31849, stop 29263, H350 8810, nospin 24759, tt_indep 4134
+  etat      n= 31849  AUC cv 0.538 flow 0.535  R@1%/10%: osde_cv 1.39/1.25  osde_all 1.36/1.20  bw 0.90/1.14  mtt_dens 0.76/1.23  mtt_window 6.21/3.58  flow 1.29/1.23  osde_cv+bw 1.21/1.23  bdt_angles 1.93/1.50  bdt_all 9.31/4.18
+     rule: wp 0.01: fail (R 1.39+-0.10); wp 0.1: fail (R 1.25+-0.03)
+  stop      n= 29263  AUC cv 0.533 flow 0.515  R@1%/10%: osde_cv 1.43/1.13  osde_all 1.35/1.11  bw 1.63/1.41  mtt_dens 0.99/1.00  mtt_window 1.05/1.02  flow 1.04/1.05  osde_cv+bw 1.88/1.39  bdt_angles 3.35/2.03  bdt_all 7.53/3.32
+     rule: wp 0.01: fail (R 1.43+-0.10); wp 0.1: fail (R 1.13+-0.02)
+  H350      n=  8810  AUC cv 0.554 flow 0.544  R@1%/10%: osde_cv 1.46/1.30  osde_all 1.38/1.27  bw 1.18/1.34  mtt_dens 0.70/1.08  mtt_window 2.43/2.06  flow 1.12/1.23  osde_cv+bw 1.68/1.36  bdt_angles 1.49/1.30  bdt_all 2.87/2.10
+     rule: wp 0.01: fail (R 1.46+-0.14); wp 0.1: fail (R 1.30+-0.04)
+  nospin    n= 24759  AUC cv 0.505 flow 0.503  R@1%/10%: osde_cv 0.94/1.07  osde_all 0.97/1.04  bw 0.91/1.03  mtt_dens 0.83/0.95  mtt_window 1.17/1.07  flow 0.97/1.02  osde_cv+bw 0.95/1.03  bdt_angles 0.97/0.99  bdt_all 0.94/0.98
+  tt_indep  n=  4134  AUC cv 0.504 flow 0.506  R@1%/10%: osde_cv 1.26/1.08  osde_all 0.77/1.07  bw 1.02/1.02  mtt_dens 0.70/0.98  mtt_window 0.97/0.97  flow 0.85/1.06  osde_cv+bw 1.14/1.04  bdt_angles 0.90/1.09  bdt_all 0.92/0.99
+[reco] tt̄ 24030 (of 100000), etat 15844, stop 16599, H350 4699, nospin 14449, tt_indep 2440
+  etat      n= 15844  AUC cv 0.537 flow 0.535  R@1%/10%: osde_cv 1.31/1.27  osde_all 0.87/1.18  bw 0.71/0.88  mtt_dens 0.59/0.51  mtt_window 6.40/3.46  flow 1.42/1.20  osde_cv+bw 0.98/1.09  bdt_angles 1.57/1.48  bdt_all 6.66/3.68
+     rule: wp 0.01: fail (R 1.31+-0.13); wp 0.1: fail (R 1.27+-0.03)
+  stop      n= 16599  AUC cv 0.534 flow 0.518  R@1%/10%: osde_cv 1.75/1.13  osde_all 1.00/1.09  bw 1.47/1.26  mtt_dens 1.16/0.93  mtt_window 1.31/1.09  flow 1.07/1.01  osde_cv+bw 1.99/1.29  bdt_angles 2.60/1.78  bdt_all 4.67/2.47
+     rule: wp 0.01: fail (R 1.75+-0.12); wp 0.1: fail (R 1.13+-0.03)
+  H350      n=  4699  AUC cv 0.551 flow 0.538  R@1%/10%: osde_cv 1.21/1.22  osde_all 0.77/1.12  bw 1.04/1.14  mtt_dens 0.87/0.75  mtt_window 2.40/2.10  flow 1.23/1.11  osde_cv+bw 1.13/1.18  bdt_angles 1.09/1.18  bdt_all 2.66/2.02
+     rule: wp 0.01: fail (R 1.21+-0.19); wp 0.1: fail (R 1.22+-0.06)
+  nospin    n= 14449  AUC cv 0.506 flow 0.500  R@1%/10%: osde_cv 0.98/1.06  osde_all 0.93/1.00  bw 0.87/1.01  mtt_dens 0.83/0.91  mtt_window 1.09/1.04  flow 1.20/1.03  osde_cv+bw 0.97/1.01  bdt_angles 1.09/1.00  bdt_all 0.97/0.99
+  tt_indep  n=  2440  AUC cv 0.504 flow 0.506  R@1%/10%: osde_cv 1.27/1.18  osde_all 1.15/1.07  bw 0.90/1.01  mtt_dens 1.02/0.93  mtt_window 0.94/1.21  flow 1.15/1.06  osde_cv+bw 1.23/1.06  bdt_angles 1.27/1.20  bdt_all 1.27/1.13
+[matched] tt̄ 7072 (of 100000), etat 3119, stop 4987, H350 1005, nospin 4255, tt_indep 698
+  etat      n=  3119  AUC cv 0.568 flow 0.527  R@1%/10%: osde_cv 1.57/1.47  osde_all 1.47/1.21  bw 0.99/0.75  mtt_dens 0.06/0.11  mtt_window 12.89/5.91  flow 1.25/1.23  osde_cv+bw 1.19/1.12  bdt_angles 2.47/1.49  bdt_all 16.54/6.73
+     rule: wp 0.01: fail (R 1.57+-0.33); wp 0.1: fail (R 1.47+-0.07)
+  stop      n=  4987  AUC cv 0.541 flow 0.512  R@1%/10%: osde_cv 1.50/1.18  osde_all 0.96/1.08  bw 3.33/1.85  mtt_dens 0.54/0.68  mtt_window 1.00/1.08  flow 1.04/1.03  osde_cv+bw 2.89/1.74  bdt_angles 1.74/1.38  bdt_all 6.28/2.56
+     rule: wp 0.01: fail (R 1.50+-0.25); wp 0.1: fail (R 1.18+-0.05)
+  H350      n=  1005  AUC cv 0.562 flow 0.501  R@1%/10%: osde_cv 1.09/1.37  osde_all 0.70/1.19  bw 0.90/1.10  mtt_dens 0.30/0.35  mtt_window 4.48/3.30  flow 1.19/0.95  osde_cv+bw 1.09/1.31  bdt_angles 0.60/1.12  bdt_all 3.68/2.53
+     rule: wp 0.01: fail (R 1.09+-0.39); wp 0.1: fail (R 1.37+-0.12)
+  nospin    n=  4255  AUC cv 0.512 flow 0.500  R@1%/10%: osde_cv 1.18/1.15  osde_all 0.94/1.06  bw 1.08/0.95  mtt_dens 1.29/0.94  mtt_window 1.20/1.02  flow 0.87/1.06  osde_cv+bw 1.06/1.06  bdt_angles 1.18/1.02  bdt_all 1.06/1.03
+  tt_indep  n=   698  AUC cv 0.506 flow 0.504  R@1%/10%: osde_cv 1.29/1.06  osde_all 1.29/1.06  bw 0.86/0.93  mtt_dens 1.29/0.96  mtt_window 1.15/1.22  flow 1.15/0.96  osde_cv+bw 1.15/1.06  bdt_angles 1.29/1.05  bdt_all 0.57/1.07
+DECISION: {"reco": {"passes": [], "verdict": "NO-GO"}, "matched": {"passes": [], "verdict": "NO-GO"}}
