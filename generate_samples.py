@@ -109,7 +109,61 @@ add process g g > h h, (h > b b~), (h > lep- nul~ q q)"""),
         param=["param_card mass 25 500", "param_card decay 25 25.0"],
         generate="""generate g g > h > t t~, (t > b w+, w+ > lep+ nul), (t~ > b~ w-, w- > q q)
 add process g g > h > t t~, (t > b w+, w+ > q q), (t~ > b~ w-, w- > lep- nul~)"""),
+    # ---- go/no-go benchmarks: differ from QCD tt̄ in spin structure rather than in m_tt̄ ----
+    # Toponium-like eta_t: a CP-odd colour-singlet spin-0 state at the tt̄ threshold (1S0, spin singlet), the
+    # simplified model of the CMS/ATLAS threshold-excess analyses: m = 343 GeV, Gamma = 7 GeV, effective g g X0 and
+    # X0 t t̄ couplings.  Higgs Characterisation model, unrestricted (its "heft" restriction drops the X0 t t̄ vertex):
+    # cos(alpha) = 0 (pure CP-odd), kAtt = kAgg = 1, CP-even couplings off.  Signal only, normalized to the measured
+    # cross section in the analysis.  The tops are slightly off shell (m_X0 < 2 m_t).
+    "etat": dict(
+        model="HC_NLO_X0_UFO-full",
+        label="g g > eta_t(343, CP-odd) > t t~ > b b~ l nu q q' (HC model, Gamma = 7 GeV)",
+        param=["param_card mass 25 343.0", "param_card decay 25 7.0",
+               "param_card frblock 2 0.0", "param_card frblock 3 0.0", "param_card frblock 4 0.0",
+               "param_card frblock 5 1.0", "param_card frblock 14 0.0", "param_card frblock 15 1.0"],
+        generate="""generate g g > x0 > t t~, (t > b w+, w+ > lep+ nul), (t~ > b~ w-, w- > q q)
+add process g g > x0 > t t~, (t > b w+, w+ > q q), (t~ > b~ w-, w- > lep- nul~)"""),
+    # Stealth top squarks at the edge of the top corridor: m_stop1 = 300, m_chi1 = 120 GeV (Delta m = 180 GeV, just
+    # beyond the CMS corridor exclusion of 145-295 GeV), t1 -> t chi1 (100%).  Scalar parents: no tt̄ spin
+    # correlation; the tops are polarized.  SPS1a mixing; the other sparticles are pushed to 2 TeV; m_t, m_W and
+    # the widths match the sm model of the tt̄ sample.  The t1 width is set to its tree-level value, 0.0556 GeV (MG5's
+    # auto width computes it but then zeroes it because it is below the QCD scale).  Delphes needs the neutralino in the invisible list
+    # (cards/delphes_card_ATLAS_lsp.tcl) for the generator-level E_T^miss.
+    "stop": dict(
+        model="MSSM_SLHA2",
+        label="p p > t1 t1~ > t t~ chi1 chi1 > b b~ l nu q q' + MET (m_t1 = 300, m_chi1 = 120 GeV)",
+        param=["param_card mass 6 173.0", "param_card mass 24 80.419", "param_card decay 6 1.4915",
+               "param_card decay 24 2.0476", "param_card mass 1000006 300.0", "param_card mass 1000022 120.0",
+               "param_card mass 1000023 2000.0", "param_card mass 1000025 -2000.0", "param_card mass 1000035 2000.0",
+               "param_card mass 1000024 2000.0", "param_card mass 1000037 2000.0", "param_card mass 2000006 2000.0",
+               "param_card decay 1000006 0.0556"],
+        generate="""generate p p > t1 t1~, (t1 > t n1, (t > b w+, w+ > lep+ nul)), (t1~ > t~ n1, (t~ > b~ w-, w- > q q))
+add process p p > t1 t1~, (t1 > t n1, (t > b w+, w+ > q q)), (t1~ > t~ n1, (t~ > b~ w-, w- > lep- nul~))"""),
+    # QCD tt̄ with the spin correlations switched off (MadSpin spinmode none: each top decays with the full
+    # t -> b l nu / b q q' matrix element, so the W helicities are right, but without the production-decay
+    # correlation).  Same masses and production kinematics as tt̄: only the decay angles can tell.
+    # Two runs, one per leptonic side: lt (t -> l+) and lb (t~ -> l-); the analysis merges them.
+    "ttnospin_lt": dict(
+        model="sm", label="p p > t t~ (no spin correlation, MadSpin none), t > b l+ nu, t~ > b~ q q'",
+        generate="generate p p > t t~",
+        madspin="decay t > w+ b, w+ > lep+ nul\ndecay t~ > w- b~, w- > q q"),
+    "ttnospin_lb": dict(
+        model="sm", label="p p > t t~ (no spin correlation, MadSpin none), t > b q q', t~ > b~ l- nu~",
+        generate="generate p p > t t~",
+        madspin="decay t > w+ b, w+ > q q\ndecay t~ > w- b~, w- > lep- nul~"),
 }
+
+
+def madspin_card(args):
+    """MadSpin card for processes with a 'madspin' entry: no spin correlations, the process's decays."""
+    flavours = [f.strip() for f in args.leptons.split(",") if f.strip()]
+    lp = " ".join(LEPTON_DEFS[f][0] for f in flavours)
+    vl = " ".join(LEPTON_DEFS[f][1] for f in flavours)
+    return (f"set seed {args.seed}\nset spinmode none\n"
+            f"define lep+ = {lp}\ndefine lep- = {' '.join(anti(LEPTON_DEFS[f][0]) for f in flavours)}\n"
+            f"define nul = {vl}\ndefine nul~ = {' '.join(anti(LEPTON_DEFS[f][1]) for f in flavours)}\n"
+            "define q = u c d s u~ c~ d~ s~\n"
+            f"{PROCESSES[args.process]['madspin']}\nlaunch\n")
 
 
 def launch_commands(args, run_name):
@@ -126,7 +180,7 @@ def launch_commands(args, run_name):
         f"shower={shower}",
         f"detector={detector}",
         "analysis=OFF",
-        "madspin=OFF",
+        "madspin=ON" if "madspin" in PROCESSES[args.process] else "madspin=OFF",
         "done",
         f"set run_card nevents {args.nevents}",
         f"set run_card iseed {args.seed}",
@@ -266,12 +320,17 @@ def main():
     # 2) Detector card, then launch
     if args.stage == "delphes":
         install_delphes_card(args, proc_dir)
+    if "madspin" in PROCESSES[args.process]:
+        with open(os.path.join(proc_dir, "Cards", "madspin_card.dat"), "w") as f:
+            f.write(madspin_card(args))
     # Launch through the process directory's own madevent interface; this avoids
     # the MG5 master interface's version check on exit.
     run_mg5(args, os.path.join(proc_dir, "bin", "madevent"), launch_cmds, os.path.join(args.workdir, f"{args.name}_{run_name}.mg5"),
             os.path.join(args.workdir, f"{args.name}_{run_name}.log"))
 
-    # 3) Collect outputs
+    # 3) Collect outputs (MadSpin writes the decayed events, and the shower/Delphes output, to <run>_decayed_1)
+    if "madspin" in PROCESSES[args.process]:
+        run_dir = run_dir + "_decayed_1"
     out = os.path.join(os.path.abspath(args.outdir), args.name, run_name)
     os.makedirs(out, exist_ok=True)
     files = {}
