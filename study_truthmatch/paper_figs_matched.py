@@ -169,7 +169,7 @@ def auc(y_tt, y_s):
 def fig_levels(y_matched, path):
     from matplotlib.colors import LinearSegmentedColormap
     blues = LinearSegmentedColormap.from_list("tt", ["#ffffff", M.NAVY])
-    lv = [("parton", "parton", (0, (1, 1.2)), M.NAVY),
+    lv = [("parton", "parton", "-", M.INK),
           ("gen", r"generator", (0, (5, 2)), blues(0.7)),
           ("reco", r"reconstructed", "-", blues(0.45)),
           ("matched", r"$\quad$''$\quad$ truth-matched", "-", HH_C)]      # ditto: reconstructed, truth-matched
@@ -189,15 +189,17 @@ def fig_levels(y_matched, path):
     fig = plt.figure(figsize=(W, H))
     ax2 = M.place(fig, T, B, P, P, W, H)
     qc = 0.5 * (q_edges[1:] + q_edges[:-1])
-    ax2.axhline(1, color=M.GRAY, lw=0.5, ls=":")
     for key, lab, ls, col in lv:
         eff_t, eff_s, h, err, a, _ = curves[key]
         lw = 1.6 if key in ("matched", "parton") else 1.2
         ax2.plot([], [], color=col, ls=ls, lw=lw, label=lab)
-        ax2.stairs(h, q_edges, color=col, ls=ls, lw=lw, baseline=None)
+        # histograms in bins of 0.1 in q, drawn as smooth (shape-preserving) curves through the bin centres
+        from scipy.interpolate import PchipInterpolator
+        qq = np.linspace(qc[0], qc[-1], 200)
+        ax2.plot(qq, PchipInterpolator(qc, h)(qq), color=col, ls=ls, lw=lw)
         if key == "matched":
-            ax2.fill_between(q_edges, np.r_[h - err, (h - err)[-1]], np.r_[h + err, (h + err)[-1]], step="post",
-                             color=col, alpha=0.18, lw=0)
+            ax2.fill_between(qq, PchipInterpolator(qc, h - err)(qq), PchipInterpolator(qc, h + err)(qq),
+                             color=col, alpha=0.2, lw=0)
     ax2.legend(loc="upper right", handlelength=2.0, labelspacing=0.2, borderaxespad=0.3)
     ax2.set_xlim(0, 1)
     ax2.set_ylim(0.4, 2.5)
