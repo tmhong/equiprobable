@@ -182,8 +182,8 @@ def fig_levels(y_matched, path):
             sc = np.load(os.path.join(ROOT, "osde_h170", f"scores_{key}.npz"))
             yt, ys = sc["train"], sc["hh"]
         curves[key] = (*roc_and_ratio(yt, ys, q_edges), auc(yt, ys), len(ys))
-    P = 3.3                                                     # one panel (the ROC curves bunch up), legend below
-    T, GX, B, RT, TOP = 0.95, 0.55, 1.62, 0.2, 0.12
+    P = 3.0                                                     # one panel (the ROC curves bunch up), legend inside;
+    T, GX, B, RT, TOP = 0.95, 0.55, 0.62, 0.2, 0.12             # set at 0.8 of a column the text prints at ~9 pt
     W = T + P + RT
     H = B + P + TOP
     fig = plt.figure(figsize=(W, H))
@@ -198,8 +198,7 @@ def fig_levels(y_matched, path):
         if key == "matched":
             ax2.fill_between(q_edges, np.r_[h - err, (h - err)[-1]], np.r_[h + err, (h + err)[-1]], step="post",
                              color=col, alpha=0.18, lw=0)
-    fig.legend(*ax2.get_legend_handles_labels(), loc="lower left", bbox_to_anchor=((T + 0.05) / W, 0.02), ncol=1,
-               handlelength=2.0, labelspacing=0.25, borderaxespad=0.0)
+    ax2.legend(loc="upper right", handlelength=2.0, labelspacing=0.2, borderaxespad=0.3)
     ax2.set_xlim(0, 1)
     ax2.set_ylim(0.4, 2.5)
     ax2.set_xlabel(r"$t\bar{t}$ quantile $q$ of $y$")
