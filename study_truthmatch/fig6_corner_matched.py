@@ -38,12 +38,16 @@ qo = {"tt": quantile(yo_t, yo_t), "hh": quantile(yo_t, yo_h)}
 qm = {"tt": quantile(ym_t, ym_t), "hh": quantile(ym_t, ym_h)}
 w_r = weights(TT["p_cos_theta_prime"][ok_t], TT["p_cos_theta_prime_tilde"][ok_t], a.fr)
 
+VMIN, VMAX = 0.1, 10.0
+
+
 def corner_plot(path, edges, R, corner, enrich, mark=M.RATIO_COLOR):
     """As make_paper_figs.fig5_plot, with the corner box and its enrichment in the annotation red (not ink), so they
     do not read as data on the amber cells."""
     from matplotlib.colors import LinearSegmentedColormap, LogNorm
     cmap = LinearSegmentedColormap.from_list("npad", [M.NAVY, "#FFFFFF", M.AMBER])
-    norm = LogNorm(vmin=1 / 3, vmax=3)
+    # symmetric log scale, white at 1: the bins run from 0.1 to 3.7, so the old 1/3 to 3 range saturated both ends
+    norm = LogNorm(vmin=VMIN, vmax=VMAX)
     P, T, B, CB, TOP = 2.2, 0.78, 0.62, 0.14, 0.95
     W = T + P + 0.22
     H = B + P + 0.22 + CB + TOP
@@ -58,12 +62,12 @@ def corner_plot(path, edges, R, corner, enrich, mark=M.RATIO_COLOR):
     ax.set_ylabel(r"$q_m$", rotation=0, ha="right", va="center", labelpad=6)
     M.finish(ax, no_values_y=False)
     cax = M.place(fig, T, B + P + 0.22, P, CB, W, H)
-    cb = fig.colorbar(im, cax=cax, orientation="horizontal", ticks=[1 / 3, 1 / 2, 1, 2, 3])
+    cb = fig.colorbar(im, cax=cax, orientation="horizontal", ticks=[0.1, 1 / 3, 1, 3, 10])
     cb.ax.xaxis.set_ticks_position("top")
-    cb.ax.set_xticklabels([r"$\frac{1}{3}$", r"$\frac{1}{2}$", "$1$", "$2$", "$3$"])
+    cb.ax.set_xticklabels([r"$\frac{1}{10}$", r"$\frac{1}{3}$", "$1$", "$3$", "$10$"])
     cb.ax.minorticks_off()
     cb.outline.set_linewidth(0.6)
-    cb.ax.set_title(r"$HH\ /\ t\bar{t}\ \mathrm{density}$", pad=8)
+    cb.ax.set_title(r"$H\!H\ /\ t\bar{t}\ \mathrm{density}$", pad=8)
     for ext in ("pdf", "png"):
         fig.savefig(f"{path}.{ext}", dpi=150)
     M.plt.close(fig)
@@ -91,6 +95,7 @@ edges = np.linspace(0, 1, a.bins + 1)
 Ht = np.histogram2d(qo["tt"], qm["tt"], [edges, edges])[0] / len(qo["tt"])
 Hh = np.histogram2d(qo["hh"], qm["hh"], [edges, edges])[0] / n_h
 R = np.where(Ht > 0, Hh / np.maximum(Ht, 1e-12), np.nan)
+res["bin_ratios"] = np.round(R, 2).tolist()
 res["width_in"] = corner_plot(os.path.join(HERE, "fig6_corner_recomatched"), edges, R, c, res["corner_enrichment_hh"][0])
 json.dump(res, open(os.path.join(HERE, "fig6_corner_recomatched.json"), "w"), indent=1)
 print(json.dumps(res, indent=1))
