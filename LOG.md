@@ -489,3 +489,19 @@ Newest entries are at the bottom. Numbers refer to the samples listed under "Sam
   - KL estimator committed as `study_cv/kl.py`; it reproduces the old values from the old scores.
   - Figs. 2, 3, 5, 7 (`paper_figs_matched.py`, `fig6_corner_matched.py`) and Fig. 4 (`compare_y.py` on the parton+trigger scores) regenerated.
   - Fig. 2 labels 0 on the y axis and shows where the projection dips below zero (cos θ̃′ near 1).
+
+## 2026-10-14: repository reorganized into code/ and results/ (PR #1)
+
+- **Request:** clean up the repository, with all results in one directory and all code in another, without touching `recon_cicero/`.
+- **Layout:**
+  - `code/` holds every script, `plotting/`, `tests/`, `cards/`, `figures/`, `note/`, `pileup/`, `paper_figs/` and one `study_*/` per study.
+  - `results/` holds every output, in the directory named after the code that writes it.
+  - `samples/`, `tools/`, `work/` and `.venv/` stay at the top level, out of git.
+  - The moves were made with `git mv`, so history is kept.
+- **Paths:** `code/repo_paths.py` holds every location, and every script writes into `results/` whichever directory it is run from.
+- **Migration:** `code/migrate_layout.py` moves an old checkout's untracked data (dry run unless given `--do`).
+- **Checks:** comparing outputs with the old layout on the same inputs.
+  - Byte-identical: `numbers.json`, the Figs. 2, 3, 6 and 7 PNGs and JSON, the go/no-go report, the OSDE fits, scores and scans, and the validation, acceptance and study outputs.
+  - Fig. 4: the PDF matches the paper's apart from its creation date.
+  - pytest: 14 passed.
+  - Not rerun: event generation, pileup production, full ML training and `analyze.py`.
