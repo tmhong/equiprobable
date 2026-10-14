@@ -197,7 +197,7 @@ def fig_levels(y_matched, path):
     lv = [("parton_trig", "parton + trigger", "-", M.INK),
           ("gen", r"generator + $\chi^2$", (0, (5, 2)), blues(0.7)),
           ("reco", r"reconstructed + $\chi^2$", "-", blues(0.45)),
-          ("matched", r"$\quad$''$\quad$ truth-matched", "-", HH_C)]      # ditto: reconstructed, truth-matched
+          ("matched", r"reco. truth-matched", "-", HH_C)]      # ditto: reconstructed, truth-matched
     q_edges = np.linspace(0, 1, 11)
     curves = {}
     for key, *_ in lv:
