@@ -6,7 +6,7 @@ pipeline (make_plots.load_sample with jet_assignment=truth, had_fermion=down); p
 run time only.  If the reco-level angular anomaly of the stop comes from the neutralinos corrupting the neutrino
 reconstruction, f_tt's R should fall towards its parton value (0.76) here.
 
-Run: OMP_NUM_THREADS=4 .venv/bin/python study_gonogo/verify/robust_met/stop_nochi.py
+Run: OMP_NUM_THREADS=4 .venv/bin/python code/study_gonogo/verify/robust_met/stop_nochi.py
 """
 import os
 import sys
@@ -20,7 +20,9 @@ sys.path.insert(0, ROOT)
 import make_plots  # noqa: E402
 from plotting import physics  # noqa: E402
 from plotting.angles import ANGLE_NAMES  # noqa: E402
+import repo_paths  # noqa: E402
 
+OUT = repo_paths.results_dir("study_gonogo", "verify", "robust_met")
 ORIG = physics.build_reco
 STATS = {"n_chi": []}
 
@@ -45,7 +47,7 @@ def build_reco_nochi(d):
 
 def main():
     physics.build_reco = build_reco_nochi
-    path = os.path.join(ROOT, "samples/stop_bblvqq/run_seed4002")
+    path = os.path.join(repo_paths.SAMPLES, "stop_bblvqq/run_seed4002")
     ev, _ = make_plots.load_sample("run_seed4002", path, ["reco"], None,
                                    {"had_fermion": "down", "jet_assignment": "truth"})
     e = ev["reco"]
@@ -63,9 +65,9 @@ def main():
     out["met_orig"] = np.asarray(e.met_orig, float)[ok]
     out["mtw"] = np.asarray(e.mtw, float)[ok]
     # which events coincide with the standard selection (for a paired comparison)
-    z = np.load(os.path.join(ROOT, "study_gonogo", "cache", "stop.npz"))
+    z = np.load(os.path.join(repo_paths.RESULTS, "study_gonogo", "cache", "stop.npz"))
     print(f"selected {ok.sum()} of {len(e)} (standard pipeline: {len(z['reco/Y'])})", flush=True)
-    np.savez_compressed(os.path.join(HERE, "stop_nochi.npz"), **out)
+    np.savez_compressed(os.path.join(OUT, "stop_nochi.npz"), **out)
 
 
 if __name__ == "__main__":

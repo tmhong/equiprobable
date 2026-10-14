@@ -11,16 +11,17 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+ROOT = os.path.dirname(HERE)          # code/
 sys.path.insert(0, ROOT)
+import repo_paths  # noqa: E402
 from plotting import style  # noqa: E402
 
-# OUT_SUFFIX (e.g. "_h170"): signal from study_washout<SUFFIX>/mechanism, output masses_<level><SUFFIX>.png;
+# OUT_SUFFIX (e.g. "_h170"): signal from results/study_washout<SUFFIX>/mechanism, output masses_<level><SUFFIX>.png;
 # SIGNAL_LABEL: signal name in the legend and titles.  Defaults: hh(125), as before.
 SUFFIX = os.environ.get("OUT_SUFFIX", "")
 SIG = os.environ.get("SIGNAL_LABEL")
-tt = np.load(os.path.join(ROOT, "study_washout/mechanism/data_tt.npz"))
-hh = np.load(os.path.join(ROOT, f"study_washout{SUFFIX}/mechanism/data_hh.npz"))
+tt = np.load(os.path.join(repo_paths.RESULTS, "study_washout/mechanism/data_tt.npz"))
+hh = np.load(os.path.join(repo_paths.RESULTS, f"study_washout{SUFFIX}/mechanism/data_hh.npz"))
 WSTAR = np.median(np.minimum(hh["p_m_w_had"], hh["p_m_w_lep"])) < 60   # one W off shell (h125) or both on shell
 COLS = [("m_w_had", r"$m_{W,\mathrm{had}}$ [GeV]", (0, 160), 80.4, 2.085),
         ("m_t_lep", r"$m_{t,\mathrm{lep}}$ [GeV]", (50, 350), 172.5, 1.42),
@@ -56,5 +57,5 @@ for lvl, pre, mk, title in (("parton", "p_", None, f"parton level: tt̄ sits on 
     axs[0].set_ylabel("unit area")
     fig.suptitle(title.replace("tt̄", r"$t\bar t$"))
     fig.tight_layout()
-    fig.savefig(os.path.join(HERE, f"masses_{lvl}{SUFFIX}.png"), dpi=110)
+    fig.savefig(os.path.join(repo_paths.results_dir("study_salvage"), f"masses_{lvl}{SUFFIX}.png"), dpi=110)
 print("ok")

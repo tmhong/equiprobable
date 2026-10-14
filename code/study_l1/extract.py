@@ -10,9 +10,9 @@ own loader (make_plots.load_sample, angle options down-type / truth) and cache, 
     four-vectors (b_had, b_lep, q1, q2, nu), the truth-matched down-type W_had jet, the three
     masses and the ten angles.
 
-Output: study_l1/cache/<name>.npz (one file per sample).  Never modifies existing files.
+Output: results/study_l1/cache/<name>.npz (one file per sample).  Never modifies existing files.
 
-  python study_l1/extract.py            # all three samples (skips existing cache files)
+  python code/study_l1/extract.py       # all three samples (skips existing cache files)
 """
 import os
 import sys
@@ -22,13 +22,15 @@ import awkward as ak
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+ROOT = os.path.dirname(HERE)          # code/
 sys.path.insert(0, ROOT)
 import make_plots  # noqa: E402
+import repo_paths  # noqa: E402
 from plotting.angles import ANGLE_NAMES, as_array  # noqa: E402
 
 OPTS = {"had_fermion": "down", "jet_assignment": "truth"}
 NJ = 8
+CACHE = repo_paths.results_dir("study_l1", "cache", create=False)
 SAMPLES = {
     # name: (path, max events)
     "tt_test": ("samples/ttbar_bblvqq/run_seed12345", None),     # independent tt̄ (10k): test
@@ -44,7 +46,7 @@ def dense(x, n, fill=np.nan):
 
 def extract(name, path, nmax):
     t0 = time.time()
-    ev, _ = make_plots.load_sample(name, os.path.join(ROOT, path), ["parton", "reco"], nmax, OPTS)
+    ev, _ = make_plots.load_sample(name, os.path.join(repo_paths.REPO, path), ["parton", "reco"], nmax, OPTS)
     R = ev["reco"]
     out = {}
     j = R.jets
@@ -72,15 +74,15 @@ def extract(name, path, nmax):
     P = ev["parton"]
     out["parton_q_down"] = as_array(P.q_down)
     out["parton_q_up"] = as_array(P.q_up)
-    np.savez_compressed(os.path.join(HERE, "cache", f"{name}.npz"), **out)
+    np.savez_compressed(os.path.join(CACHE, f"{name}.npz"), **out)
     print(f"[{name}] {len(out['met'])} events, presel {out['presel'].sum()}, reco_ok {out['reco_ok'].sum()} "
           f"({time.time() - t0:.0f} s)", flush=True)
 
 
 def main():
-    os.makedirs(os.path.join(HERE, "cache"), exist_ok=True)
+    os.makedirs(CACHE, exist_ok=True)
     for name, (path, nmax) in SAMPLES.items():
-        if os.path.exists(os.path.join(HERE, "cache", f"{name}.npz")) and "--force" not in sys.argv:
+        if os.path.exists(os.path.join(CACHE, f"{name}.npz")) and "--force" not in sys.argv:
             print(f"[{name}] cached")
             continue
         extract(name, path, nmax)

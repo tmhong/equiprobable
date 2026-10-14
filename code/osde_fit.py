@@ -9,12 +9,12 @@ Build f_tt̄(x) on the ten angles with OSDE and apply it to tt̄ and hh samples.
      and on hh
   4. plots: 1D projections of f vs data (as in the paper), distributions of
      y = f(x) and s = -ln y for tt̄ vs hh, hh-vs-tt̄ efficiency curve
-  5. osde/summary.json with the numbers (used by make_slides.py)
+  5. <out>/summary.json with the numbers (used by make_slides.py); --out defaults to results/osde
 
 Example:
-  python osde_fit.py --train samples/ttbar_bblvqq/run_seed1001 \\
-                     --test  samples/ttbar_bblvqq/run_seed12345 \\
-                     --hh    samples/hh_bblvqq/run_seed2001
+  python code/osde_fit.py --train samples/ttbar_bblvqq/run_seed1001 \\
+                          --test  samples/ttbar_bblvqq/run_seed12345 \\
+                          --hh    samples/hh_bblvqq/run_seed2001
 """
 import argparse
 import json
@@ -32,6 +32,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 import make_plots  # noqa: E402
+import repo_paths  # noqa: E402
 from plotting import angles, osde, style  # noqa: E402
 
 LEVELS = ["parton", "parton_trig", "gen", "reco"]
@@ -292,10 +293,10 @@ def main():
                         "sh: spherical-harmonic products Y_l1m1(θ,φ) Y_l2m2(θ',φ') per top")
     p.add_argument("--sh-l1", type=int, default=1, help="l1max for --basis sh")
     p.add_argument("--sh-l2", type=int, default=2, help="l2max for --basis sh")
-    p.add_argument("--orders", default=os.path.join(HERE, "osde", "order_scan.json"),
+    p.add_argument("--orders", default=os.path.join(repo_paths.RESULTS, "osde", "order_scan.json"),
                    help="osde_order_scan.py output (used with --basis extended)")
     p.add_argument("--max-order", type=int, default=16, help="cap on the extended orders")
-    p.add_argument("--out", default=os.path.join(HERE, "osde"))
+    p.add_argument("--out", default=os.path.join(repo_paths.RESULTS, "osde"))
     p.add_argument("--rebuild-cache", action="store_true")
     args = p.parse_args()
 

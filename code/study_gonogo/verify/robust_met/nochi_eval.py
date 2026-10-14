@@ -8,13 +8,15 @@ sys.path.insert(0, ROOT); sys.path.insert(0, os.path.join(ROOT, "study_gonogo"))
 import analyze as A
 from plotting import osde
 from plotting.angles import ANGLE_NAMES
+import repo_paths
+OUT = repo_paths.results_dir("study_gonogo", "verify", "robust_met")   # also extract_met.py's and stop_nochi.py's outputs
 WPS = (0.005, 0.01, 0.02, 0.05, 0.1)
-f_all = osde.load_density(os.path.join(ROOT, A.F_FILES["reco"]))
+f_all = osde.load_density(os.path.join(repo_paths.RESULTS, A.F_FILES["reco"]))
 f_cv = f_all.truncated(f_all.significance() > A.T_CV)
 tt = A.load("tt_fit", "reco")
-Mtt = dict(np.load(os.path.join(HERE, "met_tt_fit.npz")))
-std = A.load("stop", "reco"); Mstd = dict(np.load(os.path.join(HERE, "met_stop.npz")))
-z = np.load(os.path.join(HERE, "stop_nochi.npz"))
+Mtt = dict(np.load(os.path.join(OUT, "met_tt_fit.npz")))
+std = A.load("stop", "reco"); Mstd = dict(np.load(os.path.join(OUT, "met_stop.npz")))
+z = np.load(os.path.join(OUT, "stop_nochi.npz"))
 nc = {"X": {a: z[f"reco/{a}"] for a in ANGLE_NAMES}, "m": {k: z[f"reco/{k}"] for k in A.MASSES}, "mtt": z["reco/mtt"]}
 # same events? (selection identical; jets/lepton unchanged so the hadronic-side W mass must agree)
 print("events", len(nc["mtt"]), len(std["mtt"]), " m_W,had identical:", np.allclose(nc["m"]["m_w_had"], std["m"]["m_w_had"], equal_nan=True),
@@ -62,4 +64,4 @@ for lab, d in (("standard", std), ("no-chi MET", nc)):
     bd = {f"{w:g}": float(np.mean(ss > np.quantile(st, 1 - w)) / w) for w in WPS}
     out[f"bdt_angles_{lab}"] = bd
     print(f"  BDT angles ({lab}): AUC {A.auc(ss, st):.3f} " + " ".join(f"R@{k} {v:.2f}" for k, v in bd.items()))
-json.dump(out, open(os.path.join(HERE, "nochi_eval.json"), "w"), indent=1)
+json.dump(out, open(os.path.join(OUT, "nochi_eval.json"), "w"), indent=1)

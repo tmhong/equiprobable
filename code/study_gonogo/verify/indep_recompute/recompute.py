@@ -5,7 +5,7 @@ Only the OSDE basis functions (TTbarDensity.factors) and the stored coefficients
 density evaluation, the leave-one-out correction, the mass scores, the working points, the m_tt windows, the AUCs
 and the bootstrap are written here from scratch.
 
-Run: OMP_NUM_THREADS=4 .venv/bin/python study_gonogo/verify/indep_recompute/recompute.py
+Run: OMP_NUM_THREADS=4 .venv/bin/python code/study_gonogo/verify/indep_recompute/recompute.py
 """
 import json
 import os
@@ -19,6 +19,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
 sys.path.insert(0, ROOT)
 from plotting import osde  # noqa: E402
+import repo_paths  # noqa: E402
+
+RES = repo_paths.RESULTS                                    # inputs: FFILE, the caches, results.json
+OUT = repo_paths.results_dir("study_gonogo", "verify", "indep_recompute")
 
 ANG = ["Y", "cos_Theta", "cos_theta", "phi", "cos_theta_prime", "phi_prime",
        "cos_theta_tilde", "phi_tilde", "cos_theta_prime_tilde", "phi_prime_tilde"]
@@ -27,14 +31,14 @@ SIG = ["etat", "stop", "H350", "nospin", "tt_indep"]
 RUNS = {"tt_fit": ["run_seed1001"], "tt_indep": ["run_seed12345"], "etat": ["run_seed4001"],
         "stop": ["run_seed4002"], "H350": ["run_m350_seed3003"], "nospin": ["run_seed4003", "run_seed4004"]}
 FFILE = {"parton_trig": "osde/f_ttbar_parton_trig.npz", "gen": "osde/f_ttbar_gen.npz",
-         "reco": "osde/f_ttbar_reco.npz", "matched": "study_truthmatch/osde_dRmatch/f_ttbar_reco.npz"}
+         "reco": "osde/f_ttbar_reco.npz", "matched": "study_truthmatch/osde_dRmatch/f_ttbar_reco.npz"}  # under results/
 WPS = [0.01, 0.10]
 NBOOT = 300
 
 
 def get(key, level):
     if level != "matched":
-        z = np.load(os.path.join(ROOT, "study_gonogo/cache", key + ".npz"))
+        z = np.load(os.path.join(RES, "study_gonogo/cache", key + ".npz"))
         return {"X": {a: np.asarray(z[f"{level}/{a}"], float) for a in ANG},
                 "m": {k: np.asarray(z[f"{level}/{k}"], float) for k in MASS},
                 "mtt": np.asarray(z[f"{level}/mtt"], float), "n_all": int(z[f"{level}/n_all"])}
@@ -42,7 +46,7 @@ def get(key, level):
     m = {k: [] for k in MASS}
     mtt, n_all = [], 0
     for r in RUNS[key]:
-        z = np.load(os.path.join(ROOT, "study_truthmatch", f"data_{r}.npz"))
+        z = np.load(os.path.join(RES, "study_truthmatch", f"data_{r}.npz"))
         ok = z["ok"].astype(bool)
         for a in ANG:
             X[a].append(z["m_" + a][ok])
@@ -193,11 +197,11 @@ def window_evenodd(ms, mb, eb):
 # ---------------------------------------------------------------- main
 def main():
     t0 = time.time()
-    ref = json.load(open(os.path.join(ROOT, "study_gonogo/results.json")))
+    ref = json.load(open(os.path.join(RES, "study_gonogo/results.json")))
     out = {}
     for level in ["reco", "matched", "parton_trig", "gen"]:
         full_rule = level in ("reco", "matched")
-        f = osde.load_density(os.path.join(ROOT, FFILE[level]))
+        f = osde.load_density(os.path.join(RES, FFILE[level]))
         tt = get("tt_fit", level)
         n = len(tt["mtt"])
         L = out.setdefault(level, {})
@@ -303,10 +307,10 @@ def main():
                     r["mtt_window"]["full@0.01"], r["mtt_window"]["full@0.1"], r["mtt_window"]["evenodd@0.01"],
                     r["mtt_window"]["evenodd@0.1"], r["mtt_window"]["fullcv@0.01"], r["mtt_window"]["fullcv@0.1"]))
                     if full_rule else ""), flush=True)
-        json.dump(out, open(os.path.join(HERE, "recompute.json"), "w"), indent=1)
+        json.dump(out, open(os.path.join(OUT, "recompute.json"), "w"), indent=1)
         print(f"  level {level} done, {time.time() - t0:.0f}s; checks:",
               {k: v for k, v in L.items() if not isinstance(v, dict)}, flush=True)
-    json.dump(out, open(os.path.join(HERE, "recompute.json"), "w"), indent=1)
+    json.dump(out, open(os.path.join(OUT, "recompute.json"), "w"), indent=1)
 
 
 if __name__ == "__main__":

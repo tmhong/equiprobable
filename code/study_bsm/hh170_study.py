@@ -11,7 +11,7 @@ Same scores as the hh(125) study, nothing retrained: f_tt̄ (paper basis, all te
 the Breit-Wigner factors, and their sum, at parton, gen and reco; AUC (bootstrap error) and the
 signal efficiency at tt̄ efficiency 1% and 10%; selection efficiencies; per-variable 1-D likelihood-
 ratio AUCs at parton level; a figure of m_W,had and m_t,had (parton and reco) for tt̄, hh(125), hh(170).
-Output: study_bsm/hh170_study.json, study_bsm/fig_hh170.png
+Output: results/study_bsm/hh170_study.json, results/study_bsm/fig_hh170.png
 """
 import json
 import os
@@ -24,11 +24,12 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+ROOT = os.path.dirname(HERE)          # code/
 sys.path.insert(0, ROOT)
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(ROOT, "study_salvage"))
 import make_plots  # noqa: E402
+import repo_paths  # noqa: E402
 from htt_study import lr_auc, eff_at  # noqa: E402
 from htt_test import auc_err, extract  # noqa: E402
 from salvage import surprisal  # noqa: E402
@@ -51,20 +52,21 @@ OPTS = {"had_fermion": "down", "jet_assignment": "truth"}
 
 def main():
     style.use()
+    out_dir = repo_paths.results_dir("study_bsm")
     out = {"levels": {}, "selection": {}}
     for k, p in SIG.items():
-        ev, _ = make_plots.load_sample(k, os.path.join(ROOT, p), ["parton", "gen", "reco"], None, OPTS)
+        ev, _ = make_plots.load_sample(k, os.path.join(repo_paths.REPO, p), ["parton", "gen", "reco"], None, OPTS)
         out["selection"][k] = {"n": len(ev["parton"]), "trigger": float(np.mean(ev["parton"].lep_trigger)),
                                "gen_reco_ok": float(np.mean(np.asarray(ev["gen"].reco_ok))),
                                "reco_reco_ok": float(np.mean(np.asarray(ev["reco"].reco_ok)))}
     keep = {}
     for level, fname in (("parton", "f_ttbar_parton.npz"), ("gen", "f_ttbar_gen.npz"), ("reco", "f_ttbar_reco.npz")):
-        D = {"tt_fit": extract(os.path.join(ROOT, TT_FIT), level, 30000), "tt": extract(os.path.join(ROOT, TT_IND), level)}
+        D = {"tt_fit": extract(os.path.join(repo_paths.REPO, TT_FIT), level, 30000), "tt": extract(os.path.join(repo_paths.REPO, TT_IND), level)}
         for k, p in SIG.items():
-            D[k] = extract(os.path.join(ROOT, p), level)
+            D[k] = extract(os.path.join(repo_paths.REPO, p), level)
         keep[level] = D
         ref = D["tt_fit"]
-        f_all = osde.load_density(os.path.join(ROOT, "osde", fname))
+        f_all = osde.load_density(os.path.join(repo_paths.RESULTS, "osde", fname))
         f_10 = f_all.truncated(f_all.significance() > 10)
         masses = list(D["tt"]["m"])
 
@@ -108,7 +110,7 @@ def main():
             res[k] = r
             print(level, k, json.dumps({n: (round(v["auc"], 3), round(100 * v["eff_at_tt_1pct"], 1)) for n, v in r["scores"].items()}), flush=True)
         out["levels"][level] = res
-    json.dump(out, open(os.path.join(HERE, f"hh{TAG}_study.json"), "w"), indent=1)
+    json.dump(out, open(os.path.join(out_dir, f"hh{TAG}_study.json"), "w"), indent=1)
 
     cols = {"tt": "#1f4e9c", "hh125": "#d1495b", f"hh{TAG}": "#2a9d8f"}
     labs = {"tt": r"$t\bar t$", "hh125": r"$hh$, $m_h=125$", f"hh{TAG}": _a.label}
@@ -123,7 +125,7 @@ def main():
             ax.legend(fontsize=12, loc="upper center")
         axs[row][0].set_ylabel("unit area")
     fig.suptitle(r"$hh$ with on-shell $W$s: the $W$ mass handle disappears, the top-mass handle stays")
-    fig.tight_layout(); fig.savefig(os.path.join(HERE, f"fig_hh{TAG}.png"), dpi=110)
+    fig.tight_layout(); fig.savefig(os.path.join(out_dir, f"fig_hh{TAG}.png"), dpi=110)
     print("done")
 
 

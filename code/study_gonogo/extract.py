@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Per-sample arrays for the go/no-go analysis, cached in study_gonogo/cache/<key>.npz.
+Per-sample arrays for the go/no-go analysis, cached in results/study_gonogo/cache/<key>.npz.
 
 For each level in (parton_trig, gen, reco) and the events that osde_fit.py uses (finite angles; gen/reco: a
 reconstructed tt̄ system, i.e. reco_ok of the chi2 assignment): the ten angles, m_W,had, m_t,lep, m_t,had and m_tt̄,
@@ -8,7 +8,7 @@ plus n_all (generated events).  The ΔR-matched level comes from study_truthmatc
 
 For the tt̄ fit sample the angles are checked against osde_fit.py's cache, so that leave-one-out scores are exact.
 
-Run: OMP_NUM_THREADS=3 .venv/bin/python study_gonogo/extract.py KEY=PATH[,PATH...] ...
+Run: OMP_NUM_THREADS=3 .venv/bin/python code/study_gonogo/extract.py KEY=PATH[,PATH...] ...   (PATH relative to the repo top)
 """
 import os
 import sys
@@ -20,7 +20,9 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
 import make_plots  # noqa: E402
 from plotting.angles import ANGLE_NAMES  # noqa: E402
+import repo_paths  # noqa: E402
 
+CACHE = repo_paths.results_dir("study_gonogo", "cache", create=False)
 OPTS = {"had_fermion": "down", "jet_assignment": "truth"}
 LEVELS = ("parton_trig", "gen", "reco")
 
@@ -54,10 +56,10 @@ def one(path):
 
 
 def main():
-    os.makedirs(os.path.join(HERE, "cache"), exist_ok=True)
+    os.makedirs(CACHE, exist_ok=True)
     for arg in sys.argv[1:]:
         key, paths = arg.split("=", 1)
-        parts = [one(os.path.join(ROOT, p)) for p in paths.split(",")]
+        parts = [one(os.path.join(repo_paths.REPO, p)) for p in paths.split(",")]
         out = {}
         for k in parts[0]:
             if k.endswith("/n_all"):
@@ -67,7 +69,7 @@ def main():
                     out[k] = parts[0][k]
             else:
                 out[k] = np.concatenate([p[k] for p in parts])
-        np.savez_compressed(os.path.join(HERE, "cache", f"{key}.npz"), **out)
+        np.savez_compressed(os.path.join(CACHE, f"{key}.npz"), **out)
         print(key, {lvl: (int(len(out[f'{lvl}/Y'])), int(out[f'{lvl}/n_all'])) for lvl in LEVELS}, flush=True)
 
 

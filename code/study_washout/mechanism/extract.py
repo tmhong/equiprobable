@@ -1,13 +1,15 @@
 """Extract per-event arrays (parton, truth-matched gen, chi2 gen) for the washout mechanism study.
-usage: python extract.py NAME PATH MAXEV   -> data_NAME.npz
-       OUT_SUFFIX=_h170 python extract.py hh PATH MAXEV   -> ../../study_washout_h170/mechanism/data_hh.npz"""
+usage: python code/study_washout/mechanism/extract.py NAME PATH MAXEV   -> results/study_washout/mechanism/data_NAME.npz
+       OUT_SUFFIX=_h170 python code/study_washout/mechanism/extract.py hh PATH MAXEV   -> results/study_washout_h170/mechanism/data_hh.npz
+PATH: the sample directory, relative to the repository top (e.g. samples/hh_bblvqq/run_seed2001)"""
 import os, sys
 os.environ.setdefault("OMP_NUM_THREADS", "4")
 import numpy as np, awkward as ak
-PROJ = "/Users/TMHONG/Claude-code/ttbar_bblvqq"
-sys.path.insert(0, PROJ)
-SUFFIX = os.environ.get("OUT_SUFFIX", "")      # non-empty: write into the sibling study_washout<SUFFIX>/mechanism
-OUT = os.path.join(PROJ, "study_washout" + SUFFIX, "mechanism") if SUFFIX else os.path.dirname(__file__)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))   # code/
+import repo_paths
+PROJ = repo_paths.REPO
+SUFFIX = os.environ.get("OUT_SUFFIX", "")      # non-empty: write into the sibling results/study_washout<SUFFIX>/mechanism
+OUT = repo_paths.results_dir("study_washout" + SUFFIX, "mechanism")
 import make_plots
 from plotting import angles as A, physics as P
 

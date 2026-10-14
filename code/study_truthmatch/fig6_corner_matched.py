@@ -3,7 +3,7 @@
 Fig. 6 (fig:negprob) with Delta-R-matched reco jets: HH(170)/tt̄ density in the plane of the tt̄ quantiles of the
 angular score (f_tt̄, LOO for tt̄) and the Breit-Wigner mass score; corner and single-score enrichments.
 
-Run: OMP_NUM_THREADS=3 .venv/bin/python study_truthmatch/fig6_corner_matched.py [--fr 0.3] [--bins 5]
+Run: OMP_NUM_THREADS=3 .venv/bin/python code/study_truthmatch/fig6_corner_matched.py [--fr 0.3] [--bins 5]
 """
 import argparse
 import json
@@ -20,6 +20,9 @@ from analyze import bw_score, quantile  # noqa: E402
 from plotting import osde  # noqa: E402
 from plotting.angles import ANGLE_NAMES  # noqa: E402
 from wtb_reweight import weights  # noqa: E402
+import repo_paths  # noqa: E402
+
+OUT = repo_paths.results_dir("study_truthmatch")
 
 p = argparse.ArgumentParser()
 p.add_argument("--fr", type=float, default=0.3)
@@ -27,10 +30,10 @@ p.add_argument("--bins", type=int, default=5)
 p.add_argument("--corner", type=float, default=0.2)
 a = p.parse_args()
 
-TT, HH = (np.load(os.path.join(HERE, f"data_{s}.npz")) for s in ("run_seed1001", "run_m170_all"))
+TT, HH = (np.load(os.path.join(OUT, f"data_{s}.npz")) for s in ("run_seed1001", "run_m170_all"))
 ok_t, ok_h = TT["ok"], HH["ok"]
 # the angular score: the one estimator of the paper (|c|/sigma > 2.5 by 5-fold CV on tt̄, tt̄ cross-fitted; study_cv)
-_cv = np.load(os.path.join(ROOT, "study_cv", "scores_matched.npz"))
+_cv = np.load(os.path.join(repo_paths.RESULTS, "study_cv", "scores_matched.npz"))
 yo_t, yo_h = _cv["tt_cv"], _cv["HH170_cv"]
 assert len(yo_t) == int(ok_t.sum()) and len(yo_h) == int(ok_h.sum())
 ym_t = bw_score(TT, ok_t, TT, ok_t, "m")
@@ -97,6 +100,6 @@ Ht = np.histogram2d(qo["tt"], qm["tt"], [edges, edges])[0] / len(qo["tt"])
 Hh = np.histogram2d(qo["hh"], qm["hh"], [edges, edges])[0] / n_h
 R = np.where(Ht > 0, Hh / np.maximum(Ht, 1e-12), np.nan)
 res["bin_ratios"] = np.round(R, 2).tolist()
-res["width_in"] = corner_plot(os.path.join(HERE, "fig6_corner_recomatched"), edges, R, c, res["corner_enrichment_hh"][0])
-json.dump(res, open(os.path.join(HERE, "fig6_corner_recomatched.json"), "w"), indent=1)
+res["width_in"] = corner_plot(os.path.join(OUT, "fig6_corner_recomatched"), edges, R, c, res["corner_enrichment_hh"][0])
+json.dump(res, open(os.path.join(OUT, "fig6_corner_recomatched.json"), "w"), indent=1)
 print(json.dumps(res, indent=1))

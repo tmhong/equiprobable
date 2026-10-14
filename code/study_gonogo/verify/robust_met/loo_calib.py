@@ -8,7 +8,8 @@ ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
 sys.path.insert(0, ROOT); sys.path.insert(0, os.path.join(ROOT, "study_gonogo"))
 import analyze as A
 from plotting import osde
-f0 = osde.load_density(os.path.join(ROOT, A.F_FILES["reco"]))
+import repo_paths
+f0 = osde.load_density(os.path.join(repo_paths.RESULTS, A.F_FILES["reco"]))
 tt = A.load("tt_fit", "reco")
 X = tt["X"]; n = len(X["Y"])
 WPS = (0.005, 0.01, 0.02, 0.05, 0.1)

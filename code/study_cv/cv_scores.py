@@ -12,8 +12,8 @@ so tt̄ and signal see the same model noise.  The all-terms cross-fit is kept as
 truncated fit scores the independent tt̄ sample.  At the matched level the chi2-assignment angles of the same matched
 events are scored with the reco-level fold models (tt̄: the fold of the event in the reco fit sample).
 
-Writes study_cv/scores_<level>.npz and study_cv/cv_summary.json.
-Run: OMP_NUM_THREADS=8 .venv/bin/python study_cv/cv_scores.py [--levels ...] [--t 2.5]
+Writes results/study_cv/scores_<level>.npz and results/study_cv/cv_summary.json.
+Run: OMP_NUM_THREADS=8 .venv/bin/python code/study_cv/cv_scores.py [--levels ...] [--t 2.5]
 """
 import argparse
 import json
@@ -27,12 +27,14 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
 from plotting import osde  # noqa: E402
 from plotting.angles import ANGLE_NAMES  # noqa: E402
+import repo_paths  # noqa: E402
 
 K = 5
-CACHE = os.path.join(ROOT, "study_gonogo", "cache")
-TM = os.path.join(ROOT, "study_truthmatch")
+OUT = repo_paths.results_dir("study_cv")
+CACHE = repo_paths.results_dir("study_gonogo", "cache", create=False)
+TM = repo_paths.results_dir("study_truthmatch", create=False)
 F_FILES = {"parton_trig": "osde/f_ttbar_parton_trig.npz", "gen": "osde/f_ttbar_gen.npz", "reco": "osde/f_ttbar_reco.npz",
-           "matched": "study_truthmatch/osde_dRmatch/f_ttbar_reco.npz"}
+           "matched": "study_truthmatch/osde_dRmatch/f_ttbar_reco.npz"}  # under results/
 MASSES = ("m_w_had", "m_t_lep", "m_t_had")
 
 
@@ -85,12 +87,12 @@ def main():
     p.add_argument("--levels", default="parton_trig,gen,reco,matched")
     p.add_argument("--t", type=float, default=2.5)
     a = p.parse_args()
-    summ_path = os.path.join(HERE, "cv_summary.json")
+    summ_path = os.path.join(OUT, "cv_summary.json")
     summ = json.load(open(summ_path)) if os.path.exists(summ_path) else {}
     summ["threshold"] = a.t
     reco_models = None
     for level in a.levels.split(","):
-        f_all = osde.load_density(os.path.join(ROOT, F_FILES[level]))
+        f_all = osde.load_density(os.path.join(repo_paths.RESULTS, F_FILES[level]))
         out = {}
         if level != "matched":
             Xtt, Mtt = cached("tt_fit", level)
@@ -126,7 +128,7 @@ def main():
         if level == "matched":
             # chi2 assignment on the same matched events, scored with the reco-level fold models
             if reco_models is None:
-                f_reco = osde.load_density(os.path.join(ROOT, F_FILES["reco"]))
+                f_reco = osde.load_density(os.path.join(repo_paths.RESULTS, F_FILES["reco"]))
                 Xr, _ = cached("tt_fit", "reco")
                 reco_models = fold_models(f_reco, Xr, a.t)
             chi_ok = z["chi_ok"]
@@ -138,7 +140,7 @@ def main():
             bh = okh & zh["chi_ok"]
             Xch = {x: zh[f"c_{x}"][bh] for x in ANGLE_NAMES}
             out["HH170_chi2_cv"], out["HH170_chi2_all_cv"] = score(reco_models, Xch, np.arange(bh.sum()) % K)
-        np.savez_compressed(os.path.join(HERE, f"scores_{level}.npz"), **out)
+        np.savez_compressed(os.path.join(OUT, f"scores_{level}.npz"), **out)
         summ[level] = {"n_tt": n, "kept_per_fold": [m[2] for m in models], "kept_full": int((f_full.c != 0).sum()),
                        **{f"n_{k}": int(len(v[0]["Y"])) for k, v in sigs.items()}}
         print(level, json.dumps(summ[level]), flush=True)

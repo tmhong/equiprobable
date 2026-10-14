@@ -11,7 +11,7 @@ Compared at parton and reco level, hh vs tt̄ and H->tt̄ vs tt̄, same test eve
                 a 1-D tt̄ density of m_tt̄ (histogram of the fit sample); combinations (surprisals add)
   supervised    BDT trained on hh vs tt̄ (angles; angles + masses + m_tt̄), applied to BOTH signals
   ceiling       BDT trained on H->tt̄ vs tt̄ (what a dedicated search could do)
-Output: study_bsm/htt_test.json
+Output: results/study_bsm/htt_test.json
 """
 import json
 import os
@@ -22,10 +22,11 @@ from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.metrics import roc_auc_score
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+ROOT = os.path.dirname(HERE)          # code/
 sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, "study_salvage"))
 import make_plots  # noqa: E402
+import repo_paths  # noqa: E402
 from salvage import surprisal  # noqa: E402
 from simplest import PDG, bw_surprisal, cauchy_surprisal  # noqa: E402
 from plotting import osde  # noqa: E402
@@ -87,10 +88,10 @@ def auc_err(lab, score, n=100, seed=0):
 def main():
     out = {}
     for level, fname in (("parton", "f_ttbar_parton.npz"), ("reco", "f_ttbar_reco.npz")):
-        D = {k: extract(os.path.join(ROOT, p), level, 30000 if k == "tt_fit" else None) for k, p in SAMPLES.items()}
+        D = {k: extract(os.path.join(repo_paths.REPO, p), level, 30000 if k == "tt_fit" else None) for k, p in SAMPLES.items()}
         n = {k: len(v["mtt"]) for k, v in D.items()}
         half = {k: np.arange(n[k]) < n[k] // 2 for k in ("hh", "Htt", "tt_fit")}   # train / test halves
-        f = osde.load_density(os.path.join(ROOT, "osde", fname))
+        f = osde.load_density(os.path.join(repo_paths.RESULTS, "osde", fname))
         f = f.truncated(f.significance() > 10)
         fref = f(D["tt_fit"]["ang"])
         ref = D["tt_fit"]
@@ -136,7 +137,7 @@ def main():
             res[f"{sig} vs tt"] = r
         out[level] = res
         print(level, json.dumps(res, indent=1), flush=True)
-    with open(os.path.join(HERE, "htt_test.json"), "w") as fh:
+    with open(os.path.join(repo_paths.results_dir("study_bsm"), "htt_test.json"), "w") as fh:
         json.dump(out, fh, indent=1)
 
 

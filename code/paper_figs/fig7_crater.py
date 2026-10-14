@@ -6,7 +6,7 @@ r = sqrt(2 (1 - c)) (Lambert projection: r dr dphi = dc dphi = dOmega, so areas 
 The band y1 < y < y2 of Fig. 6 is the red ring on the surface; its projection is the hatched ring of area Delta V;
 the arrows are grad f (radial).  Every equiprobable contour is a circle.
 
-Run: .venv/bin/python paper_figs/fig7_crater.py      -> paper_figs/fig7_toy_crater.pdf / .png (+ .json numbers)
+Run: .venv/bin/python code/paper_figs/fig7_crater.py      -> results/paper_figs/fig7_toy_crater.pdf / .png (+ .json numbers)
 """
 import json
 import os
@@ -16,9 +16,10 @@ import numpy as np
 from scipy.optimize import brentq
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, HERE)
+sys.path[:0] = [HERE, os.path.dirname(HERE)]          # paper_figs/ (make_paper_figs) and code/ (repo_paths)
 import make_paper_figs as M  # noqa: E402
 from make_paper_figs import plt  # noqa: E402
+import repo_paths  # noqa: E402
 from matplotlib.colors import LinearSegmentedColormap  # noqa: E402
 
 F0, FM, FP = 0.7, 0.3, 0.0
@@ -100,9 +101,10 @@ def main():
     ax.annotate(rf"${Y1:g} < y < {Y2:g}$", xy=at(rm * np.cos(np.radians(140)), rm * np.sin(np.radians(140)), f_r(rm)),
                 xytext=(0.04, 0.86), textcoords="axes fraction", ha="left", va="center", color=RED,
                 arrowprops=dict(arrowstyle="-", color=RED, lw=0.6))
+    out = repo_paths.results_dir("paper_figs")
     for ext in ("pdf", "png"):
-        fig.savefig(os.path.join(HERE, f"fig7_toy_crater.{ext}"), dpi=200)
-    json.dump(nums, open(os.path.join(HERE, "fig7_toy_crater.json"), "w"), indent=1)
+        fig.savefig(os.path.join(out, f"fig7_toy_crater.{ext}"), dpi=200)
+    json.dump(nums, open(os.path.join(out, "fig7_toy_crater.json"), "w"), indent=1)
     print(json.dumps(nums, indent=1))
 
 

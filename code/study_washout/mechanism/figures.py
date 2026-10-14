@@ -1,20 +1,24 @@
-"""Figures for the washout mechanism study."""
-import os, json
+"""Figures for the washout mechanism study (results/study_washout/mechanism/figures; see OUT_SUFFIX below)."""
+import os, sys, json
 import numpy as np
 import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 HERE = os.path.dirname(os.path.abspath(__file__))
-# OUT_SUFFIX (e.g. "_h170"): signal data, results and figures in the sibling study_washout<SUFFIX>/mechanism (tt̄ data
-# always from here); SIGNAL_LABEL: name of the signal in the figures.  Defaults: as before.
+sys.path.insert(0, os.path.dirname(os.path.dirname(HERE)))     # code/
+import repo_paths
+# the tt̄ data and the default inputs/outputs: results/study_washout/mechanism
+BASE = repo_paths.results_dir("study_washout", "mechanism")
+# OUT_SUFFIX (e.g. "_h170"): signal data, results and figures in the sibling results/study_washout<SUFFIX>/mechanism (tt̄ data
+# always from BASE); SIGNAL_LABEL: name of the signal in the figures.  Defaults: as before.
 SUFFIX = os.environ.get("OUT_SUFFIX", "")
-OUT = os.path.join(os.path.dirname(os.path.dirname(HERE)), "study_washout" + SUFFIX, "mechanism") if SUFFIX else HERE
+OUT = repo_paths.results_dir("study_washout" + SUFFIX, "mechanism") if SUFFIX else BASE
 SIG = os.environ.get("SIGNAL_LABEL", "hh")
 FIG = os.path.join(OUT, "figures"); os.makedirs(FIG, exist_ok=True)
 plt.rcParams.update({"font.size": 16, "axes.labelsize": 18, "axes.titlesize": 17, "xtick.labelsize": 15,
                      "ytick.labelsize": 15, "legend.fontsize": 14, "lines.linewidth": 2.4,
                      "axes.spines.top": False, "axes.spines.right": False, "axes.grid": True, "grid.alpha": 0.25})
 C_TT, C_HH, C_HH2 = "#1f4e9c", "#d1495b", "#e9a23b"
-h = dict(np.load(os.path.join(OUT, "data_hh.npz"))); t = dict(np.load(os.path.join(HERE, "data_tt.npz")))
+h = dict(np.load(os.path.join(OUT, "data_hh.npz"))); t = dict(np.load(os.path.join(BASE, "data_tt.npz")))
 R = json.load(open(os.path.join(OUT, "results.json")))
 for d in (h, t):
     d["all"] = np.ones(len(d["p_Y"]), bool); d["reco"] = d["g_reco_ok"].astype(bool); d["match"] = d["t_matched"].astype(bool)

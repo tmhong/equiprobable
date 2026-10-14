@@ -17,7 +17,7 @@ Scores (existing fits, nothing retrained): f_tt̄ paper basis all terms and |c|/
 Breit-Wigner mass factors (study_salvage), at parton, gen and reco level.  Metrics: weighted AUC
 (signal = reweighted sample, background = unweighted), and the signal efficiency at tt̄ efficiency
 1% and 10% (tail enrichment: what an anomaly score is for).  Also the effective sample size of the
-reweighted signal.  Output: study_bsm/wtb_reweight.json
+reweighted signal.  Output: results/study_bsm/wtb_reweight.json
 """
 import json
 import os
@@ -27,10 +27,11 @@ import numpy as np
 from sklearn.metrics import roc_auc_score
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+ROOT = os.path.dirname(HERE)          # code/
 sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, "study_salvage"))
 import make_plots  # noqa: E402
+import repo_paths  # noqa: E402
 from salvage import surprisal  # noqa: E402
 from simplest import PDG, bw_surprisal, cauchy_surprisal  # noqa: E402
 from plotting import osde  # noqa: E402
@@ -58,8 +59,8 @@ def eff_at(score_sig, w_sig, score_bkg, bkg_eff):
 
 
 def main():
-    ev, _ = make_plots.load_sample("tt", os.path.join(ROOT, "samples/ttbar_bblvqq/run_seed12345"), ["parton", "gen", "reco"], None, OPTS)
-    ref, _ = make_plots.load_sample("ref", os.path.join(ROOT, "samples/ttbar_bblvqq/run_seed1001"), ["parton", "gen", "reco"], 30000, OPTS)
+    ev, _ = make_plots.load_sample("tt", os.path.join(repo_paths.REPO, "samples/ttbar_bblvqq/run_seed12345"), ["parton", "gen", "reco"], None, OPTS)
+    ref, _ = make_plots.load_sample("ref", os.path.join(repo_paths.REPO, "samples/ttbar_bblvqq/run_seed1001"), ["parton", "gen", "reco"], 30000, OPTS)
     P = ev["parton"]
     cl, ch = np.asarray(P.cos_theta_prime, float), np.asarray(P.cos_theta_prime_tilde, float)
     out = {"F_SM": F_SM, "levels": {}}
@@ -72,7 +73,7 @@ def main():
         rok = np.ones(len(r), bool) if lvl == "parton" else np.asarray(r.reco_ok)
         rang = {a: np.asarray(r[a], float)[rok] for a in ANGLE_NAMES}
         rang = {a: v[np.all([np.isfinite(x) for x in rang.values()], 0)] for a, v in rang.items()}
-        f_all = osde.load_density(os.path.join(ROOT, "osde", f"f_ttbar_{lvl}.npz"))
+        f_all = osde.load_density(os.path.join(repo_paths.RESULTS, "osde", f"f_ttbar_{lvl}.npz"))
         f_10 = f_all.truncated(f_all.significance() > 10)
         # mass factors (labelling-independent)
         masses = {"m_w_had": e.w_had.mass, "m_t_lep": e.t_lep.mass, "m_t_had": e.t_had.mass}
@@ -114,7 +115,7 @@ def main():
             for name in scores:
                 v = entry[name]
                 print(f"     {name:28s} AUC {v['auc']:.3f}  eff@1% {100 * v['eff_at_bkg_1pct']:.1f}%  eff@10% {100 * v['eff_at_bkg_10pct']:.1f}%")
-    json.dump(out, open(os.path.join(HERE, "wtb_reweight.json"), "w"), indent=1)
+    json.dump(out, open(os.path.join(repo_paths.results_dir("study_bsm"), "wtb_reweight.json"), "w"), indent=1)
 
 
 if __name__ == "__main__":

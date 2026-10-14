@@ -15,7 +15,7 @@ Mapping to the 10-D basis of plotting/osde.py:
   Y (Hermite order K, scale s)                      -> n_hermite = K + 1
 (likewise for the hadronic-side angles)
 
-Output: osde/order_scan.json and a printed table.
+Output: results/osde/order_scan.json and a printed table.
 """
 import argparse
 import json
@@ -28,6 +28,8 @@ from numpy.polynomial import hermite, legendre
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
+
+import repo_paths  # noqa: E402
 
 KIND = {"cos_theta": "leg", "phi": "four", "cos_theta_prime": "leg", "phi_prime": "four",
         "cos_theta_tilde": "leg", "phi_tilde": "four", "cos_theta_prime_tilde": "leg",
@@ -63,7 +65,7 @@ def main():
     p.add_argument("--train", required=True)
     p.add_argument("--tag", default="down_truth")
     p.add_argument("--levels", default="parton,parton_trig,gen,reco")
-    p.add_argument("--out", default=os.path.join(HERE, "osde", "order_scan.json"))
+    p.add_argument("--out", default=os.path.join(repo_paths.RESULTS, "osde", "order_scan.json"))
     args = p.parse_args()
     z = np.load(os.path.join(args.train, f"angles_{args.tag}.npz"))
     out = {}

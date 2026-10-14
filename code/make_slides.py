@@ -3,13 +3,14 @@
 Make Beamer slides summarizing the ttbar -> bblvqq sample production and validation.
 
 All numbers on the slides are recomputed from the sample, and the figures are taken
-from the plots directory (run make_plots.py first, or pass --make-plots).
+from the plots directory (results/plots; run make_plots.py first, or pass --make-plots).
+The slides are written to results/slides/ (--out).
 Edit build_slides() below to add, remove or reorder slides.
 
 Examples:
-  python make_slides.py --sample samples/ttbar_bblvqq/run_seed12345
-  python make_slides.py --sample samples/ttbar_bblvqq/run_seed12345 --make-plots --author "A. Person"
-  python make_slides.py --sample ... --no-compile          # only write slides/slides.tex
+  python code/make_slides.py --sample samples/ttbar_bblvqq/run_seed12345
+  python code/make_slides.py --sample samples/ttbar_bblvqq/run_seed12345 --make-plots --author "A. Person"
+  python code/make_slides.py --sample ... --no-compile          # only write results/slides/slides.tex
 """
 import argparse
 import json
@@ -26,6 +27,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 import make_plots  # noqa: E402
+import repo_paths  # noqa: E402
 from plotting import summary  # noqa: E402
 
 
@@ -99,7 +101,7 @@ def build_slides(S, meta):
               note=r"The broad inclusive peaks come from wrong jet choices (combinatorics) "
                    r"and quarks that are out of acceptance, not from the jet response."),
         section("The ten angles"),
-        wide_figure("Definition of the ten angles", os.path.join(HERE, "figures", "angle_diagram_slide.pdf")),
+        wide_figure("Definition of the ten angles", os.path.join(repo_paths.RESULTS, "figures", "angle_diagram_slide.pdf")),
         bullets("The ten angles (as in the paper)", [
             r"$Y$: $t\bar{t}$ rapidity (lab); $\Theta$: polar angle of $t_\mathrm{lep}$ in the $t\bar{t}$ frame",
             r"$(\theta,\phi)$: $W$ in the top rest frame; $z=\hat{p}_t^\mathrm{lab}$, "
@@ -959,7 +961,7 @@ def study_c_slides(pdir, ldir):
         for pth, cap in PU.get("figures", []):
             cap = cap.replace(r"\langle\mu\rangle", r"$\langle\mu\rangle$") if "$" not in cap else cap
             head, note = split_caption(cap)
-            slides.append(wide_figure(head, os.path.join(HERE, pth), note=note))
+            slides.append(wide_figure(head, os.path.join(repo_paths.RESULTS, pth), note=note))
         lo, hi = PU["mu"][mus[0]], PU["mu"][mus[-1]]
         if lo.get("auc_angles_masses") and hi.get("auc_angles_masses"):
             slides.append(bullets(r"Pileup: what it shows", [
@@ -1383,7 +1385,7 @@ def coefficient_slides(C, odir):
             + ", ".join(f"{v[l]['5sigma']['kept']}" for l in lvls),
         ]),
         *[figures(rf"Cross-validated error vs number of coefficients, {LVL_TEX[l]}",
-                  [os.path.relpath(os.path.join(odir, f"simplify_{l}"), HERE)]) for l in lvls],
+                  [os.path.relpath(os.path.join(odir, f"simplify_{l}"), repo_paths.RESULTS)]) for l in lvls],
     ]
     rows = []
     names = [("all", "all (paper)"), ("kronmal_tarter", r"$\sqrt2\sigma$ (K--T)"),
@@ -1450,7 +1452,7 @@ def acceptance_slides(adir):
 def closing_slide(S, O=None):
     """Summary slides; numbers are read from the analysis outputs when they exist."""
     def load(*parts):
-        p = os.path.join(HERE, *parts)
+        p = os.path.join(repo_paths.RESULTS, *parts)
         return json.load(open(p)) if os.path.exists(p) else None
 
     nu, wh = load("plots", "nu_pz.json"), (load("plots_hh", "w_had_mass_split.json") if SIGNAL == "h125" else None)
@@ -1514,7 +1516,7 @@ SIGNAL, SUF = "h125", ""   # main signal: hh(125) or hh(170); outputs of the lat
 def sdir(name):
     """Output directory of the main signal: <name> for hh(125); <name>_h170 for HH(170).  Signal-specific directories
     are never silently replaced by the hh(125) ones: a missing _h170 directory makes its section skip."""
-    return os.path.join(HERE, name + SUF)
+    return os.path.join(repo_paths.RESULTS, name + SUF)
 
 
 def sfile(d, name):
@@ -1593,7 +1595,7 @@ def cmp_variant():
     if SIGNAL in VARIANTS:
         return SIGNAL
     for k in ("h170", "h2mw"):   # HH(170) first: its W masses are tt̄-like (W-factor AUC 0.50), so it isolates the angles best
-        if os.path.exists(os.path.join(HERE, "study_bsm", f"hh{VARIANTS[k]['tag']}_study.json")):
+        if os.path.exists(os.path.join(repo_paths.RESULTS, "study_bsm", f"hh{VARIANTS[k]['tag']}_study.json")):
             return k
     return "h170"
 
@@ -1642,7 +1644,7 @@ def figures(title, names, note=None):
         h = 0.74 - (0.06 if note else 0)
         cells = []
         for name in chunk:
-            path = os.path.join(HERE, name + ".png") if "/" in name else os.path.join(PLOTS_DIR, name + ".png")
+            path = os.path.join(repo_paths.RESULTS, name + ".png") if "/" in name else os.path.join(PLOTS_DIR, name + ".png")
             if os.path.exists(path):
                 cells.append(rf"\includegraphics[width={w}\textwidth,height={h}\textheight,keepaspectratio]"
                              rf"{{{os.path.relpath(path, OUT_DIR)}}}")
@@ -1862,9 +1864,9 @@ def main():
     global PLOTS_DIR, OUT_DIR
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--sample", required=True, help="sample directory from generate_samples.py")
-    p.add_argument("--plots", default=os.path.join(HERE, "plots"))
+    p.add_argument("--plots", default=os.path.join(repo_paths.RESULTS, "plots"))
     p.add_argument("--config", default=os.path.join(HERE, "plot_config.py"))
-    p.add_argument("--out", default=os.path.join(HERE, "slides"))
+    p.add_argument("--out", default=os.path.join(repo_paths.RESULTS, "slides"))
     p.add_argument("--title", default=r"$t\bar{t}$ and $hh\to b\bar{b}\,\ell\nu\,q\bar{q}'$: samples, "
                                       r"the ten angles, and $f_{t\bar t}$ by OSDE")
     p.add_argument("--author", default="Tae Min Hong")
@@ -1913,20 +1915,20 @@ def main():
         simp = os.path.join(args.osde, "simplify_summary.json")
         if os.path.exists(simp):
             slides += coefficient_slides(json.load(open(simp)), os.path.abspath(args.osde))
-        slides += extended_slides(os.path.abspath(args.osde), os.path.join(HERE, "osde_ext"))
-        slides += sh_slides(os.path.join(HERE, "osde_sh"))
+        slides += extended_slides(os.path.abspath(args.osde), os.path.join(repo_paths.RESULTS, "osde_ext"))
+        slides += sh_slides(os.path.join(repo_paths.RESULTS, "osde_sh"))
         slides += ml_slides(sdir("ml"), ml_explainer_slides())
         slides += washout_slides(sdir("study_washout"))
-        slides += salvage_slides(os.path.join(HERE, "study_salvage"))
+        slides += salvage_slides(os.path.join(repo_paths.RESULTS, "study_salvage"))
         slides += discriminator_slides(os.path.abspath(args.osde))
     elif args.hh or args.osde:
         sys.exit("--hh and --osde go together")
     if args.acceptance:
         slides += acceptance_slides(os.path.abspath(args.acceptance))
     if args.hh and args.osde:
-        slides += hh170_slides(os.path.join(HERE, "study_bsm"))
-        slides += study_b_slides(os.path.join(HERE, "study_bsm"))
-        slides += study_c_slides(os.path.join(HERE, "pileup"), os.path.join(HERE, "study_l1"))
+        slides += hh170_slides(os.path.join(repo_paths.RESULTS, "study_bsm"))
+        slides += study_b_slides(os.path.join(repo_paths.RESULTS, "study_bsm"))
+        slides += study_c_slides(os.path.join(repo_paths.RESULTS, "pileup"), os.path.join(repo_paths.RESULTS, "study_l1"))
     slides.append(section("Summary"))
     slides.append(closing_slide(S, O))
     write_tex(slides, args.title, args.author, tex)

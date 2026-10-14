@@ -8,7 +8,7 @@ Delta V = 2 pi Delta c, and |grad f| = |df/dc|, so Delta V ~ 2 pi Delta y / |df/
 The toy is compare_y.py's: spin 1 -> 1/2 + 1/2 with helicity fractions (F_0, F_-, F_+) = (0.7, 0.3, 0); type 0 is
 isotropic, 1/4pi.  A rotation keeps solid angles, so V(y), Delta V and dN/dy are those of Fig. 6.
 
-Run: .venv/bin/python paper_figs/fig7_volume3d.py      -> paper_figs/fig7_toy_collapsed.pdf / .png
+Run: .venv/bin/python code/paper_figs/fig7_volume3d.py      -> results/paper_figs/fig7_toy_collapsed.pdf / .png
 """
 import json
 import os
@@ -18,9 +18,10 @@ import numpy as np
 from scipy.optimize import brentq
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, HERE)
+sys.path[:0] = [HERE, os.path.dirname(HERE)]          # paper_figs/ (make_paper_figs) and code/ (repo_paths)
 import make_paper_figs as M  # noqa: E402  (fonts, colours)
 from make_paper_figs import plt  # noqa: E402
+import repo_paths  # noqa: E402
 
 F0, FM, FP = 0.7, 0.3, 0.0
 Y1, Y2 = 0.04, 0.06
@@ -83,9 +84,10 @@ def main():
     ax.set_xlabel(r"$c = \cos\theta_P$")
     ax.set_ylabel(r"$y$", rotation=0, ha="right", va="center", labelpad=6)
     M.finish(ax, no_values_y=False)
+    out = repo_paths.results_dir("paper_figs")
     for ext in ("pdf", "png"):
-        fig.savefig(os.path.join(HERE, f"fig7_toy_collapsed.{ext}"), dpi=200)
-    json.dump(nums, open(os.path.join(HERE, "fig7_toy_collapsed.json"), "w"), indent=1)
+        fig.savefig(os.path.join(out, f"fig7_toy_collapsed.{ext}"), dpi=200)
+    json.dump(nums, open(os.path.join(out, "fig7_toy_collapsed.json"), "w"), indent=1)
     print(json.dumps(nums, indent=1), f"\nwidth {W:.2f} in")
 
 

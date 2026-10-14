@@ -1,4 +1,5 @@
-"""Numbers + figures for the washout mechanism study (reads data_hh.npz, data_tt.npz)."""
+"""Numbers + figures for the washout mechanism study (reads data_hh.npz, data_tt.npz in results/study_washout/mechanism,
+writes results.json there; see OUT_SUFFIX below)."""
 import os, sys, json
 os.environ.setdefault("OMP_NUM_THREADS", "4")
 import numpy as np
@@ -7,19 +8,22 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import roc_auc_score
 from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.model_selection import cross_val_predict, StratifiedKFold
-HERE = os.path.dirname(os.path.abspath(__file__)); PROJ = os.path.abspath(os.path.join(HERE, "../.."))
-sys.path.insert(0, PROJ)
+HERE = os.path.dirname(os.path.abspath(__file__)); CODE = os.path.abspath(os.path.join(HERE, "../.."))
+sys.path.insert(0, CODE)
+import repo_paths
 from plotting import angles as A, osde
-# OUT_SUFFIX (e.g. "_h170"): signal data (data_hh.npz) and outputs in the sibling study_washout<SUFFIX>/mechanism;
-# the tt̄ data (data_tt.npz) is always read from here.  Default: everything here, as before.
+# the tt̄ data and the default outputs: results/study_washout/mechanism
+BASE = repo_paths.results_dir("study_washout", "mechanism")
+# OUT_SUFFIX (e.g. "_h170"): signal data (data_hh.npz) and outputs in the sibling results/study_washout<SUFFIX>/mechanism;
+# the tt̄ data (data_tt.npz) is always read from BASE.  Default: everything in BASE, as before.
 SUFFIX = os.environ.get("OUT_SUFFIX", "")
-OUT = os.path.join(PROJ, "study_washout" + SUFFIX, "mechanism") if SUFFIX else HERE
+OUT = repo_paths.results_dir("study_washout" + SUFFIX, "mechanism") if SUFFIX else BASE
 FIG = os.path.join(OUT, "figures"); os.makedirs(FIG, exist_ok=True)
 plt.rcParams.update({"font.size": 16, "axes.labelsize": 18, "axes.titlesize": 18, "xtick.labelsize": 15,
                      "ytick.labelsize": 15, "legend.fontsize": 15, "lines.linewidth": 2.2,
                      "axes.spines.top": False, "axes.spines.right": False})
 C_TT, C_HH = "#1f4e9c", "#d1495b"
-hh = dict(np.load(os.path.join(OUT, "data_hh.npz"))); tt = dict(np.load(os.path.join(HERE, "data_tt.npz")))
+hh = dict(np.load(os.path.join(OUT, "data_hh.npz"))); tt = dict(np.load(os.path.join(BASE, "data_tt.npz")))
 NAMES = A.ANGLE_NAMES
 LAB = {"Y": "Y", "cos_Theta": r"cos$\Theta$", "cos_theta": r"cos$\theta$", "phi": r"$\phi$",
        "cos_theta_prime": r"cos$\theta'$", "phi_prime": r"$\phi'$", "cos_theta_tilde": r"cos$\tilde\theta$",
@@ -89,11 +93,11 @@ mh, mt = fin(hh, "c", hh["match_reco"]), fin(tt, "c", tt["match_reco"])
 R["bdt"]["χ², matched-event subset"] = bdt_auc(angs(hh, "c", mh), angs(tt, "c", mt))
 print(R["bdt"])
 
-# ----- f_ttbar sanity (paper basis fits from osde/), tt̄ = independent sample seed12345 cached angles
+# ----- f_ttbar sanity (paper basis fits from results/osde/), tt̄ = independent sample seed12345 cached angles
 R["f_auc"] = {}
 for lvl, pre, cls in (("parton", "p", "all"), ("gen", "c", "reco")):
-    f = osde.TTbarDensity.load(os.path.join(PROJ, "osde", f"f_ttbar_{lvl}.npz"))
-    z = np.load(os.path.join(PROJ, "samples/ttbar_bblvqq/run_seed12345/angles_down_truth.npz"))
+    f = osde.TTbarDensity.load(os.path.join(repo_paths.RESULTS, "osde", f"f_ttbar_{lvl}.npz"))
+    z = np.load(os.path.join(repo_paths.SAMPLES, "ttbar_bblvqq/run_seed12345/angles_down_truth.npz"))
     Xt = {a: z[f"{lvl}/{a}"] for a in NAMES}
     m = fin(hh, pre, hh[cls]); Xh = {a: hh[f"{pre}_{a}"][m] for a in NAMES}
     yh, yt = np.real(f(Xh)), np.real(f(Xt))

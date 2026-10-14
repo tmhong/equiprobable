@@ -8,7 +8,7 @@ Paper figures for reco level with Delta-R-matched jets (study T), in the style o
   figA_levels_hh170                   appendix: HH(170) vs tt̄ at every level (parton, parton+trigger, gen chi2,
                                       reco chi2, reco matched): ROC, and the HH/tt̄ density ratio vs the tt̄ quantile q
 
-Run: OMP_NUM_THREADS=3 .venv/bin/python study_truthmatch/paper_figs_matched.py [--fr 0.3]
+Run: OMP_NUM_THREADS=3 .venv/bin/python code/study_truthmatch/paper_figs_matched.py [--fr 0.3]
 """
 import argparse
 import json
@@ -25,18 +25,20 @@ from make_paper_figs import plt  # noqa: E402
 from plotting import osde  # noqa: E402
 from plotting.angles import ANGLE_NAMES  # noqa: E402
 from wtb_reweight import weights  # noqa: E402
+import repo_paths  # noqa: E402
 
 SAMPLES = {"tt": "run_seed1001", "hh": "run_m170_all", "h1": "run_seed2001"}
 HH_LBL = r"$HH_{170}$"    # short legend label
 HH_C = M.AMBER          # the amber of the toy figure (compare_y.py LINE_J), now that hh(125) is not drawn
 
 
-CV = os.path.join(ROOT, "study_cv")   # the one estimator: |c|/sigma > 2.5 (5-fold CV on tt̄), tt̄ cross-fitted
+OUT = repo_paths.results_dir("study_truthmatch")   # build_matched.py's data_*.npz; the figures
+CV = os.path.join(repo_paths.RESULTS, "study_cv")   # the one estimator: |c|/sigma > 2.5 (5-fold CV on tt̄), tt̄ cross-fitted
 T_CV = json.load(open(os.path.join(CV, "cv_summary.json")))["threshold"]
 
 
 def load(fit_dir):
-    D = {k: np.load(os.path.join(HERE, f"data_{s}.npz")) for k, s in SAMPLES.items()}
+    D = {k: np.load(os.path.join(OUT, f"data_{s}.npz")) for k, s in SAMPLES.items()}
     x = {k: {a: D[k][f"m_{a}"][D[k]["ok"]] for a in ANGLE_NAMES} for k in D}
     f_all = osde.load_density(os.path.join(fit_dir, "f_ttbar_reco.npz"))
     f = f_all.truncated(f_all.significance() > T_CV)                 # the projections: full-sample truncated fit
@@ -313,19 +315,19 @@ def main():
     global A
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--fr", type=float, default=0.3)
-    p.add_argument("--fit", default=os.path.join(HERE, "osde_dRmatch"))
+    p.add_argument("--fit", default=os.path.join(OUT, "osde_dRmatch"))
     A = p.parse_args()
     D, x, f, y, w_r = load(A.fit)
     col = 0.95 * 3.375
     incl = lambda w: f"width={w * (col / M.DATA_WIDTH_IN) / 3.375:.3f}\\linewidth"
-    W2 = fig2(x, f, y, w_r, os.path.join(HERE, "fig2_osde_projections_recomatched"))
-    W3, neff = fig3(y, w_r, os.path.join(HERE, "fig3_discriminator_recomatched"))
-    lev, WA = fig_levels(y, os.path.join(HERE, "figA_levels_hh170"))
+    W2 = fig2(x, f, y, w_r, os.path.join(OUT, "fig2_osde_projections_recomatched"))
+    W3, neff = fig3(y, w_r, os.path.join(OUT, "fig3_discriminator_recomatched"))
+    lev, WA = fig_levels(y, os.path.join(OUT, "figA_levels_hh170"))
     info = {"n": {k: int(len(v["Y"])) for k, v in x.items()}, "ttR_n_eff": float(neff),
             "auc_hh170": float(auc(y["tt"], y["hh"])), "auc_hh125": float(auc(y["tt"], y["h1"])),
             "auc_ttR": None, "levels_hh170": lev,
             "include": {"fig2": incl(W2), "fig3": incl(W3), "figA": incl(WA)}}
-    json.dump(info, open(os.path.join(HERE, "paper_figs_matched.json"), "w"), indent=1)
+    json.dump(info, open(os.path.join(OUT, "paper_figs_matched.json"), "w"), indent=1)
     print(json.dumps(info, indent=1))
 
 

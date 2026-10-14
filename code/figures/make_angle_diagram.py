@@ -8,14 +8,17 @@ W rest frame:    z' = W direction, y' = z × z' (in the xy plane), x' = y' × z'
 Projection: z to the right, x up, y = z × x out of the page, so the page is the x-z plane,
 i.e. the plane spanned by the beam axis and the top momentum.
 
-Run:  python figures/make_angle_diagram.py   ->  figures/angle_diagram.{tex,pdf,png}
+Run:  python code/figures/make_angle_diagram.py   ->  code/figures/angle_diagram.tex, results/figures/angle_diagram.{pdf,png}
 """
 import os
 import subprocess
+import sys
 
 import numpy as np
 
-HERE = os.path.dirname(os.path.abspath(__file__))
+HERE = os.path.dirname(os.path.abspath(__file__))     # code/figures: the generated .tex (kept in git)
+sys.path.insert(0, os.path.dirname(HERE))
+import repo_paths  # noqa: E402
 
 # ---- angles drawn (degrees) and layout -------------------------------------
 THETA, PHI = 52.0, 40.0          # W in the top rest frame
@@ -154,25 +157,26 @@ def build(legend=True):
 
 
 def main():
+    out = repo_paths.results_dir("figures")          # pdf, png (and the LaTeX aux/log)
     for name, legend in (("angle_diagram", True), ("angle_diagram_slide", False)):
         tex = os.path.join(HERE, f"{name}.tex")
         with open(tex, "w") as f:
             f.write(build(legend))
-        res = subprocess.run(["pdflatex", "-interaction=nonstopmode", "-halt-on-error", f"{name}.tex"],
-                             cwd=HERE, stdout=subprocess.PIPE, text=True)
+        res = subprocess.run(["pdflatex", "-interaction=nonstopmode", "-halt-on-error", f"-output-directory={out}",
+                              f"{name}.tex"], cwd=HERE, stdout=subprocess.PIPE, text=True)
         if res.returncode:
             print("\n".join(res.stdout.splitlines()[-20:]))
             raise SystemExit("pdflatex failed")
         for ext in ("aux", "log"):
-            p = os.path.join(HERE, f"{name}.{ext}")
+            p = os.path.join(out, f"{name}.{ext}")
             if os.path.exists(p):
                 os.remove(p)
         try:
             import pymupdf
-            pymupdf.open(os.path.join(HERE, f"{name}.pdf"))[0].get_pixmap(dpi=150).save(os.path.join(HERE, f"{name}.png"))
+            pymupdf.open(os.path.join(out, f"{name}.pdf"))[0].get_pixmap(dpi=150).save(os.path.join(out, f"{name}.png"))
         except ImportError:
             pass
-        print(f"wrote {os.path.join(HERE, name)}.pdf")
+        print(f"wrote {os.path.join(out, name)}.pdf")
 
 
 if __name__ == "__main__":

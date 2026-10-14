@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Reco-level MET handles for a sample, with exactly the selection of study_gonogo/extract.py (reco_ok & finite
-angles), so that the rows line up with study_gonogo/cache/<key>.npz reco arrays.  Scratch for the robustness check.
+angles), so that the rows line up with results/study_gonogo/cache/<key>.npz reco arrays.  Scratch for the robustness check.
 
-Run: OMP_NUM_THREADS=4 .venv/bin/python study_gonogo/verify/robust_met/extract_met.py KEY=PATH ...
+Run: OMP_NUM_THREADS=4 .venv/bin/python code/study_gonogo/verify/robust_met/extract_met.py KEY=PATH ...   (PATH relative to the repo top)
 """
 import os
 import sys
@@ -16,6 +16,9 @@ sys.path.insert(0, ROOT)
 import make_plots  # noqa: E402
 from plotting.angles import ANGLE_NAMES  # noqa: E402
 from plotting.physics import M_W  # noqa: E402
+import repo_paths  # noqa: E402
+
+OUT = repo_paths.results_dir("study_gonogo", "verify", "robust_met")
 
 OPTS = {"had_fermion": "down", "jet_assignment": "truth"}
 
@@ -46,15 +49,15 @@ def one(key, path):
         out[f"ang/{a_}"] = v[ok]
     out["n_all"] = np.array(len(e))
     # alignment check with the go/no-go cache
-    z = np.load(os.path.join(ROOT, "study_gonogo", "cache", f"{key}.npz"))
+    z = np.load(os.path.join(repo_paths.RESULTS, "study_gonogo", "cache", f"{key}.npz"))
     same = all(len(z[f"reco/{x}"]) == len(out[f"ang/{x}"]) and np.allclose(z[f"reco/{x}"], out[f"ang/{x}"])
                for x in ANGLE_NAMES)
     print(f"{key}: {ok.sum()} of {len(e)} events, identical to study_gonogo cache: {same}", flush=True)
     out["aligned"] = np.array(same)
-    np.savez_compressed(os.path.join(HERE, f"met_{key}.npz"), **out)
+    np.savez_compressed(os.path.join(OUT, f"met_{key}.npz"), **out)
 
 
 if __name__ == "__main__":
     for arg in sys.argv[1:]:
         k, p = arg.split("=", 1)
-        one(k, os.path.join(ROOT, p))
+        one(k, os.path.join(repo_paths.REPO, p))

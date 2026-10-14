@@ -9,7 +9,7 @@ make_plots.load_sample, then rebuilt a second time with an oracle E_T^miss from 
 analyze.py; R = eps_S/eps_tt at eps_tt = 1% and 10% with the tt fit sample's leave-one-out scores as reference.
 Also: supervised BDT (angles only), both versions; and R binned in the neutralino pT fraction of E_T^miss.
 
-Run: cd ttbar_bblvqq && OMP_NUM_THREADS=4 .venv/bin/python study_gonogo/verify/physics_skeptic/stop_met_test.py
+Run: cd ttbar_bblvqq && OMP_NUM_THREADS=4 .venv/bin/python code/study_gonogo/verify/physics_skeptic/stop_met_test.py
 """
 import json
 import os
@@ -24,9 +24,11 @@ sys.path.insert(0, ROOT)
 from plotting import angles, io, osde, physics  # noqa: E402
 from plotting.angles import ANGLE_NAMES  # noqa: E402
 from sklearn.ensemble import HistGradientBoostingClassifier  # noqa: E402
+import repo_paths  # noqa: E402
 
+OUT = repo_paths.results_dir("study_gonogo", "verify", "physics_skeptic")
 CHUNK = 10000
-F_FILES = {"gen": "osde/f_ttbar_gen.npz", "reco": "osde/f_ttbar_reco.npz"}
+F_FILES = {"gen": "osde/f_ttbar_gen.npz", "reco": "osde/f_ttbar_reco.npz"}  # under results/
 
 
 def lhe_info(lhe):
@@ -84,15 +86,15 @@ def bdt(F_tt, F_s, seed=0):
 
 def main():
     out = {}
-    samples = {"stop": os.path.join(ROOT, "samples/stop_bblvqq/run_seed4002")}
+    samples = {"stop": os.path.join(repo_paths.SAMPLES, "stop_bblvqq/run_seed4002")}
     for level in ("gen", "reco"):
-        f_all = osde.load_density(os.path.join(ROOT, F_FILES[level]))
+        f_all = osde.load_density(os.path.join(repo_paths.RESULTS, F_FILES[level]))
         f_cv = f_all.truncated(f_all.significance() > 2.5)
-        z = np.load(os.path.join(ROOT, "study_gonogo/cache/tt_fit.npz"))
+        z = np.load(os.path.join(repo_paths.RESULTS, "study_gonogo/cache/tt_fit.npz"))
         Xtt = {a: z[f"{level}/{a}"] for a in ANGLE_NAMES}
         s_tt = -f_cv.loo(Xtt)
         A_tt = np.column_stack([Xtt[a] for a in ANGLE_NAMES])
-        zc = np.load(os.path.join(ROOT, "study_gonogo/cache/stop.npz"))
+        zc = np.load(os.path.join(repo_paths.RESULTS, "study_gonogo/cache/stop.npz"))
         for key, path in samples.items():
             parton, cpx, cpy = lhe_info(os.path.join(path, "parton_events.lhe.gz"))
             root = os.path.join(path, "delphes_events.root")
@@ -122,7 +124,7 @@ def main():
                 res[tag] = r
                 print(level, key, tag, json.dumps(r), flush=True)
             out[f"{level}/{key}"] = res
-    json.dump(out, open(os.path.join(HERE, "stop_met_test.json"), "w"), indent=1)
+    json.dump(out, open(os.path.join(OUT, "stop_met_test.json"), "w"), indent=1)
 
 
 if __name__ == "__main__":

@@ -5,7 +5,7 @@ spin axis P (here along z) the type-1 density depends only on c = cos(theta_P); 
 coloured by f, so the zero of f along P is a crater.  The band y1 < y < y2 is the red ring; its area on the unit
 sphere is the solid angle Delta V; the arrows are grad f along the surface (away from P).
 
-Run: .venv/bin/python paper_figs/fig7_globe.py      -> paper_figs/fig7_toy_globe.pdf / .png
+Run: .venv/bin/python code/paper_figs/fig7_globe.py      -> results/paper_figs/fig7_toy_globe.pdf / .png
 """
 import os
 import sys
@@ -14,9 +14,10 @@ import numpy as np
 from scipy.optimize import brentq
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, HERE)
+sys.path[:0] = [HERE, os.path.dirname(HERE)]          # paper_figs/ (make_paper_figs) and code/ (repo_paths)
 import make_paper_figs as M  # noqa: E402
 from make_paper_figs import plt  # noqa: E402
+import repo_paths  # noqa: E402
 from matplotlib.colors import LinearSegmentedColormap  # noqa: E402
 
 F0, FM, FP = 0.7, 0.3, 0.0
@@ -81,8 +82,9 @@ def main():
     fig.text(0.04, 0.93, rf"$\Delta V = {dV:.2f}$ sr  (red ring, ${Y1:g} < y < {Y2:g}$)", ha="left", va="top",
              color=RED[:3], fontsize=M.FONT)
     fig.text(0.04, 0.86, r"$\nabla f$: arrows", ha="left", va="top", color=RED[:3], fontsize=M.FONT)
+    out = repo_paths.results_dir("paper_figs")
     for ext in ("pdf", "png"):
-        fig.savefig(os.path.join(HERE, f"fig7_toy_globe.{ext}"), dpi=200)
+        fig.savefig(os.path.join(out, f"fig7_toy_globe.{ext}"), dpi=200)
     print(f"Delta V = {dV:.3f}; band at theta_P = {np.degrees(t1):.1f} to {np.degrees(t2):.1f} deg")
 
 

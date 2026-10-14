@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """
-Tables (results.md) and the enrichment figure (fig_enrichment.png/.pdf) from study_gonogo/results.json.
+Tables (results.md) and the enrichment figure (fig_enrichment.png/.pdf) from results/study_gonogo/results.json,
+written next to it.
 
-Run: .venv/bin/python study_gonogo/report.py
+Run: .venv/bin/python code/study_gonogo/report.py
 """
 import json
 import os
+import sys
 
 import matplotlib
 
@@ -14,7 +16,11 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-R = json.load(open(os.path.join(HERE, "results.json")))
+sys.path.insert(0, os.path.dirname(HERE))
+import repo_paths  # noqa: E402
+
+OUT = repo_paths.results_dir("study_gonogo")
+R = json.load(open(os.path.join(OUT, "results.json")))
 SIG = [("etat", "η_t(343)"), ("stop", "stop (300, 120)"), ("H350", "H(350) → tt̄"), ("nospin", "tt̄, no spin corr."),
        ("tt_indep", "tt̄ independent (null)")]
 METH = [("osde_cv", "f_tt̄, CV-truncated (2.5σ)"), ("osde_all", "f_tt̄, all terms"), ("flow", "flow (same angles)"),
@@ -85,7 +91,7 @@ def main():
                         L.append(f"| {n} | {m} @ {float(wp):.0%} | {c['S']:.0f} | {c['B']:.0f} | {c['S/B']:.3f} | {c['Z_stat']:.1f} | "
                                  f"{c['Z_5pct']:.2f} | {c['Z_10pct']:.2f} |")
             L.append("")
-    open(os.path.join(HERE, "results.md"), "w").write("\n".join(L) + "\n")
+    open(os.path.join(OUT, "results.md"), "w").write("\n".join(L) + "\n")
 
     # figure: R at 1% (filled) and 10% (open) per score, signals in columns, reco and matched in rows
     lv = [(l, n) for l, n in LEVELS if l in ("reco", "matched") and l in R["levels"]]
@@ -118,7 +124,7 @@ def main():
     fig.text(0.01, 0.005, "filled: at 1% of tt̄; open: at 10% of tt̄; grey line R = 1, dotted R = 2", fontsize=9)
     fig.tight_layout(rect=(0, 0.02, 1, 1))
     for ext in ("png", "pdf"):
-        fig.savefig(os.path.join(HERE, f"fig_enrichment.{ext}"), dpi=130)
+        fig.savefig(os.path.join(OUT, f"fig_enrichment.{ext}"), dpi=130)
 
 
 if __name__ == "__main__":

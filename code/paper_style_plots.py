@@ -13,9 +13,9 @@ tt̄: the fit sample with leave-one-out scores (unbiased, high statistics); hh: 
 Both are normalized to unit area, so the ratio compares shapes.
 
 Example:
-  python paper_style_plots.py --dir osde          # paper basis   -> osde/tt_hh_dNdy_dNdt_<level>.{pdf,png}
-  python paper_style_plots.py --dir osde_ext      # extended basis
-  python paper_style_plots.py --dir osde --t-vs-y0 parton   # also t_vs_y0_parton.png (shape of t vs y0)
+  python code/paper_style_plots.py --dir results/osde      # paper basis -> results/osde/tt_hh_dNdy_dNdt_<level>.{pdf,png}
+  python code/paper_style_plots.py --dir results/osde_ext  # extended basis
+  python code/paper_style_plots.py --dir results/osde --t-vs-y0 parton   # also t_vs_y0_parton.png (shape of t vs y0)
 """
 import argparse
 import os
@@ -27,6 +27,8 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 from matplotlib.colors import LinearSegmentedColormap  # noqa: E402
 from matplotlib.ticker import AutoMinorLocator, FuncFormatter  # noqa: E402
+
+import repo_paths  # noqa: E402
 
 TT_DARK = "#0a2f8f"
 HH = "#e8a33d"
@@ -177,7 +179,7 @@ def t_vs_y0(scores, level, path, factors=(1.05, 1.5, 3.0)):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--dir", default="osde", help="osde_fit.py output directory (scores_<level>.npz)")
+    p.add_argument("--dir", default=os.path.join(repo_paths.RESULTS, "osde"), help="osde_fit.py output directory (scores_<level>.npz)")
     p.add_argument("--levels", default="parton,parton_trig,gen,reco")
     p.add_argument("--edge-quantile", type=float, default=0.005,
                    help="s'_0, s'_1 = this and 1 - this quantile of s' (0 = the paper's min / max)")

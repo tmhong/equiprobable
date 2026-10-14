@@ -12,14 +12,19 @@ Conventions (as make_angle_diagram.py):
                    top direction z), the gray plane contains z' and the lepton; φ' is the angle between them.
 
 Sized for one PRL column (8.6 cm); the printed font size is the size after scaling to it.
-Run:  .venv/bin/python figures/make_angle_diagram_slide.py   ->  figures/angle_diagram_slide.{tex,pdf,png}
+Run:  .venv/bin/python code/figures/make_angle_diagram_slide.py   ->  code/figures/angle_diagram_slide.tex,
+                                                                   results/figures/angle_diagram_slide.{pdf,png}
 """
 import os
 import subprocess
+import sys
 
 import numpy as np
 
-HERE = os.path.dirname(os.path.abspath(__file__))
+HERE = os.path.dirname(os.path.abspath(__file__))     # code/figures: the generated .tex (kept in git)
+sys.path.insert(0, os.path.dirname(HERE))
+import repo_paths  # noqa: E402
+
 STEM = "angle_diagram_slide"
 FONT_PT, FINAL_WIDTH_CM = 14.4, 8.6        # \Large; one PRL column
 
@@ -129,13 +134,14 @@ def build():
 
 
 def main():
+    out = repo_paths.results_dir("figures")          # pdf, png (and the LaTeX aux/log)
     open(os.path.join(HERE, STEM + ".tex"), "w").write(build())
-    subprocess.run(["pdflatex", "-interaction=nonstopmode", "-halt-on-error", STEM + ".tex"], cwd=HERE, check=True,
-                   stdout=subprocess.DEVNULL)
+    subprocess.run(["pdflatex", "-interaction=nonstopmode", "-halt-on-error", f"-output-directory={out}", STEM + ".tex"],
+                   cwd=HERE, check=True, stdout=subprocess.DEVNULL)
     import pymupdf
-    doc = pymupdf.open(os.path.join(HERE, STEM + ".pdf"))
+    doc = pymupdf.open(os.path.join(out, STEM + ".pdf"))
     w_cm = doc[0].rect.width / 72 * 2.54
-    doc[0].get_pixmap(dpi=200).save(os.path.join(HERE, STEM + ".png"))
+    doc[0].get_pixmap(dpi=200).save(os.path.join(out, STEM + ".png"))
     f = FINAL_WIDTH_CM / w_cm
     print(f"{STEM}.pdf: {w_cm:.1f} cm wide; in one PRL column (x{f:.2f}) the labels are {FONT_PT * f:.1f} pt")
 

@@ -22,7 +22,7 @@ same events with weight 1.  F_R = 0.05, 0.1, 0.3 at parton, gen and reco.
    Variant: the same BDT trained on the reweighted fit sample (100k / 41k / 24k events) and tested on the
    whole independent sample.  Oracle: the score w itself (parton truth, the optimum at parton level).
 3. f_tt̄ (OSDE): 'angles, >10 sigma' and 'angles, >10 sigma + BW' are copied from wtb_study.json.  The
-   angles-only score is also recomputed here, as in wtb_study.py: osde/f_ttbar_<level>.npz, salvage.surprisal,
+   angles-only score is also recomputed here, as in wtb_study.py: results/osde/f_ttbar_<level>.npz, salvage.surprisal,
    and the first 30k fit-sample events as the reference.  This checks the event alignment and evaluates the
    score on the BDT test half.
 Metrics (as in wtb_reweight.py): weighted AUC is roc_auc_score on [unweighted copy, weighted copy] with
@@ -37,8 +37,8 @@ Checks:
   - BDTs trained with event-shuffled weights (8 permutations) give a mean AUC ~ 0.5.
   - The flow NLL on the training / validation / independent tt̄ samples shows any overfitting.
   - The flow AUC for hh (run_seed2001) vs tt̄ at parton should match ml_compare (0.654).
-Output: study_bsm/ml_wtb.json and a printed table.
-Run: OMP_NUM_THREADS=3 .venv/bin/python study_bsm/ml_wtb.py      (~10 min; reading the 100k fit sample dominates)
+Output: results/study_bsm/ml_wtb.json and a printed table.
+Run: OMP_NUM_THREADS=3 .venv/bin/python code/study_bsm/ml_wtb.py      (~10 min; reading the 100k fit sample dominates)
 """
 import argparse
 import json
@@ -55,10 +55,11 @@ from sklearn.ensemble import HistGradientBoostingClassifier  # noqa: E402
 from sklearn.metrics import roc_auc_score  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+ROOT = os.path.dirname(HERE)          # code/
 sys.path.insert(0, ROOT)
 sys.path.insert(0, HERE)
 import make_plots  # noqa: E402
+import repo_paths  # noqa: E402
 from ml_compare import SEED, angle_features, train_flow  # noqa: E402   (train_flow builds ml_compare.RealNVP)
 from wtb_reweight import F_SM, eff_at, weights  # noqa: E402
 from salvage import surprisal  # noqa: E402              (study_salvage/, put on the path by wtb_reweight)
@@ -179,13 +180,13 @@ def cell(d):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--fit", default=os.path.join(ROOT, "samples/ttbar_bblvqq/run_seed1001"))
-    p.add_argument("--test", default=os.path.join(ROOT, "samples/ttbar_bblvqq/run_seed12345"))
-    p.add_argument("--hh", default=os.path.join(ROOT, "samples/hh_bblvqq/run_seed2001"))
+    p.add_argument("--fit", default=os.path.join(repo_paths.REPO, "samples/ttbar_bblvqq/run_seed1001"))
+    p.add_argument("--test", default=os.path.join(repo_paths.REPO, "samples/ttbar_bblvqq/run_seed12345"))
+    p.add_argument("--hh", default=os.path.join(repo_paths.REPO, "samples/hh_bblvqq/run_seed2001"))
     p.add_argument("--nmax-fit", type=int, default=None, help="events read from the fit sample (default: all, as ml_compare)")
     p.add_argument("--epochs", type=int, default=40, help="max flow epochs (ml_compare: 40 with early stopping)")
     p.add_argument("--levels", default="parton,gen,reco")
-    p.add_argument("--out", default=os.path.join(HERE, "ml_wtb.json"))
+    p.add_argument("--out", default=os.path.join(repo_paths.results_dir("study_bsm"), "ml_wtb.json"))
     args = p.parse_args()
     levels = args.levels.split(",")
     load_levels = ["parton"] + [lv for lv in levels if lv != "parton"]
@@ -201,8 +202,8 @@ def main():
     ang_hh, _ = select(hh["parton"], "parton")
     n_hh = len(ang_hh["Y"])
     del hh
-    study = json.load(open(os.path.join(HERE, "wtb_study.json")))["levels"]
-    mlc_path = os.path.join(ROOT, "ml", "results_parton.json")
+    study = json.load(open(os.path.join(repo_paths.RESULTS, "study_bsm", "wtb_study.json")))["levels"]
+    mlc_path = os.path.join(repo_paths.RESULTS, "ml", "results_parton.json")
     mlc_flow = (json.load(open(mlc_path))["results"].get("normalizing flow (RealNVP, 8 couplings)", {}).get("auc_test")
                 if os.path.exists(mlc_path) else None)
 
@@ -231,7 +232,7 @@ def main():
         print(f"[ml_wtb] {lvl}: flow trained in {finfo['seconds']} s; mean -ln p train {finfo['nll_train']:.3f} "
               f"val {finfo['nll_val']:.3f} independent {finfo['nll_indep']:.3f}", flush=True)
         # f_tt̄ angles >10 sigma, recomputed as in wtb_study.py (alignment check; BDT test half)
-        f_all = osde.load_density(os.path.join(ROOT, "osde", f"f_ttbar_{lvl}.npz"))
+        f_all = osde.load_density(os.path.join(repo_paths.RESULTS, "osde", f"f_ttbar_{lvl}.npz"))
         f_10 = f_all.truncated(f_all.significance() > 10)
         n_ref = int(ok_f[:N_REF].sum())
         s_osde = surprisal(f_10(ang), f_10({a: v[:n_ref] for a, v in ang_f.items()}))

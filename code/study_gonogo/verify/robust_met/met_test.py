@@ -6,7 +6,7 @@ paired bootstrap against f_tt (CV-truncated, the primary detector); then conditi
   - f_tt enrichment for the stop after reweighting tt to the stop's (MET, m_T) distribution
   - f_tt enrichment within m_T < m_W (real neutrino solution) and m_T > m_W
   - supervised BDT: (MET, m_T) vs angles vs angles + (MET, m_T)
-Run: OMP_NUM_THREADS=4 .venv/bin/python study_gonogo/verify/robust_met/met_test.py
+Run: OMP_NUM_THREADS=4 .venv/bin/python code/study_gonogo/verify/robust_met/met_test.py
 """
 import json
 import os
@@ -21,7 +21,9 @@ sys.path.insert(0, os.path.join(ROOT, "study_gonogo"))
 import analyze as A  # noqa: E402
 from plotting import osde  # noqa: E402
 from plotting.angles import ANGLE_NAMES  # noqa: E402
+import repo_paths  # noqa: E402
 
+OUT = repo_paths.results_dir("study_gonogo", "verify", "robust_met")   # also extract_met.py's met_<key>.npz
 WPS = (0.005, 0.01, 0.02, 0.05, 0.10)
 NBOOT = 300
 
@@ -37,11 +39,11 @@ def wquantile(x, w, q):
 
 
 def main():
-    f_all = osde.load_density(os.path.join(ROOT, A.F_FILES["reco"]))
+    f_all = osde.load_density(os.path.join(repo_paths.RESULTS, A.F_FILES["reco"]))
     f_cv = f_all.truncated(f_all.significance() > A.T_CV)
     tt = A.load("tt_fit", "reco")
-    keys = [k for k in ("stop", "etat", "H350", "tt_indep") if os.path.exists(os.path.join(HERE, f"met_{k}.npz"))]
-    Mtt = dict(np.load(os.path.join(HERE, "met_tt_fit.npz")))
+    keys = [k for k in ("stop", "etat", "H350", "tt_indep") if os.path.exists(os.path.join(OUT, f"met_{k}.npz"))]
+    Mtt = dict(np.load(os.path.join(OUT, "met_tt_fit.npz")))
     assert bool(Mtt["aligned"])
     assert np.allclose(Mtt["ang/Y"], tt["X"]["Y"])
 
@@ -69,7 +71,7 @@ def main():
     rng = np.random.default_rng(7)
     nb = len(tt["mtt"])
     for k in keys:
-        M = dict(np.load(os.path.join(HERE, f"met_{k}.npz")))
+        M = dict(np.load(os.path.join(OUT, f"met_{k}.npz")))
         d = A.load(k, "reco")
         assert bool(M["aligned"]) and np.allclose(M["ang/Y"], d["X"]["Y"])
         H = combos(handles(M, d, False))
@@ -180,7 +182,7 @@ def main():
                       "  ".join(f"R@{wp:g} {bd[name][f'{wp:g}']:.2f}" for wp in WPS), flush=True)
             r["bdt"] = bd
         out[k] = r
-    json.dump(out, open(os.path.join(HERE, "met_test.json"), "w"), indent=1)
+    json.dump(out, open(os.path.join(OUT, "met_test.json"), "w"), indent=1)
 
 
 if __name__ == "__main__":

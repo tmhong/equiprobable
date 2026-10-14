@@ -7,7 +7,7 @@ no-spin control both show R > 1).  Here: K-fold cross-fit, repeated; in each fol
 truncated with that fit's own significances, and scores the held-out tt events and the signal events assigned to that
 fold; scores are averaged over the repetitions.  bw / mtt_dens / flow / window are taken from scan.py's saved scores.
 
-Run: OMP_NUM_THREADS=4 .venv/bin/python study_gonogo/verify/robust_met/crossfit.py
+Run: OMP_NUM_THREADS=4 .venv/bin/python code/study_gonogo/verify/robust_met/crossfit.py
 """
 import json
 import os
@@ -22,7 +22,9 @@ sys.path.insert(0, os.path.join(ROOT, "study_gonogo"))
 import analyze as A  # noqa: E402
 from plotting import osde  # noqa: E402
 from plotting.angles import ANGLE_NAMES  # noqa: E402
+import repo_paths  # noqa: E402
 
+OUT = repo_paths.results_dir("study_gonogo", "verify", "robust_met")   # also scan.py's and stop_nochi.py's outputs
 TS = (0.0, 1.0, float(np.sqrt(2)), 2.0, 2.5, 3.0, 4.0, 5.0)
 WPS = (0.005, 0.01, 0.02, 0.05, 0.10)
 K, REPS, NBOOT = 5, 3, 300
@@ -33,10 +35,10 @@ def tname(T):
 
 
 def main():
-    f0 = osde.load_density(os.path.join(ROOT, A.F_FILES["reco"]))
+    f0 = osde.load_density(os.path.join(repo_paths.RESULTS, A.F_FILES["reco"]))
     tt = A.load("tt_fit", "reco")
     D = {k: A.load(k, "reco") for k in ("etat", "stop", "H350", "nospin", "tt_indep")}
-    z = np.load(os.path.join(HERE, "stop_nochi.npz"))
+    z = np.load(os.path.join(OUT, "stop_nochi.npz"))
     D["stop_nochi"] = {"X": {a: z[f"reco/{a}"] for a in ANGLE_NAMES}, "m": {k: z[f"reco/{k}"] for k in A.MASSES},
                        "mtt": z["reco/mtt"]}
     n = len(tt["mtt"])
@@ -61,7 +63,7 @@ def main():
                     S[k][tname(T)][m] += -h({a: v[m] for a, v in d["X"].items()}) / REPS
         print(f"rep {rep} done", flush=True)
     # comparison scores
-    sv = np.load(os.path.join(HERE, "scores_reco.npz"))
+    sv = np.load(os.path.join(OUT, "scores_reco.npz"))
     for m in ("bw", "mtt_dens", "flow"):
         S_tt[m] = sv[f"tt/{m}"]
         for k in ("etat", "stop", "H350", "nospin", "tt_indep"):
@@ -116,7 +118,7 @@ def main():
             res["passes"] = passes
             print(f"  PASSING cells (cross-fit): {passes}")
         out["signals"][k] = res
-    json.dump(out, open(os.path.join(HERE, "crossfit_reco.json"), "w"), indent=1)
+    json.dump(out, open(os.path.join(OUT, "crossfit_reco.json"), "w"), indent=1)
 
 
 if __name__ == "__main__":

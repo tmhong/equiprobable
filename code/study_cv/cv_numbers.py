@@ -7,7 +7,7 @@ Per level (parton_trig, gen, reco = chi2 jets, matched = ΔR-matched jets):
   AUC of HH(170) and hh(125) against tt̄ (low y = anomalous) with bootstrap errors, and the all-terms cross-fit;
   fractions with y <= 0; the HH/tt̄ ratio in deciles of the tt̄ quantile q (Fig. 7) and the KL divergence it carries;
 matched level: chi2 assignment on the same events; the corner of Fig. 5 (angles x Breit-Wigner masses).
-Writes study_cv/numbers.json.  Run: .venv/bin/python study_cv/cv_numbers.py
+Writes results/study_cv/numbers.json.  Run: .venv/bin/python code/study_cv/cv_numbers.py
 """
 import json
 import os
@@ -17,8 +17,11 @@ import numpy as np
 from sklearn.metrics import roc_auc_score
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, HERE)
+sys.path[:0] = [HERE, os.path.dirname(HERE)]
 from kl import kl_score, quantile  # noqa: E402
+import repo_paths  # noqa: E402
+
+OUT = repo_paths.results_dir("study_cv")       # cv_scores.py writes its scores here too
 
 LEVELS = ("parton_trig", "gen", "reco", "matched")
 MASSES = ("m_w_had", "m_t_lep", "m_t_had")
@@ -56,9 +59,9 @@ def bw(ref, d):
 
 def main():
     out = {}
-    summ = json.load(open(os.path.join(HERE, "cv_summary.json")))
+    summ = json.load(open(os.path.join(OUT, "cv_summary.json")))
     for lv in LEVELS:
-        z = np.load(os.path.join(HERE, f"scores_{lv}.npz"))
+        z = np.load(os.path.join(OUT, f"scores_{lv}.npz"))
         tt = z["tt_cv"]
         r = {"n_tt": int(len(tt)), "kept_terms_full_fit": summ[lv]["kept_full"], "kept_per_fold": summ[lv]["kept_per_fold"]}
         for s in ("HH170", "hh125"):
@@ -110,7 +113,7 @@ def main():
                       "kl_fraction_matched": round(out["matched"]["HH170"]["kl"][0] / out["parton_trig"]["HH170"]["kl"][0], 3),
                       "kl_fraction_gen": round(out["gen"]["HH170"]["kl"][0] / out["parton_trig"]["HH170"]["kl"][0], 3)}
     print("derived", out["derived"])
-    json.dump(out, open(os.path.join(HERE, "numbers.json"), "w"), indent=1)
+    json.dump(out, open(os.path.join(OUT, "numbers.json"), "w"), indent=1)
 
 
 if __name__ == "__main__":

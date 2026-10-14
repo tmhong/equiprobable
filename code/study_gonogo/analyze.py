@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
 Go/no-go analysis for a PRL: does f_tt̄ flag spin-structure anomalies at reconstruction level better than the mass
-handles and as well as a flow?  The decision rule is fixed in study_gonogo/CRITERIA.md (committed before results).
+handles and as well as a flow?  The decision rule is fixed in results/study_gonogo/CRITERIA.md (committed before results).
 
-Inputs
+Inputs (under results/)
   study_gonogo/cache/<key>.npz         extract.py: angles, masses, m_tt̄ at parton_trig / gen / reco (chi2 jets)
   study_truthmatch/data_<run>.npz      build_matched.py: the same with ΔR-matched jets ("matched")
   osde/f_ttbar_<level>.npz             the paper's tt̄ fits;  study_truthmatch/osde_dRmatch/  the matched-jet fit
@@ -14,9 +14,9 @@ Scores (higher = more anomalous; tt̄ scores are leave-one-out or out-of-fold on
   flow        RealNVP on the ten angles, 5-fold out-of-fold, seed ensemble
   osde_cv+bw  -ln(tail fraction) of osde_cv plus that of bw
   bdt_*       supervised ceilings (2-fold), not part of the rule
-Outputs: study_gonogo/results.json, results.md, fig_enrichment.png
+Outputs: results/study_gonogo/results.json, results.md, fig_enrichment.png
 
-Run: OMP_NUM_THREADS=8 .venv/bin/python study_gonogo/analyze.py [--levels reco,matched] [--nboot 300]
+Run: OMP_NUM_THREADS=8 .venv/bin/python code/study_gonogo/analyze.py [--levels reco,matched] [--nboot 300]
 """
 import argparse
 import json
@@ -38,7 +38,11 @@ sys.path.insert(0, ROOT)
 from ml_compare import RealNVP  # noqa: E402
 from plotting import osde  # noqa: E402
 from plotting.angles import ANGLE_NAMES  # noqa: E402
+import repo_paths  # noqa: E402
 
+OUT = repo_paths.results_dir("study_gonogo")
+CACHE = os.path.join(OUT, "cache")                # extract.py
+TM = repo_paths.results_dir("study_truthmatch", create=False)
 TT_RUN = "run_seed1001"
 SIGNALS = {
     "etat": dict(runs=["run_seed4001"], sigma_pb=8.8, label=r"$\eta_t(343)$"),
@@ -49,7 +53,7 @@ SIGNALS = {
 }
 PHYSICAL = ("etat", "stop", "H350")
 F_FILES = {"parton_trig": "osde/f_ttbar_parton_trig.npz", "gen": "osde/f_ttbar_gen.npz", "reco": "osde/f_ttbar_reco.npz",
-           "matched": "study_truthmatch/osde_dRmatch/f_ttbar_reco.npz"}
+           "matched": "study_truthmatch/osde_dRmatch/f_ttbar_reco.npz"}  # under results/
 MASSES = ("m_w_had", "m_t_lep", "m_t_had")
 WPS = (0.01, 0.10)
 T_CV = 2.5
@@ -62,7 +66,7 @@ METHODS = ("osde_cv", "osde_all", "bw", "mtt_dens", "mtt_window", "flow", "osde_
 def load(key_or_runs, level):
     """{'X': angles, 'm': masses, 'mtt', 'n_all'} for a sample (cache key) or a list of runs (matched level)."""
     if level != "matched":
-        z = np.load(os.path.join(HERE, "cache", f"{key_or_runs}.npz"))
+        z = np.load(os.path.join(CACHE, f"{key_or_runs}.npz"))
         d = {"X": {a: z[f"{level}/{a}"] for a in ANGLE_NAMES}, "m": {k: z[f"{level}/{k}"] for k in MASSES},
              "mtt": z[f"{level}/mtt"], "n_all": int(z[f"{level}/n_all"])}
         if f"{level}/same_as_fit_cache" in z:
@@ -70,7 +74,7 @@ def load(key_or_runs, level):
         return d
     parts = []
     for run in key_or_runs:
-        z = np.load(os.path.join(ROOT, "study_truthmatch", f"data_{run}.npz"))
+        z = np.load(os.path.join(TM, f"data_{run}.npz"))
         ok = z["ok"]
         parts.append({"X": {a: z[f"m_{a}"][ok] for a in ANGLE_NAMES}, "m": {k: z[f"m_{k}"][ok] for k in MASSES},
                       "mtt": z["m_mtt"][ok], "n_all": int(z["n_generated"]) if "n_generated" in z else len(ok)})
@@ -255,11 +259,11 @@ def main():
     torch.set_num_threads(8)
     levels = a.levels.split(",")
     sigs = [s for s in a.signals.split(",") if s]
-    out_path = os.path.join(HERE, "results.json")
+    out_path = os.path.join(OUT, "results.json")
     out = json.load(open(out_path)) if os.path.exists(out_path) else {}
     out.setdefault("levels", {})
     for level in levels:
-        f_all = osde.load_density(os.path.join(ROOT, F_FILES[level]))
+        f_all = osde.load_density(os.path.join(repo_paths.RESULTS, F_FILES[level]))
         f_cv = f_all.truncated(f_all.significance() > T_CV)
         tt = load([TT_RUN], level) if level == "matched" else load("tt_fit", level)
         n_tt = len(tt["mtt"])
@@ -267,7 +271,7 @@ def main():
         if level != "matched":
             assert tt.get("same_as_fit_cache", False), f"{level}: tt̄ events differ from the fit sample"
         else:
-            z = np.load(os.path.join(ROOT, "samples/ttbar_bblvqq", TT_RUN, "angles_down_dRmatch.npz"))
+            z = np.load(os.path.join(repo_paths.SAMPLES, "ttbar_bblvqq", TT_RUN, "angles_down_dRmatch.npz"))
             assert all(np.allclose(z[f"reco/{x}"], tt["X"][x]) for x in ANGLE_NAMES), "matched tt̄ differs from the fit"
         D = {k: sample(k, level) for k in sigs}
         print(f"[{level}] tt̄ {n_tt} (of {tt['n_all']}), " + ", ".join(f"{k} {len(d['mtt'])}" for k, d in D.items()), flush=True)

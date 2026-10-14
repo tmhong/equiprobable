@@ -21,7 +21,7 @@ Models
 Test set (identical for every method): the independent tt̄ sample + a held-out 40% of hh.
 Checks: shuffled labels and tt̄-vs-tt̄ must give AUC ≈ 0.5; train vs test AUC (overtraining).
 
-Output: ml/roc_<level>.png, ml/results_<level>.json
+Output: results/ml/roc_<level>.png, results/ml/results_<level>.json
 """
 import argparse
 import json
@@ -45,6 +45,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 import make_plots  # noqa: E402
+import repo_paths  # noqa: E402
 from plotting import osde, style  # noqa: E402
 from plotting.angles import ANGLE_NAMES  # noqa: E402
 
@@ -305,12 +306,13 @@ def train_flow(x_tr, x_va, epochs=40):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--train", default="samples/ttbar_bblvqq/run_seed1001")
-    p.add_argument("--test", default="samples/ttbar_bblvqq/run_seed12345")
-    p.add_argument("--hh", default="samples/hh_bblvqq/run_seed2001")
+    p.add_argument("--train", default=os.path.join(repo_paths.SAMPLES, "ttbar_bblvqq/run_seed1001"))
+    p.add_argument("--test", default=os.path.join(repo_paths.SAMPLES, "ttbar_bblvqq/run_seed12345"))
+    p.add_argument("--hh", default=os.path.join(repo_paths.SAMPLES, "hh_bblvqq/run_seed2001"))
     p.add_argument("--level", default="parton", choices=["parton", "parton_trig"])
-    p.add_argument("--osde", default="osde", help="directory with f_ttbar_<level>.npz (paper basis)")
-    p.add_argument("--out", default="ml")
+    p.add_argument("--osde", default=os.path.join(repo_paths.RESULTS, "osde"),
+                   help="directory with f_ttbar_<level>.npz (paper basis)")
+    p.add_argument("--out", default=os.path.join(repo_paths.RESULTS, "ml"))
     p.add_argument("--config", default=os.path.join(HERE, "plot_config.py"))
     p.add_argument("--quick", action="store_true", help="few epochs (testing only)")
     p.add_argument("--replot", action="store_true", help="only redraw the ROC figures from saved curves")

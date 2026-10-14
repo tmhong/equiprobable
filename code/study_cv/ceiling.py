@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Supervised ceiling on the same ten angles (BDT trained with the signal labels, 5-fold out-of-fold predictions),
-at each level, on the events of study_cv/cv_scores.py.  Writes study_cv/ceiling.json."""
+at each level, on the events of study_cv/cv_scores.py.  Writes results/study_cv/ceiling.json."""
 import json, os, sys
 import numpy as np
 from sklearn.ensemble import HistGradientBoostingClassifier
@@ -8,7 +8,9 @@ from sklearn.metrics import roc_auc_score
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
 from plotting.angles import ANGLE_NAMES  # noqa: E402
-C = os.path.join(ROOT, "study_gonogo", "cache"); TM = os.path.join(ROOT, "study_truthmatch")
+import repo_paths  # noqa: E402
+OUT = repo_paths.results_dir("study_cv")
+C = repo_paths.results_dir("study_gonogo", "cache", create=False); TM = repo_paths.results_dir("study_truthmatch", create=False)
 
 def arr(X): return np.column_stack([X[a] for a in ANGLE_NAMES])
 def cached(key, lv):
@@ -33,4 +35,4 @@ for lv in ("parton_trig", "gen", "reco"):
     print(lv, out[lv], flush=True)
 out["matched"] = {"HH170": ceiling(matched("run_seed1001"), matched("run_m170_all"))}
 print("matched", out["matched"])
-json.dump(out, open(os.path.join(HERE, "ceiling.json"), "w"), indent=1)
+json.dump(out, open(os.path.join(OUT, "ceiling.json"), "w"), indent=1)

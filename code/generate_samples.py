@@ -3,7 +3,7 @@
 Generate pp -> ttbar -> b b W W -> b b l nu q q' samples with MadGraph5_aMC@NLO,
 shower with Pythia8, and run Delphes with the ATLAS card (no pileup).
 
-Outputs (copied to <outdir>/<name>/<run>/):
+Outputs (copied to <outdir>/<name>/<run>/; --outdir defaults to samples/ at the repository top):
   parton_events.lhe.gz   MG5 parton-level (generator-level) events
   delphes_events.root    Delphes reco (Jet, Electron, Muon, MissingET, ...) plus
                          generator-level GenJet, GenMissingET and Particle branches
@@ -12,16 +12,16 @@ Outputs (copied to <outdir>/<name>/<run>/):
 
 Examples:
   # full chain, 10k events at 13 TeV
-  python generate_samples.py --nevents 10000
+  python code/generate_samples.py --nevents 10000
 
   # parton level only (fast), different seed and run name
-  python generate_samples.py --stage parton --nevents 5000 --seed 7 --run run_seed7
+  python code/generate_samples.py --stage parton --nevents 5000 --seed 7 --run run_seed7
 
   # include taus in the W -> l nu decay, 13.6 TeV
-  python generate_samples.py --leptons e,mu,ta --sqrts 13600 --name ttbar_bblvqq_tau
+  python code/generate_samples.py --leptons e,mu,ta --sqrts 13600 --name ttbar_bblvqq_tau
 
   # just write the MG5 command files and show them
-  python generate_samples.py --dry-run
+  python code/generate_samples.py --dry-run
 """
 import argparse
 import glob
@@ -34,8 +34,10 @@ import subprocess
 import sys
 import time
 
+import repo_paths
+
 HERE = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_MG5 = os.path.join(HERE, "tools", "MG5_aMC_v3_6_7")
+DEFAULT_MG5 = os.path.join(repo_paths.TOOLS, "MG5_aMC_v3_6_7")
 
 LEPTON_DEFS = {
     # name : (charged lepton+, neutrino)
@@ -225,7 +227,7 @@ def install_delphes_card(args, proc_dir):
     card = args.delphes_card or os.path.join(args.mg5, "Delphes", "cards", "delphes_card_ATLAS.tcl")
     if not os.path.isfile(card):
         sys.exit(f"[generate] Delphes card not found: {card}\n"
-                 "Install Delphes (./setup_tools.sh) or pass --delphes-card.")
+                 "Install Delphes (code/setup_tools.sh) or pass --delphes-card.")
     with open(card) as f:
         text = f.read()
     if re.search(r"^\s*module\s+PileUpMerger", text, re.M):
@@ -284,8 +286,8 @@ def main():
     p.add_argument("--keep-hepmc", action="store_true", help="copy the Pythia8 HepMC file to outdir")
     p.add_argument("--mg5", default=DEFAULT_MG5, help="MG5_aMC installation directory")
     p.add_argument("--python", default=sys.executable, help="python used to run MG5")
-    p.add_argument("--workdir", default=os.path.join(HERE, "work"))
-    p.add_argument("--outdir", default=os.path.join(HERE, "samples"))
+    p.add_argument("--workdir", default=repo_paths.WORK)
+    p.add_argument("--outdir", default=repo_paths.SAMPLES)
     p.add_argument("--dry-run", action="store_true", help="write and print MG5 commands only")
     args = p.parse_args()
     sys.stdout.reconfigure(line_buffering=True)    # progress visible when logging to a file
@@ -297,7 +299,7 @@ def main():
     proc_dir = os.path.join(os.path.abspath(args.workdir), args.name)
 
     if not os.path.isfile(os.path.join(args.mg5, "bin", "mg5_aMC")):
-        sys.exit(f"[generate] MG5 not found at {args.mg5}. Run ./setup_tools.sh or pass --mg5.")
+        sys.exit(f"[generate] MG5 not found at {args.mg5}. Run code/setup_tools.sh or pass --mg5.")
 
     proc_cmds = process_commands(args, proc_dir)
     launch_cmds = launch_commands(args, run_name)

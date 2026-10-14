@@ -6,7 +6,7 @@ working points 0.5%, 1%, 2%, 5%, 10%, and f_T + BW (sum of -ln tail fractions) a
 The rule of CRITERIA.md is applied to every (signal, T, wp, f or f+BW) cell, with paired bootstrap.
 Also: f_T+BW minus BW (do angles add to the masses?), and the tt_indep null for each variant.
 
-Run: OMP_NUM_THREADS=4 .venv/bin/python study_gonogo/verify/robust_met/scan.py [--level reco] [--nboot 300]
+Run: OMP_NUM_THREADS=4 .venv/bin/python code/study_gonogo/verify/robust_met/scan.py [--level reco] [--nboot 300]
 """
 import argparse
 import json
@@ -22,7 +22,9 @@ sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, "study_gonogo"))
 import analyze as A  # noqa: E402
 from plotting import osde  # noqa: E402
+import repo_paths  # noqa: E402
 
+OUT = repo_paths.results_dir("study_gonogo", "verify", "robust_met")
 TS = (0.0, 1.0, float(np.sqrt(2)), 2.0, 2.5, 3.0, 4.0, 5.0)
 WPS = (0.005, 0.01, 0.02, 0.05, 0.10)
 SIGS = ("etat", "stop", "H350", "nospin", "tt_indep")
@@ -40,7 +42,7 @@ def main():
     a = p.parse_args()
     torch.set_num_threads(4)
     level = a.level
-    f_all = osde.load_density(os.path.join(ROOT, A.F_FILES[level]))
+    f_all = osde.load_density(os.path.join(repo_paths.RESULTS, A.F_FILES[level]))
     sig = f_all.significance()
     tt = A.load([A.TT_RUN], level) if level == "matched" else A.load("tt_fit", level)
     assert len(tt["mtt"]) == f_all.n_fit
@@ -114,8 +116,8 @@ def main():
                 res["combo_minus_bw"][n][f"{wp:g}"] = [float(dd[0]), float(np.std(dd[1:]))]
         out["signals"][k] = res
         print(f"  {k}: done", flush=True)
-    json.dump(out, open(os.path.join(HERE, f"scan_{level}.json"), "w"), indent=1)
-    np.savez_compressed(os.path.join(HERE, f"scores_{level}.npz"),
+    json.dump(out, open(os.path.join(OUT, f"scan_{level}.json"), "w"), indent=1)
+    np.savez_compressed(os.path.join(OUT, f"scores_{level}.npz"),
                         **{f"tt/{m}": v for m, v in S_tt.items()},
                         **{f"{k}/{m}": v for k in S for m, v in S[k].items()})
     # summary

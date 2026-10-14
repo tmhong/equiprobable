@@ -5,8 +5,8 @@ Bit-true fixed-point emulation of an L1 (ATLAS Phase-II L0 Global Trigger) imple
 
     s = -ln( f_angles(Ω) - y0 ) + Σ_k ln[(m_k - M_k)^2 + W_k^2]        (high s = not tt̄)
 
-f_angles: the paper-basis OSDE density osde/f_ttbar_reco.npz truncated to |c|/σ > 10 (31 terms);
-masses: m_W,had, m_t,lep, m_t,had of the χ² tt̄ reconstruction.  See design.md for the design.
+f_angles: the paper-basis OSDE density results/osde/f_ttbar_reco.npz truncated to |c|/σ > 10 (31 terms);
+masses: m_W,had, m_t,lep, m_t,had of the χ² tt̄ reconstruction.  See results/study_l1/design.md for the design.
 
 Chain (every operator emulated with its rounding; numpy float64 carries exact fixed-point values,
 which is bit-exact for W <= 24 because products of two <= 26-bit operands are exact in float64):
@@ -21,11 +21,11 @@ which is bit-exact for W <= 24 because products of two <= 26-bit operands are ex
     -> ten angles without explicit boosts (aberration, invariant ratios, CORDIC atan2)
     -> 25 one-dimensional basis-function LUTs -> 27 real product terms -> f -> -ln LUT -> score
 
-Inputs: study_l1/cache/*.npz from extract.py.  Output: study_l1/results.json and a printed table.
+Inputs: results/study_l1/cache/*.npz from extract.py.  Output: results/study_l1/results.json and a printed table.
 Deterministic (no random numbers except the bootstrap, which uses a fixed seed).
 
-    python study_l1/emulate.py              # everything (~2 min)
-    python study_l1/emulate.py --selftest   # only the consistency checks
+    python code/study_l1/emulate.py              # everything (~2 min)
+    python code/study_l1/emulate.py --selftest   # only the consistency checks
 """
 import argparse
 import json
@@ -39,13 +39,14 @@ import numpy as np
 from sklearn.metrics import roc_auc_score
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+ROOT = os.path.dirname(HERE)          # code/
 sys.path.insert(0, ROOT)
+import repo_paths  # noqa: E402
 from plotting import osde  # noqa: E402
 from plotting.angles import ANGLE_NAMES, decay_angles, production_angles  # noqa: E402
 
 M_W, M_TOP, SIG_W, SIG_T = 80.4, 172.5, 10.0, 15.0     # χ² of plotting/physics.py
-DENSITY = os.path.join(ROOT, "osde", "f_ttbar_reco.npz")
+DENSITY = os.path.join(repo_paths.RESULTS, "osde", "f_ttbar_reco.npz")
 SIG_CUT = 10.0                                         # keep |ĉ|/σ > 10  (31 terms at reco)
 MASSES = ("m_w_had", "m_t_lep", "m_t_had")
 
@@ -189,7 +190,7 @@ def lut(x, fn, lo, hi, K, periodic=False):
 # 2. Data
 # =============================================================================================
 def load(name):
-    z = np.load(os.path.join(HERE, "cache", f"{name}.npz"))
+    z = np.load(os.path.join(repo_paths.RESULTS, "study_l1", "cache", f"{name}.npz"))
     return {k: z[k] for k in z.files}
 
 
@@ -941,7 +942,7 @@ RECOMMENDED = {"N": 6, "inputs": "nominal", "W": 16, "K": 256, "Kchi": 256}
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--selftest", action="store_true", help="only run the consistency checks")
-    ap.add_argument("--out", default=os.path.join(HERE, "results.json"))
+    ap.add_argument("--out", default=os.path.join(repo_paths.results_dir("study_l1"), "results.json"))
     args = ap.parse_args()
     t0 = time.time()
     st = Study()
@@ -1038,7 +1039,7 @@ def main():
               + " | ".join(f"{dev}: " + " ".join(f"{k} {100 * x:.2f}%" for k, x in r["frac"][dev].items())
                            for dev in DEVICES)
               + f" | latency {r['latency_clk']} clk = {r['latency_ns']:.0f} ns")
-    out = {"meta": {"date": time.strftime("%Y-%m-%d"), "density": os.path.relpath(DENSITY, ROOT),
+    out = {"meta": {"date": time.strftime("%Y-%m-%d"), "density": os.path.relpath(DENSITY, repo_paths.REPO),
                     "kept_terms": dens.n_kept, "real_terms": len(dens.terms), "onedim_functions": dens.n_onedim(),
                     "terms": [{k: (v if k != "c" else [v.real, v.imag]) for k, v in t.items()} for t in dens.terms],
                     "samples": {"tt_test": "samples/ttbar_bblvqq/run_seed12345 (10k)",

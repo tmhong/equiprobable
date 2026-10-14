@@ -18,6 +18,8 @@ Usage
   python compare_y.py ttbar.txt hh.txt      type i and type j       -> ttbar_y.pdf / .png
   python compare_y.py ttbar.txt hh.txt lny  ... binned in -ln y     -> ttbar_lny.pdf / .png
   python compare_y.py --write-toy           the toy events as text files, toy_i.txt and toy_j.txt
+  In the repository the outputs go to results/paper_figs/ (input files are read as given); used on its
+  own, to the working directory.
 
 Input files
   Plain text, one event per line, columns separated by spaces, tabs or commas; '#' starts a
@@ -59,6 +61,16 @@ from matplotlib.patches import FancyArrowPatch, Patch
 from matplotlib.ticker import (AutoMinorLocator, FixedFormatter, FixedLocator, FuncFormatter, LogFormatterMathtext,
                                LogLocator, MaxNLocator, MultipleLocator, ScalarFormatter,
                                NullFormatter, NullLocator)
+
+# where the outputs go: in the repository, results/paper_figs/ (code/repo_paths.py); used on its own,
+# the figures and the toy's text files go to the working directory and the toy's event cache next to this file
+_CODE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if os.path.exists(os.path.join(_CODE, "repo_paths.py")):
+    sys.path.insert(0, _CODE)
+    import repo_paths
+    OUT_DIR = TOY_CACHE_DIR = repo_paths.results_dir("paper_figs")
+else:
+    OUT_DIR, TOY_CACHE_DIR = "", os.path.dirname(os.path.abspath(__file__))
 
 # ==========================================================================================
 # Things you are most likely to tweak
@@ -297,7 +309,7 @@ def toy_events():
     import inspect
     recipe = (inspect.getsource(toy_f_i) + inspect.getsource(toy_f_j)
               + repr((N_TOY, TOY_SPIN, TOY_HELICITY, TOY_ALPHA_P, TOY_POL, X1_COS, PER_SIN, X1_RANGE, X2_RANGE, SOLID_ANGLE)))
-    path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+    path = os.path.join(TOY_CACHE_DIR,
                         "toy_events_%s.npz" % hashlib.sha1(recipe.encode()).hexdigest()[:10])
     if TOY_CACHE and os.path.exists(path):
         with np.load(path) as kept:
@@ -551,9 +563,10 @@ if "--write-toy" in args:
     for fname, f in (("toy_i.txt", toy_f_i), ("toy_j.txt", toy_f_j)):
         x = sample(f, N_TOY_FILE)
         theta = np.arccos(np.clip(x[:, 0], -1, 1)) if X1_COS else x[:, 0]
-        np.savetxt(fname, np.column_stack([theta, x[:, 1], toy_f_i(theta, x[:, 1])]), fmt="%.6f",
-                   header="theta phi y")
-        print(f"wrote {fname}: {N_TOY_FILE:,} events, columns theta phi y (y = f_ttbar, also for hh)")
+        np.savetxt(os.path.join(OUT_DIR, fname), np.column_stack([theta, x[:, 1], toy_f_i(theta, x[:, 1])]),
+                   fmt="%.6f", header="theta phi y")
+        print(f"wrote {os.path.join(OUT_DIR, fname)}: {N_TOY_FILE:,} events, columns theta phi y "
+              f"(y = f_ttbar, also for hh)")
     sys.exit()
 
 IN_Y = "y" in args or "--y" in args          # the toy in y itself: (1/N) dN/dy against dV/d(-ln y)
@@ -570,14 +583,16 @@ if files:
               f"('{TYPE_I}'), {len(B['x']):,} of type j ('{TYPE_J}')")
         if len(B["x"]) == 0:
             B = None
-    name = os.path.splitext(os.path.basename(files[0]))[0] + (("_t" if T_SCALE else "_s") if LOG else "_y")
+    name = os.path.join(OUT_DIR, os.path.splitext(os.path.basename(files[0]))[0]
+                        + (("_t" if T_SCALE else "_s") if LOG else "_y"))
     is_toy = False
 else:
     xi, xj = toy_events()
     f_toy = plane_f(toy_f_i)                                    # y = f_ttbar, in the plane's coordinates
     A = {"x": xi, "y": f_toy(xi[:, 0], xi[:, 1]), "w": None}
     B = {"x": xj, "y": f_toy(xj[:, 0], xj[:, 1]), "w": None}
-    name = "compare_s" if LOG else ("compare_lny" if IN_Y else "compare_lnz")   # in y: dV/d(-ln y); in z
+    name = os.path.join(OUT_DIR,
+                        "compare_s" if LOG else ("compare_lny" if IN_Y else "compare_lnz"))   # in y: dV/d(-ln y); in z
     is_toy = True
     NAME_I, NAME_J, SHORT_I, SHORT_J = TOY_NAMES
     Y_AXIS = r"$y$"                                         # the toy's y (defined at the top: f_1/2)

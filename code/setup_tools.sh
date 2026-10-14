@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Install everything needed by generate_samples.py and make_plots.py:
-#   - python venv (.venv) with uproot, awkward, vector, numpy, matplotlib
+#   - python venv (<repo>/.venv) with uproot, awkward, vector, numpy, matplotlib
 #   - MadGraph5_aMC@NLO, Pythia8 (+ MG5 interface, via MG5's installer)
 #   - Delphes (built with CMake against your ROOT; MG5's own Makefile build
 #     fails to link with recent ROOT versions)
@@ -8,18 +8,19 @@
 #
 # Requirements: ROOT (root-config in PATH), gfortran, a C++ compiler, cmake, curl.
 #
-# Usage: ./setup_tools.sh [TOOLS_DIR]      (default: ./tools)
+# Usage: code/setup_tools.sh [TOOLS_DIR]      (default: <repo>/tools)
 set -euo pipefail
 
-HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TOOLS="${1:-$HERE/tools}"
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"     # code/
+REPO="$(dirname "$HERE")"                                  # repository top: tools/, .venv, requirements.txt
+TOOLS="${1:-$REPO/tools}"
 MG_VERSION=3.6.7
 DELPHES_VERSION=3.5.1
 PYTHON="${PYTHON:-python3}"
 NCORES="$(getconf _NPROCESSORS_ONLN 2>/dev/null || echo 4)"
 
 MG_DIR="$TOOLS/MG5_aMC_v${MG_VERSION//./_}"
-VENV="$HERE/.venv"
+VENV="$REPO/.venv"
 
 for exe in root-config gfortran cmake curl "$PYTHON"; do
   command -v "$exe" >/dev/null || { echo "ERROR: '$exe' not found in PATH"; exit 1; }
@@ -33,7 +34,7 @@ if [ ! -x "$VENV/bin/python" ]; then
   "$PYTHON" -m venv "$VENV"
 fi
 "$VENV/bin/pip" install -q --upgrade pip
-"$VENV/bin/pip" install -q -r "$HERE/requirements.txt"
+"$VENV/bin/pip" install -q -r "$REPO/requirements.txt"
 
 echo "=== 2/4 MadGraph5_aMC@NLO $MG_VERSION ($MG_DIR)"
 if [ ! -x "$MG_DIR/bin/mg5_aMC" ]; then
@@ -80,4 +81,4 @@ set_cfg delphes_path "$DEL"
 echo
 echo "Done.  MG5:     $MG_DIR"
 echo "       Delphes: $DEL"
-echo "Next:  $VENV/bin/python generate_samples.py --nevents 10000"
+echo "Next:  $VENV/bin/python $HERE/generate_samples.py --nevents 10000"

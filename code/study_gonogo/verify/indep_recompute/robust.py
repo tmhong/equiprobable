@@ -4,10 +4,10 @@ import os, sys
 import numpy as np
 H = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, H)
-from recompute import get, basis, f_eval, self_term, own_fit, R_at, SIG, FFILE, ROOT  # own helpers only
+from recompute import get, basis, f_eval, self_term, own_fit, R_at, SIG, FFILE, RES  # own helpers only
 from plotting import osde
 for level in ("reco", "matched"):
-    f = osde.load_density(os.path.join(ROOT, FFILE[level]))
+    f = osde.load_density(os.path.join(RES, FFILE[level]))
     tt = get("tt_fit", level)
     n = len(tt["mtt"])
     ft = basis(f, tt["X"])

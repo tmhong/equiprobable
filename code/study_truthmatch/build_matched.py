@@ -11,11 +11,12 @@ whose m(l nu b_lep) is closer to m_t.  The ten angles are computed with plotting
 
 Writes
   <sample>/angles_down_dRmatch.npz     reco/<angle> for the matched events, the osde_fit.py cache format
-                                       (fit with --config study_truthmatch/config_dRmatch.py --levels reco)
-  study_truthmatch/data_<name>.npz     event indices, masses, the chi2-assignment angles of the same events,
+                                       (fit with --config code/study_truthmatch/config_dRmatch.py --levels reco)
+  results/study_truthmatch/data_<name>.npz   event indices, masses, the chi2-assignment angles of the same events,
                                        parton angles (for the tt̄_R weights) and the matching statistics
 
-Run: OMP_NUM_THREADS=3 .venv/bin/python study_truthmatch/build_matched.py [--max-events N] [--dr 0.4] SAMPLE ...
+Run: OMP_NUM_THREADS=3 .venv/bin/python code/study_truthmatch/build_matched.py [--max-events N] [--dr 0.4] SAMPLE ...
+(SAMPLE relative to the repo top, e.g. samples/ttbar_bblvqq/run_seed1001)
 """
 import argparse
 import json
@@ -31,10 +32,12 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
 import make_plots  # noqa: E402
 from plotting import angles, physics  # noqa: E402
+import repo_paths  # noqa: E402
 
 OPTS = {"had_fermion": "down", "jet_assignment": "truth"}   # the chi2 comparison uses the paper's labelling
 PARTS = ("b_had", "b_lep", "q_down", "q_up")
 TAG = "down_dRmatch"
+OUT = repo_paths.results_dir("study_truthmatch")
 
 
 def arr4(v):
@@ -143,8 +146,8 @@ def build(path, dr_max, max_events):
            "c_m_w_had": mass(arr4(reco.w_had)), "c_m_t_lep": mass(arr4(reco.t_lep)), "c_m_t_had": mass(arr4(reco.t_had)),
            "parton_lep_trigger": np.asarray(parton.lep_trigger, bool)}
     suffix = "" if max_events is None else f"_test{max_events}"
-    np.savez_compressed(os.path.join(HERE, f"data_{name}{suffix}.npz"), **out)
-    json.dump(stats, open(os.path.join(HERE, f"stats_{name}{suffix}.json"), "w"), indent=1)
+    np.savez_compressed(os.path.join(OUT, f"data_{name}{suffix}.npz"), **out)
+    json.dump(stats, open(os.path.join(OUT, f"stats_{name}{suffix}.json"), "w"), indent=1)
     print(json.dumps(stats, indent=1))
 
 
@@ -155,7 +158,7 @@ def main():
     p.add_argument("--max-events", type=int, default=None, help="test run (does not write the angle cache)")
     a = p.parse_args()
     for s in a.samples:
-        build(os.path.join(ROOT, s) if not os.path.isabs(s) else s, a.dr, a.max_events)
+        build(os.path.join(repo_paths.REPO, s) if not os.path.isabs(s) else s, a.dr, a.max_events)
 
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@
 """
 Paired version of stop_met_test.py: saves per-event scores (nominal vs oracle E_T^miss, same events) and computes
 the paired-bootstrap uncertainty of R(nominal) - R(oracle) for f_tt (CV) at 1% and 10%, gen and reco.
-Run: cd ttbar_bblvqq && OMP_NUM_THREADS=4 .venv/bin/python study_gonogo/verify/physics_skeptic/stop_met_paired.py
+Run: cd ttbar_bblvqq && OMP_NUM_THREADS=4 .venv/bin/python code/study_gonogo/verify/physics_skeptic/stop_met_paired.py
 """
 import json
 import os
@@ -16,18 +16,19 @@ import stop_met_test as T  # noqa: E402
 
 from plotting import osde  # noqa: E402
 from plotting.angles import ANGLE_NAMES  # noqa: E402
+import repo_paths  # noqa: E402
 
 
 def main():
-    path = os.path.join(T.ROOT, "samples/stop_bblvqq/run_seed4002")
+    path = os.path.join(repo_paths.SAMPLES, "stop_bblvqq/run_seed4002")
     parton, cpx, cpy = T.lhe_info(os.path.join(path, "parton_events.lhe.gz"))
     root = os.path.join(path, "delphes_events.root")
     out, save = {}, {}
     rng = np.random.default_rng(11)
     for level in ("gen", "reco"):
-        f_all = osde.load_density(os.path.join(T.ROOT, T.F_FILES[level]))
+        f_all = osde.load_density(os.path.join(repo_paths.RESULTS, T.F_FILES[level]))
         f_cv = f_all.truncated(f_all.significance() > 2.5)
-        z = np.load(os.path.join(T.ROOT, "study_gonogo/cache/tt_fit.npz"))
+        z = np.load(os.path.join(repo_paths.RESULTS, "study_gonogo/cache/tt_fit.npz"))
         s_tt = -f_cv.loo({a: z[f"{level}/{a}"] for a in ANGLE_NAMES})
         S = {}
         for oracle in (False, True):
@@ -50,8 +51,8 @@ def main():
         res["corr(score shift, pT chi chi)"] = float(np.corrcoef(shift, ptchi[ok])[0, 1])
         out[level] = res
         print(level, json.dumps(res), flush=True)
-    np.savez_compressed(os.path.join(HERE, "stop_met_scores.npz"), **save)
-    json.dump(out, open(os.path.join(HERE, "stop_met_paired.json"), "w"), indent=1)
+    np.savez_compressed(os.path.join(T.OUT, "stop_met_scores.npz"), **save)
+    json.dump(out, open(os.path.join(T.OUT, "stop_met_paired.json"), "w"), indent=1)
 
 
 if __name__ == "__main__":

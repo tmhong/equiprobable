@@ -5,14 +5,14 @@ Internal note (LaTeX article) that compiles and explains the study shown in the 
 Every number is read from the analysis outputs (the same JSON files make_slides.py uses) and the
 figures are the ones in the plot directories, so the note stays in sync with the slides.  The
 sample-level numbers (cutflow, helicity fractions, resolutions) are computed once from the samples
-and cached in note/sample_summary.json.
+and cached in results/note/sample_summary.json.
 
-  .venv/bin/python note/make_note.py                 # writes note/note.tex and compiles note/note.pdf
-  .venv/bin/python note/make_note.py --no-compile
-  .venv/bin/python note/make_note.py --recompute     # rebuild the sample summary cache
+  .venv/bin/python code/note/make_note.py                 # writes results/note/note.tex and compiles results/note/note.pdf
+  .venv/bin/python code/note/make_note.py --no-compile
+  .venv/bin/python code/note/make_note.py --recompute     # rebuild the sample summary cache
 
 Sections that depend on studies still running (BSM test, pileup) are written from their result
-files when present (study_bsm/htt_test.json, pileup/results.json) and as a short status paragraph
+files when present (results/study_bsm/htt_test.json, results/pileup/results.json) and as a short status paragraph
 otherwise.
 """
 import argparse
@@ -24,8 +24,11 @@ import sys
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
-sys.path.insert(0, ROOT)
+sys.path.insert(0, os.path.dirname(HERE))          # code/: make_plots, plotting, repo_paths
+import repo_paths  # noqa: E402
+
+ROOT = repo_paths.RESULTS                            # the analysis outputs (JSON, figures) the note reads
+OUT = repo_paths.results_dir("note", create=False)  # note.tex, note.pdf and the sample-summary cache
 
 ANGLE_TEX = {"Y": "$Y$", "cos_Theta": r"$\cos\Theta$", "cos_theta": r"$\cos\theta$", "phi": r"$\phi$",
              "cos_theta_prime": r"$\cos\theta'$", "phi_prime": r"$\phi'$",
@@ -91,17 +94,17 @@ def srel(*parts):
     if SUF:
         d = os.path.join(ROOT, parts[0] + SUF, *parts[1:])
         if os.path.exists(d):
-            return os.path.relpath(d, HERE)
+            return os.path.relpath(d, OUT)
         base, ext = os.path.splitext(parts[-1])
         q = os.path.join(ROOT, *parts[:-1], base + SUF + ext)
         if os.path.exists(q):
-            return os.path.relpath(q, HERE)
-    return os.path.relpath(os.path.join(ROOT, *parts), HERE)
+            return os.path.relpath(q, OUT)
+    return os.path.relpath(os.path.join(ROOT, *parts), OUT)
 
 
 def rel(*parts):
     """Path of a figure relative to the note directory."""
-    return os.path.relpath(os.path.join(ROOT, *parts), HERE)
+    return os.path.relpath(os.path.join(ROOT, *parts), OUT)
 
 
 def exists(*parts):
@@ -118,7 +121,7 @@ def _jsonable(o):
 
 def sample_summary(sample, hh, recompute):
     """plotting.summary numbers for the tt̄ (independent) sample and the hh reco cutflow, cached."""
-    cache = os.path.join(HERE, f"sample_summary{SUF}.json")
+    cache = os.path.join(OUT, f"sample_summary{SUF}.json")
     if os.path.exists(cache) and not recompute:
         return json.load(open(cache))
     import make_plots
@@ -161,7 +164,7 @@ def tab(caption, header, rows, label, note=None, small=True, col=None):
 
 
 def fig(path, caption, label, width=0.9):
-    if not os.path.exists(os.path.join(HERE, path)):
+    if not os.path.exists(os.path.join(OUT, path)):
         return rf"\par\noindent\fbox{{\footnotesize missing figure: \texttt{{{esc(path)}}}}}\par"
     return rf"""
 \begin{{figure}}[htbp]\centering
@@ -173,7 +176,7 @@ def fig(path, caption, label, width=0.9):
 
 def figs2(paths, caption, label, width=0.49):
     inc = "\n".join(rf"\includegraphics[width={width}\textwidth]{{{p}}}" for p in paths
-                    if os.path.exists(os.path.join(HERE, p)))
+                    if os.path.exists(os.path.join(OUT, p)))
     return rf"""
 \begin{{figure}}[htbp]\centering
 {inc}
@@ -1270,7 +1273,7 @@ checks, $F_R=0$ gives AUC 0.500 for every score and BDTs trained on event-shuffl
 def wtb_fig(path, caption, label):
     """fig_wtb.png with the suptitle and the third panel's y label (clipped by matplotlib) cropped away; the caption
     carries the label.  Same trim fractions (left, bottom, right, top of the image) as make_slides.wtb_slides."""
-    if not os.path.exists(os.path.join(HERE, path)):
+    if not os.path.exists(os.path.join(OUT, path)):
         return fig(path, caption, label)
     inc = [rf"\adjustbox{{trim={{{l}\width}} {{{b}\height}} {{{r}\width}} {{{t}\height}}, clip, width={w}\textwidth}}{{\includegraphics{{{path}}}}}"
            for (l, b, r, t), w in (((0, .034, .337, .108), 0.655), ((.692, .034, 0, .108), 0.305))]
@@ -1498,7 +1501,7 @@ def sec_appendix(N):
 \section{Code and reproduction}
 \label{app:code}
 
-Everything is in \texttt{/Users/TMHONG/Claude-code/ttbar\_bblvqq} (git repository on \texttt{main}).
+Everything is in \texttt{""" + esc(repo_paths.REPO) + r"""} (git repository on \texttt{main}).
 \begin{description}
 \item[\texttt{setup\_tools.sh}] installs MadGraph5\_aMC 3.6.7, Pythia8, Delphes 3.5.1 (built with CMake) and the Python environment.
 \item[\texttt{generate\_samples.py}] MadGraph $\to$ Pythia8 $\to$ Delphes production; \texttt{--process ttbar|hh|Htt}.
@@ -1552,8 +1555,8 @@ PREAMBLE = r"""\documentclass[11pt]{article}
 
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--sample", default=os.path.join(ROOT, "samples/ttbar_bblvqq/run_seed12345"))
-    p.add_argument("--hh", default=os.path.join(ROOT, "samples/hh_bblvqq/run_seed2001"))
+    p.add_argument("--sample", default=os.path.join(repo_paths.SAMPLES, "ttbar_bblvqq/run_seed12345"))
+    p.add_argument("--hh", default=os.path.join(repo_paths.SAMPLES, "hh_bblvqq/run_seed2001"))
     p.add_argument("--recompute", action="store_true")
     p.add_argument("--no-compile", action="store_true")
     p.add_argument("--author", default="Tae Min Hong")
@@ -1564,13 +1567,14 @@ def main():
     SIGNAL, SUF = args.signal, ("" if args.signal == "h125" else "_h" + VARIANTS[args.signal]["tag"])
     stem = args.name or ("note" if args.signal == "h125" else f"note_h{VARIANTS[args.signal]['tag']}")
     if SIGNAL in VARIANTS:
-        args.hh = {"h170": "samples/hh_bblvqq/run_m170_seed2170", "h2mw": "samples/hh_bblvqq/run_m2mw_seed2161"}[SIGNAL]
-        args.hh = os.path.join(ROOT, args.hh)
+        args.hh = {"h170": "hh_bblvqq/run_m170_seed2170", "h2mw": "hh_bblvqq/run_m2mw_seed2161"}[SIGNAL]
+        args.hh = os.path.join(repo_paths.SAMPLES, args.hh)
+    os.makedirs(OUT, exist_ok=True)
 
     N = {
         "S": sample_summary(args.sample, args.hh, args.recompute),
-        "meta_tt": load("samples/ttbar_bblvqq/run_seed12345/metadata.json"),
-        "meta_fit": load("samples/ttbar_bblvqq/run_seed1001/metadata.json"),
+        "meta_tt": load(os.path.join(repo_paths.SAMPLES, "ttbar_bblvqq/run_seed12345/metadata.json")),   # load() takes an absolute path too
+        "meta_fit": load(os.path.join(repo_paths.SAMPLES, "ttbar_bblvqq/run_seed1001/metadata.json")),
         "meta_hh": json.load(open(os.path.join(args.hh, "metadata.json"))),
         "osde": load("osde", "summary.json"), "simp": load("osde", "simplify_summary.json"),
         "order_scan": load("osde", "order_scan.json"), "trunc_gen": load("osde", "truncation_gen.json"),
@@ -1620,18 +1624,18 @@ study are included.
 {body}
 \end{{document}}
 """
-    out = os.path.join(HERE, f"{stem}.tex")
+    out = os.path.join(OUT, f"{stem}.tex")
     with open(out, "w") as f:
         f.write(tex)
     print(f"[note] wrote {out}")
     if not args.no_compile:
         res = subprocess.run(["latexmk", "-pdf", "-interaction=nonstopmode", "-halt-on-error", f"{stem}.tex"],
-                             cwd=HERE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+                             cwd=OUT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         if res.returncode:
             print("\n".join(res.stdout.splitlines()[-30:]))
-            sys.exit(f"[note] LaTeX failed, see note/{stem}.log")
-        subprocess.run(["latexmk", "-c", f"{stem}.tex"], cwd=HERE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        print(f"[note] wrote {os.path.join(HERE, stem + '.pdf')}")
+            sys.exit(f"[note] LaTeX failed, see {os.path.join(OUT, stem + '.log')}")
+        subprocess.run(["latexmk", "-c", f"{stem}.tex"], cwd=OUT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        print(f"[note] wrote {os.path.join(OUT, stem + '.pdf')}")
 
 
 if __name__ == "__main__":

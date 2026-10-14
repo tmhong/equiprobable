@@ -2,10 +2,10 @@
 """
 Reco level with perfect (Delta-R) jet matching vs the chi2 reco of the paper: AUCs, tt̄_R, the corner picture.
 
-Inputs: study_truthmatch/data_*.npz (build_matched.py), study_truthmatch/osde_dRmatch/ (osde_fit.py on the matched
-angles), osde_h170/ (the paper's chi2 reco fit).  Writes study_truthmatch/results.json and plots.
+Inputs (under results/): study_truthmatch/data_*.npz (build_matched.py), study_truthmatch/osde_dRmatch/ (osde_fit.py
+on the matched angles), osde_h170/ (the paper's chi2 reco fit).  Writes results/study_truthmatch/results.json and plots.
 
-Run: OMP_NUM_THREADS=3 .venv/bin/python study_truthmatch/analyze.py [--fr 0.3]
+Run: OMP_NUM_THREADS=3 .venv/bin/python code/study_truthmatch/analyze.py [--fr 0.3]
 """
 import argparse
 import json
@@ -24,7 +24,9 @@ sys.path[:0] = [ROOT, os.path.join(ROOT, "study_bsm")]
 from plotting import osde  # noqa: E402
 from plotting.angles import ANGLE_NAMES  # noqa: E402
 from wtb_reweight import weights  # noqa: E402
+import repo_paths  # noqa: E402
 
+OUT = repo_paths.results_dir("study_truthmatch")   # build_matched.py's data_*.npz, stats_*.json are here too
 TT, TT_TEST, PU0, HH = "run_seed1001", "run_seed12345", "pu0_fit", "run_m170_all"
 MASSES = ("m_w_had", "m_t_lep", "m_t_had")
 
@@ -76,12 +78,12 @@ def quantile(ref, x):
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--fr", type=float, default=0.3)
-    p.add_argument("--osde", default=os.path.join(HERE, "osde_dRmatch"))
+    p.add_argument("--osde", default=os.path.join(OUT, "osde_dRmatch"))
     p.add_argument("--tag", default="")
-    p.add_argument("--chi2-osde", default=os.path.join(ROOT, "osde_h170"), help="the chi2 reco fit to compare with")
+    p.add_argument("--chi2-osde", default=os.path.join(repo_paths.RESULTS, "osde_h170"), help="the chi2 reco fit to compare with")
     a = p.parse_args()
-    D = {k: np.load(os.path.join(HERE, f"data_{k}.npz")) for k in (TT, TT_TEST, PU0, HH)}
-    stats = {k: json.load(open(os.path.join(HERE, f"stats_{k}.json"))) for k in D}
+    D = {k: np.load(os.path.join(OUT, f"data_{k}.npz")) for k in (TT, TT_TEST, PU0, HH)}
+    stats = {k: json.load(open(os.path.join(OUT, f"stats_{k}.json"))) for k in D}
     ok = {k: D[k]["ok"] for k in D}                       # matched + preselection
     both = {k: D[k]["ok"] & D[k]["chi_ok"] for k in D}    # matched and chi2-reconstructed (all matched pass chi2)
     R = {"fr": a.fr, "matching": {k: {"n_all": stats[k]["n_all"], "n_matched": stats[k]["n_matched_presel"],
@@ -111,7 +113,7 @@ def main():
     w_r_all = weights(D[TT]["p_cos_theta_prime"][D[TT]["chi_ok"]], D[TT]["p_cos_theta_prime_tilde"][D[TT]["chi_ok"]], a.fr)
     w_r_m = weights(D[TT]["p_cos_theta_prime"][both[TT]], D[TT]["p_cos_theta_prime_tilde"][both[TT]], a.fr)
 
-    ref = json.load(open(os.path.join(ROOT, "osde_h170", "summary.json")))["levels"]
+    ref = json.load(open(os.path.join(repo_paths.RESULTS, "osde_h170", "summary.json")))["levels"]
     R["auc_hh"] = {"parton": ref["parton"]["auc_hh_vs_tt"], "parton_trig": ref["parton_trig"]["auc_hh_vs_tt"],
                    "gen_chi2": ref["gen"]["auc_hh_vs_tt"],
                    "reco_chi2_all": auc(sc["hh"], sc["train"]),
@@ -149,7 +151,7 @@ def main():
     R["auc_hh_product_matched"] = auc(qo["hh"] * qm["hh"], qo["tt"] * qm["tt"])
     R["n"] = {"tt_fit": int(ok[TT].sum()), "hh": int(ok[HH].sum()), "tt_test": int(ok[TT_TEST].sum()),
               "tt_pu0": int(ok[PU0].sum()), "n_coefficients": int(np.sum(np.abs(fm.c) > 0))}
-    json.dump(R, open(os.path.join(HERE, f"results{a.tag}.json"), "w"), indent=1)
+    json.dump(R, open(os.path.join(OUT, f"results{a.tag}.json"), "w"), indent=1)
     print(json.dumps(R, indent=1))
 
     # --- quick-look plots ---
@@ -174,7 +176,7 @@ def main():
     for i, k in enumerate(levels):
         ax[2].text(i, R["auc_hh"][k] + 0.003, f"{R['auc_hh'][k]:.3f}", ha="center", fontsize=8)
     fig.tight_layout()
-    fig.savefig(os.path.join(HERE, f"summary{a.tag}.png"), dpi=130)
+    fig.savefig(os.path.join(OUT, f"summary{a.tag}.png"), dpi=130)
 
     fig, ax = plt.subplots(figsize=(5, 4.3))
     edges = np.linspace(0, 1, 11)
@@ -191,7 +193,7 @@ def main():
     ax.set_ylabel(r"$q_m$ (masses)")
     ax.set_title("HH(170), reco, $\\Delta R$-matched jets")
     fig.tight_layout()
-    fig.savefig(os.path.join(HERE, f"corner_matched{a.tag}.png"), dpi=130)
+    fig.savefig(os.path.join(OUT, f"corner_matched{a.tag}.png"), dpi=130)
 
 
 if __name__ == "__main__":

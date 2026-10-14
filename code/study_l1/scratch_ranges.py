@@ -3,7 +3,7 @@ import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from scratch_float import *
 D = {k: load(k) for k in ("tt_test", "tt_calib", "hh")}
-f = osde.load_density(os.path.join(ROOT, "osde", "f_ttbar_reco.npz")); f = f.truncated(f.significance() > 10)
+f = osde.load_density(os.path.join(repo_paths.RESULTS, "osde", "f_ttbar_reco.npz")); f = f.truncated(f.significance() > 10)
 for k, d in D.items():
     idx = np.flatnonzero((d["nleptons"] == 1) & (d["njets"] >= 4))
     o = chi2_float(d, idx, 6, False, True)

@@ -7,8 +7,8 @@ File layout (XDR = big-endian), from Delphes classes/DelphesPileUpWriter.cc:
   index          : int64 byte offset of every event
   trailer        : int64 number of events
 
-  python pileup/merge_pileup.py --info lib.pileup [...]          # events, particles/event
-  python pileup/merge_pileup.py -o merged.pileup a.pileup b.pileup  # exact byte copy + new index
+  python code/pileup/merge_pileup.py --info lib.pileup [...]          # events, particles/event
+  python code/pileup/merge_pileup.py -o merged.pileup a.pileup b.pileup  # exact byte copy + new index
 """
 import argparse
 import os

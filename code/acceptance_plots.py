@@ -7,14 +7,14 @@ changes: any shape difference between "no cuts" and "after cuts" is acceptance o
 not resolution or wrong jet assignment.  For comparison, the angles measured at the
 selected level are also overlaid.
 
-Outputs per sample (in --out):
+Outputs per sample (in --out, default results/acceptance):
   acceptance_<label>_shapes.png      unit-area parton angles: no cuts / gen selection /
                                      reco selection, + reco-measured angles; efficiency below
   acceptance_<label>_cutflow.png     reco efficiency vs (parton) angle after each cumulative cut
   acceptance_<label>.json            the efficiencies, per angle and bin
 
 Example:
-  python acceptance_plots.py --sample tt=samples/ttbar_bblvqq/run_seed1001 --sample hh=samples/hh_bblvqq/run_seed2001
+  python code/acceptance_plots.py --sample tt=samples/ttbar_bblvqq/run_seed1001 --sample hh=samples/hh_bblvqq/run_seed2001
 """
 import argparse
 import json
@@ -33,6 +33,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 import make_plots  # noqa: E402
+import repo_paths  # noqa: E402
 from osde_fit import ANGLE_TEX, domain  # noqa: E402
 from plotting import style  # noqa: E402
 
@@ -151,7 +152,7 @@ def main():
     p.add_argument("--config", default=os.path.join(HERE, "plot_config.py"))
     p.add_argument("--nbins", type=int, default=20)
     p.add_argument("--max-events", type=int, default=None)
-    p.add_argument("--out", default=os.path.join(HERE, "acceptance"))
+    p.add_argument("--out", default=os.path.join(repo_paths.RESULTS, "acceptance"))
     args = p.parse_args()
 
     cfg = runpy.run_path(args.config)

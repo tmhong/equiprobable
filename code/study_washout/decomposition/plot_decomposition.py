@@ -1,15 +1,19 @@
 """Summary figure of decomposition.json."""
 import json
 import os
+import sys
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-# OUT_SUFFIX (e.g. "_h170"): read and write in the sibling study_washout<SUFFIX>/decomposition; SIGNAL_LABEL: legend name
+# results/study_washout/decomposition, or with OUT_SUFFIX (e.g. "_h170") the sibling results/study_washout<SUFFIX>/decomposition:
+# read decomposition.json and write the figures there; SIGNAL_LABEL: legend name
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.dirname(os.path.dirname(HERE)))     # code/
+import repo_paths
 SUFFIX = os.environ.get("OUT_SUFFIX", "")
-OUT = os.path.join(os.path.dirname(os.path.dirname(HERE)), "study_washout" + SUFFIX, "decomposition") if SUFFIX else HERE
+OUT = repo_paths.results_dir("study_washout" + SUFFIX, "decomposition")
 SIG = os.environ.get("SIGNAL_LABEL", "hh")
 DJ = json.load(open(os.path.join(OUT, "decomposition.json")))
 R = DJ["steps"]

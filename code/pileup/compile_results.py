@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-Compile the per-<mu> results (pileup/results_pu<mu>.json from analyze_pileup.py) into pileup/results.json
-in the schema used by note/make_note.py and make_slides.py, plus the summary figure pileup/figures/summary_vs_mu.png
-(AUC and efficiencies versus <mu>) and a short LaTeX summary paragraph.
+Compile the per-<mu> results (results/pileup/results_pu<mu>.json from analyze_pileup.py) into results/pileup/results.json
+in the schema used by code/note/make_note.py and code/make_slides.py, plus the summary figure
+results/pileup/figures/summary_vs_mu.png (AUC and efficiencies versus <mu>) and a short LaTeX summary paragraph.
+The figure paths in results.json are relative to results/ (pileup/figures/...).
 """
 import json
 import os
@@ -14,9 +15,12 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
-sys.path.insert(0, ROOT)
+sys.path.insert(0, os.path.dirname(HERE))   # code/
+import repo_paths  # noqa: E402
 from plotting import style  # noqa: E402
+
+OUT = repo_paths.results_dir("pileup")      # results/pileup
+ROOT = repo_paths.RESULTS                   # figure paths in results.json are relative to results/
 
 MUS = ["0", "50", "200"]
 FIELDS = ["n_tt_fit", "n_tt_test", "n_hh", "reco_eff_tt", "reco_eff_hh", "gen_eff_tt", "njets_mean_tt", "njets_mean_hh",
@@ -30,7 +34,7 @@ FIELDS = ["n_tt_fit", "n_tt_test", "n_hh", "reco_eff_tt", "reco_eff_hh", "gen_ef
 def main():
     per = {}
     for mu in MUS:
-        p = os.path.join(HERE, f"results_pu{mu}.json")
+        p = os.path.join(OUT, f"results_pu{mu}.json")
         if os.path.exists(p):
             per[mu] = json.load(open(p))
     if not per:
@@ -75,12 +79,12 @@ def main():
     axs[1].set_ylim(0, None); axs[2].set_ylim(0, None)
     fig.suptitle(r"Reco level versus pileup (Delphes ATLAS pileup card; same hard events at every $\langle\mu\rangle$)")
     fig.tight_layout()
-    os.makedirs(os.path.join(HERE, "figures"), exist_ok=True)
-    figp = os.path.join(HERE, "figures", "summary_vs_mu.png")
+    os.makedirs(os.path.join(OUT, "figures"), exist_ok=True)
+    figp = os.path.join(OUT, "figures", "summary_vs_mu.png")
     fig.savefig(figp, dpi=110)
     out["figures"] = [[os.path.relpath(figp, ROOT), r"AUC, selection efficiencies and resolutions at reco level versus $\langle\mu\rangle$."]]
     for mu in mus:
-        out["figures"].append([os.path.relpath(os.path.join(HERE, "figures", f"masses_pu{mu}.png"), ROOT),
+        out["figures"].append([os.path.relpath(os.path.join(OUT, "figures", f"masses_pu{mu}.png"), ROOT),
                                rf"Resonance masses at reco level for $\langle\mu\rangle={mu}$ ($t\bar t$ and $hh$, with the two-number Cauchy model)."])
     lo, hi = per[mus[0]], per[mus[-1]]
     out["summary_tex"] = (
@@ -92,11 +96,11 @@ def main():
         rf"{lo['auc_masses']:.3f} to {hi['auc_masses']:.3f} and that of angles + masses from {lo['auc_angles_masses']:.3f} to "
         rf"{hi['auc_angles_masses']:.3f}; the gen-level check is {', '.join(f"{per[m]['gen_check_auc_angles_masses']:.3f}" for m in mus)} "
         r"at the three pileup levels, as it must be for paired events that do not see pileup at gen level.")
-    with open(os.path.join(HERE, "results.json"), "w") as f:
+    with open(os.path.join(OUT, "results.json"), "w") as f:
         json.dump(out, f, indent=1)
     print(json.dumps({m: {k: out["mu"][m][k] for k in ("reco_eff_tt", "njets_mean_tt", "correct_jets_frac_tt", "auc_masses", "auc_angles_masses", "gen_check_auc_angles_masses")}
                       for m in mus}, indent=1))
-    print(f"[pileup] wrote {os.path.join(HERE, 'results.json')} and {figp}")
+    print(f"[pileup] wrote {os.path.join(OUT, 'results.json')} and {figp}")
 
 
 if __name__ == "__main__":

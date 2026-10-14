@@ -13,7 +13,7 @@ Background: the independent tt̄ sample; everything tt̄-derived is fitted on th
    sample = independent tt̄ + a signal fraction ε, compare with the tt̄ reference coefficients
    (fit sample, 100k) term by term: pulls, global χ² over the 14,400 real degrees of freedom, the terms
    that respond.  ε = 0 calibrates the pulls (must be N(0,1)).
-Outputs: study_bsm/htt_study.json, figures study_bsm/fig_*.png
+Outputs: results/study_bsm/htt_study.json, figures results/study_bsm/fig_*.png
 """
 import json
 import os
@@ -28,10 +28,11 @@ from sklearn.ensemble import HistGradientBoostingClassifier  # noqa: E402
 from sklearn.metrics import roc_auc_score  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+ROOT = os.path.dirname(HERE)          # code/
 sys.path.insert(0, ROOT)
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(ROOT, "study_salvage"))
+import repo_paths  # noqa: E402
 from htt_test import HistDensity, auc_err, extract  # noqa: E402
 from salvage import surprisal  # noqa: E402
 from simplest import PDG, bw_surprisal, cauchy_surprisal  # noqa: E402
@@ -119,16 +120,17 @@ def coefficient_test(f_ref, X_bkg, X_sig, eps, rng, phys, groups):
 
 def main():
     style.use()
+    out_dir = repo_paths.results_dir("study_bsm")
     out = {"signals": {k: v[0] for k, v in SIGNALS.items()}, "levels": {}}
     data = {}
     for level in ("parton", "gen", "reco"):
-        D = {"tt_fit": extract(os.path.join(ROOT, TT_FIT), level, 30000), "tt": extract(os.path.join(ROOT, TT_IND), level)}
+        D = {"tt_fit": extract(os.path.join(repo_paths.REPO, TT_FIT), level, 30000), "tt": extract(os.path.join(repo_paths.REPO, TT_IND), level)}
         for k, (p, _) in SIGNALS.items():
-            if os.path.exists(os.path.join(ROOT, p)):
-                D[k] = extract(os.path.join(ROOT, p), level)
+            if os.path.exists(os.path.join(repo_paths.REPO, p)):
+                D[k] = extract(os.path.join(repo_paths.REPO, p), level)
         data[level] = D
         ref = D["tt_fit"]
-        f_all = osde.load_density(os.path.join(ROOT, "osde", f"f_ttbar_{level}.npz"))
+        f_all = osde.load_density(os.path.join(repo_paths.RESULTS, "osde", f"f_ttbar_{level}.npz"))
         f_10 = f_all.truncated(f_all.significance() > 10)
         mtt_den = HistDensity(ref["mtt"], 300, 1500)
 
@@ -189,7 +191,7 @@ def main():
                           + ", ".join(f"{gname} {gv['z']:+.1f}" for gname, gv in c["groups"].items()) + "  top: "
                           + "; ".join(f"{t['term']} ({t['pull']:.1f})" for t in c["top_terms"][:3]), flush=True)
         out["levels"][level] = res
-    json.dump(out, open(os.path.join(HERE, "htt_study.json"), "w"), indent=1)
+    json.dump(out, open(os.path.join(out_dir, "htt_study.json"), "w"), indent=1)
 
     # ---- figures (parton level): what is different, and the coefficient pulls
     P = data["parton"]
@@ -207,7 +209,7 @@ def main():
     axs[1].set_xlabel(r"$\cos\Theta$"); axs[1].set_ylim(bottom=0)
     axs[2].set_xlabel(r"$\cos\theta\,\cos\tilde\theta$ (spin correlation)"); axs[2].set_ylim(bottom=0)
     fig.suptitle(r"parton level: what distinguishes $H\to t\bar t$ from QCD $t\bar t$")
-    fig.tight_layout(); fig.savefig(os.path.join(HERE, "fig_htt_parton.png"), dpi=110); plt.close(fig)
+    fig.tight_layout(); fig.savefig(os.path.join(out_dir, "fig_htt_parton.png"), dpi=110); plt.close(fig)
 
     fig, axs = plt.subplots(1, 2, figsize=(16, 6.0))
     for ax, k in zip(axs, ("H500", "H350")):
@@ -223,7 +225,7 @@ def main():
         ax.set_xlabel(r"signal fraction $\epsilon$ in 10k events"); ax.set_ylabel(r"significance [$\sigma$]")
         ax.set_title(labs[k], fontsize=18); ax.legend(fontsize=14, frameon=False)
     fig.suptitle(r"OSDE coefficients as a bump hunt: $\hat c_\mathrm{data}-\hat c_{t\bar t}$")
-    fig.tight_layout(); fig.savefig(os.path.join(HERE, "fig_coefficient_test.png"), dpi=110); plt.close(fig)
+    fig.tight_layout(); fig.savefig(os.path.join(out_dir, "fig_coefficient_test.png"), dpi=110); plt.close(fig)
     print("done")
 
 

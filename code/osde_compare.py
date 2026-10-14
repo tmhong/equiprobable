@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Compare the paper's basis (osde/) with the extended basis (osde_ext/): projection χ²/ndf of
+Compare the paper's basis (results/osde/) with the extended basis (results/osde_ext/): projection χ²/ndf of
 every angle against the tt̄ fit sample, for the full and the cross-validation-truncated
 ("simplified") functions, at each level.  Also writes the projection plots of the
 simplified functions.
 
-Output: osde_ext/projection_chi2_comparison.json, <dir>/projections_ttbar_simplified_<level>.png
+Output: results/osde_ext/projection_chi2_comparison.json, <dir>/projections_ttbar_simplified_<level>.png
 """
 import argparse
 import json
@@ -18,6 +18,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 import osde_fit  # noqa: E402
+import repo_paths  # noqa: E402
 from plotting import osde  # noqa: E402
 from plotting.angles import ANGLE_NAMES  # noqa: E402
 
@@ -26,8 +27,8 @@ def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--train", required=True)
     p.add_argument("--test", required=True)
-    p.add_argument("--paper", default=os.path.join(HERE, "osde"))
-    p.add_argument("--extended", default=os.path.join(HERE, "osde_ext"))
+    p.add_argument("--paper", default=os.path.join(repo_paths.RESULTS, "osde"))
+    p.add_argument("--extended", default=os.path.join(repo_paths.RESULTS, "osde_ext"))
     p.add_argument("--tag", default="down_truth")
     args = p.parse_args()
 

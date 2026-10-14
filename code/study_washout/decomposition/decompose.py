@@ -1,36 +1,39 @@
 """
 Stepwise parton -> gen decomposition of the tt̄ / hh separation on the ten angles.
 
-Reads cache_tt.npz / cache_hh.npz (from extract.py) and, for each step, computes the ten
-angles, then
+Reads cache_tt.npz / cache_hh.npz (from extract.py, in results/study_washout/decomposition) and, for each
+step, computes the ten angles, then
   * AUC of f_tt̄ (paper OSDE basis) fit on a random half of the tt̄ events at that step,
     evaluated on the other half + all hh at that step (score = -f, hh = 1);
   * AUC of a supervised HistGradientBoostingClassifier on the ten angles (φ -> cos, sin),
     50/50 train/test split, class-balanced;
   * single-angle AUCs (same BDT on one angle).
-Writes decomposition.json and prints a table.
+Writes decomposition.json (next to the hh caches, see OUT_SUFFIX below) and prints a table.
 """
 import os, sys, json, time
 import numpy as np
 from sklearn.metrics import roc_auc_score
 from sklearn.ensemble import HistGradientBoostingClassifier
 
-sys.path.insert(0, '/Users/TMHONG/Claude-code/ttbar_bblvqq')
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.dirname(os.path.dirname(HERE)))     # code/
+import repo_paths
 from plotting.angles import decay_angles, production_angles, ANGLE_NAMES
 from plotting import osde
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-# OUT_SUFFIX (e.g. "_h170"): signal caches (cache_hh*.npz) and outputs in the sibling study_washout<SUFFIX>/decomposition;
-# the tt̄ caches are always read from here.  Default: everything here, as before.
+# the tt̄ caches and the default outputs: results/study_washout/decomposition
+BASE = repo_paths.results_dir("study_washout", "decomposition")
+# OUT_SUFFIX (e.g. "_h170"): signal caches (cache_hh*.npz) and outputs in the sibling results/study_washout<SUFFIX>/decomposition;
+# the tt̄ caches are always read from BASE.  Default: everything in BASE, as before.
 SUFFIX = os.environ.get("OUT_SUFFIX", "")
-OUT = os.path.join(os.path.dirname(os.path.dirname(HERE)), "study_washout" + SUFFIX, "decomposition") if SUFFIX else HERE
+OUT = repo_paths.results_dir("study_washout" + SUFFIX, "decomposition") if SUFFIX else BASE
 M_TOP, M_W = 172.5, 80.4
 RNG_SEED = 7
 N_FIX = 8000          # tt̄ fit events for the equal-statistics f_tt̄ AUC
 PHI = {"phi", "phi_prime", "phi_tilde", "phi_prime_tilde"}
 
 
-def load(name, d=HERE):
+def load(name, d=BASE):
     return dict(np.load(os.path.join(d, f"cache_{name}.npz")))
 
 

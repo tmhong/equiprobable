@@ -1,5 +1,5 @@
 """
-Checks of the basis functions and OSDE (run: .venv/bin/python -m pytest -q tests).
+Checks of the basis functions and OSDE (run: .venv/bin/python -m pytest -q code/tests).
 """
 import os
 import sys

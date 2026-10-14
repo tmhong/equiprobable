@@ -6,7 +6,7 @@ extending f_tt̄ from the ten angles to the resonance masses.
 The paper's angles are coordinates on the narrow-width manifold (both W and both tops on
 shell).  Off shell, the phase space has extra directions: m_W,lep, m_W,had, m_t,lep, m_t,had
 (+ m_tt̄).  Here f_tt̄ = f_angles(Ω) × g(m), with
-  f_angles  the existing paper-basis OSDE (osde/f_ttbar_<level>.npz, fit on 100k tt̄; tt̄ events
+  f_angles  the existing paper-basis OSDE (results/osde/f_ttbar_<level>.npz, fit on 100k tt̄; tt̄ events
             scored leave-one-out because they were in that fit)
   g(m)      an OSDE in the masses: each mass mapped to u = 1/2 + arctan((m - M)/W)/π (Cauchy
             CDF, M = median, W = half the interquartile range of tt̄), orthonormal Legendre
@@ -16,8 +16,8 @@ Score = total surprisal  s = -ln(f_angles - y0_a) - ln(g - y0_g)  (y0 = 2.5 × m
 The product assumes angles and masses independent for tt̄; a supervised BDT on the same
 inputs is the reference for what they contain.
 
-Input: study_washout/mechanism/data_{tt,hh}.npz (40k tt̄ from the fit sample, 20k hh).
-Output: study_salvage/salvage.json, printed table.
+Input: results/study_washout/mechanism/data_{tt,hh}.npz (40k tt̄ from the fit sample, 20k hh).
+Output: results/study_salvage/salvage.json, printed table.
 """
 import itertools
 import json
@@ -30,8 +30,9 @@ from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.metrics import roc_auc_score
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+ROOT = os.path.dirname(HERE)          # code/
 sys.path.insert(0, ROOT)
+import repo_paths  # noqa: E402
 from plotting import osde  # noqa: E402
 from plotting.angles import ANGLE_NAMES  # noqa: E402
 
@@ -95,8 +96,8 @@ def bdt_auc(Xtt, Xhh, seed=1):
 
 
 def main():
-    tt = np.load(os.path.join(ROOT, "study_washout/mechanism/data_tt.npz"))
-    hh = np.load(os.path.join(ROOT, "study_washout/mechanism/data_hh.npz"))
+    tt = np.load(os.path.join(repo_paths.RESULTS, "study_washout/mechanism/data_tt.npz"))
+    hh = np.load(os.path.join(repo_paths.RESULTS, "study_washout/mechanism/data_hh.npz"))
     out = {}
     for lvl, (pre, mkey, masses, fname) in LEVELS.items():
         sel = lambda z: (z[mkey].astype(bool) if mkey else np.ones(len(z["p_Y"]), bool))  # noqa: E731
@@ -107,7 +108,7 @@ def main():
         Mh = np.stack([col(hh, v, mh) for v in masses], 1)
         ok_t, ok_h = np.all(np.isfinite(Mt), 1), np.all(np.isfinite(Mh), 1)
         # angles part: existing f (fit on 100k tt̄ incl. these events) -> tt̄ leave-one-out
-        f = osde.load_density(os.path.join(ROOT, "osde", fname))
+        f = osde.load_density(os.path.join(repo_paths.RESULTS, "osde", fname))
         fa_t, fa_h = f.loo(ang(tt, mt)), f(ang(hh, mh))
         # split tt̄: half A fits g, half B tests
         rng = np.random.default_rng(7)
@@ -134,7 +135,7 @@ def main():
         res["tt_independence_auc"] = bdt_auc(real, shuf)
         out[lvl] = res
         print(f"[{lvl}] " + "  ".join(f"{k} {v:.3f}" if isinstance(v, float) else f"{k} {v}" for k, v in res.items()))
-    with open(os.path.join(HERE, "salvage.json"), "w") as fh:
+    with open(os.path.join(repo_paths.results_dir("study_salvage"), "salvage.json"), "w") as fh:
         json.dump(out, fh, indent=1)
 
 

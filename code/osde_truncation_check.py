@@ -3,14 +3,14 @@
 Why the gen/reco projections of f_tt̄ miss the data: the basis order, not the fit.
 
 For each angle, compare the histogram with
-  (1) the projection of the fitted 10-D f (osde/f_ttbar_<level>.npz),
+  (1) the projection of the fitted 10-D f (results/osde/f_ttbar_<level>.npz),
   (2) a direct 1-D orthogonal expansion of the same data truncated at the SAME order as the
       paper's basis (cos θ: Legendre l<=1; cos θ': l<=2; φ, φ': Fourier |m|<=1).  It must agree
       with (1), which checks the code,
   (3) a higher-order 1-D expansion (Legendre l<=10, Fourier |m|<=6), which shows that the
       acceptance edges need higher orders than the basis contains.
 
-Output: osde/truncation_<level>.png and osde/truncation_<level>.json
+Output: results/osde/truncation_<level>.png and results/osde/truncation_<level>.json
 """
 import argparse
 import json
@@ -27,6 +27,7 @@ from numpy.polynomial import legendre  # noqa: E402
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
+import repo_paths  # noqa: E402
 from osde_fit import ANGLE_TEX  # noqa: E402
 from plotting import osde, style  # noqa: E402
 
@@ -53,7 +54,7 @@ def expansion_1d(v, kind, order, grid):
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--train", required=True, help="tt̄ fit sample (angle cache)")
-    p.add_argument("--osde", default=os.path.join(HERE, "osde"))
+    p.add_argument("--osde", default=os.path.join(repo_paths.RESULTS, "osde"))
     p.add_argument("--levels", default="parton,parton_trig,gen,reco")
     p.add_argument("--tag", default="down_truth")
     args = p.parse_args()

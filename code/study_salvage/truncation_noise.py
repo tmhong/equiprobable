@@ -8,7 +8,7 @@ unrelated to tt̄ vs hh.  Predictions if this is right:
   (2) two fits on disjoint subsamples of the same size agree on the truncated f but not on the full f.
 Fit on N parton-level tt̄ events (disjoint subsamples of the 100k fit sample), score the independent
 10k tt̄ sample and 20k hh (no leave-one-out needed).  Paired bootstrap for the AUC differences.
-Output: study_salvage/truncation_noise.json, truncation_noise.png
+Output: results/study_salvage/truncation_noise.json, truncation_noise.png
 """
 import json
 import os
@@ -22,15 +22,16 @@ import numpy as np  # noqa: E402
 from sklearn.metrics import roc_auc_score  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+ROOT = os.path.dirname(HERE)          # code/
 sys.path.insert(0, ROOT)
+import repo_paths  # noqa: E402
 from plotting import osde, style  # noqa: E402
 from plotting.angles import ANGLE_NAMES  # noqa: E402
 
 LVL = "parton"
-fit_all = np.load(os.path.join(ROOT, "samples/ttbar_bblvqq/run_seed1001/angles_down_truth.npz"))
-ind = np.load(os.path.join(ROOT, "samples/ttbar_bblvqq/run_seed12345/angles_down_truth.npz"))
-hh = np.load(os.path.join(ROOT, "samples/hh_bblvqq/run_seed2001/angles_down_truth.npz"))
+fit_all = np.load(os.path.join(repo_paths.SAMPLES, "ttbar_bblvqq/run_seed1001/angles_down_truth.npz"))
+ind = np.load(os.path.join(repo_paths.SAMPLES, "ttbar_bblvqq/run_seed12345/angles_down_truth.npz"))
+hh = np.load(os.path.join(repo_paths.SAMPLES, "hh_bblvqq/run_seed2001/angles_down_truth.npz"))
 get = lambda z, m=slice(None): {a: z[f"{LVL}/{a}"][m] for a in ANGLE_NAMES}  # noqa: E731
 Xi, Xh = get(ind), get(hh)
 lab = np.r_[np.zeros(len(Xi["Y"])), np.ones(len(Xh["Y"]))]
@@ -71,7 +72,7 @@ for N in sorted({r["N"] for r in rows}):
               f"10 sigma {pair[0]['rep corr 10 sigma']:.3f}", flush=True)
 for r in rows:
     r.pop("_scores")
-json.dump(rows, open(os.path.join(HERE, "truncation_noise.json"), "w"), indent=1)
+json.dump(rows, open(os.path.join(repo_paths.results_dir("study_salvage"), "truncation_noise.json"), "w"), indent=1)
 
 style.use()
 fig, ax = plt.subplots(figsize=(10, 6.4))
@@ -87,4 +88,4 @@ ax.set_ylabel("AUC(truncated) − AUC(all 14,400 terms)")
 ax.set_title("parton level: the truncation gain shrinks with more fit events", fontsize=18)
 ax.legend(fontsize=16)
 fig.tight_layout()
-fig.savefig(os.path.join(HERE, "truncation_noise.png"), dpi=110)
+fig.savefig(os.path.join(repo_paths.results_dir("study_salvage"), "truncation_noise.png"), dpi=110)

@@ -19,7 +19,7 @@ i.e. the tt̄ density of the event as observed (unlabelled), with f fit on truth
 Compared: truth labels, softer jet always down, symmetrized (w = 1/2: no tagging at all),
 c-tag at two illustrative ATLAS-like working points, and an ideal c-tagger.
 Scores: angles only, and angles + the Breit-Wigner mass factors (the masses do not depend on
-the labelling).  Output: study_salvage/tagging.json
+the labelling).  Output: results/study_salvage/tagging.json
 """
 import json
 import os
@@ -30,10 +30,11 @@ import numpy as np
 from sklearn.metrics import roc_auc_score
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+ROOT = os.path.dirname(HERE)          # code/
 sys.path.insert(0, ROOT)
 sys.path.insert(0, HERE)
 import make_plots  # noqa: E402
+import repo_paths  # noqa: E402
 from salvage import surprisal  # noqa: E402
 from simplest import PDG, bw_surprisal, cauchy_surprisal  # noqa: E402
 from plotting import angles as A  # noqa: E402
@@ -110,9 +111,9 @@ def main():
     rng = np.random.default_rng(11)
     out = {}
     for level, fname in (("parton", "f_ttbar_parton.npz"), ("reco", "f_ttbar_reco.npz")):
-        ref = extract(os.path.join(ROOT, "samples/ttbar_bblvqq/run_seed1001"), level, 30000)
-        tt = extract(os.path.join(ROOT, "samples/ttbar_bblvqq/run_seed12345"), level)
-        hh = extract(os.path.join(ROOT, HH), level)
+        ref = extract(os.path.join(repo_paths.REPO, "samples/ttbar_bblvqq/run_seed1001"), level, 30000)
+        tt = extract(os.path.join(repo_paths.REPO, "samples/ttbar_bblvqq/run_seed12345"), level)
+        hh = extract(os.path.join(repo_paths.REPO, HH), level)
         p_s = float(np.mean(ref["softer_is_down"]))
         lab = np.r_[np.zeros(len(tt["fl_h"])), np.ones(len(hh["fl_h"]))]
         # mass surprisal (labelling independent)
@@ -124,7 +125,7 @@ def main():
                 x = ref["m"][k]; x = x[np.isfinite(x)]
                 M = np.median(x); q1, q3 = np.percentile(x, [25, 75]); W = 0.5 * (q3 - q1)
                 sm = sm + np.r_[cauchy_surprisal(tt["m"][k], M, W), cauchy_surprisal(hh["m"][k], M, W)]
-        full = osde.load_density(os.path.join(ROOT, "osde", fname))
+        full = osde.load_density(os.path.join(repo_paths.RESULTS, "osde", fname))
         res = {"p_softer_is_down_tt": p_s, "n_tt": int((lab == 0).sum()), "n_hh": int(lab.sum()),
                "frac_cs_tt": float(np.mean((tt["fl_h"] == 4) | (tt["fl_s"] == 4)))}
         for fname_, f in (("all terms", full), ("23-ish terms (>10 sigma)", full.truncated(full.significance() > 10))):
@@ -155,7 +156,7 @@ def main():
         res["masses only (BW)"] = roc_auc_score(lab, sm)
         out[level] = res
         print(level, json.dumps(res, indent=1), flush=True)
-    json.dump(out, open(os.path.join(HERE, f"tagging{SUFFIX}.json"), "w"), indent=1)
+    json.dump(out, open(os.path.join(repo_paths.results_dir("study_salvage"), f"tagging{SUFFIX}.json"), "w"), indent=1)
 
 
 if __name__ == "__main__":

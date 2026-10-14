@@ -2,11 +2,11 @@
 """
 Pileup validation: branch sizes and analysis-level numbers for Delphes samples.
 
-  .venv/bin/python pileup/validate_pileup.py nopu=samples/ttbar_bblvqq/run_seed12345:1000 \
+  .venv/bin/python code/pileup/validate_pileup.py nopu=samples/ttbar_bblvqq/run_seed12345:1000 \
       pu0=samples/ttbar_bblvqq/test_pu0 pu50=samples/ttbar_bblvqq/test_pu50 pu200=samples/ttbar_bblvqq/test_pu200
 
-label=path[:max_events].  Uses the analysis code unchanged (make_plots.load_sample,
-plotting.summary.correct_assignment).  Prints a table and writes pileup/validation.json.
+label=path[:max_events] (a relative path is taken from the repository top).  Uses the analysis code unchanged
+(make_plots.load_sample, plotting.summary.correct_assignment).  Prints a table and writes results/pileup/validation.json.
 """
 import json
 import os
@@ -17,8 +17,8 @@ import numpy as np
 import uproot
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-PROJ = os.path.dirname(HERE)
-sys.path.insert(0, PROJ)
+sys.path.insert(0, os.path.dirname(HERE))           # code/
+import repo_paths                                   # noqa: E402
 import make_plots                                   # noqa: E402
 from plotting import io, summary                    # noqa: E402
 
@@ -107,7 +107,7 @@ def main():
     for arg in sys.argv[1:]:
         label, spec = arg.split("=", 1)
         path, _, nmax = spec.partition(":")
-        results[label] = analyse(label, os.path.join(PROJ, path) if not os.path.isabs(path) else path,
+        results[label] = analyse(label, os.path.join(repo_paths.REPO, path) if not os.path.isabs(path) else path,
                                  int(nmax) if nmax else None)
 
     labels = list(results)
@@ -148,9 +148,10 @@ def main():
                 print(f"GenJets {a} vs {b}: event-by-event identical = {same}")
     for r in results.values():
         r.pop("_genjet_count"), r.pop("_genjet_pt_sum")
-    with open(os.path.join(HERE, "validation.json"), "w") as f:
+    out = os.path.join(repo_paths.results_dir("pileup"), "validation.json")
+    with open(out, "w") as f:
         json.dump(results, f, indent=1)
-    print(f"\nwrote {os.path.join(HERE, 'validation.json')}")
+    print(f"\nwrote {out}")
 
 
 if __name__ == "__main__":

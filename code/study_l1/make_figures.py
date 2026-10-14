@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Figures of the L1 feasibility study, drawn from study_l1/results.json (run emulate.py first):
+Figures of the L1 feasibility study, drawn from results/study_l1/results.json (run emulate.py first)
+and written next to it in results/study_l1/:
 
   fig_precision.png   ΔAUC (hh vs tt̄) and per-event score fidelity vs datapath width W and ROM depth K
   fig_resources.png   resources of four designs by block, as % of a VP1802, against the 5% budget
@@ -10,6 +11,7 @@ Sized for ~10-inch width with >= 14 pt text.  Colors: the dataviz reference pale
 """
 import json
 import os
+import sys
 
 import matplotlib
 
@@ -18,6 +20,10 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.dirname(HERE))      # code/
+import repo_paths  # noqa: E402
+
+OUT = repo_paths.results_dir("study_l1")
 SURF, INK, INK2, MUTED, GRID, BASE = "#fcfcfb", "#0b0b0b", "#52514e", "#898781", "#e1e0d9", "#c3c2b7"
 SLOT = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#4a3aa7", "#e34948"]
 plt.rcParams.update({
@@ -36,9 +42,9 @@ def rows_by_name(R):
 
 def save(fig, name):
     for ext in ("png", "pdf"):
-        fig.savefig(os.path.join(HERE, f"{name}.{ext}"), dpi=200 if ext == "png" else None, bbox_inches="tight")
+        fig.savefig(os.path.join(OUT, f"{name}.{ext}"), dpi=200 if ext == "png" else None, bbox_inches="tight")
     plt.close(fig)
-    print("wrote", os.path.join(HERE, name + ".png"))
+    print("wrote", os.path.join(OUT, name + ".png"))
 
 
 def errline(ax, x, y, e, color, marker, label, dx=0.0):
@@ -259,7 +265,7 @@ def fig_latency(R):
 
 
 def main():
-    R = json.load(open(os.path.join(HERE, "results.json")))
+    R = json.load(open(os.path.join(OUT, "results.json")))
     fig_precision(R)
     fig_resources(R)
     fig_latency(R)

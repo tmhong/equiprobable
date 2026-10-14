@@ -16,7 +16,7 @@ effective number of events Σw²/Σw² is reported).
    1% and 10%, at parton, gen, reco, for F_R = 0.02 ... 0.3.
 2. The coefficient test (pulls of ĉ_data - ĉ_tt̄ over the 14,400 real degrees of freedom; chi2 per physics
    category; the terms that respond) at parton, gen and reco, for F_R = 0.01 ... 0.3.
-Outputs: study_bsm/wtb_study.json, study_bsm/fig_wtb.png
+Outputs: results/study_bsm/wtb_study.json, results/study_bsm/fig_wtb.png
 """
 import json
 import os
@@ -30,11 +30,12 @@ import numpy as np  # noqa: E402
 from sklearn.metrics import roc_auc_score  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+ROOT = os.path.dirname(HERE)          # code/
 sys.path.insert(0, ROOT)
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(ROOT, "study_salvage"))
 import make_plots  # noqa: E402
+import repo_paths  # noqa: E402
 from htt_study import term_groups  # noqa: E402
 from wtb_reweight import F_SM, eff_at, weights  # noqa: E402
 from salvage import surprisal  # noqa: E402
@@ -89,8 +90,9 @@ def coef_pulls(f_ref, X, w, phys, groups):
 
 def main():
     style.use()
-    ev, _ = make_plots.load_sample("tt", os.path.join(ROOT, "samples/ttbar_bblvqq/run_seed12345"), ["parton", "gen", "reco"], None, OPTS)
-    ref, _ = make_plots.load_sample("ref", os.path.join(ROOT, "samples/ttbar_bblvqq/run_seed1001"), ["parton", "gen", "reco"], 30000, OPTS)
+    out_dir = repo_paths.results_dir("study_bsm")
+    ev, _ = make_plots.load_sample("tt", os.path.join(repo_paths.REPO, "samples/ttbar_bblvqq/run_seed12345"), ["parton", "gen", "reco"], None, OPTS)
+    ref, _ = make_plots.load_sample("ref", os.path.join(repo_paths.REPO, "samples/ttbar_bblvqq/run_seed1001"), ["parton", "gen", "reco"], 30000, OPTS)
     P = ev["parton"]
     cl, ch = np.asarray(P.cos_theta_prime, float), np.asarray(P.cos_theta_prime_tilde, float)
     out = {"F_SM": F_SM, "levels": {}}
@@ -105,7 +107,7 @@ def main():
         rang = {a: np.asarray(r[a], float)[rok] for a in ANGLE_NAMES}
         fin = np.all([np.isfinite(x) for x in rang.values()], 0)
         rang = {a: v[fin] for a, v in rang.items()}
-        f_all = osde.load_density(os.path.join(ROOT, "osde", f"f_ttbar_{lvl}.npz"))
+        f_all = osde.load_density(os.path.join(repo_paths.RESULTS, "osde", f"f_ttbar_{lvl}.npz"))
         f_10 = f_all.truncated(f_all.significance() > 10)
         masses = {"m_w_had": e.w_had.mass, "m_t_lep": e.t_lep.mass, "m_t_had": e.t_had.mass}
         if lvl == "parton":
@@ -150,7 +152,7 @@ def main():
         keep[lvl] = (ang, scores)
         for fr, en in res["score"].items():
             print(f"   score F_R={fr}: " + ", ".join(f"{n} {v['auc']:.3f}/{100 * v['eff_at_bkg_1pct']:.1f}%" for n, v in en.items() if isinstance(v, dict)), flush=True)
-    json.dump(out, open(os.path.join(HERE, "wtb_study.json"), "w"), indent=1)
+    json.dump(out, open(os.path.join(out_dir, "wtb_study.json"), "w"), indent=1)
 
     # figure: cos theta' (parton) SM vs F_R; the surprisal tail; the coefficient-test significance vs F_R
     ang, scores = keep["parton"]
@@ -175,7 +177,7 @@ def main():
     axs[2].axhline(5, color="0.6", lw=1, ls=":"); axs[2].set_xscale("symlog", linthresh=0.01)
     axs[2].set_xlabel(r"$F_R$"); axs[2].set_ylabel(r"significance [$\sigma$] (dashed: largest single pull)"); axs[2].legend(fontsize=12, frameon=False)
     fig.suptitle(r"A right-handed $W$ in $t\bar t$: where the density is in its element")
-    fig.tight_layout(); fig.savefig(os.path.join(HERE, "fig_wtb.png"), dpi=110)
+    fig.tight_layout(); fig.savefig(os.path.join(out_dir, "fig_wtb.png"), dpi=110)
     print("done")
 
 

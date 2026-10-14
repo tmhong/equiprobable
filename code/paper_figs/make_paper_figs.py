@@ -3,9 +3,9 @@
 Figures 2 and 3 of the letter (Overleaf NPAD/main.tex), at one-column size (3.4 in), Pitt colours.
 
 Fig. 2 (fig:OSDE): reco-level tt̄ (fit sample after the reco selection, 24k) with the one-dimensional projections of
-  the OSDE fit f_tt̄ (osde/f_ttbar_reco.npz), for four of the ten angles, with the two BSM benchmarks overlaid (unit area):
+  the OSDE fit f_tt̄ (results/osde/f_ttbar_reco.npz), for four of the ten angles, with the two BSM benchmarks overlaid (unit area):
     HH(170)  = samples/hh_bblvqq/run_m170_seed2170,
-    tt̄R     = the same tt̄ events reweighted to a right-handed W helicity fraction F_R (study_bsm/wtb_reweight.py).
+    tt̄R     = the same tt̄ events reweighted to a right-handed W helicity fraction F_R (code/study_bsm/wtb_reweight.py).
   Angles: cos Θ (production), cos θ (W in the top frame), cos θ' (lepton in the W frame), cos θ̃' (down-type quark in
   the hadronic W frame): HH(170) differs most in cos Θ and cos θ, tt̄R only in cos θ' and cos θ̃'.
 Fig. 3 (fig:p): reco level, y = f_tt̄(x) and υ (called t before: rescaled, flipped, shifted -ln y, as paper_style_plots.py) for tt̄
@@ -14,8 +14,9 @@ Fig. 3 (fig:p): reco level, y = f_tt̄(x) and υ (called t before: rescaled, fli
 Fig. 5 (fig:negprob): reco level, the two tt̄ scores υ_Ω (angles, f_tt̄) and υ_m (resonance masses, product of
   Cauchy factors) for tt̄, tt̄R and HH(170); the corner where both are small is where new physics sits.
 
-Run: OMP_NUM_THREADS=3 .venv/bin/python paper_figs/make_paper_figs.py [--fr 0.3]
-     (first run reads the samples, ~4 min, and caches the arrays in paper_figs/cache.npz)
+Run: OMP_NUM_THREADS=3 .venv/bin/python code/paper_figs/make_paper_figs.py [--fr 0.3]
+     -> results/paper_figs/fig2_*, fig3_*, fig5_* .pdf / .png
+     (first run reads the samples, ~4 min, and caches the arrays in results/paper_figs/cache.npz)
 """
 import argparse
 import os
@@ -29,8 +30,10 @@ import numpy as np  # noqa: E402
 from matplotlib.ticker import AutoMinorLocator  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+ROOT = os.path.dirname(HERE)          # code/
 sys.path[:0] = [ROOT, os.path.join(ROOT, "study_bsm")]
+import repo_paths  # noqa: E402
+OUT = repo_paths.results_dir("paper_figs", create=False)    # the figures and the cache (created by main)
 
 # ---- the NPAD paper style, copied from ../paper/compare_y.py (Figs. 4-5 of the letter) ----------------------------
 # one font size (14 pt) for all text, Computer Modern (all text is written as mathtext), square panels of fixed size in
@@ -115,14 +118,14 @@ def load_inputs(cache):
     import make_plots
     from plotting.angles import ANGLE_NAMES
     out = {}
-    fit, _ = make_plots.load_sample("fit", os.path.join(ROOT, FIT_SAMPLE), ["parton", "reco"], None, OPTS)
-    hh, _ = make_plots.load_sample("hh170", os.path.join(ROOT, HH170), ["parton", "reco"], None, OPTS)
+    fit, _ = make_plots.load_sample("fit", os.path.join(repo_paths.REPO, FIT_SAMPLE), ["parton", "reco"], None, OPTS)
+    hh, _ = make_plots.load_sample("hh170", os.path.join(repo_paths.REPO, HH170), ["parton", "reco"], None, OPTS)
     for a in ANGLE_NAMES:
         out[f"tt_p_{a}"] = np.asarray(fit["parton"][a], float)
         out[f"hh_p_{a}"] = np.asarray(hh["parton"][a], float)
     out["tt_p_trig"] = np.asarray(fit["parton"].lep_trigger, bool)     # the parton_trig level of osde_fit.py
     out["hh_p_trig"] = np.asarray(hh["parton"].lep_trigger, bool)
-    h1, _ = make_plots.load_sample("hh125", os.path.join(ROOT, HH125), ["parton"], None, OPTS)
+    h1, _ = make_plots.load_sample("hh125", os.path.join(repo_paths.REPO, HH125), ["parton"], None, OPTS)
     for a in ANGLE_NAMES:
         out[f"h1_p_{a}"] = np.asarray(h1["parton"][a], float)
     out["h1_p_trig"] = np.asarray(h1["parton"].lep_trigger, bool)
@@ -149,7 +152,7 @@ def fig2(D, fr, path, level="parton_trig"):
     from plotting import osde
     from plotting.angles import ANGLE_NAMES
     from wtb_reweight import weights
-    f = osde.load_density(os.path.join(ROOT, "osde", f"f_ttbar_{level}.npz"))
+    f = osde.load_density(os.path.join(repo_paths.RESULTS, "osde", f"f_ttbar_{level}.npz"))
 
     def sel(key):
         ok = np.all([np.isfinite(D[f"{key}_p_{a}"]) for a in ANGLE_NAMES], 0)
@@ -165,7 +168,7 @@ def fig2(D, fr, path, level="parton_trig"):
     # projections), so the legend swatch is the same as Fig. 3's
     from matplotlib.colors import LinearSegmentedColormap
     cmap = LinearSegmentedColormap.from_list("tt", ["#ffffff", NAVY])
-    sc = np.load(os.path.join(ROOT, "osde", f"scores_{level}.npz"))
+    sc = np.load(os.path.join(repo_paths.RESULTS, "osde", f"scores_{level}.npz"))
     assert len(sc["train"]) == len(x["tt"]["Y"]), "tt̄ scores and events are not aligned"
     ups = npad_upsilon({"tt": sc["train"], "x": sc["hh"]}, {"tt": sc["train"]})[0]["tt"]
     edges = np.linspace(-1, 1, 25)
@@ -310,10 +313,10 @@ def fig3_plot(path, fr, panels, w_r, n_eff_r, extra):
 def fig3(D, fr, path, level="reco", extra=False):
     from plotting import osde
     from wtb_reweight import weights
-    sc = np.load(os.path.join(ROOT, "osde_h170", f"scores_{level}.npz"))
+    sc = np.load(os.path.join(repo_paths.RESULTS, "osde_h170", f"scores_{level}.npz"))
     y_tt, y_hh = sc["train"], sc["hh"]           # tt̄: fit sample, leave-one-out; HH(170)
     # alignment check: the stored LOO scores are those of the reco-selected fit-sample events, in order
-    f = osde.load_density(os.path.join(ROOT, "osde_h170", f"f_ttbar_{level}.npz"))
+    f = osde.load_density(os.path.join(repo_paths.RESULTS, "osde_h170", f"f_ttbar_{level}.npz"))
     from plotting.angles import ANGLE_NAMES
     if level == "reco":
         ok, x_tt = D["reco_ok"], {a: D[f"tt_r_{a}"] for a in ANGLE_NAMES}
@@ -326,9 +329,9 @@ def fig3(D, fr, path, level="reco", extra=False):
     w_r = weights(D["tt_p_cos_theta_prime"][ok], D["tt_p_cos_theta_prime_tilde"][ok], fr)
     n_eff_r = w_r.sum() ** 2 / (w_r ** 2).sum()
     # optional hh(125) (osde/: the same tt̄-only fit and identical tt̄ scores as osde_h170/)
-    y_x = np.load(os.path.join(ROOT, "osde", f"scores_{level}.npz"))["hh"] if extra else None
+    y_x = np.load(os.path.join(repo_paths.RESULTS, "osde", f"scores_{level}.npz"))["hh"] if extra else None
     # υ as in Fig. 5 (compare_y.py), with its parameters from tt̄ and hh(125), so υ is the same number in both
-    y_ref = y_x if extra else np.load(os.path.join(ROOT, "osde", f"scores_{level}.npz"))["hh"]
+    y_ref = y_x if extra else np.load(os.path.join(repo_paths.RESULTS, "osde", f"scores_{level}.npz"))["hh"]
     t, y0 = npad_upsilon({"tt": y_tt, "x": y_ref}, {"tt": y_tt, "hh": y_hh, "x": y_ref})
     expo = int(np.floor(np.log10(np.percentile(y_tt, 99))))
     scale = 10.0 ** expo
@@ -367,8 +370,8 @@ def fig5(D, fr, path, corner=0.20):
     from plotting import osde
     from plotting.angles import ANGLE_NAMES
     from wtb_reweight import weights
-    f = osde.load_density(os.path.join(ROOT, "osde_h170", "f_ttbar_reco.npz"))
-    sc = np.load(os.path.join(ROOT, "osde_h170", "scores_reco.npz"))
+    f = osde.load_density(os.path.join(repo_paths.RESULTS, "osde_h170", "f_ttbar_reco.npz"))
+    sc = np.load(os.path.join(repo_paths.RESULTS, "osde_h170", "scores_reco.npz"))
     yo_tt = sc["train"]                                             # leave-one-out, aligned (checked in fig3)
     yo_hh = f({a: D[f"hh_r_{a}"] for a in ANGLE_NAMES})
     hh_check = float(np.max(np.abs(yo_hh - sc["hh"]))) if len(sc["hh"]) == len(yo_hh) else np.nan
@@ -443,17 +446,18 @@ def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--fr", type=float, default=0.3, help="right-handed W helicity fraction of tt̄R")
     args = p.parse_args()
-    D = load_inputs(os.path.join(HERE, "cache.npz"))
+    repo_paths.results_dir("paper_figs")                       # creates results/paper_figs/
+    D = load_inputs(os.path.join(OUT, "cache.npz"))
     col = 0.95 * 3.375                                         # \includegraphics[width=0.95\linewidth]
     scale5 = col / DATA_WIDTH_IN                                # Fig. 5's print scale: match its panels and text
     incl = lambda w: f"width={w * scale5 / 3.375:.3f}\\linewidth (panels {PANEL_DATA * scale5:.2f} in, text {FONT * scale5:.1f} pt)"
-    n2, W2 = fig2(D, args.fr, os.path.join(HERE, "fig2_osde_projections_partontrig"), "parton_trig")
+    n2, W2 = fig2(D, args.fr, os.path.join(OUT, "fig2_osde_projections_partontrig"), "parton_trig")
     print(f"fig2 parton+trig: {n2} tt̄ events; {W2:.2f} in wide -> include at {incl(W2)}")
-    c2, ne2, nt2, nh2, W3 = fig3(D, args.fr, os.path.join(HERE, "fig3_discriminator_partontrig"), "parton_trig",
+    c2, ne2, nt2, nh2, W3 = fig3(D, args.fr, os.path.join(OUT, "fig3_discriminator_partontrig"), "parton_trig",
                                  extra=True)
     print(f"fig3 parton+trig: {nt2} tt̄ (LOO) / tt̄R n_eff {ne2:.0f} / {nh2} HH(170); corr(f, LOO) = {c2:.4f}; "
           f"{W3:.2f} in wide -> include at {incl(W3)}")
-    frac, hh_check, rho, W5 = fig5(D, args.fr, os.path.join(HERE, "fig5_corner_reco"))
+    frac, hh_check, rho, W5 = fig5(D, args.fr, os.path.join(OUT, "fig5_corner_reco"))
     scale = col / REF_WIDTH_IN                                 # the print scale of Fig. 4
     print(f"fig5: corner fractions {frac}; HH score check {hh_check:.1e}; {W5:.2f} in wide -> include at "
           f"width={W5 * scale / 3.375:.2f}\\linewidth for the Fig. 4 scale (text {FONT * scale:.1f} pt)")

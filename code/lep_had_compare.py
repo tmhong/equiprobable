@@ -10,7 +10,7 @@ reconstruction vs jet cuts, response and jet assignment), so they need not.
 Compared: parton (all), gen and reco (events with a reconstructed tt̄), and reco restricted to
 events whose jets are all correctly assigned (perfect flavour tagging + correct assignment).
 
-Output: plots/lep_vs_had_<case>.png (one per level) and plots/lep_vs_had.json (KS distance, p-value)
+Output: results/plots/lep_vs_had_<case>.png (one per level) and results/plots/lep_vs_had.json (KS distance, p-value)
 """
 import argparse
 import json
@@ -28,6 +28,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 import make_plots  # noqa: E402
+import repo_paths  # noqa: E402
 from plotting import style, summary  # noqa: E402
 
 PAIRS = [("cos_theta", "cos_theta_tilde", r"$\cos\theta$ vs $\cos\tilde\theta$", (-1, 1)),
@@ -52,7 +53,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--sample", required=True)
     p.add_argument("--config", default=os.path.join(HERE, "plot_config.py"))
-    p.add_argument("--out", default=os.path.join(HERE, "plots", "lep_vs_had"))
+    p.add_argument("--out", default=os.path.join(repo_paths.RESULTS, "plots", "lep_vs_had"))
     args = p.parse_args()
     cfg = runpy.run_path(args.config)
     opts = {"had_fermion": "down", "jet_assignment": "truth", **cfg.get("ANGLES", {})}

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Compare the three bases for f_tt̄ — the paper's M functions (osde/), spherical-harmonic
-products (osde_sh/), the extended block basis (osde_ext/) — full and CV-truncated, per level.
+Compare the three bases for f_tt̄ — the paper's M functions (results/osde/), spherical-harmonic
+products (results/osde_sh/), the extended block basis (results/osde_ext/) — full and CV-truncated, per level.
 
 Figures of merit (all on the independent tt̄ sample, which no fit has seen):
   held-out ISE   ∫(f̂ - f)^2 - ∫f^2 = Σ|ĉ|^2 - 2 <f̂>_indep   (orthonormal bases; lower = closer to the
@@ -10,7 +10,7 @@ Figures of merit (all on the independent tt̄ sample, which no fit has seen):
   f <= 0         fraction of independent tt̄ events with negative density
   AUC            hh vs tt̄ (from <dir>/simplify_summary.json)
 
-Output: osde_sh/basis_comparison.json and osde_sh/basis_comparison.png
+Output: results/osde_sh/basis_comparison.json and results/osde_sh/basis_comparison.png
 """
 import json
 import os
@@ -26,19 +26,22 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 import osde_fit  # noqa: E402
+import repo_paths  # noqa: E402
 from plotting import osde, style  # noqa: E402
 from plotting.angles import ANGLE_NAMES  # noqa: E402
 
-BASES = [("paper (M functions)", "osde"), ("spherical harmonics", "osde_sh"), ("extended", "osde_ext")]
+BASES = [("paper (M functions)", "osde"), ("spherical harmonics", "osde_sh"), ("extended", "osde_ext")]   # dirs in results/
+OUT = os.path.join(repo_paths.RESULTS, "osde_sh")
 LEVELS = ["parton", "parton_trig", "gen", "reco"]
 
 
 def main():
-    tr = np.load("samples/ttbar_bblvqq/run_seed1001/angles_down_truth.npz")
-    te = np.load("samples/ttbar_bblvqq/run_seed12345/angles_down_truth.npz")
+    tr = np.load(os.path.join(repo_paths.SAMPLES, "ttbar_bblvqq/run_seed1001/angles_down_truth.npz"))
+    te = np.load(os.path.join(repo_paths.SAMPLES, "ttbar_bblvqq/run_seed12345/angles_down_truth.npz"))
     get = lambda z, l: {a: z[f"{l}/{a}"] for a in ANGLE_NAMES}  # noqa: E731
     res, fvals = {}, {}
     for lab, d in BASES:
+        d = os.path.join(repo_paths.RESULTS, d)
         simp = json.load(open(os.path.join(d, "simplify_summary.json")))["levels"] \
             if os.path.exists(os.path.join(d, "simplify_summary.json")) else {}
         for lvl in LEVELS:
@@ -72,7 +75,7 @@ def main():
             d = mine[0] - ref[0]
             r["delta_ise_vs_paper"] = float(mine[1] - ref[1] - 2 * d.mean())
             r["delta_ise_vs_paper_err"] = float(2 * d.std() / np.sqrt(len(d)))
-    with open("osde_sh/basis_comparison.json", "w") as fh:
+    with open(os.path.join(OUT, "basis_comparison.json"), "w") as fh:
         json.dump(res, fh, indent=1)
 
     plot(res)
@@ -116,8 +119,8 @@ def plot(res):
     axs[1].set_ylabel(r"worst projection $\chi^2$/ndf")
     axs[1].set_title("1-D projections (excluding $Y$)", fontsize=16)
     fig.tight_layout()
-    fig.savefig("osde_sh/basis_comparison.png", dpi=120, bbox_inches="tight")
-    print("wrote osde_sh/basis_comparison.png")
+    fig.savefig(os.path.join(OUT, "basis_comparison.png"), dpi=120, bbox_inches="tight")
+    print(f"wrote {os.path.join(OUT, 'basis_comparison.png')}")
 
 
 if __name__ == "__main__":

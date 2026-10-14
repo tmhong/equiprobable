@@ -7,8 +7,9 @@ import numpy as np
 from sklearn.metrics import roc_auc_score
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+ROOT = os.path.dirname(HERE)          # code/
 sys.path.insert(0, ROOT)
+import repo_paths  # noqa: E402
 from plotting import osde  # noqa: E402
 from plotting.angles import ANGLE_NAMES, production_angles, decay_angles  # noqa: E402
 
@@ -16,7 +17,7 @@ M_W, M_TOP, SIG_W, SIG_T = 80.4, 172.5, 10.0, 15.0
 
 
 def load(name):
-    z = np.load(os.path.join(HERE, "cache", f"{name}.npz"))
+    z = np.load(os.path.join(repo_paths.RESULTS, "study_l1", "cache", f"{name}.npz"))
     return {k: z[k] for k in z.files}
 
 
@@ -115,7 +116,7 @@ def cauchy_s(m, M, W):
 
 if __name__ == "__main__":
     D = {k: load(k) for k in ("tt_test", "tt_calib", "hh")}
-    f = osde.load_density(os.path.join(ROOT, "osde", "f_ttbar_reco.npz"))
+    f = osde.load_density(os.path.join(repo_paths.RESULTS, "osde", "f_ttbar_reco.npz"))
     f = f.truncated(f.significance() > 10)
     res = {}
     for k, d in D.items():
