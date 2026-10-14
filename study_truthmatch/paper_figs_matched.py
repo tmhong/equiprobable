@@ -112,13 +112,78 @@ def fig2(x, f, y, w_r, path, with_h1=False):
     return W
 
 
-def fig3_plot(path, panels):
+RATIO_RT = 0.76         # Fig. 3's right margin (inches) with the ratio axis: its values and the fraction
+RATIO_C = "#d62728"     # compare_y.py RATIO_COLOR: the HH/tt̄ curve and its axis, as in Fig. 4
+
+
+def smoothed_ratio(v_tt, v_hh, lo, hi, n=401, smooth=1.5, min_events=50):
+    """HH/tt̄ of the two distributions of v, both smoothed by one Gaussian (smooth times Scott's width), on n - 1
+    points from lo to hi; nan wherever either sample has fewer than min_events events under the kernel.
+    compare_y.py's smoothed_ratio (Fig. 4) for unweighted events."""
+    v_tt, v_hh = v_tt[np.isfinite(v_tt)], v_hh[np.isfinite(v_hh)]
+    fine = np.linspace(lo, hi, n)
+    step = fine[1] - fine[0]
+    bw = smooth * 1.06 * min(v_tt.std(), v_hh.std()) * min(len(v_tt), len(v_hh)) ** -0.2   # Scott's rule
+    sig = max(bw / step, 0.5)                                            # in fine bins
+    m = int(np.ceil(3 * sig))
+    kern = np.exp(-0.5 * (np.arange(-m, m + 1) / sig) ** 2)
+    kern /= kern.sum()
+    inside = np.convolve(np.ones(n - 1), kern, mode="same")             # renormalised at the ends
+    c_tt, c_hh = (np.convolve(np.histogram(v, fine)[0], kern, mode="same") / inside for v in (v_tt, v_hh))
+    d_tt, d_hh = c_tt / (len(v_tt) * step), c_hh / (len(v_hh) * step)
+    under = np.sqrt(2 * np.pi) * sig                                     # fine bins under the kernel
+    enough = (c_tt * under >= min_events) & (c_hh * under >= min_events) & (d_tt > 0)
+    return 0.5 * (fine[1:] + fine[:-1]), np.where(enough, d_hh / np.where(d_tt > 0, d_tt, 1.0), np.nan)
+
+
+def ratio_axis(ax, fig, v, edges):
+    """HH/tt̄ of the panel's two samples as a red curve on its own axis on the right, styled as in Fig. 4
+    (compare_y.py style_ratio and title_at_plot_top): linear from 0 (log over a wide range), its title, the
+    red fraction, level with the top of the plot in the column of its values, the values it covers left out."""
+    from matplotlib.ticker import AutoMinorLocator, FixedLocator, FuncFormatter, MaxNLocator
+    g, r = smoothed_ratio(v["tt"], v["hh"], edges[0], edges[-1])
+    axr = ax.twinx()
+    axr.plot(g, r, color=RATIO_C, lw=1.0, zorder=6, solid_capstyle="round")
+    lo_v, hi_v = np.nanmin(r), np.nanmax(r)
+    fmt = FuncFormatter(lambda u, _p: "$%g$" % u)
+    if hi_v / lo_v > 20:
+        axr.set_yscale("log")
+        axr.set_ylim(lo_v / 1.5, hi_v * 1.5)
+    else:
+        axr.set_ylim(0, 1.15 * hi_v)
+        axr.yaxis.set_major_locator(MaxNLocator(4, steps=[1, 2, 2.5, 5, 10]))
+        axr.yaxis.set_minor_locator(AutoMinorLocator())
+    axr.yaxis.set_major_formatter(fmt)
+    axr.tick_params(axis="y", which="both", colors=RATIO_C, labelcolor=RATIO_C)
+    axr.spines["right"].set_color(RATIO_C)
+    axr.set_xlim(edges[0], edges[-1])
+    axr.set_ylabel(r"$\dfrac{%s}{%s}$" % (HH_LBL.strip("$"), M.TT_L.strip("$")), rotation=0, color=RATIO_C)
+    renderer = fig.canvas.get_renderer()
+    fig.canvas.draw()
+    shown = [t for t in axr.yaxis.get_majorticklabels() if t.get_visible() and t.get_text()]
+    frame = axr.get_window_extent(renderer)
+    left = min((t.get_window_extent(renderer).x0 for t in shown), default=frame.x1 + 0.1 * fig.dpi)
+    axr.yaxis.label.set_horizontalalignment("left")
+    axr.yaxis.label.set_verticalalignment("top")
+    axr.yaxis.set_label_coords(axr.transAxes.inverted().transform((left, frame.y1))[0], 1.0)
+    bottom = frame.y1 - axr.yaxis.label.get_window_extent(renderer).height - 0.02 * fig.dpi
+    lo_l, hi_l = axr.get_ylim()
+    ticks = [u for u in axr.get_yticks() if lo_l <= u <= hi_l + 1e-9]
+    labels = ["" if axr.transData.transform((0, u))[1] > bottom else fmt(u) for u in ticks]
+    axr.yaxis.set_major_locator(FixedLocator(ticks))
+    axr.yaxis.set_major_formatter(FuncFormatter(lambda u, i: labels[i] if i is not None and i < len(labels) else ""))
+    return axr
+
+
+def fig3_plot(path, panels, ratio_col=1):
     """As make_paper_figs.fig3_plot: y and υ side by side, tt̄ filled with the white-to-navy gradient in υ,
-    HH(170) as a line; no tt̄_R."""
+    HH(170) as a line; no tt̄_R.  Panel ratio_col (None: none) also shows HH/tt̄ on a red axis on its right."""
     from matplotlib.colors import LinearSegmentedColormap
     cmap = LinearSegmentedColormap.from_list("tt", ["#ffffff", M.NAVY])
     P = M.PANEL_DATA
     T, GX, B, RT, TOP = 0.75, 0.12, 0.62, 0.15, 0.12
+    if ratio_col is not None:
+        RT = RATIO_RT                       # room for the ratio's values and its title
     W = T + P + GX + T + P + RT
     H = B + P + TOP
     fig = plt.figure(figsize=(W, H))
@@ -141,6 +206,8 @@ def fig3_plot(path, panels):
         ax.yaxis.set_major_formatter(FuncFormatter(lambda v, _p: "$0$" if abs(v) < 1e-12 else ""))   # only the zero
         ax.tick_params(axis="y", labelleft=True)
         tuck_ylabel(ax, fig)
+        if col == ratio_col:
+            ratio_axis(ax, fig, v, edges)
     hs = [plt.Rectangle((0, 0), 1, 1, fc=cmap(0.45), ec=M.NAVY, lw=1.0), plt.Line2D([], [], color=HH_C, lw=1.3)]
     fig.axes[0].legend(hs, [M.TT_L, HH_LBL], loc="upper right", bbox_to_anchor=(1.03, 1.0), handlelength=1.3,
                        handletextpad=0.4, labelspacing=0.25, borderaxespad=0.1)
