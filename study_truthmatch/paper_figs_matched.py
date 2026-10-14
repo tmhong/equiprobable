@@ -128,6 +128,9 @@ def fig3_plot(path, panels):
         ax.set_xlabel(xlab)
         M.upright_ylabel(ax, M.dndx(sym))
         M.finish(ax)
+        from matplotlib.ticker import FuncFormatter
+        ax.yaxis.set_major_formatter(FuncFormatter(lambda v, _p: "$0$" if abs(v) < 1e-12 else ""))   # only the zero
+        ax.tick_params(axis="y", labelleft=True)
     hs = [plt.Rectangle((0, 0), 1, 1, fc=cmap(0.45), ec=M.NAVY, lw=1.0), plt.Line2D([], [], color=HH_C, lw=1.3)]
     fig.axes[0].legend(hs, [M.TT_L, HH_LBL], loc="upper right", bbox_to_anchor=(1.03, 1.0), handlelength=1.3,
                        handletextpad=0.4, labelspacing=0.25, borderaxespad=0.1)
