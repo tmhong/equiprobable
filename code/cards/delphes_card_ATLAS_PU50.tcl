@@ -83,7 +83,7 @@ module PileUpMerger PileUpMerger {
   set VertexOutputArray vertices
 
   # pre-generated minbias input file
-  set PileUpFile /Users/TMHONG/Claude-code/ttbar_bblvqq/pileup/MinBias_13TeV.pileup
+  set PileUpFile /Users/TMHONG/Claude-code/ttbar_bblvqq/results/pileup/MinBias_13TeV.pileup
 
   # average expected pile up
   set MeanPileUp 50

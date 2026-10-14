@@ -3,7 +3,7 @@
 Move the files that git does not track (fits, caches, .npz, ROOT files, plots) from the old flat layout into the
 code/ + results/ layout, after pulling the reorganization.  git moves the tracked files itself; this script moves the
 rest.  Code-like files (.py .sh .C .tcl .tex) go to code/<dir>/, everything else to results/<dir>/; files at the top
-level that are not code go to results/logs/.  samples/, tools/, work/, .venv/, recon_cicero/, code/, results/ and .git
+level that are not code go to results/figures/ (pdf, png) or results/logs/.  samples/, tools/, work/, .venv/, recon_cicero/, code/, results/ and .git
 are left alone.
 
 Dry run by default (prints what it would do).  Run from anywhere:
@@ -18,7 +18,7 @@ import shutil
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
 SKIP = {"samples", "tools", "work", ".venv", "recon_cicero", "code", "results", ".git", "__pycache__", ".claude"}
-CODE_EXT = {".py", ".sh", ".C", ".tcl", ".tex"}
+CODE_EXT = {".py", ".sh", ".C", ".cc", ".cmnd", ".tcl", ".tex"}
 CODE_NAMES = {"Makefile", "README", "minbias2pileup"}
 GENERATED = ("note/", "slides", "figures/")       # .tex there is written by make_note.py / make_slides.py: a result
 
@@ -32,7 +32,8 @@ def is_code(rel):
     if ext == ".tex" and rel.startswith(GENERATED) and not rel.startswith("figures/angle_diagram"):
         return False
     return ext in CODE_EXT or base in CODE_NAMES
-TOP_KEEP = {"README.md", "LOG.md", "LICENSE", "requirements.txt", ".gitignore", ".DS_Store"}
+TOP_KEEP = {"README.md", "LOG.md", "LICENSE", "requirements.txt", ".gitignore", ".DS_Store",
+            "py.py"}                         # py.py: MG5's parser table, rewritten wherever MG5 is started (ignored)
 
 
 def plan(src_root):
@@ -44,7 +45,9 @@ def plan(src_root):
         if os.path.isfile(p):
             if top in TOP_KEEP:
                 continue
-            kind = "code" if os.path.splitext(top)[1] in CODE_EXT else "results/logs"
+            ext = os.path.splitext(top)[1]
+            kind = ("code" if ext in CODE_EXT else "results/figures" if ext in (".pdf", ".png")
+                    else "results/logs")
             out.append((p, os.path.join(REPO, kind, top)))
             continue
         for dp, dn, fn in os.walk(p):

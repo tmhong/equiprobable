@@ -21,6 +21,9 @@
 *.feather
 *.joblib
 
+# MG5's parser table, written into the directory MG5 is started from
+/py.py
+
 # Python and OS by-products
 __pycache__/
 .pytest_cache/

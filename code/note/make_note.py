@@ -1501,7 +1501,8 @@ def sec_appendix(N):
 \section{Code and reproduction}
 \label{app:code}
 
-Everything is in \texttt{""" + esc(repo_paths.REPO) + r"""} (git repository on \texttt{main}).
+Everything is in \texttt{""" + esc(repo_paths.REPO) + r"""} (git repository on \texttt{main}): the code in \texttt{code/}, every output in \texttt{results/}, in the
+directory named after the code that writes it; the paths below are relative to \texttt{code/}.
 \begin{description}
 \item[\texttt{setup\_tools.sh}] installs MadGraph5\_aMC 3.6.7, Pythia8, Delphes 3.5.1 (built with CMake) and the Python environment.
 \item[\texttt{generate\_samples.py}] MadGraph $\to$ Pythia8 $\to$ Delphes production; \texttt{--process ttbar|hh|Htt}.
@@ -1520,11 +1521,11 @@ Everything is in \texttt{""" + esc(repo_paths.REPO) + r"""} (git repository on \
 \item[\texttt{study\_bsm/}, \texttt{pileup/}] the $H\to t\bar t$ benchmark and the pileup study.
 \item[\texttt{make\_slides.py}, \texttt{note/make\_note.py}] the slides and this note; both read the same result files.
 \item[\texttt{tests/test\_osde.py}] 14 unit tests of the basis functions and the estimator (\texttt{pytest}).
-\item[\texttt{LOG.md}] the running log of the study.
+\item[\texttt{../LOG.md}] the running log of the study.
 \end{description}
 The slides are rebuilt with
-\texttt{python make\_slides.py --sample samples/ttbar\_bblvqq/run\_seed12345 --hh samples/hh\_bblvqq/run\_seed2001 --osde osde --acceptance acceptance}
-and this note with \texttt{python note/make\_note.py}.
+\texttt{python code/make\_slides.py --sample samples/ttbar\_bblvqq/run\_seed12345 --hh samples/hh\_bblvqq/run\_seed2001 --osde results/osde --acceptance results/acceptance}
+and this note with \texttt{python code/note/make\_note.py}, both from the top of the repository.
 
 \section*{Acknowledgement}
 The analysis code, the figures, the slides and this note were produced with Claude Code (Anthropic) under the

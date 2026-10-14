@@ -3,14 +3,14 @@
 #   ./code/pileup/make_minbias_library.sh [jobs=4] [events_per_job=25000] [first_seed=90001]
 # 4 x 25k events: ~35 s wall on 4 cores, 682 MB.  Pythia 8.317 (MG5 HEPTools), SoftQCD:inelastic.
 # The jobs write results/pileup/parts/*.pileup; merge_pileup.py concatenates them (byte copy + new index).
-# The generator source src/minbias2pileup.cc and the Pythia card minbias_13TeV.cmnd are taken from code/pileup/
-# if they are there, else from results/pileup/; the binary goes to code/pileup/bin/.
+# The generator source src/minbias2pileup.cc and the Pythia card minbias_13TeV.cmnd are in code/pileup/;
+# the binary goes to code/pileup/bin/.
 set -euo pipefail
 HERE=$(cd "$(dirname "$0")" && pwd)          # code/pileup
 REPO=$(cd "$HERE/../.." && pwd)
 OUT=$REPO/results/pileup
-SRC=$HERE/src/minbias2pileup.cc; [ -e "$SRC" ] || SRC=$OUT/src/minbias2pileup.cc
-CMND=$HERE/minbias_13TeV.cmnd; [ -e "$CMND" ] || CMND=$OUT/minbias_13TeV.cmnd
+SRC=$HERE/src/minbias2pileup.cc
+CMND=$HERE/minbias_13TeV.cmnd
 MG5=$REPO/tools/MG5_aMC_v3_6_7
 D=$MG5/Delphes
 P=$MG5/HEPTools/pythia8
