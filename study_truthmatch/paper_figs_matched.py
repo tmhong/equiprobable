@@ -48,6 +48,14 @@ def load(fit_dir):
     return D, x, f, y, w_r
 
 
+def tuck_ylabel(ax, fig):
+    """The upright y-axis title at the spine minus (outward tick + labelpad), as without tick values: a lone 0 at
+    the bottom of the axis does not push the title (at mid-height) outward."""
+    d_in = (M.TICK_LEN + 6.0) / 72.0
+    w_in = ax.get_position().width * fig.get_figwidth()
+    ax.yaxis.set_label_coords(-d_in / w_in, 0.5)
+
+
 def fig2(x, f, y, w_r, path, with_h1=False):
     """As make_paper_figs.fig2, with the matched-reco samples."""
     from matplotlib.colors import LinearSegmentedColormap
@@ -59,7 +67,7 @@ def fig2(x, f, y, w_r, path, with_h1=False):
     lo_u = min(v.min() for v in u_bins.values()); hi_u = max(v.max() for v in u_bins.values())
     grid = np.linspace(-1, 1, 401)
     P = M.PANEL_DATA
-    T, GX, B, GY, TOP = 0.82, 0.10, 0.55, 0.60, 0.08     # T: room for the upright dN/dx titles
+    T, GX, B, GY, TOP = 0.68, 0.10, 0.55, 0.60, 0.08
     W = T + P + GX + T + P + 0.12
     H = B + P + GY + P + TOP
     fig = plt.figure(figsize=(W, H))
@@ -90,6 +98,7 @@ def fig2(x, f, y, w_r, path, with_h1=False):
         ax.yaxis.set_major_locator(FixedLocator([0.0]))                # only the zero is labelled
         ax.yaxis.set_major_formatter(FixedFormatter(["$0$"]))
         ax.tick_params(axis="y", labelleft=True)
+        tuck_ylabel(ax, fig)
     h = [plt.Rectangle((0, 0), 1, 1, fc=cmap(0.45), ec=M.NAVY, lw=1.0), plt.Line2D([], [], color=M.INK, lw=1.2),
          plt.Line2D([], [], color=HH_C, lw=1.3)]
     labs = [M.TT_L, r"$f_{t\bar{t}}$", HH_LBL]
@@ -131,6 +140,7 @@ def fig3_plot(path, panels):
         from matplotlib.ticker import FuncFormatter
         ax.yaxis.set_major_formatter(FuncFormatter(lambda v, _p: "$0$" if abs(v) < 1e-12 else ""))   # only the zero
         ax.tick_params(axis="y", labelleft=True)
+        tuck_ylabel(ax, fig)
     hs = [plt.Rectangle((0, 0), 1, 1, fc=cmap(0.45), ec=M.NAVY, lw=1.0), plt.Line2D([], [], color=HH_C, lw=1.3)]
     fig.axes[0].legend(hs, [M.TT_L, HH_LBL], loc="upper right", bbox_to_anchor=(1.03, 1.0), handlelength=1.3,
                        handletextpad=0.4, labelspacing=0.25, borderaxespad=0.1)
