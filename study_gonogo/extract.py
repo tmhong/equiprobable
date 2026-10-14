@@ -63,7 +63,8 @@ def main():
             if k.endswith("/n_all"):
                 out[k] = np.array(sum(int(p[k]) for p in parts))
             elif k.endswith("same_as_fit_cache"):
-                out[k] = np.array(all(bool(p[k]) for p in parts))
+                if len(parts) == 1:                    # only meaningful for a single sample (the OSDE fit sample)
+                    out[k] = parts[0][k]
             else:
                 out[k] = np.concatenate([p[k] for p in parts])
         np.savez_compressed(os.path.join(HERE, "cache", f"{key}.npz"), **out)

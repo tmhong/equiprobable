@@ -1,0 +1,4 @@
+parton_trig {"n_tt": 71322, "kept_per_fold": [323, 347, 354, 343, 349], "kept_full": 385, "n_hh125": 10149, "n_HH170": 73117}
+gen {"n_tt": 41317, "kept_per_fold": [400, 431, 408, 418, 393], "kept_full": 459, "n_hh125": 4416, "n_HH170": 44647}
+reco {"n_tt": 24030, "kept_per_fold": [334, 317, 315, 326, 319], "kept_full": 342, "n_hh125": 1878, "n_HH170": 19675}
+matched {"n_tt": 7072, "kept_per_fold": [218, 223, 209, 195, 204], "kept_full": 234, "n_HH170": 3451, "n_hh125": 149}

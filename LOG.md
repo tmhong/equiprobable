@@ -463,3 +463,29 @@ Newest entries are at the bottom. Numbers refer to the samples listed under "Sam
   Full write-up in `study_gonogo/VERDICT.md`.
 - **Corrections:** the stop point is already excluded by ATLAS (diagonal up to 600 GeV); the experiments' η_t uses Γ = 2.8 GeV; CMS lepton+jets measures 5.1 ± 0.9 pb.
 - **Consequence:** there is no per-event spin-structure niche, so there is no PRL claim on this basis; the paper goes to PRD.
+
+## 2026-10-14: one estimator for every number in the paper (study_cv/)
+- **Review item 4.3:** the text said 255 terms were kept, but every number used all 14400.
+- **Now everything uses one estimator:**
+  - f_tt̄ truncated to |ĉ|/σ > 2.5, the 5-fold LSCV optimum on tt̄ alone at every level (385 / 459 / 342 / 234 terms at parton+trigger / gen / reco χ² / matched);
+  - tt̄ events are scored by 5-fold cross-fitting (term selection inside each fold);
+  - signal events are scored with the same five fits;
+  - all 10^5 HH(170) events are used at every level.
+  The all-terms cross-fit reproduces the old leave-one-out values (matched 0.574 vs 0.574), which validates the cross-fitting.
+- **Numbers, HH170** (`study_cv/numbers.json`):
+
+  | level | AUC | KL | lowest decile | tt̄ y ≤ 0 |
+  |---|---|---|---|---|
+  | parton+trigger | 0.668 (hh 0.682) | 0.214 | 2.70 | 0.5% |
+  | gen χ² | 0.558 | 0.025 | 1.45 | |
+  | reco χ² | 0.542 (hh 0.506) | 0.015 | 1.27 | 1.0% |
+  | matched | 0.609 (χ² on the same events 0.562) | 0.083 | 1.82 | 1.2% |
+
+  - Truth-matched jets recover 53% of the parton-to-reco AUC loss (38% assignment, 16% selection).
+  - KL fractions: reco 7%, matched 39%.
+  - Corner: 3.8% of tt̄, 17.1% of HH, enrichment 4.5 ± 0.2; masses alone 5.4, angles alone 2.2. AUC with masses 0.751 vs masses alone 0.750.
+- **Supervised angle-only ceiling** (`study_cv/ceiling.json`): parton+trigger 0.887/0.921, gen 0.655/0.708, reco 0.621/0.681, matched HH 0.800.
+- **Scripts and figures:**
+  - KL estimator committed as `study_cv/kl.py`; it reproduces the old values from the old scores.
+  - Figs. 2, 3, 5, 7 (`paper_figs_matched.py`, `fig6_corner_matched.py`) and Fig. 4 (`compare_y.py` on the parton+trigger scores) regenerated.
+  - Fig. 2 labels 0 on the y axis and shows where the projection dips below zero (cos θ̃′ near 1).

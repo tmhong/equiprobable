@@ -1,0 +1,54 @@
+'created' timestamp seems very low; regarding as unix timestamp
+'modified' timestamp seems very low; regarding as unix timestamp
+'created' timestamp seems very low; regarding as unix timestamp
+'modified' timestamp seems very low; regarding as unix timestamp
+'created' timestamp seems very low; regarding as unix timestamp
+'modified' timestamp seems very low; regarding as unix timestamp
+'created' timestamp seems very low; regarding as unix timestamp
+'modified' timestamp seems very low; regarding as unix timestamp
+'created' timestamp seems very low; regarding as unix timestamp
+'modified' timestamp seems very low; regarding as unix timestamp
+'created' timestamp seems very low; regarding as unix timestamp
+'modified' timestamp seems very low; regarding as unix timestamp
+'created' timestamp seems very low; regarding as unix timestamp
+'modified' timestamp seems very low; regarding as unix timestamp
+'created' timestamp seems very low; regarding as unix timestamp
+'modified' timestamp seems very low; regarding as unix timestamp
+{
+ "n": {
+  "tt": 7072,
+  "hh": 3451,
+  "h1": 149
+ },
+ "ttR_n_eff": 4040.9640029012867,
+ "auc_hh170": 0.609003628366622,
+ "auc_hh125": 0.5567404491481673,
+ "auc_ttR": null,
+ "levels_hh170": {
+  "parton_trig": {
+   "auc": 0.6679152320440921,
+   "n_hh": 73117,
+   "ratio_lowest_q_bin": 2.7007399100072487
+  },
+  "gen": {
+   "auc": 0.5584140928058009,
+   "n_hh": 44647,
+   "ratio_lowest_q_bin": 1.4473536855779783
+  },
+  "reco": {
+   "auc": 0.54172371997942,
+   "n_hh": 19675,
+   "ratio_lowest_q_bin": 1.2742058449809404
+  },
+  "matched": {
+   "auc": 0.609003628366622,
+   "n_hh": 3451,
+   "ratio_lowest_q_bin": 1.8226600985221675
+  }
+ },
+ "include": {
+  "fig2": "width=0.893\\linewidth",
+  "fig3": "width=0.923\\linewidth",
+  "figA": "width=0.653\\linewidth"
+ }
+}

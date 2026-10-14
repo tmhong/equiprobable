@@ -31,13 +31,18 @@ HH_LBL = r"$HH_{170}$"    # short legend label
 HH_C = M.AMBER          # the amber of the toy figure (compare_y.py LINE_J), now that hh(125) is not drawn
 
 
+CV = os.path.join(ROOT, "study_cv")   # the one estimator: |c|/sigma > 2.5 (5-fold CV on tt̄), tt̄ cross-fitted
+T_CV = json.load(open(os.path.join(CV, "cv_summary.json")))["threshold"]
+
+
 def load(fit_dir):
     D = {k: np.load(os.path.join(HERE, f"data_{s}.npz")) for k, s in SAMPLES.items()}
     x = {k: {a: D[k][f"m_{a}"][D[k]["ok"]] for a in ANGLE_NAMES} for k in D}
-    f = osde.load_density(os.path.join(fit_dir, "f_ttbar_reco.npz"))
-    y = {"tt": f.loo(x["tt"]), "hh": f(x["hh"]), "h1": f(x["h1"])}
-    stored = np.load(os.path.join(fit_dir, "scores_reco.npz"))["train"]
-    assert np.corrcoef(y["tt"], stored)[0, 1] > 0.999
+    f_all = osde.load_density(os.path.join(fit_dir, "f_ttbar_reco.npz"))
+    f = f_all.truncated(f_all.significance() > T_CV)                 # the projections: full-sample truncated fit
+    z = np.load(os.path.join(CV, "scores_matched.npz"))               # the scores: cross-fitted (study_cv)
+    y = {"tt": z["tt_cv"], "hh": z["HH170_cv"], "h1": z["hh125_cv"]}
+    assert len(y["tt"]) == len(x["tt"]["Y"]) and len(y["hh"]) == len(x["hh"]["Y"]) and len(y["h1"]) == len(x["h1"]["Y"])
     ok = D["tt"]["ok"]
     w_r = weights(D["tt"]["p_cos_theta_prime"][ok], D["tt"]["p_cos_theta_prime_tilde"][ok], A.fr)
     return D, x, f, y, w_r
@@ -72,12 +77,19 @@ def fig2(x, f, y, w_r, path, with_h1=False):
         if with_h1:
             ax.stairs(h_h1, edges, color=M.HH125_C, lw=1.3)
         top = max(h_tt.max(), h_hh.max(), h_h1.max())
+        low = min(0.0, float(f.projection(a, grid).min()))             # show where the fit dips below zero
         ax.set_xlim(-1, 1)
-        ax.set_ylim(0, (1.75 if i == 1 else 1.08) * top)
+        ax.set_ylim(low - 0.04 * top if low < 0 else 0, (1.75 if i == 1 else 1.08) * top)
+        if low < 0:
+            ax.axhline(0, color="0.6", lw=0.6, zorder=0)
         ax.set_xticks([-1, -0.5, 0, 0.5, 1])
         ax.set_xlabel(rf"$x = {sym}$")
         M.upright_ylabel(ax, M.dndx("x"))
         M.finish(ax)
+        from matplotlib.ticker import FixedLocator, FixedFormatter
+        ax.yaxis.set_major_locator(FixedLocator([0.0]))                # only the zero is labelled
+        ax.yaxis.set_major_formatter(FixedFormatter(["$0$"]))
+        ax.tick_params(axis="y", labelleft=True)
     h = [plt.Rectangle((0, 0), 1, 1, fc=cmap(0.45), ec=M.NAVY, lw=1.0), plt.Line2D([], [], color=M.INK, lw=1.2),
          plt.Line2D([], [], color=HH_C, lw=1.3)]
     labs = [M.TT_L, r"$f_{t\bar{t}}$", HH_LBL]
@@ -169,18 +181,15 @@ def auc(y_tt, y_s):
 def fig_levels(y_matched, path):
     from matplotlib.colors import LinearSegmentedColormap
     blues = LinearSegmentedColormap.from_list("tt", ["#ffffff", M.NAVY])
-    lv = [("parton", "parton", "-", M.INK),
+    lv = [("parton_trig", "parton", "-", M.INK),
           ("gen", r"generator", (0, (5, 2)), blues(0.7)),
           ("reco", r"reconstructed", "-", blues(0.45)),
           ("matched", r"$\quad$''$\quad$ truth-matched", "-", HH_C)]      # ditto: reconstructed, truth-matched
     q_edges = np.linspace(0, 1, 11)
     curves = {}
     for key, *_ in lv:
-        if key == "matched":
-            yt, ys = y_matched["tt"], y_matched["hh"]
-        else:
-            sc = np.load(os.path.join(ROOT, "osde_h170", f"scores_{key}.npz"))
-            yt, ys = sc["train"], sc["hh"]
+        sc = np.load(os.path.join(CV, f"scores_{key}.npz"))           # cross-fitted, |c|/sigma > 2.5 at every level
+        yt, ys = sc["tt_cv"], sc["HH170_cv"]
         curves[key] = (*roc_and_ratio(yt, ys, q_edges), auc(yt, ys), len(ys))
     P = 3.0                                                     # one panel (the ROC curves bunch up), legend inside;
     T, GX, B, RT, TOP = 0.95, 0.55, 0.62, 0.2, 0.12             # set at 0.8 of a column the text prints at ~9 pt
@@ -191,12 +200,12 @@ def fig_levels(y_matched, path):
     qc = 0.5 * (q_edges[1:] + q_edges[:-1])
     for key, lab, ls, col in lv:
         eff_t, eff_s, h, err, a, _ = curves[key]
-        lw = 1.6 if key in ("matched", "parton") else 1.2
+        lw = 1.6 if key in ("matched", "parton", "parton_trig") else 1.2
         ax2.plot([], [], color=col, ls=ls, lw=lw, label=lab)
         # histograms in bins of 0.1 in q, drawn as smooth (shape-preserving) curves through the bin centres
         from scipy.interpolate import PchipInterpolator
         qq = np.linspace(qc[0], qc[-1], 200)
-        if key == "parton":                         # the reference: as a histogram
+        if key in ("parton", "parton_trig"):        # the reference: as a histogram
             ax2.stairs(h, q_edges, color=col, ls=ls, lw=lw, baseline=None)
         else:
             ax2.plot(qq, PchipInterpolator(qc, h)(qq), color=col, ls=ls, lw=lw)
@@ -205,7 +214,7 @@ def fig_levels(y_matched, path):
                              color=col, alpha=0.2, lw=0)
     ax2.legend(loc="upper right", handlelength=2.0, labelspacing=0.2, borderaxespad=0.3)
     ax2.set_xlim(0, 1)
-    ax2.set_ylim(0.3, 2.5)
+    ax2.set_ylim(0.3, 3.0)
     ax2.set_xlabel(r"$t\bar{t}$ quantile $q$ of $y_{t\bar{t}}$")
     ax2.set_ylabel(r"Normalized $H\!H/t\bar{t}$ ratio")
     for ax in (ax2,):

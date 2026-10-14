@@ -1,0 +1,65 @@
+'created' timestamp seems very low; regarding as unix timestamp
+'modified' timestamp seems very low; regarding as unix timestamp
+'created' timestamp seems very low; regarding as unix timestamp
+'modified' timestamp seems very low; regarding as unix timestamp
+'created' timestamp seems very low; regarding as unix timestamp
+'modified' timestamp seems very low; regarding as unix timestamp
+{
+ "n_tt": 7072,
+ "n_hh": 3451,
+ "corner": 0.2,
+ "corner_tt": 0.03789592760180995,
+ "corner_hh": 0.17067516661837148,
+ "corner_enrichment_hh": [
+  4.5037864862877734,
+  0.18557528922126404
+ ],
+ "corner_enrichment_ttR": 1.121057799674623,
+ "masses_alone_same_tt": [
+  5.360194103374752,
+  0.20245173717621756
+ ],
+ "angles_alone_same_tt": [
+  2.1563120358797145,
+  0.12840651311445136
+ ],
+ "corr_q_tt": -0.030428620843674523,
+ "bin_ratios": [
+  [
+   4.5,
+   1.73,
+   1.15,
+   0.59,
+   0.35
+  ],
+  [
+   3.43,
+   1.1,
+   0.72,
+   0.47,
+   0.24
+  ],
+  [
+   2.62,
+   1.1,
+   0.56,
+   0.32,
+   0.17
+  ],
+  [
+   2.21,
+   0.85,
+   0.51,
+   0.22,
+   0.16
+  ],
+  [
+   1.24,
+   0.52,
+   0.28,
+   0.14,
+   0.11
+  ]
+ ],
+ "width_in": 3.2000000000000006
+}

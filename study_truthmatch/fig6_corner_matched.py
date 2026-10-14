@@ -29,9 +29,10 @@ a = p.parse_args()
 
 TT, HH = (np.load(os.path.join(HERE, f"data_{s}.npz")) for s in ("run_seed1001", "run_m170_all"))
 ok_t, ok_h = TT["ok"], HH["ok"]
-f = osde.load_density(os.path.join(HERE, "osde_dRmatch", "f_ttbar_reco.npz"))
-yo_t = f.loo({k: TT[f"m_{k}"][ok_t] for k in ANGLE_NAMES})
-yo_h = f({k: HH[f"m_{k}"][ok_h] for k in ANGLE_NAMES})
+# the angular score: the one estimator of the paper (|c|/sigma > 2.5 by 5-fold CV on tt̄, tt̄ cross-fitted; study_cv)
+_cv = np.load(os.path.join(ROOT, "study_cv", "scores_matched.npz"))
+yo_t, yo_h = _cv["tt_cv"], _cv["HH170_cv"]
+assert len(yo_t) == int(ok_t.sum()) and len(yo_h) == int(ok_h.sum())
 ym_t = bw_score(TT, ok_t, TT, ok_t, "m")
 ym_h = bw_score(TT, ok_t, HH, ok_h, "m")
 qo = {"tt": quantile(yo_t, yo_t), "hh": quantile(yo_t, yo_h)}
