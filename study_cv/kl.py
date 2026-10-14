@@ -4,8 +4,8 @@ in q) and r the density of the signal in q.  Since tt̄ is uniform, D_KL(r || 1)
 differential entropy of the signal's q values.
 
 Estimator: Vasicek m-spacing entropy with Ebrahimi's boundary correction (m = round(sqrt(n)/2)), with the bias of the
-estimator for a uniform sample of the same size subtracted (it is not zero for finite n), and bootstrap errors that
-resample both the tt̄ reference and the signal.
+estimator for a signal identical to tt̄ subtracted (it is not zero for finite samples: both the signal sample and the
+finite tt̄ reference that q is computed against contribute), and bootstrap errors that resample both samples.
 """
 import numpy as np
 
@@ -31,14 +31,16 @@ def entropy_mspacing(x, m=None):
     return float(np.mean(np.log(n * d / (c * m))))
 
 
-def null_bias(n, reps=200, seed=1):
+def null_bias(n_sig, n_ref, reps=200, seed=1):
+    """Mean estimate for a signal identical to tt̄: n_sig uniform values ranked against n_ref uniform reference
+    values, so the noise of the finite tt̄ reference (which q is computed against) is included in the bias."""
     rng = np.random.default_rng(seed)
-    return float(np.mean([entropy_mspacing(rng.random(n)) for _ in range(reps)]))
+    return float(np.mean([entropy_mspacing(quantile(rng.random(n_ref), rng.random(n_sig))) for _ in range(reps)]))
 
 
 def kl_score(y_ref, y_sig, nboot=200, seed=2):
     """D_KL(r||1) with r the density of the signal in the tt̄ quantile of y (low y = unlike tt̄), and its error."""
-    b = null_bias(len(y_sig))
+    b = null_bias(len(y_sig), len(y_ref))
     est = lambda ref, sig: -(entropy_mspacing(quantile(ref, sig)) - b)  # noqa: E731
     d0 = est(y_ref, y_sig)
     rng = np.random.default_rng(seed)

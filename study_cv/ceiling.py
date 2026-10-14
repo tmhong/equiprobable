@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Supervised ceiling on the same ten angles (BDT trained with the signal labels, 2-fold out-of-fold predictions),
+"""Supervised ceiling on the same ten angles (BDT trained with the signal labels, 5-fold out-of-fold predictions),
 at each level, on the events of study_cv/cv_scores.py.  Writes study_cv/ceiling.json."""
 import json, os, sys
 import numpy as np
@@ -18,9 +18,9 @@ def matched(run):
 
 def ceiling(Xb, Xs, seed=0):
     rng = np.random.default_rng(seed)
-    fb, fs = rng.permutation(len(Xb)) % 2, rng.permutation(len(Xs)) % 2
+    fb, fs = rng.permutation(len(Xb)) % 5, rng.permutation(len(Xs)) % 5
     ob, os_ = np.zeros(len(Xb)), np.zeros(len(Xs))
-    for f in (0, 1):
+    for f in range(5):
         clf = HistGradientBoostingClassifier(max_iter=300, learning_rate=0.1, class_weight="balanced", random_state=seed)
         clf.fit(np.vstack([Xb[fb != f], Xs[fs != f]]), np.r_[np.zeros((fb != f).sum()), np.ones((fs != f).sum())])
         ob[fb == f] = clf.predict_proba(Xb[fb == f])[:, 1]; os_[fs == f] = clf.predict_proba(Xs[fs == f])[:, 1]

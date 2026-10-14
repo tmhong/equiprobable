@@ -59,7 +59,7 @@ def fig2(x, f, y, w_r, path, with_h1=False):
     lo_u = min(v.min() for v in u_bins.values()); hi_u = max(v.max() for v in u_bins.values())
     grid = np.linspace(-1, 1, 401)
     P = M.PANEL_DATA
-    T, GX, B, GY, TOP = 0.68, 0.10, 0.55, 0.60, 0.08
+    T, GX, B, GY, TOP = 0.82, 0.10, 0.55, 0.60, 0.08     # T: room for the upright dN/dx titles
     W = T + P + GX + T + P + 0.12
     H = B + P + GY + P + TOP
     fig = plt.figure(figsize=(W, H))
@@ -181,7 +181,7 @@ def auc(y_tt, y_s):
 def fig_levels(y_matched, path):
     from matplotlib.colors import LinearSegmentedColormap
     blues = LinearSegmentedColormap.from_list("tt", ["#ffffff", M.NAVY])
-    lv = [("parton_trig", "parton", "-", M.INK),
+    lv = [("parton_trig", "parton + trigger", "-", M.INK),
           ("gen", r"generator", (0, (5, 2)), blues(0.7)),
           ("reco", r"reconstructed", "-", blues(0.45)),
           ("matched", r"$\quad$''$\quad$ truth-matched", "-", HH_C)]      # ditto: reconstructed, truth-matched
