@@ -165,9 +165,8 @@ INF_MIN_SHARE = 0.001              # ... and at least this share of them (not ju
 INF_MIN_EVENTS = 5                 # past the last event of the bottom type, this many of the top type make the
                                    # ratio infinite there: drawn flat along the top of its axis, marked infinity
 RATIO_COLOR = "#d62728"            # the hh/ttbar curves and their axes
-DATA_LEGEND_IN = "x"               # with the ratio: the legend naming the two types in the dN/dx plot ("x"; the
-                                   # second type first, rows right-aligned, upper right), or in the dN/dy plot
-                                   # together with the ratio ("y")
+DATA_LEGEND_IN = "x"               # with the ratio: the legend naming the two types in the dN/dx plot ("x", in
+                                   # its upper right, in from the edge), or in the dN/dy plot with the ratio ("y")
 RATIO_LW = 1.0                     # width of the ratio curves
 RATIO_SMOOTH = 1.5                 # it is smooth: both y distributions smoothed by one Gaussian this many
                                    # times Scott's width, then divided
@@ -1231,11 +1230,10 @@ legend_x1 = None if legend_in_y else axx1.legend(   # (none when the dN/dy legen
                         borderaxespad=0 if contour_mode else 0.5, borderpad=0, labelspacing=0.1,
                         handlelength=1.4, handletextpad=0.5)    # ... and the legend inside, level
                                                                           # with it, its entries close together
-if show_ratio and not volume and not legend_in_y:   # the two types named here, the longer name on top, right-aligned
+if show_ratio and not volume and not legend_in_y:   # the two types named here, in the free upper right
     legend_x1.remove()
-    legend_x1 = axx1.legend(handles=handles[::-1], loc="upper right", bbox_to_anchor=(0.98, TITLE_TOP),
+    legend_x1 = axx1.legend(handles=handles, loc="upper right", bbox_to_anchor=(0.9, TITLE_TOP),
                             borderaxespad=0, borderpad=0, labelspacing=0.1, handlelength=1.4, handletextpad=0.5)
-    legend_x1._legend_handle_box.get_children()[0].align = "right"   # its rows flush right
 
 # ---- bottom right: (1/N) dN/dy, or (1/N) dN/ds with s = -ln y ----
 oki = np.isfinite(bi)
