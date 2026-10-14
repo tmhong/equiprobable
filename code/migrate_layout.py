@@ -25,7 +25,7 @@ GENERATED = ("note/", "slides", "figures/")       # .tex there is written by mak
 
 def is_code(rel):
     base, ext = os.path.basename(rel), os.path.splitext(rel)[1]
-    if "failed_attempts" in rel:
+    if "failed_attempts" in rel or "/build/" in rel:  # records of a failed run; LaTeX build directories
         return False
     if rel.startswith("pileup/bin/"):
         return True                                  # compiled helper programs live with the pileup code
@@ -51,7 +51,7 @@ def plan(src_root):
             out.append((p, os.path.join(REPO, kind, top)))
             continue
         for dp, dn, fn in os.walk(p):
-            dn[:] = [d for d in dn if d != "__pycache__"]
+            dn[:] = [d for d in dn if d not in ("__pycache__", ".pytest_cache")]
             for f in fn:
                 rel = os.path.relpath(os.path.join(dp, f), src_root)
                 kind = "code" if is_code(rel) else "results"
@@ -89,6 +89,9 @@ def main():
             p = os.path.join(src, top)
             if top in SKIP or not os.path.isdir(p):
                 continue
+            for dp, dn, fn in os.walk(p):                  # byte-code caches are rebuilt on import
+                for d in [d for d in dn if d in ("__pycache__", ".pytest_cache")]:
+                    shutil.rmtree(os.path.join(dp, d))
             for dp, dn, fn in sorted(os.walk(p, topdown=False), key=lambda t: -len(t[0])):
                 if not os.listdir(dp):
                     os.rmdir(dp)
