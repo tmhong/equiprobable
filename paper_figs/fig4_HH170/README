@@ -1,0 +1,2 @@
+Fig. 4 of the paper: python compare_y_fig4.py tt_f_theta_phi.txt HH170_f_theta_phi.txt t
+Inputs (theta, phi, y at parton level after the trigger, cross-fitted f_tt from study_cv/scores_parton_trig.npz) are written by the snippet in LOG.md (2026-10-14); the .txt files are not kept in git.

@@ -1381,8 +1381,8 @@ for axis, (lo, hi) in ((ax2d.xaxis, r1), (ax2d.yaxis, r2), (axx2.xaxis, r2)):
             axis.set_minor_locator(AutoMinorLocator())
 for axis in (axx1.yaxis, axx2.yaxis, axy.yaxis):            # the (1/N) dN/d... axes: tick marks, but values
     axis.set_major_locator(MaxNLocator(5, steps=[1, 2, 5, 10]))   # only if DENSITY_VALUES (or DNDY_VALUES)
-    if not (DENSITY_VALUES or (axis is axy.yaxis and DNDY_VALUES)):
-        axis.set_major_formatter(NullFormatter())
+    if not (DENSITY_VALUES or (axis is axy.yaxis and DNDY_VALUES)):        # no values, except the zero
+        axis.set_major_formatter(FuncFormatter(lambda v, _p: "$0$" if abs(v) < 1e-12 else ""))
     if MINOR_TICKS:
         axis.set_minor_locator(AutoMinorLocator())
 if is_toy and not rescale and not LOG:      # dN/dy (the toy in y): ticks at 0 and 12 per unit y, only the 0
