@@ -195,8 +195,8 @@ def fig_levels(y_matched, path):
     from matplotlib.colors import LinearSegmentedColormap
     blues = LinearSegmentedColormap.from_list("tt", ["#ffffff", M.NAVY])
     lv = [("parton_trig", "parton + trigger", "-", M.INK),
-          ("gen", r"generator", (0, (5, 2)), blues(0.7)),
-          ("reco", r"reconstructed", "-", blues(0.45)),
+          ("gen", r"generator + $\chi^2$", (0, (5, 2)), blues(0.7)),
+          ("reco", r"reconstructed + $\chi^2$", "-", blues(0.45)),
           ("matched", r"$\quad$''$\quad$ truth-matched", "-", HH_C)]      # ditto: reconstructed, truth-matched
     q_edges = np.linspace(0, 1, 11)
     curves = {}
