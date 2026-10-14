@@ -165,6 +165,9 @@ INF_MIN_SHARE = 0.001              # ... and at least this share of them (not ju
 INF_MIN_EVENTS = 5                 # past the last event of the bottom type, this many of the top type make the
                                    # ratio infinite there: drawn flat along the top of its axis, marked infinity
 RATIO_COLOR = "#d62728"            # the hh/ttbar curves and their axes
+DATA_LEGEND_IN = "x"               # with the ratio: the legend naming the two types in the dN/dx plot ("x"; the
+                                   # second type first, rows right-aligned, upper right), or in the dN/dy plot
+                                   # together with the ratio ("y")
 RATIO_LW = 1.0                     # width of the ratio curves
 RATIO_SMOOTH = 1.5                 # it is smooth: both y distributions smoothed by one Gaussian this many
                                    # times Scott's width, then divided
@@ -1221,12 +1224,18 @@ if DNDX_TITLE == "outside":                  # the (1/N) dN/dx title: left of th
                            fontsize=TITLE_SIZE)
 else:                                        # ... or upright, left of its axis at mid-height
     upright_ylabel(axx1, frac(X1))
-legend_x1 = None if show_ratio and not volume else axx1.legend(   # (none when the dN/dy legend names them)
+legend_in_y = show_ratio and not volume and DATA_LEGEND_IN == "y"
+legend_x1 = None if legend_in_y else axx1.legend(   # (none when the dN/dy legend names them)
                         handles=handles, loc="upper left" if contour_mode else "best",
                         bbox_to_anchor=(LEGEND_LEFT, TITLE_TOP) if contour_mode else None,
                         borderaxespad=0 if contour_mode else 0.5, borderpad=0, labelspacing=0.1,
                         handlelength=1.4, handletextpad=0.5)    # ... and the legend inside, level
                                                                           # with it, its entries close together
+if show_ratio and not volume and not legend_in_y:   # the two types named here, the longer name on top, right-aligned
+    legend_x1.remove()
+    legend_x1 = axx1.legend(handles=handles[::-1], loc="upper right", bbox_to_anchor=(0.98, TITLE_TOP),
+                            borderaxespad=0, borderpad=0, labelspacing=0.1, handlelength=1.4, handletextpad=0.5)
+    legend_x1._legend_handle_box.get_children()[0].align = "right"   # its rows flush right
 
 # ---- bottom right: (1/N) dN/dy, or (1/N) dN/ds with s = -ln y ----
 oki = np.isfinite(bi)
@@ -1300,7 +1309,7 @@ if show_ratio:                             # hh/ttbar (or ttbar/hh), smoothed, o
     axr.set_ylabel(ratio_frac, rotation=0, ha="left", va="center", color=color_r, fontsize=TITLE_SIZE)
     axr.yaxis.set_label_position("right")
     axr.spines["right"].set_color(color_r)
-    if not volume:                          # a legend inside: the two types and the ratio
+    if legend_in_y:                         # a legend inside: the two types and the ratio
         handles_y = [Patch(facecolor=cmap_i(0.55) if GRADIENT_FILL else FILL_I, edgecolor=LINE_I, lw=1.0,
                            label=NAME_I),
                      Line2D([], [], color=LINE_J, lw=1.6, marker="o", ms=3.5, mfc=COLOR_J, mec=DOT_EDGE_J,
@@ -1492,7 +1501,7 @@ if volume:
             legend_y._loc = 4
         legend_y.set_bbox_to_anchor((1.0, 1.02), transform=axy.transAxes)
         print("the dV/d(-ln y) legend found no free spot inside its plot, so it sits just above it")
-if show_ratio and not volume:               # the data legend: at the upper right, the histograms kept tall
+if legend_in_y:                            # the data legend: at the upper right, the histograms kept tall
     tall = np.maximum(ci, cj if cj is not None else 0)  # in the corner over the lower histograms:
     third = max(len(tall) // 3, 1)                      # upper right, or upper left (as for s')
     on_left = tall[-third:].max() > tall[:third].max()
