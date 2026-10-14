@@ -217,11 +217,15 @@ def fig_levels(y_matched, path):
                              color=col, alpha=0.2, lw=0)
     ax2.legend(loc="upper right", handlelength=2.0, labelspacing=0.2, borderaxespad=0.3)
     ax2.set_xlim(0, 1)
-    ax2.set_ylim(0.3, 3.0)
+    ax2.set_ylim(0, 3.0)
     ax2.set_xlabel(r"$t\bar{t}$ quantile $q$ of $y_{t\bar{t}}$")
     ax2.set_ylabel(r"Normalized $H\!H/t\bar{t}$ ratio")
     for ax in (ax2,):
         M.finish(ax, no_values_y=False)
+    from matplotlib.ticker import FixedLocator, MultipleLocator
+    ax2.yaxis.set_major_locator(FixedLocator([0, 1, 2, 3]))        # values 0, 1, 2, 3 only
+    ax2.yaxis.set_minor_locator(MultipleLocator(0.5))
+    ax2.set_yticklabels(["$0$", "$1$", "$2$", "$3$"])
     for ext in ("pdf", "png"):
         fig.savefig(f"{path}.{ext}", dpi=150)
     plt.close(fig)
