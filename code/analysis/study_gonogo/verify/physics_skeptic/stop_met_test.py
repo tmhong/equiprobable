@@ -88,13 +88,13 @@ def main():
     out = {}
     samples = {"stop": os.path.join(repo_paths.SAMPLES, "stop_bblvqq/run_seed4002")}
     for level in ("gen", "reco"):
-        f_all = osde.load_density(os.path.join(repo_paths.RESULTS, F_FILES[level]))
+        f_all = osde.load_density(repo_paths.results(F_FILES[level]))
         f_cv = f_all.truncated(f_all.significance() > 2.5)
-        z = np.load(os.path.join(repo_paths.RESULTS, "study_gonogo/cache/tt_fit.npz"))
+        z = np.load(repo_paths.results("study_gonogo/cache/tt_fit.npz"))
         Xtt = {a: z[f"{level}/{a}"] for a in ANGLE_NAMES}
         s_tt = -f_cv.loo(Xtt)
         A_tt = np.column_stack([Xtt[a] for a in ANGLE_NAMES])
-        zc = np.load(os.path.join(repo_paths.RESULTS, "study_gonogo/cache/stop.npz"))
+        zc = np.load(repo_paths.results("study_gonogo/cache/stop.npz"))
         for key, path in samples.items():
             parton, cpx, cpy = lhe_info(os.path.join(path, "parton_events.lhe.gz"))
             root = os.path.join(path, "delphes_events.root")

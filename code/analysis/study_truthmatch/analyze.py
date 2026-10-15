@@ -3,7 +3,7 @@
 Reco level with perfect (Delta-R) jet matching vs the chi2 reco of the paper: AUCs, tt̄_R, the corner picture.
 
 Inputs (under results/): study_truthmatch/data_*.npz (build_matched.py), study_truthmatch/osde_dRmatch/ (osde_fit.py
-on the matched angles), osde_h170/ (the paper's chi2 reco fit).  Writes results/study_truthmatch/results.json and plots.
+on the matched angles), osde_h170/ (the paper's chi2 reco fit).  Writes results/analysis/study_truthmatch/results.json and plots.
 
 Run: OMP_NUM_THREADS=3 .venv/bin/python code/analysis/study_truthmatch/analyze.py [--fr 0.3]
 """
@@ -80,7 +80,7 @@ def main():
     p.add_argument("--fr", type=float, default=0.3)
     p.add_argument("--osde", default=os.path.join(OUT, "osde_dRmatch"))
     p.add_argument("--tag", default="")
-    p.add_argument("--chi2-osde", default=os.path.join(repo_paths.RESULTS, "osde_h170"), help="the chi2 reco fit to compare with")
+    p.add_argument("--chi2-osde", default=repo_paths.results("osde_h170"), help="the chi2 reco fit to compare with")
     a = p.parse_args()
     D = {k: np.load(os.path.join(OUT, f"data_{k}.npz")) for k in (TT, TT_TEST, PU0, HH)}
     stats = {k: json.load(open(os.path.join(OUT, f"stats_{k}.json"))) for k in D}
@@ -113,7 +113,7 @@ def main():
     w_r_all = weights(D[TT]["p_cos_theta_prime"][D[TT]["chi_ok"]], D[TT]["p_cos_theta_prime_tilde"][D[TT]["chi_ok"]], a.fr)
     w_r_m = weights(D[TT]["p_cos_theta_prime"][both[TT]], D[TT]["p_cos_theta_prime_tilde"][both[TT]], a.fr)
 
-    ref = json.load(open(os.path.join(repo_paths.RESULTS, "osde_h170", "summary.json")))["levels"]
+    ref = json.load(open(repo_paths.results("osde_h170", "summary.json")))["levels"]
     R["auc_hh"] = {"parton": ref["parton"]["auc_hh_vs_tt"], "parton_trig": ref["parton_trig"]["auc_hh_vs_tt"],
                    "gen_chi2": ref["gen"]["auc_hh_vs_tt"],
                    "reco_chi2_all": auc(sc["hh"], sc["train"]),

@@ -6,10 +6,13 @@ the rest.  Two older layouts are known:
 
   flat    everything at the top (osde_fit.py, plotting/, paper_figs/, study_cv/, ...).  Code-like files (.py .sh .C
           .cc .cmnd .tcl .tex, Makefile, README) go next to the moved code in code/<category>/ (see below), everything
-          else to results/<dir>/; files at the top level that are not code go to results/figures/ (pdf, png) or
-          results/logs/.
+          else to its results/ group (see below); files at the top level that are not code go to results/plotting/ (pdf,
+          png) or results/logs/.
   code/   code/ + results/, with code/ not yet sorted into categories (code/osde_fit.py, code/paper_figs/,
           code/study_cv/, ...).  What is left in the old code/ directories after the pull goes the same way.
+And results/ itself: untracked data left in an ungrouped results/<dir>/ (results/osde/, results/study_cv/, ...) moves to
+its group, results/analysis/, plotting/ or docs/ (repo_paths.LAYOUT); the Fig. 2, 3, 6 and 7 outputs that
+study_truthmatch/ used to hold (fig2_osde_projections_recomatched.*, ...) move to results/plotting/paper/.
 
 Where the code goes now (old directory or file -> new place under code/):
   plotting/ (flat layout: the shared library) -> lib/            cards/      -> generation/cards/
@@ -31,8 +34,20 @@ import argparse
 import os
 import shutil
 
+import repo_paths
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
+PAPER_OUTPUTS = ("fig2_osde_projections_recomatched.", "fig3_discriminator_recomatched.", "figA_levels_hh170.",
+                 "fig6_corner_recomatched.", "paper_figs_matched.json")   # written to study_truthmatch/ before
+
+
+def new_results_path(rel):
+    """Where an output at results/<rel> of an ungrouped layout goes now, relative to the repository top."""
+    top, _, rest = rel.partition("/")
+    if top == "study_truthmatch" and "/" not in rest and rest.startswith(PAPER_OUTPUTS):
+        rel = "paper_figs/" + rest
+    return os.path.relpath(repo_paths.results(rel), REPO)
 SKIP = {"samples", "tools", "work", ".venv", "recon_cicero", "code", "results", ".git", "__pycache__", ".claude"}
 CODE_EXT = {".py", ".sh", ".C", ".cc", ".cmnd", ".tcl", ".tex"}
 CODE_NAMES = {"Makefile", "README", "minbias2pileup"}
@@ -106,14 +121,14 @@ def plan(src_root):
                 continue
             ext = os.path.splitext(top)[1]
             dest = (os.path.join("code", new_code_path(top)) if ext in CODE_EXT
-                    else os.path.join("results/figures" if ext in (".pdf", ".png") else "results/logs", top))
+                    else os.path.join("results/plotting" if ext in (".pdf", ".png") else "results/logs", top))
             out.append((p, os.path.join(REPO, dest)))
             continue
         for dp, dn, fn in os.walk(p):
             dn[:] = [d for d in dn if d not in ("__pycache__", ".pytest_cache")]
             for f in fn:
                 rel = os.path.relpath(os.path.join(dp, f), src_root)
-                dest = os.path.join("code", new_code_path(rel)) if is_code(rel) else os.path.join("results", rel)
+                dest = os.path.join("code", new_code_path(rel)) if is_code(rel) else new_results_path(rel)
                 out.append((os.path.join(dp, f), os.path.join(REPO, dest)))
     code = os.path.join(src_root, "code")              # the code/ layout: what is left in the old code/ directories
     for top in old_code_entries(src_root):
@@ -128,9 +143,28 @@ def plan(src_root):
             for f in fn:
                 rel = os.path.relpath(os.path.join(dp, f), code)
                 dest = (os.path.join("code", new_code_path(rel, flat=False)) if is_code(rel)
-                        else os.path.join("results", rel))
+                        else new_results_path(rel))
                 out.append((os.path.join(dp, f), os.path.join(REPO, dest)))
+    for top in old_results_entries(src_root):          # ungrouped results/<dir>/ -> results/<group>/<dir>/
+        for dp, dn, fn in os.walk(os.path.join(src_root, "results", top)):
+            dn[:] = [d for d in dn if d not in ("__pycache__", ".pytest_cache")]
+            for f in fn:
+                rel = os.path.relpath(os.path.join(dp, f), os.path.join(src_root, "results"))
+                out.append((os.path.join(dp, f), os.path.join(REPO, new_results_path(rel))))
+    tm = os.path.join(src_root, "results", "analysis", "study_truthmatch")   # paper outputs already grouped there
+    if os.path.isdir(tm):
+        for f in sorted(os.listdir(tm)):
+            if f.startswith(PAPER_OUTPUTS) and os.path.isfile(os.path.join(tm, f)):
+                out.append((os.path.join(tm, f), repo_paths.results("paper_figs", f)))
     return out
+
+
+def old_results_entries(src_root):
+    """The ungrouped results/ layout: directories in results/ that LAYOUT now places in a group."""
+    d = os.path.join(src_root, "results")
+    if not os.path.isdir(d):
+        return []
+    return [e for e in sorted(os.listdir(d)) if e in repo_paths.LAYOUT and os.path.isdir(os.path.join(d, e))]
 
 
 def main():
@@ -161,6 +195,7 @@ def main():
     if args.do and not args.link:                      # remove the emptied old directories
         olds = [os.path.join(src, t) for t in os.listdir(src) if t not in SKIP]
         olds += [os.path.join(src, "code", t) for t in old_code_entries(src)]
+        olds += [os.path.join(src, "results", t) for t in old_results_entries(src)]
         for p in olds:
             if not os.path.isdir(p):
                 continue

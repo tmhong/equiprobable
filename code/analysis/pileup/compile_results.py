@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Compile the per-<mu> results (results/pileup/results_pu<mu>.json from analyze_pileup.py) into results/pileup/results.json
+Compile the per-<mu> results (results/analysis/pileup/results_pu<mu>.json from analyze_pileup.py) into results/analysis/pileup/results.json
 in the schema used by code/docs/make_note.py and code/docs/make_slides.py, plus the summary figure
-results/pileup/figures/summary_vs_mu.png (AUC and efficiencies versus <mu>) and a short LaTeX summary paragraph.
+results/analysis/pileup/figures/summary_vs_mu.png (AUC and efficiencies versus <mu>) and a short LaTeX summary paragraph.
 The figure paths in results.json are relative to results/ (pileup/figures/...).
 """
 import json
@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(HERE)))   # code/
 import repo_paths  # noqa: E402
 from lib import style  # noqa: E402
 
-OUT = repo_paths.results_dir("pileup")      # results/pileup
+OUT = repo_paths.results_dir("pileup")      # results/analysis/pileup
 ROOT = repo_paths.RESULTS                   # figure paths in results.json are relative to results/
 
 MUS = ["0", "50", "200"]

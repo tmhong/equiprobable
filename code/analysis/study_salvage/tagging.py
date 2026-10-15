@@ -19,7 +19,7 @@ i.e. the tt̄ density of the event as observed (unlabelled), with f fit on truth
 Compared: truth labels, softer jet always down, symmetrized (w = 1/2: no tagging at all),
 c-tag at two illustrative ATLAS-like working points, and an ideal c-tagger.
 Scores: angles only, and angles + the Breit-Wigner mass factors (the masses do not depend on
-the labelling).  Output: results/study_salvage/tagging.json
+the labelling).  Output: results/analysis/study_salvage/tagging.json
 """
 import json
 import os
@@ -125,7 +125,7 @@ def main():
                 x = ref["m"][k]; x = x[np.isfinite(x)]
                 M = np.median(x); q1, q3 = np.percentile(x, [25, 75]); W = 0.5 * (q3 - q1)
                 sm = sm + np.r_[cauchy_surprisal(tt["m"][k], M, W), cauchy_surprisal(hh["m"][k], M, W)]
-        full = osde.load_density(os.path.join(repo_paths.RESULTS, "osde", fname))
+        full = osde.load_density(repo_paths.results("osde", fname))
         res = {"p_softer_is_down_tt": p_s, "n_tt": int((lab == 0).sum()), "n_hh": int(lab.sum()),
                "frac_cs_tt": float(np.mean((tt["fl_h"] == 4) | (tt["fl_s"] == 4)))}
         for fname_, f in (("all terms", full), ("23-ish terms (>10 sigma)", full.truncated(full.significance() > 10))):

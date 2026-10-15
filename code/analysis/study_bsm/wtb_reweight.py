@@ -17,7 +17,7 @@ Scores (existing fits, nothing retrained): f_tt̄ paper basis all terms and |c|/
 Breit-Wigner mass factors (study_salvage), at parton, gen and reco level.  Metrics: weighted AUC
 (signal = reweighted sample, background = unweighted), and the signal efficiency at tt̄ efficiency
 1% and 10% (tail enrichment: what an anomaly score is for).  Also the effective sample size of the
-reweighted signal.  Output: results/study_bsm/wtb_reweight.json
+reweighted signal.  Output: results/analysis/study_bsm/wtb_reweight.json
 """
 import json
 import os
@@ -72,7 +72,7 @@ def main():
         rok = np.ones(len(r), bool) if lvl == "parton" else np.asarray(r.reco_ok)
         rang = {a: np.asarray(r[a], float)[rok] for a in ANGLE_NAMES}
         rang = {a: v[np.all([np.isfinite(x) for x in rang.values()], 0)] for a, v in rang.items()}
-        f_all = osde.load_density(os.path.join(repo_paths.RESULTS, "osde", f"f_ttbar_{lvl}.npz"))
+        f_all = osde.load_density(repo_paths.results("osde", f"f_ttbar_{lvl}.npz"))
         f_10 = f_all.truncated(f_all.significance() > 10)
         # mass factors (labelling-independent)
         masses = {"m_w_had": e.w_had.mass, "m_t_lep": e.t_lep.mass, "m_t_had": e.t_had.mass}

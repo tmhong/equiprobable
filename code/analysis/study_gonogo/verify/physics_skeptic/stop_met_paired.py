@@ -26,9 +26,9 @@ def main():
     out, save = {}, {}
     rng = np.random.default_rng(11)
     for level in ("gen", "reco"):
-        f_all = osde.load_density(os.path.join(repo_paths.RESULTS, T.F_FILES[level]))
+        f_all = osde.load_density(repo_paths.results(T.F_FILES[level]))
         f_cv = f_all.truncated(f_all.significance() > 2.5)
-        z = np.load(os.path.join(repo_paths.RESULTS, "study_gonogo/cache/tt_fit.npz"))
+        z = np.load(repo_paths.results("study_gonogo/cache/tt_fit.npz"))
         s_tt = -f_cv.loo({a: z[f"{level}/{a}"] for a in ANGLE_NAMES})
         S = {}
         for oracle in (False, True):

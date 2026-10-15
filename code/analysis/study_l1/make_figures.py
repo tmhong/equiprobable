@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Figures of the L1 feasibility study, drawn from results/study_l1/results.json (run emulate.py first)
-and written next to it in results/study_l1/:
+Figures of the L1 feasibility study, drawn from results/analysis/study_l1/results.json (run emulate.py first)
+and written next to it in results/analysis/study_l1/:
 
   fig_precision.png   ΔAUC (hh vs tt̄) and per-event score fidelity vs datapath width W and ROM depth K
   fig_resources.png   resources of four designs by block, as % of a VP1802, against the 5% budget

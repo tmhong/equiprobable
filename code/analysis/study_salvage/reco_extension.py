@@ -4,9 +4,9 @@
 Same recipe as simplest.py / angle_terms.py, done the clean way for both levels:
   - tt̄ test events: the independent sample (seed12345), never used in any fit -> no leave-one-out
   - M, W of the Cauchy factor (median, half-IQR): from 30k events of the fit sample (seed1001)
-  - f(Ω): results/osde/f_ttbar_<level>.npz, truncated by coefficient significance; 'CV' = the paper method
+  - f(Ω): results/analysis/osde/f_ttbar_<level>.npz, truncated by coefficient significance; 'CV' = the paper method
   - masses: m_W,had, m_t,lep, m_t,had of the χ² reconstruction (m_W,lep is fixed to m_W by the ν solution)
-Score = surprisal(angles) + Σ surprisal(mass).  Output: results/study_salvage/reco_extension.json
+Score = surprisal(angles) + Σ surprisal(mass).  Output: results/analysis/study_salvage/reco_extension.json
 """
 import json
 import os
@@ -68,8 +68,8 @@ def main():
             sm = sm + s
         res["masses"] = single
         res["masses only"] = roc_auc_score(lab, sm)
-        full = osde.load_density(os.path.join(repo_paths.RESULTS, "osde", f"f_ttbar_{l}.npz"))
-        cv = osde.load_density(os.path.join(repo_paths.RESULTS, "osde", f"f_ttbar_{l}_simplified.npz"))
+        full = osde.load_density(repo_paths.results("osde", f"f_ttbar_{l}.npz"))
+        cv = osde.load_density(repo_paths.results("osde", f"f_ttbar_{l}_simplified.npz"))
         fref = full(ref[l]["ang"])
         variants = [("all", full)] + [(f">{k} sigma", full.truncated(full.significance() > k)) for k in (3, 5, 10, 20, 40)] \
             + [("CV", cv)]

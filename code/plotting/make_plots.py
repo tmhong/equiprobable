@@ -7,7 +7,7 @@ parton_events.lhe.gz and/or delphes_events.root), or a single .lhe(.gz) or
 .root file.  Give one or more as LABEL=PATH; all are overlaid, with a ratio
 to the first one.
 
-Plots go to results/plots/ unless --out is given.
+Plots go to results/plotting/plots/ unless --out is given.
 
 Examples:
   python code/plotting/make_plots.py --sample nominal=samples/ttbar_bblvqq/run_seed12345
@@ -147,7 +147,7 @@ def main():
     p.add_argument("--norm", choices=["unit", "xsec", "none"], default="unit")
     p.add_argument("--lumi", type=float, default=140.0, help="fb^-1, used with --norm xsec")
     p.add_argument("--max-events", type=int, default=None)
-    p.add_argument("--out", default=os.path.join(repo_paths.RESULTS, "plots"))
+    p.add_argument("--out", default=repo_paths.results("plots"))
     p.add_argument("--format", default="png", help="png, pdf, ... (comma list allowed)")
     args = p.parse_args()
 

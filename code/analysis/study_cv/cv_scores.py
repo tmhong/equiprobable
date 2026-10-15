@@ -12,7 +12,7 @@ so tt̄ and signal see the same model noise.  The all-terms cross-fit is kept as
 truncated fit scores the independent tt̄ sample.  At the matched level the chi2-assignment angles of the same matched
 events are scored with the reco-level fold models (tt̄: the fold of the event in the reco fit sample).
 
-Writes results/study_cv/scores_<level>.npz and results/study_cv/cv_summary.json.
+Writes results/analysis/study_cv/scores_<level>.npz and results/analysis/study_cv/cv_summary.json.
 Run: OMP_NUM_THREADS=8 .venv/bin/python code/analysis/study_cv/cv_scores.py [--levels ...] [--t 2.5]
 """
 import argparse
@@ -92,7 +92,7 @@ def main():
     summ["threshold"] = a.t
     reco_models = None
     for level in a.levels.split(","):
-        f_all = osde.load_density(os.path.join(repo_paths.RESULTS, F_FILES[level]))
+        f_all = osde.load_density(repo_paths.results(F_FILES[level]))
         out = {}
         if level != "matched":
             Xtt, Mtt = cached("tt_fit", level)
@@ -128,7 +128,7 @@ def main():
         if level == "matched":
             # chi2 assignment on the same matched events, scored with the reco-level fold models
             if reco_models is None:
-                f_reco = osde.load_density(os.path.join(repo_paths.RESULTS, F_FILES["reco"]))
+                f_reco = osde.load_density(repo_paths.results(F_FILES["reco"]))
                 Xr, _ = cached("tt_fit", "reco")
                 reco_models = fold_models(f_reco, Xr, a.t)
             chi_ok = z["chi_ok"]

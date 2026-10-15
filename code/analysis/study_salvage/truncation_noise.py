@@ -8,7 +8,7 @@ unrelated to tt̄ vs hh.  Predictions if this is right:
   (2) two fits on disjoint subsamples of the same size agree on the truncated f but not on the full f.
 Fit on N parton-level tt̄ events (disjoint subsamples of the 100k fit sample), score the independent
 10k tt̄ sample and 20k hh (no leave-one-out needed).  Paired bootstrap for the AUC differences.
-Output: results/study_salvage/truncation_noise.json, truncation_noise.png
+Output: results/analysis/study_salvage/truncation_noise.json, truncation_noise.png
 """
 import json
 import os

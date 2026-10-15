@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Tables (results.md) and the enrichment figure (fig_enrichment.png/.pdf) from results/study_gonogo/results.json,
+Tables (results.md) and the enrichment figure (fig_enrichment.png/.pdf) from results/analysis/study_gonogo/results.json,
 written next to it.
 
 Run: .venv/bin/python code/analysis/study_gonogo/report.py

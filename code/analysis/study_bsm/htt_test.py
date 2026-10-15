@@ -11,7 +11,7 @@ Compared at parton and reco level, hh vs tt̄ and H->tt̄ vs tt̄, same test eve
                 a 1-D tt̄ density of m_tt̄ (histogram of the fit sample); combinations (surprisals add)
   supervised    BDT trained on hh vs tt̄ (angles; angles + masses + m_tt̄), applied to BOTH signals
   ceiling       BDT trained on H->tt̄ vs tt̄ (what a dedicated search could do)
-Output: results/study_bsm/htt_test.json
+Output: results/analysis/study_bsm/htt_test.json
 """
 import json
 import os
@@ -90,7 +90,7 @@ def main():
         D = {k: extract(os.path.join(repo_paths.REPO, p), level, 30000 if k == "tt_fit" else None) for k, p in SAMPLES.items()}
         n = {k: len(v["mtt"]) for k, v in D.items()}
         half = {k: np.arange(n[k]) < n[k] // 2 for k in ("hh", "Htt", "tt_fit")}   # train / test halves
-        f = osde.load_density(os.path.join(repo_paths.RESULTS, "osde", fname))
+        f = osde.load_density(repo_paths.results("osde", fname))
         f = f.truncated(f.significance() > 10)
         fref = f(D["tt_fit"]["ang"])
         ref = D["tt_fit"]

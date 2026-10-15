@@ -7,7 +7,7 @@
 #   make words                  quick word-level diff in the terminal (same options)
 #   make clean                  delete $(BUILD)/
 #
-# All output goes to $(BUILD) = results/paper_figs/build/, so nothing new appears next to main.tex.
+# All output goes to $(BUILD) = results/plotting/paper/build/, so nothing new appears next to main.tex.
 # latexdiff: the installed one is used if there is one; otherwise the stand-alone
 # version (a single Perl script) is downloaded from CTAN into $(BUILD)/ on first use.
 
@@ -16,7 +16,7 @@ OLD   ?=
 PAPER ?= ../../../../paper
 NEW   ?= $(PAPER)/main.tex
 REV   ?= v1
-BUILD ?= ../../../results/paper_figs/build
+BUILD ?= ../../../results/plotting/paper/build
 NAME  ?= main_diff
 
 # the figures are found in $(PAPER) through TEXINPUTS

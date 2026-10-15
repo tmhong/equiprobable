@@ -17,7 +17,7 @@ M_W, M_TOP, SIG_W, SIG_T = 80.4, 172.5, 10.0, 15.0
 
 
 def load(name):
-    z = np.load(os.path.join(repo_paths.RESULTS, "study_l1", "cache", f"{name}.npz"))
+    z = np.load(repo_paths.results("study_l1", "cache", f"{name}.npz"))
     return {k: z[k] for k in z.files}
 
 
@@ -116,7 +116,7 @@ def cauchy_s(m, M, W):
 
 if __name__ == "__main__":
     D = {k: load(k) for k in ("tt_test", "tt_calib", "hh")}
-    f = osde.load_density(os.path.join(repo_paths.RESULTS, "osde", "f_ttbar_reco.npz"))
+    f = osde.load_density(repo_paths.results("osde", "f_ttbar_reco.npz"))
     f = f.truncated(f.significance() > 10)
     res = {}
     for k, d in D.items():

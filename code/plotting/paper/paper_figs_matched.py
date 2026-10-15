@@ -8,7 +8,7 @@ Paper figures for reco level with Delta-R-matched jets (study T), in the style o
   figA_levels_hh170                   appendix: HH(170) vs tt̄ at every level (parton, parton+trigger, gen chi2,
                                       reco chi2, reco matched): ROC, and the HH/tt̄ density ratio vs the tt̄ quantile q
 
-Run: OMP_NUM_THREADS=3 .venv/bin/python code/plotting/paper/paper_figs_matched.py [--fr 0.3]   (figures in results/study_truthmatch/)
+Run: OMP_NUM_THREADS=3 .venv/bin/python code/plotting/paper/paper_figs_matched.py [--fr 0.3]   (figures in results/analysis/study_truthmatch/)
 """
 import argparse
 import json
@@ -32,8 +32,9 @@ HH_LBL = r"$HH_{170}$"    # short legend label
 HH_C = M.AMBER          # the amber of the toy figure (compare_y.py LINE_J), now that hh(125) is not drawn
 
 
-OUT = repo_paths.results_dir("study_truthmatch")   # build_matched.py's data_*.npz; the figures
-CV = os.path.join(repo_paths.RESULTS, "study_cv")   # the one estimator: |c|/sigma > 2.5 (5-fold CV on tt̄), tt̄ cross-fitted
+OUT = repo_paths.results_dir("study_truthmatch")   # build_matched.py's data_*.npz and the matched-jet fits
+FIGS = repo_paths.results_dir("paper_figs")        # the figures and their JSON, with the other paper figures
+CV = repo_paths.results("study_cv")   # the one estimator: |c|/sigma > 2.5 (5-fold CV on tt̄), tt̄ cross-fitted
 T_CV = json.load(open(os.path.join(CV, "cv_summary.json")))["threshold"]
 
 
@@ -346,14 +347,14 @@ def main():
     D, x, f, y, w_r = load(A.fit)
     col = 0.95 * 3.375
     incl = lambda w: f"width={w * (col / M.DATA_WIDTH_IN) / 3.375:.3f}\\linewidth"
-    W2 = fig2(x, f, y, w_r, os.path.join(OUT, "fig2_osde_projections_recomatched"))
-    W3, neff = fig3(y, w_r, os.path.join(OUT, "fig3_discriminator_recomatched"))
-    lev, WA = fig_levels(y, os.path.join(OUT, "figA_levels_hh170"))
+    W2 = fig2(x, f, y, w_r, os.path.join(FIGS, "fig2_osde_projections_recomatched"))
+    W3, neff = fig3(y, w_r, os.path.join(FIGS, "fig3_discriminator_recomatched"))
+    lev, WA = fig_levels(y, os.path.join(FIGS, "figA_levels_hh170"))
     info = {"n": {k: int(len(v["Y"])) for k, v in x.items()}, "ttR_n_eff": float(neff),
             "auc_hh170": float(auc(y["tt"], y["hh"])), "auc_hh125": float(auc(y["tt"], y["h1"])),
             "auc_ttR": None, "levels_hh170": lev,
             "include": {"fig2": incl(W2), "fig3": incl(W3), "figA": incl(WA)}}
-    json.dump(info, open(os.path.join(OUT, "paper_figs_matched.json"), "w"), indent=1)
+    json.dump(info, open(os.path.join(FIGS, "paper_figs_matched.json"), "w"), indent=1)
     print(json.dumps(info, indent=1))
 
 

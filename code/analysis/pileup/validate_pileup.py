@@ -6,7 +6,7 @@ Pileup validation: branch sizes and analysis-level numbers for Delphes samples.
       pu0=samples/ttbar_bblvqq/test_pu0 pu50=samples/ttbar_bblvqq/test_pu50 pu200=samples/ttbar_bblvqq/test_pu200
 
 label=path[:max_events] (a relative path is taken from the repository top).  Uses the analysis code unchanged
-(make_plots.load_sample, lib.summary.correct_assignment).  Prints a table and writes results/pileup/validation.json.
+(make_plots.load_sample, lib.summary.correct_assignment).  Prints a table and writes results/analysis/pileup/validation.json.
 """
 import json
 import os

@@ -34,7 +34,7 @@ def tname(T):
 
 
 def main():
-    f0 = osde.load_density(os.path.join(repo_paths.RESULTS, A.F_FILES["reco"]))
+    f0 = osde.load_density(repo_paths.results(A.F_FILES["reco"]))
     tt = A.load("tt_fit", "reco")
     D = {k: A.load(k, "reco") for k in ("etat", "stop", "H350", "nospin", "tt_indep")}
     z = np.load(os.path.join(OUT, "stop_nochi.npz"))

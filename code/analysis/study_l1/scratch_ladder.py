@@ -5,7 +5,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from scratch_float import *
 
 D = {k: load(k) for k in ("tt_test", "tt_calib", "hh")}
-f = osde.load_density(os.path.join(repo_paths.RESULTS, "osde", "f_ttbar_reco.npz"))
+f = osde.load_density(repo_paths.results("osde", "f_ttbar_reco.npz"))
 f = f.truncated(f.significance() > 10)
 
 def evset(d, kind):

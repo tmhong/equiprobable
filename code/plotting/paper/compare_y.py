@@ -18,7 +18,7 @@ Usage
   python compare_y.py ttbar.txt hh.txt      type i and type j       -> ttbar_y.pdf / .png
   python compare_y.py ttbar.txt hh.txt lny  ... binned in -ln y     -> ttbar_lny.pdf / .png
   python compare_y.py --write-toy           the toy events as text files, toy_i.txt and toy_j.txt
-  In the repository the outputs go to results/paper_figs/ (input files are read as given); used on its
+  In the repository the outputs go to results/plotting/paper/ (input files are read as given); used on its
   own, to the working directory.
 
 Input files
@@ -62,7 +62,7 @@ from matplotlib.ticker import (AutoMinorLocator, FixedFormatter, FixedLocator, F
                                LogLocator, MaxNLocator, MultipleLocator, ScalarFormatter,
                                NullFormatter, NullLocator)
 
-# where the outputs go: in the repository, results/paper_figs/ (code/repo_paths.py); used on its own,
+# where the outputs go: in the repository, results/plotting/paper/ (code/repo_paths.py); used on its own,
 # the figures and the toy's text files go to the working directory and the toy's event cache next to this file
 _CODE = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))   # code/ (this is code/plotting/paper/)
 if os.path.exists(os.path.join(_CODE, "repo_paths.py")):

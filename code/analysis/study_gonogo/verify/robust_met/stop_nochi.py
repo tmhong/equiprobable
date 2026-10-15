@@ -65,7 +65,7 @@ def main():
     out["met_orig"] = np.asarray(e.met_orig, float)[ok]
     out["mtw"] = np.asarray(e.mtw, float)[ok]
     # which events coincide with the standard selection (for a paired comparison)
-    z = np.load(os.path.join(repo_paths.RESULTS, "study_gonogo", "cache", "stop.npz"))
+    z = np.load(repo_paths.results("study_gonogo", "cache", "stop.npz"))
     print(f"selected {ok.sum()} of {len(e)} (standard pipeline: {len(z['reco/Y'])})", flush=True)
     np.savez_compressed(os.path.join(OUT, "stop_nochi.npz"), **out)
 

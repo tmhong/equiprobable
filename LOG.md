@@ -505,3 +505,17 @@ Newest entries are at the bottom. Numbers refer to the samples listed under "Sam
   - Fig. 4: the PDF matches the paper's apart from its creation date.
   - pytest: 14 passed.
   - Not rerun: event generation, pileup production, full ML training and `analyze.py`.
+
+## 2026-10-15: results/ grouped like code/ (PR #3)
+
+- **Request:** organize `results/` as `code/` was (#2).
+- **Layout:** `results/analysis/` (osde*, ml*, pileup, study_*), `results/plotting/` (plots*, acceptance*, paper/, angle_diagram/), `results/docs/` (note, slides*), `results/logs/`.
+- **Paper figures in one place:** the Fig. 2, 3, 6 and 7 outputs (were in study_truthmatch/) join Fig. 4 and the toy figures in `results/plotting/paper/`.
+- **How:** scripts keep naming an output directory by its short name. `code/repo_paths.py` places it through one table, `LAYOUT`: `results_dir("study_cv")` and the new `results("osde", ...)` return `results/analysis/...`.
+  - The 121 `os.path.join(RESULTS, ...)` calls became `results(...)`.
+  - Literal paths in scripts, cards, the README and `.gitignore` were updated.
+- **Migration:** `code/migrate_layout.py` moves untracked data from the old `results/<dir>/` folders to their groups. It was tested on a copy of the real untracked data: 750 files moved, no collisions.
+- **Checks:**
+  - All 30 argparse scripts run `--help`.
+  - Byte-identical to main: `numbers.json`, the Figs. 2, 3, 4, 6 and 7 PNG and JSON, and the go/no-go `results.md`.
+  - The note builds with all 42 included figures found; pytest 14 passed.

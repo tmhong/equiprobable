@@ -2,7 +2,7 @@
 """With the Breit-Wigner mass factors in, how many angular terms does f_tt̄ still need?
 Truncate f(Ω) by coefficient significance |c|/σ(c) > k (k = 0 is all 14,400 terms; CV = the
 cross-validated choice; 'none' = flat in the angles) and score  s(Ω) + Σ_k s_BW(m_k).
-Output: results/study_salvage/angle_terms.json"""
+Output: results/analysis/study_salvage/angle_terms.json"""
 import json
 import os
 import sys
@@ -20,9 +20,9 @@ from simplest import PDG, bw_surprisal, cauchy_surprisal  # noqa: E402
 from lib import osde  # noqa: E402
 from lib.angles import ANGLE_NAMES  # noqa: E402
 
-SUFFIX = os.environ.get("OUT_SUFFIX", "")   # e.g. "_h170": signal from results/study_washout_h170/, output angle_terms_h170.json
-tt = np.load(os.path.join(repo_paths.RESULTS, "study_washout/mechanism/data_tt.npz"))
-hh = np.load(os.path.join(repo_paths.RESULTS, f"study_washout{SUFFIX}/mechanism/data_hh.npz"))
+SUFFIX = os.environ.get("OUT_SUFFIX", "")   # e.g. "_h170": signal from results/analysis/study_washout_h170/, output angle_terms_h170.json
+tt = np.load(repo_paths.results("study_washout/mechanism/data_tt.npz"))
+hh = np.load(repo_paths.results(f"study_washout{SUFFIX}/mechanism/data_hh.npz"))
 out = {}
 for lvl, pre, mk, masses in (("parton", "p_", None, list(PDG)), ("gen", "c_", "g_reco_ok", ["m_w_had", "m_t_lep", "m_t_had"])):
     mt = tt[mk].astype(bool) if mk else np.ones(len(tt["p_Y"]), bool)
@@ -38,8 +38,8 @@ for lvl, pre, mk, masses in (("parton", "p_", None, list(PDG)), ("gen", "c_", "g
         else:
             M = np.median(xt[A]); q1, q3 = np.percentile(xt[A], [25, 75]); W = 0.5 * (q3 - q1)
             sm = sm + np.r_[cauchy_surprisal(xt[~A], M, W), cauchy_surprisal(xh, M, W)]
-    full = osde.load_density(os.path.join(repo_paths.RESULTS, "osde", f"f_ttbar_{lvl}.npz"))
-    cv = osde.load_density(os.path.join(repo_paths.RESULTS, "osde", f"f_ttbar_{lvl}_simplified.npz"))
+    full = osde.load_density(repo_paths.results("osde", f"f_ttbar_{lvl}.npz"))
+    cv = osde.load_density(repo_paths.results("osde", f"f_ttbar_{lvl}_simplified.npz"))
     variants = [("all", full)] + [(f">{k} sigma", full.truncated(full.significance() > k)) for k in (3, 5, 10, 20, 40)] \
         + [("CV", cv)]
     res = {"none (masses only)": {"terms": 0, "angles_only": 0.5, "with_masses": roc_auc_score(lab, sm)}}

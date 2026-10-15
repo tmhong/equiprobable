@@ -10,7 +10,7 @@ Criterion: keep a term iff |ĉ|/σ(ĉ) > t, always keeping the constant.
     ISE(f̂) - ∫f^2 = Σ_kept |ĉ|^2 - 2 Re Σ_kept ĉ conj(ĉ_heldout)  (orthonormal basis, no integrals).
 Conjugate partners have equal |ĉ| and σ, so they are kept together and f stays real (checked).
 
-Outputs in --osde (default results/osde): simplify_<level>.png (CV curve), f_ttbar_<level>_simplified.npz,
+Outputs in --osde (default results/analysis/osde): simplify_<level>.png (CV curve), f_ttbar_<level>_simplified.npz,
 terms_<level>.txt (kept terms with physics labels), simplify_summary.json.
 """
 import argparse
@@ -86,7 +86,7 @@ def main():
     p.add_argument("--train", required=True)
     p.add_argument("--test")
     p.add_argument("--hh", required=True)
-    p.add_argument("--osde", default=os.path.join(repo_paths.RESULTS, "osde"), help="osde_fit.py output directory")
+    p.add_argument("--osde", default=repo_paths.results("osde"), help="osde_fit.py output directory")
     p.add_argument("--levels", default="parton,parton_trig,gen,reco")
     p.add_argument("--tag", default="down_truth", help="angle cache tag (<had_fermion>_<jet_assignment>)")
     p.add_argument("--folds", type=int, default=5)

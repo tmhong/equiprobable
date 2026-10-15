@@ -7,7 +7,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-# results/study_washout/decomposition, or with OUT_SUFFIX (e.g. "_h170") the sibling results/study_washout<SUFFIX>/decomposition:
+# results/analysis/study_washout/decomposition, or with OUT_SUFFIX (e.g. "_h170") the sibling results/analysis/study_washout<SUFFIX>/decomposition:
 # read decomposition.json and write the figures there; SIGNAL_LABEL: legend name
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(HERE))))     # code/
