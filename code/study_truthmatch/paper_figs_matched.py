@@ -138,9 +138,9 @@ def smoothed_ratio(v_tt, v_hh, lo, hi, n=401, smooth=1.5, min_events=50):
     return 0.5 * (fine[1:] + fine[:-1]), np.where(enough, d_hh / np.where(d_tt > 0, d_tt, 1.0), np.nan)
 
 
-UPS_CLIPPED = "hide"    # Fig. 3, υ panel: the events whose υ is clipped to 0 or 1 (s' beyond s'_1 or s'_0, a long tail):
-                        # "hide" leaves them out of the histograms and the ratio, normalized to all events (the caption
-                        # gives their fractions); "bin" piles them into the first and last bins
+UPS_CLIPPED = "bin"     # Fig. 3: the events outside the plotted ranges (υ clipped to 0 or 1, s' beyond s'_1 or s'_0, and
+                        # y beyond its range): "bin" counts them in the outermost bins (overflow, as the caption says);
+                        # "hide" leaves them out of the histograms and the ratio, still normalized to all events
 
 
 def ratio_axis(ax, fig, v, edges, keep=None):
