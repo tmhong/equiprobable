@@ -4,7 +4,7 @@ Is the f_tt (CV) enrichment for eta_t a spin effect or a proxy for its threshold
 R = eps_S/eps_tt at eps_tt = 10% computed (a) inclusively and (b) conditionally in bins of m_tt (the tt threshold is
 taken from the tt fit sample's LOO scores in the same bin), then averaged over the signal's m_tt distribution.
 Also the same for a supervised BDT on angles + m_tt versus m_tt alone (does adding angles help at fixed m_tt?).
-Cache only.  Run: cd ttbar_bblvqq && OMP_NUM_THREADS=4 .venv/bin/python code/study_gonogo/verify/physics_skeptic/etat_conditional.py
+Cache only.  Run: cd ttbar_bblvqq && OMP_NUM_THREADS=4 .venv/bin/python code/analysis/study_gonogo/verify/physics_skeptic/etat_conditional.py
 """
 import json
 import os
@@ -13,7 +13,7 @@ import sys
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
+ROOT = os.path.abspath(os.path.join(HERE, "..", "..", "..", ".."))  # code/
 sys.path.insert(0, ROOT)
 from lib import osde  # noqa: E402
 from lib.angles import ANGLE_NAMES  # noqa: E402

@@ -11,8 +11,8 @@ parton m_bb marker (default 125 GeV).
 Output: <out>/w_had_mass_split.png (+ .json with the fractions); --out defaults to results/plots_hh
 
 Example:
-  python code/hh_plots.py --sample samples/hh_bblvqq/run_seed2001 --out results/plots_hh
-  python code/hh_plots.py --sample samples/hh_bblvqq/run_m170_seed2170 --mh 170 --out results/plots_hh_h170
+  python code/plotting/hh_plots.py --sample samples/hh_bblvqq/run_seed2001 --out results/plots_hh
+  python code/plotting/hh_plots.py --sample samples/hh_bblvqq/run_m170_seed2170 --mh 170 --out results/plots_hh_h170
 """
 import argparse
 import json
@@ -24,14 +24,15 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
-from lib import style  # noqa: E402
 import numpy as np  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, HERE)
+CODE = os.path.dirname(HERE)          # code/
+sys.path.insert(0, CODE)
 
-import make_plots  # noqa: E402
 import repo_paths  # noqa: E402
+from plotting import make_plots  # noqa: E402
+from lib import style  # noqa: E402
 from lib.physics import M_W  # noqa: E402
 
 LEVELS = {"parton": ("#1f4e9c", ":"), "gen": ("#d1495b", "--"), "reco": ("#2a9d8f", "-")}

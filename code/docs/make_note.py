@@ -7,9 +7,9 @@ figures are the ones in the plot directories, so the note stays in sync with the
 sample-level numbers (cutflow, helicity fractions, resolutions) are computed once from the samples
 and cached in results/note/sample_summary.json.
 
-  .venv/bin/python code/note/make_note.py                 # writes results/note/note.tex and compiles results/note/note.pdf
-  .venv/bin/python code/note/make_note.py --no-compile
-  .venv/bin/python code/note/make_note.py --recompute     # rebuild the sample summary cache
+  .venv/bin/python code/docs/make_note.py                 # writes results/note/note.tex and compiles results/note/note.pdf
+  .venv/bin/python code/docs/make_note.py --no-compile
+  .venv/bin/python code/docs/make_note.py --recompute     # rebuild the sample summary cache
 
 Sections that depend on studies still running (BSM test, pileup) are written from their result
 files when present (results/study_bsm/htt_test.json, results/pileup/results.json) and as a short status paragraph
@@ -24,7 +24,7 @@ import sys
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.dirname(HERE))          # code/: make_plots, plotting, repo_paths
+sys.path.insert(0, os.path.dirname(HERE))          # code/: repo_paths, lib, plotting (make_plots)
 import repo_paths  # noqa: E402
 
 ROOT = repo_paths.RESULTS                            # the analysis outputs (JSON, figures) the note reads
@@ -124,7 +124,7 @@ def sample_summary(sample, hh, recompute):
     cache = os.path.join(OUT, f"sample_summary{SUF}.json")
     if os.path.exists(cache) and not recompute:
         return json.load(open(cache))
-    import make_plots
+    from plotting import make_plots
     from lib import summary
     opts = {"had_fermion": "down", "jet_assignment": "truth"}
     ev, xsec = make_plots.load_sample("tt", sample, ["parton", "gen", "reco"], None, opts)
@@ -273,7 +273,7 @@ any fit: the independent $t\bar t$ sample, or the fit sample scored leave-one-ou
 """ + tab("Headline answers.", ["question", "answer"], rows, "tab:summary", col=r"p{0.36\textwidth}p{0.6\textwidth}") + r"""
 The slides (\texttt{slides/slides.pdf}) show the same material in the same order; the section titles here
 match the slide sections.  All numbers in this note are read from the analysis outputs by
-\texttt{note/make\_note.py}, so the note and the slides cannot drift apart.
+\texttt{docs/make\_note.py}, so the note and the slides cannot drift apart.
 """
 
 
@@ -1502,30 +1502,33 @@ def sec_appendix(N):
 \label{app:code}
 
 Everything is in \texttt{""" + esc(repo_paths.REPO) + r"""} (git repository on \texttt{main}): the code in \texttt{code/}, every output in \texttt{results/}, in the
-directory named after the code that writes it; the paths below are relative to \texttt{code/}.
+directory named after the code that writes it.  The code is sorted by what it does: \texttt{generation/} (the samples),
+\texttt{analysis/} (the fits and the studies), \texttt{plotting/} (the figures), \texttt{docs/} (the slides and this note) and
+\texttt{lib/} (the shared library); the paths below are relative to \texttt{code/}.
 \begin{description}
-\item[\texttt{setup\_tools.sh}] installs MadGraph5\_aMC 3.6.7, Pythia8, Delphes 3.5.1 (built with CMake) and the Python environment.
-\item[\texttt{generate\_samples.py}] MadGraph $\to$ Pythia8 $\to$ Delphes production; \texttt{--process ttbar|hh|Htt}.
+\item[\texttt{generation/setup\_tools.sh}] installs MadGraph5\_aMC 3.6.7, Pythia8, Delphes 3.5.1 (built with CMake) and the Python environment.
+\item[\texttt{generation/generate\_samples.py}] MadGraph $\to$ Pythia8 $\to$ Delphes production; \texttt{--process ttbar|hh|Htt};
+  the Delphes cards in \texttt{generation/cards/}, the pileup production in \texttt{generation/pileup/}.
 \item[\texttt{lib/}] \texttt{io.py} (LHE and Delphes readers), \texttt{physics.py} (objects, selection, $\chi^2$ reconstruction),
   \texttt{angles.py} (the ten angles), \texttt{osde.py} (basis functions, OSDE, leave-one-out, extended and spherical-harmonic bases),
   \texttt{summary.py}, \texttt{histo.py}, \texttt{style.py}.
-\item[\texttt{make\_plots.py}, \texttt{plot\_config.py}] validation plots; \texttt{nu\_pz\_plot.py}, \texttt{lep\_had\_compare.py},
-  \texttt{hh\_plots.py}, \texttt{acceptance\_plots.py}.
-\item[\texttt{osde\_fit.py}] fits $f_{t\bar t}$ per level (\texttt{--basis paper|extended|sh}), applies it to $t\bar t$ and $hh$, projections and scores;
+\item[\texttt{plotting/make\_plots.py}, \texttt{plot\_config.py}] validation plots; \texttt{nu\_pz\_plot.py}, \texttt{lep\_had\_compare.py},
+  \texttt{hh\_plots.py}, \texttt{acceptance\_plots.py}, \texttt{paper\_style\_plots.py}; the paper figures in \texttt{plotting/paper/}.
+\item[\texttt{analysis/osde\_fit.py}] fits $f_{t\bar t}$ per level (\texttt{--basis paper|extended|sh}), applies it to $t\bar t$ and $hh$, projections and scores;
   \texttt{osde\_simplify.py} (truncation, CV), \texttt{osde\_order\_scan.py}, \texttt{osde\_truncation\_check.py}, \texttt{osde\_compare.py},
-  \texttt{basis\_compare.py}, \texttt{paper\_style\_plots.py}.
-\item[\texttt{ml\_compare.py}] the unsupervised and supervised machine-learning comparison.
-\item[\texttt{study\_washout/}] the mechanism and the step-by-step decomposition of the parton-to-gen loss.
-\item[\texttt{study\_salvage/}] the mass extension (\texttt{simplest.py}, \texttt{salvage.py}, \texttt{reco\_extension.py}), the angular-term
+  \texttt{basis\_compare.py}.
+\item[\texttt{analysis/ml\_compare.py}] the unsupervised and supervised machine-learning comparison.
+\item[\texttt{analysis/study\_washout/}] the mechanism and the step-by-step decomposition of the parton-to-gen loss.
+\item[\texttt{analysis/study\_salvage/}] the mass extension (\texttt{simplest.py}, \texttt{salvage.py}, \texttt{reco\_extension.py}), the angular-term
   study (\texttt{angle\_terms.py}), the truncation-noise test (\texttt{truncation\_noise.py}) and the tagging study (\texttt{tagging.py}).
-\item[\texttt{study\_bsm/}, \texttt{pileup/}] the $H\to t\bar t$ benchmark and the pileup study.
-\item[\texttt{make\_slides.py}, \texttt{note/make\_note.py}] the slides and this note; both read the same result files.
+\item[\texttt{analysis/study\_bsm/}, \texttt{analysis/pileup/}] the $H\to t\bar t$ benchmark and the pileup study.
+\item[\texttt{docs/make\_slides.py}, \texttt{docs/make\_note.py}] the slides and this note; both read the same result files.
 \item[\texttt{tests/test\_osde.py}] 14 unit tests of the basis functions and the estimator (\texttt{pytest}).
 \item[\texttt{../LOG.md}] the running log of the study.
 \end{description}
 The slides are rebuilt with
-\texttt{python code/make\_slides.py --sample samples/ttbar\_bblvqq/run\_seed12345 --hh samples/hh\_bblvqq/run\_seed2001 --osde results/osde --acceptance results/acceptance}
-and this note with \texttt{python code/note/make\_note.py}, both from the top of the repository.
+\texttt{python code/docs/make\_slides.py --sample samples/ttbar\_bblvqq/run\_seed12345 --hh samples/hh\_bblvqq/run\_seed2001 --osde results/osde --acceptance results/acceptance}
+and this note with \texttt{python code/docs/make\_note.py}, both from the top of the repository.
 
 \section*{Acknowledgement}
 The analysis code, the figures, the slides and this note were produced with Claude Code (Anthropic) under the

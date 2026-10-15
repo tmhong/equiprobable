@@ -4,9 +4,9 @@ truncate at |c|/sigma > T using A's errors, then R = eps_B / eps_A(LOO) at fixed
 import os, sys
 import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
-sys.path.insert(0, ROOT); sys.path.insert(0, os.path.join(ROOT, "study_gonogo"))
-import analyze as A
+ROOT = os.path.abspath(os.path.join(HERE, "..", "..", "..", ".."))  # code/
+sys.path.insert(0, ROOT)
+from analysis.study_gonogo import analyze as A
 from lib import osde
 import repo_paths
 f0 = osde.load_density(os.path.join(repo_paths.RESULTS, A.F_FILES["reco"]))

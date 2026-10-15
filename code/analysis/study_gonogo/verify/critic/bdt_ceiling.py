@@ -4,7 +4,7 @@ nospin, stop, tt_indep; compare with results.json bdt_angles (2-fold)."""
 import json, os, sys
 import numpy as np
 from sklearn.ensemble import HistGradientBoostingClassifier
-HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
+HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.abspath(os.path.join(HERE, "..", "..", "..", ".."))  # code/
 sys.path.insert(0, ROOT)
 from lib.angles import ANGLE_NAMES
 import repo_paths

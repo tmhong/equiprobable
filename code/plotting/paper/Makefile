@@ -1,5 +1,5 @@
 # Makefile for the NPAD paper: see what changed between two versions with latexdiff.
-# It lives in the code repository (code/paper_figs/, run make there); the paper is the Overleaf clone at $(PAPER).
+# It lives in the code repository (code/plotting/paper/, run make there); the paper is the Overleaf clone at $(PAPER).
 #
 #   make                        $(BUILD)/main_diff.pdf  (tag v1 -> main.tex; also REV=v2, v3 or any commit)
 #   make OLD=a.tex NEW=b.tex    compare any two files
@@ -13,10 +13,10 @@
 
 OLD   ?=
 # the old version: main.tex at this git tag or commit (v1 = the first Overleaf version)
-PAPER ?= ../../../paper
+PAPER ?= ../../../../paper
 NEW   ?= $(PAPER)/main.tex
 REV   ?= v1
-BUILD ?= ../../results/paper_figs/build
+BUILD ?= ../../../results/paper_figs/build
 NAME  ?= main_diff
 
 # the figures are found in $(PAPER) through TEXINPUTS

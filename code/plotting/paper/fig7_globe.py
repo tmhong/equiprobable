@@ -5,7 +5,7 @@ spin axis P (here along z) the type-1 density depends only on c = cos(theta_P); 
 coloured by f, so the zero of f along P is a crater.  The band y1 < y < y2 is the red ring; its area on the unit
 sphere is the solid angle Delta V; the arrows are grad f along the surface (away from P).
 
-Run: .venv/bin/python code/paper_figs/fig7_globe.py      -> results/paper_figs/fig7_toy_globe.pdf / .png
+Run: .venv/bin/python code/plotting/paper/fig7_globe.py      -> results/paper_figs/fig7_toy_globe.pdf / .png
 """
 import os
 import sys
@@ -14,9 +14,10 @@ import numpy as np
 from scipy.optimize import brentq
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path[:0] = [HERE, os.path.dirname(HERE)]          # paper_figs/ (make_paper_figs) and code/ (repo_paths)
-import make_paper_figs as M  # noqa: E402
-from make_paper_figs import plt  # noqa: E402
+CODE = os.path.dirname(os.path.dirname(HERE))          # code/
+sys.path.insert(0, CODE)
+from plotting.paper import make_paper_figs as M  # noqa: E402
+from plotting.paper.make_paper_figs import plt  # noqa: E402
 import repo_paths  # noqa: E402
 from matplotlib.colors import LinearSegmentedColormap  # noqa: E402
 

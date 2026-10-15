@@ -8,9 +8,9 @@ The slides are written to results/slides/ (--out).
 Edit build_slides() below to add, remove or reorder slides.
 
 Examples:
-  python code/make_slides.py --sample samples/ttbar_bblvqq/run_seed12345
-  python code/make_slides.py --sample samples/ttbar_bblvqq/run_seed12345 --make-plots --author "A. Person"
-  python code/make_slides.py --sample ... --no-compile          # only write results/slides/slides.tex
+  python code/docs/make_slides.py --sample samples/ttbar_bblvqq/run_seed12345
+  python code/docs/make_slides.py --sample samples/ttbar_bblvqq/run_seed12345 --make-plots --author "A. Person"
+  python code/docs/make_slides.py --sample ... --no-compile          # only write results/slides/slides.tex
 """
 import argparse
 import json
@@ -24,10 +24,11 @@ import subprocess
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, HERE)
+CODE = os.path.dirname(HERE)          # code/
+sys.path.insert(0, CODE)
 
-import make_plots  # noqa: E402
 import repo_paths  # noqa: E402
+from plotting import make_plots  # noqa: E402
 from lib import summary  # noqa: E402
 
 
@@ -1828,8 +1829,8 @@ PREAMBLE = r"""\documentclass[aspectratio=169,11pt]{beamer}
 
 def run_tests():
     """Run the unit tests and return e.g. '7 passed' for the slides."""
-    res = subprocess.run([sys.executable, "-m", "pytest", "-q", "--color=no", "-p", "no:cacheprovider", os.path.join(HERE, "tests")],
-                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, cwd=HERE)
+    res = subprocess.run([sys.executable, "-m", "pytest", "-q", "--color=no", "-p", "no:cacheprovider", os.path.join(CODE, "tests")],
+                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, cwd=CODE)
     last = res.stdout.strip().splitlines()[-1] if res.stdout.strip() else "no output"
     print(f"[slides] tests: {last}")
     return last.split(" in ")[0].strip("= ")
@@ -1865,7 +1866,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--sample", required=True, help="sample directory from generate_samples.py")
     p.add_argument("--plots", default=os.path.join(repo_paths.RESULTS, "plots"))
-    p.add_argument("--config", default=os.path.join(HERE, "plot_config.py"))
+    p.add_argument("--config", default=os.path.join(CODE, "plotting", "plot_config.py"))
     p.add_argument("--out", default=os.path.join(repo_paths.RESULTS, "slides"))
     p.add_argument("--title", default=r"$t\bar{t}$ and $hh\to b\bar{b}\,\ell\nu\,q\bar{q}'$: samples, "
                                       r"the ten angles, and $f_{t\bar t}$ by OSDE")
@@ -1886,7 +1887,7 @@ def main():
     PLOTS_DIR, OUT_DIR = os.path.abspath(args.plots), os.path.abspath(args.out)
     os.makedirs(OUT_DIR, exist_ok=True)
     if args.make_plots:
-        subprocess.run([sys.executable, os.path.join(HERE, "make_plots.py"), "--sample",
+        subprocess.run([sys.executable, os.path.join(CODE, "plotting", "make_plots.py"), "--sample",
                         f"nominal={args.sample}", "--out", PLOTS_DIR, "--config", args.config], check=True)
 
     cfg = runpy.run_path(args.config)

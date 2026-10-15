@@ -7,7 +7,7 @@ no-spin control both show R > 1).  Here: K-fold cross-fit, repeated; in each fol
 truncated with that fit's own significances, and scores the held-out tt events and the signal events assigned to that
 fold; scores are averaged over the repetitions.  bw / mtt_dens / flow / window are taken from scan.py's saved scores.
 
-Run: OMP_NUM_THREADS=4 .venv/bin/python code/study_gonogo/verify/robust_met/crossfit.py
+Run: OMP_NUM_THREADS=4 .venv/bin/python code/analysis/study_gonogo/verify/robust_met/crossfit.py
 """
 import json
 import os
@@ -16,10 +16,9 @@ import sys
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
+ROOT = os.path.abspath(os.path.join(HERE, "..", "..", "..", ".."))  # code/
 sys.path.insert(0, ROOT)
-sys.path.insert(0, os.path.join(ROOT, "study_gonogo"))
-import analyze as A  # noqa: E402
+from analysis.study_gonogo import analyze as A  # noqa: E402
 from lib import osde  # noqa: E402
 from lib.angles import ANGLE_NAMES  # noqa: E402
 import repo_paths  # noqa: E402

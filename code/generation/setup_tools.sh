@@ -8,11 +8,11 @@
 #
 # Requirements: ROOT (root-config in PATH), gfortran, a C++ compiler, cmake, curl.
 #
-# Usage: code/setup_tools.sh [TOOLS_DIR]      (default: <repo>/tools)
+# Usage: code/generation/setup_tools.sh [TOOLS_DIR]      (default: <repo>/tools)
 set -euo pipefail
 
-HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"     # code/
-REPO="$(dirname "$HERE")"                                  # repository top: tools/, .venv, requirements.txt
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"     # code/generation/
+REPO="$(dirname "$(dirname "$HERE")")"                    # repository top: tools/, .venv, requirements.txt
 TOOLS="${1:-$REPO/tools}"
 MG_VERSION=3.6.7
 DELPHES_VERSION=3.5.1

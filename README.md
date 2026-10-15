@@ -3,32 +3,42 @@
 ## Repository layout
 
 ```
-code/                 all code (the scripts below, plotting/, tests/, cards/, figures/, note/, pileup/,
-                      paper_figs/ for the paper figures, and one study_*/ directory per study)
+code/                 all code, sorted by what it does:
+  generation/         making the samples: setup_tools.sh, generate_samples.py, cards/ (Delphes cards),
+                      pileup/ (minimum-bias library and pileup merging), generate_gonogo.sh, generate_hh170_more.sh
+  analysis/           osde_fit.py and the other OSDE scripts, ml_compare.py, pileup/ (pileup analysis),
+                      and one study_*/ directory per study
+  plotting/           make_plots.py + plot_config.py (validation plots) and the other figure scripts,
+                      paper/ (the paper figures), angle_diagram/ (the TikZ angle diagram)
+  docs/               make_slides.py (the slides) and make_note.py (the internal note)
+  lib/                the shared library: readers, physics objects, the ten angles, OSDE, drawing
+  tests/              unit tests (pytest)
 code/repo_paths.py    where everything lives: every script finds its inputs and writes its outputs through it
 results/              every output, in the directory named after the code that writes it (results/study_cv/ from
-                      code/study_cv/, results/osde/ from code/osde_fit.py, results/paper_figs/, results/slides*/ ...);
+                      code/analysis/study_cv/, results/osde/ from code/analysis/osde_fit.py, results/paper_figs/ from
+                      code/plotting/paper/, results/slides*/ from code/docs/make_slides.py ...);
                       fits, caches, .npz files and regenerated plot directories are not in git (see .gitignore)
 recon_cicero/         J. Cicero's reconstruction, kept as is
 samples/ tools/ work/ .venv/   event samples, MG5/Pythia8/Delphes, MG5 work areas, python env (not in git)
 LOG.md                the running log of requests, decisions and results
 ```
 
-Run everything from the repository top (`python code/<script>.py ...`).  A checkout from before this layout keeps its
-untracked data (fits, caches, plots) in the old places after `git pull`; `python code/migrate_layout.py` shows where
-each file goes, and `--do` moves them.
+Run everything from the repository top (`python code/<category>/<script>.py ...`).  A checkout from before this layout
+keeps its untracked files (fits, caches, plots, scripts not in git) in the old places after `git pull`;
+`python code/migrate_layout.py` shows where each file goes (data to results/, code next to the moved code in
+code/<category>/), and `--do` moves them.
 
 ```
-code/setup_tools.sh        one-time install: MG5_aMC 3.6.7, Pythia8, Delphes 3.5.1, python venv
-code/generate_samples.py   MG5 -> Pythia8 -> Delphes(ATLAS card) sample production
-code/make_plots.py         validation plots (parton / particle / reco level overlays)
-code/osde_fit.py           f_tt̄ on the ten angles by OSDE; applies it to tt̄ and hh
-code/make_slides.py        Beamer slides; every number is recomputed from the samples
-code/tests/                unit tests of the basis functions and OSDE (pytest)
-code/plot_config.py        <- the plot definitions: edit this to add/change plots
-code/plotting/             io.py (LHE + Delphes readers), physics.py (objects, selection,
-                           chi2 ttbar reconstruction), angles.py (the paper's ten angles),
-                           osde.py (basis + OSDE), summary.py (numbers), histo.py (drawing)
+code/generation/setup_tools.sh        one-time install: MG5_aMC 3.6.7, Pythia8, Delphes 3.5.1, python venv
+code/generation/generate_samples.py   MG5 -> Pythia8 -> Delphes(ATLAS card) sample production
+code/plotting/make_plots.py           validation plots (parton / particle / reco level overlays)
+code/plotting/plot_config.py          <- the plot definitions: edit this to add/change plots
+code/analysis/osde_fit.py             f_tt̄ on the ten angles by OSDE; applies it to tt̄ and hh
+code/docs/make_slides.py              Beamer slides; every number is recomputed from the samples
+code/tests/                           unit tests of the basis functions and OSDE (pytest)
+code/lib/                             io.py (LHE + Delphes readers), physics.py (objects, selection,
+                                      chi2 ttbar reconstruction), angles.py (the paper's ten angles),
+                                      osde.py (basis + OSDE), summary.py (numbers), histo.py (drawing)
 ```
 
 ## 1. Setup (once)
@@ -36,20 +46,20 @@ code/plotting/             io.py (LHE + Delphes readers), physics.py (objects, s
 Needs ROOT (`root-config` in PATH), gfortran, cmake, and curl. The setup was already run in this checkout.
 
 ```bash
-./code/setup_tools.sh        # installs into ./tools and ./.venv; re-running skips finished steps
-source .venv/bin/activate    # or call .venv/bin/python explicitly
+./code/generation/setup_tools.sh   # installs into ./tools and ./.venv; re-running skips finished steps
+source .venv/bin/activate          # or call .venv/bin/python explicitly
 ```
 
 ## 2. Generate
 
 ```bash
-python code/generate_samples.py --nevents 10000                    # full chain, 13 TeV, l = e, mu
-python code/generate_samples.py --nevents 10000 --seed 2           # another statistically independent run
-python code/generate_samples.py --stage parton --nevents 50000     # LHE only (fast)
-python code/generate_samples.py --leptons e,mu,ta --sqrts 13600 --name ttbar_bblvqq_13p6_tau
-python code/generate_samples.py --set "run_card ptj 20"            # any MG5 card setting (repeatable)
-python code/generate_samples.py --dry-run                          # print MG5 commands only
-python code/generate_samples.py --process hh --nevents 20000       # hh -> bb WW* -> bb l nu qq (heft)
+python code/generation/generate_samples.py --nevents 10000                    # full chain, 13 TeV, l = e, mu
+python code/generation/generate_samples.py --nevents 10000 --seed 2           # another statistically independent run
+python code/generation/generate_samples.py --stage parton --nevents 50000     # LHE only (fast)
+python code/generation/generate_samples.py --leptons e,mu,ta --sqrts 13600 --name ttbar_bblvqq_13p6_tau
+python code/generation/generate_samples.py --set "run_card ptj 20"            # any MG5 card setting (repeatable)
+python code/generation/generate_samples.py --dry-run                          # print MG5 commands only
+python code/generation/generate_samples.py --process hh --nevents 20000       # hh -> bb WW* -> bb l nu qq (heft)
 ```
 
 Process (LO, `sm` model, 4-flavour proton, spin correlations kept through the decay chain):
@@ -79,11 +89,11 @@ Notes:
 ## 3. Plot / validate
 
 ```bash
-python code/make_plots.py --sample nominal=samples/ttbar_bblvqq/run_seed12345
-python code/make_plots.py --sample s1=samples/ttbar_bblvqq/run_seed12345 --sample s2=samples/ttbar_bblvqq/run_seed2 \
-                          --levels reco --norm xsec --lumi 140
-python code/make_plots.py --sample nominal=samples/ttbar_bblvqq/run_seed12345 --only top_had_mass,lep_pt --format png,pdf
-python code/make_plots.py --sample some/delphes_events.root      # single files work too (.lhe(.gz) or .root)
+python code/plotting/make_plots.py --sample nominal=samples/ttbar_bblvqq/run_seed12345
+python code/plotting/make_plots.py --sample s1=samples/ttbar_bblvqq/run_seed12345 --sample s2=samples/ttbar_bblvqq/run_seed2 \
+                                   --levels reco --norm xsec --lumi 140
+python code/plotting/make_plots.py --sample nominal=samples/ttbar_bblvqq/run_seed12345 --only top_had_mass,lep_pt --format png,pdf
+python code/plotting/make_plots.py --sample some/delphes_events.root      # single files work too (.lhe(.gz) or .root)
 ```
 
 - With **one sample**, the parton, particle (gen) and reco levels are overlaid, and the ratio panel is relative to the first level drawn.
@@ -93,7 +103,7 @@ python code/make_plots.py --sample some/delphes_events.root      # single files 
 
 ### Adding or changing a plot
 
-Edit `code/plot_config.py`. Each plot is one dict:
+Edit `code/plotting/plot_config.py`. Each plot is one dict:
 
 ```python
 dict(name="lead_bjet_eta", levels=["gen", "reco"],
@@ -102,7 +112,7 @@ dict(name="lead_bjet_eta", levels=["gen", "reco"],
      bins=(30, -2.5, 2.5), xlabel=r"Leading b-jet $\eta$"),
 ```
 
-`expr` and `select` can be `{level: function}` dicts when the levels need different code. The top of `code/plot_config.py` lists everything available on `ev`. Object cuts (jet/lepton p_T and η, χ² resolutions) are in `CUTS` in `code/lib/physics.py`; override them from `code/plot_config.py`.
+`expr` and `select` can be `{level: function}` dicts when the levels need different code. The top of `code/plotting/plot_config.py` lists everything available on `ev`. Object cuts (jet/lepton p_T and η, χ² resolutions) are in `CUTS` in `code/lib/physics.py`; override them from `code/plotting/plot_config.py`.
 
 ### Object and reconstruction definitions
 
@@ -125,7 +135,7 @@ The tt̄ reconstruction (gen and reco) uses a χ² built from m_jj = m_W, m_jjb 
 - **θ′, φ′**: direction of the fermion in the W rest frame, reached by the standard boost from the top frame. z′ = Ŵ, y′ = z × z′ (in the xy plane) and x′ = y′ × z′, i.e. the D(φ, θ, 0) rotation.
 - Unadorned angles are for the leptonic top, with the charged lepton as the fermion. Tilded angles are for the hadronic top, with the **down-type** quark (the analogue of ℓ) as the fermion.
 - At gen/reco, the down-type W_had jet is chosen by **truth matching** to the LHE quarks, which matches the paper's assumption of up/down tagging. Events are aligned, so this needs the LHE file in the sample directory.
-- Options are set by `ANGLES` in `code/plot_config.py`: `had_fermion: "down" | "up"` and `jet_assignment: "truth" | "softer" | "harder"`.
+- Options are set by `ANGLES` in `code/plotting/plot_config.py`: `had_fermion: "down" | "up"` and `jet_assignment: "truth" | "softer" | "harder"`.
 
 Validation (10k events):
 - A synthetic round trip, building momenta from chosen angles and recovering them, agrees to 1e-14.
@@ -140,13 +150,13 @@ Validation (10k events):
 - The cross section (0.11 fb at 13 TeV) is LO HEFT with MG5's default parameters; its h width is not the sum of its own partial widths. It is **not** an SM prediction, so compare hh shapes with unit-area normalization.
 - For tt̄-hypothesis quantities (the angles), hh uses the same χ² at gen/reco level. At parton level, hh uses the b pairing that best matches m_t.
 
-## f_tt̄ by OSDE (`code/osde_fit.py`, `code/lib/osde.py`)
+## f_tt̄ by OSDE (`code/analysis/osde_fit.py`, `code/lib/osde.py`)
 
 ```bash
-python code/osde_fit.py --train samples/ttbar_bblvqq/run_seed1001 --test samples/ttbar_bblvqq/run_seed12345 \
-                        --hh samples/hh_bblvqq/run_seed2001     # all levels; outputs in results/osde/
-python -m pytest -q code/tests                                  # basis and OSDE checks
-python code/make_slides.py --sample samples/ttbar_bblvqq/run_seed12345 --hh samples/hh_bblvqq/run_seed2001 --osde results/osde
+python code/analysis/osde_fit.py --train samples/ttbar_bblvqq/run_seed1001 --test samples/ttbar_bblvqq/run_seed12345 \
+                                 --hh samples/hh_bblvqq/run_seed2001     # all levels; outputs in results/osde/
+python -m pytest -q code/tests                                           # basis and OSDE checks
+python code/docs/make_slides.py --sample samples/ttbar_bblvqq/run_seed12345 --hh samples/hh_bblvqq/run_seed2001 --osde results/osde
 ```
 
 **Basis** (as in the paper):
@@ -182,11 +192,11 @@ Angles are cached as `<sample>/angles_<options>.npz`. Delete the cache, or use `
 
 | script | what it makes |
 |---|---|
-| `code/acceptance_plots.py` | parton-level angles before and after the gen/reco selections, plus the efficiency vs angle cut by cut (`results/acceptance/`) |
-| `code/nu_pz_plot.py` | Δp_z of the reconstructed neutrino: gen vs reco, effect of the jet assignment, choice of the m_W solution (`results/plots/nu_pz.png`) |
-| `code/hh_plots.py` | hh overview and the hadronic-W mass split into on-shell W and W* (`results/plots_hh/`) |
-| `code/osde_simplify.py` | how many coefficients matter: Kronmal–Tarter rule, 5-fold cross-validated threshold, physics labels of the kept terms (`results/osde/simplify_*`, `results/osde/terms_*.txt`) |
-| `code/figures/make_angle_diagram.py` | TikZ diagram of (θ, φ, θ′, φ′) in the top and W rest frames (`results/figures/angle_diagram.pdf`) |
+| `code/plotting/acceptance_plots.py` | parton-level angles before and after the gen/reco selections, plus the efficiency vs angle cut by cut (`results/acceptance/`) |
+| `code/plotting/nu_pz_plot.py` | Δp_z of the reconstructed neutrino: gen vs reco, effect of the jet assignment, choice of the m_W solution (`results/plots/nu_pz.png`) |
+| `code/plotting/hh_plots.py` | hh overview and the hadronic-W mass split into on-shell W and W* (`results/plots_hh/`) |
+| `code/analysis/osde_simplify.py` | how many coefficients matter: Kronmal–Tarter rule, 5-fold cross-validated threshold, physics labels of the kept terms (`results/osde/simplify_*`, `results/osde/terms_*.txt`) |
+| `code/plotting/angle_diagram/make_angle_diagram.py` | TikZ diagram of (θ, φ, θ′, φ′) in the top and W rest frames (`results/figures/angle_diagram.pdf`) |
 
-Full deck: `python code/make_slides.py --sample samples/ttbar_bblvqq/run_seed12345 --hh samples/hh_bblvqq/run_seed2001 --osde results/osde --acceptance results/acceptance`.
+Full deck: `python code/docs/make_slides.py --sample samples/ttbar_bblvqq/run_seed12345 --hh samples/hh_bblvqq/run_seed2001 --osde results/osde --acceptance results/acceptance`.
 It uses a University of Pittsburgh color theme, includes an outline, and runs the unit tests.

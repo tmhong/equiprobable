@@ -3,7 +3,7 @@
 Tables (results.md) and the enrichment figure (fig_enrichment.png/.pdf) from results/study_gonogo/results.json,
 written next to it.
 
-Run: .venv/bin/python code/study_gonogo/report.py
+Run: .venv/bin/python code/analysis/study_gonogo/report.py
 """
 import json
 import os
@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.dirname(HERE))
+sys.path.insert(0, os.path.dirname(os.path.dirname(HERE)))          # code/
 import repo_paths  # noqa: E402
 
 OUT = repo_paths.results_dir("study_gonogo")

@@ -2,7 +2,7 @@
 """Reco-level MET handles for a sample, with exactly the selection of study_gonogo/extract.py (reco_ok & finite
 angles), so that the rows line up with results/study_gonogo/cache/<key>.npz reco arrays.  Scratch for the robustness check.
 
-Run: OMP_NUM_THREADS=4 .venv/bin/python code/study_gonogo/verify/robust_met/extract_met.py KEY=PATH ...   (PATH relative to the repo top)
+Run: OMP_NUM_THREADS=4 .venv/bin/python code/analysis/study_gonogo/verify/robust_met/extract_met.py KEY=PATH ...   (PATH relative to the repo top)
 """
 import os
 import sys
@@ -11,9 +11,9 @@ import numpy as np
 import awkward as ak
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
+ROOT = os.path.abspath(os.path.join(HERE, "..", "..", "..", ".."))  # code/
 sys.path.insert(0, ROOT)
-import make_plots  # noqa: E402
+from plotting import make_plots  # noqa: E402
 from lib.angles import ANGLE_NAMES  # noqa: E402
 from lib.physics import M_W  # noqa: E402
 import repo_paths  # noqa: E402

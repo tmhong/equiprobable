@@ -5,7 +5,7 @@ Reco level with perfect (Delta-R) jet matching vs the chi2 reco of the paper: AU
 Inputs (under results/): study_truthmatch/data_*.npz (build_matched.py), study_truthmatch/osde_dRmatch/ (osde_fit.py
 on the matched angles), osde_h170/ (the paper's chi2 reco fit).  Writes results/study_truthmatch/results.json and plots.
 
-Run: OMP_NUM_THREADS=3 .venv/bin/python code/study_truthmatch/analyze.py [--fr 0.3]
+Run: OMP_NUM_THREADS=3 .venv/bin/python code/analysis/study_truthmatch/analyze.py [--fr 0.3]
 """
 import argparse
 import json
@@ -19,11 +19,11 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
-sys.path[:0] = [ROOT, os.path.join(ROOT, "study_bsm")]
+CODE = os.path.dirname(os.path.dirname(HERE))          # code/
+sys.path.insert(0, CODE)
 from lib import osde  # noqa: E402
 from lib.angles import ANGLE_NAMES  # noqa: E402
-from wtb_reweight import weights  # noqa: E402
+from analysis.study_bsm.wtb_reweight import weights  # noqa: E402
 import repo_paths  # noqa: E402
 
 OUT = repo_paths.results_dir("study_truthmatch")   # build_matched.py's data_*.npz, stats_*.json are here too

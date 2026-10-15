@@ -12,7 +12,7 @@ own loader (make_plots.load_sample, angle options down-type / truth) and cache, 
 
 Output: results/study_l1/cache/<name>.npz (one file per sample).  Never modifies existing files.
 
-  python code/study_l1/extract.py       # all three samples (skips existing cache files)
+  python code/analysis/study_l1/extract.py       # all three samples (skips existing cache files)
 """
 import os
 import sys
@@ -22,10 +22,10 @@ import awkward as ak
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)          # code/
+ROOT = os.path.dirname(os.path.dirname(HERE))          # code/
 sys.path.insert(0, ROOT)
-import make_plots  # noqa: E402
 import repo_paths  # noqa: E402
+from plotting import make_plots  # noqa: E402
 from lib.angles import ANGLE_NAMES, as_array  # noqa: E402
 
 OPTS = {"had_fermion": "down", "jet_assignment": "truth"}

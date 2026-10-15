@@ -6,7 +6,7 @@ r = sqrt(2 (1 - c)) (Lambert projection: r dr dphi = dc dphi = dOmega, so areas 
 The band y1 < y < y2 of Fig. 6 is the red ring on the surface; its projection is the hatched ring of area Delta V;
 the arrows are grad f (radial).  Every equiprobable contour is a circle.
 
-Run: .venv/bin/python code/paper_figs/fig7_crater.py      -> results/paper_figs/fig7_toy_crater.pdf / .png (+ .json numbers)
+Run: .venv/bin/python code/plotting/paper/fig7_crater.py      -> results/paper_figs/fig7_toy_crater.pdf / .png (+ .json numbers)
 """
 import json
 import os
@@ -16,9 +16,10 @@ import numpy as np
 from scipy.optimize import brentq
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path[:0] = [HERE, os.path.dirname(HERE)]          # paper_figs/ (make_paper_figs) and code/ (repo_paths)
-import make_paper_figs as M  # noqa: E402
-from make_paper_figs import plt  # noqa: E402
+CODE = os.path.dirname(os.path.dirname(HERE))          # code/
+sys.path.insert(0, CODE)
+from plotting.paper import make_paper_figs as M  # noqa: E402
+from plotting.paper.make_paper_figs import plt  # noqa: E402
 import repo_paths  # noqa: E402
 from matplotlib.colors import LinearSegmentedColormap  # noqa: E402
 

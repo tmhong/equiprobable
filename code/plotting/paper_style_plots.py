@@ -13,12 +13,13 @@ tt̄: the fit sample with leave-one-out scores (unbiased, high statistics); hh: 
 Both are normalized to unit area, so the ratio compares shapes.
 
 Example:
-  python code/paper_style_plots.py --dir results/osde      # paper basis -> results/osde/tt_hh_dNdy_dNdt_<level>.{pdf,png}
-  python code/paper_style_plots.py --dir results/osde_ext  # extended basis
-  python code/paper_style_plots.py --dir results/osde --t-vs-y0 parton   # also t_vs_y0_parton.png (shape of t vs y0)
+  python code/plotting/paper_style_plots.py --dir results/osde      # paper basis -> results/osde/tt_hh_dNdy_dNdt_<level>.{pdf,png}
+  python code/plotting/paper_style_plots.py --dir results/osde_ext  # extended basis
+  python code/plotting/paper_style_plots.py --dir results/osde --t-vs-y0 parton   # also t_vs_y0_parton.png (shape of t vs y0)
 """
 import argparse
 import os
+import sys
 
 import matplotlib
 
@@ -28,6 +29,8 @@ import numpy as np  # noqa: E402
 from matplotlib.colors import LinearSegmentedColormap  # noqa: E402
 from matplotlib.ticker import AutoMinorLocator, FuncFormatter  # noqa: E402
 
+CODE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))          # code/
+sys.path.insert(0, CODE)
 import repo_paths  # noqa: E402
 
 TT_DARK = "#0a2f8f"

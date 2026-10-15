@@ -2,7 +2,7 @@
 """
 Paired version of stop_met_test.py: saves per-event scores (nominal vs oracle E_T^miss, same events) and computes
 the paired-bootstrap uncertainty of R(nominal) - R(oracle) for f_tt (CV) at 1% and 10%, gen and reco.
-Run: cd ttbar_bblvqq && OMP_NUM_THREADS=4 .venv/bin/python code/study_gonogo/verify/physics_skeptic/stop_met_paired.py
+Run: cd ttbar_bblvqq && OMP_NUM_THREADS=4 .venv/bin/python code/analysis/study_gonogo/verify/physics_skeptic/stop_met_paired.py
 """
 import json
 import os

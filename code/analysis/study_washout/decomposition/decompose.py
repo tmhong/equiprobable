@@ -16,7 +16,7 @@ from sklearn.metrics import roc_auc_score
 from sklearn.ensemble import HistGradientBoostingClassifier
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.dirname(os.path.dirname(HERE)))     # code/
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(HERE))))     # code/
 import repo_paths
 from lib.angles import decay_angles, production_angles, ANGLE_NAMES
 from lib import osde

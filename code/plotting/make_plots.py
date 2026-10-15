@@ -10,10 +10,10 @@ to the first one.
 Plots go to results/plots/ unless --out is given.
 
 Examples:
-  python code/make_plots.py --sample nominal=samples/ttbar_bblvqq/run_seed12345
-  python code/make_plots.py --sample s1=samples/ttbar_bblvqq/run_seed1 --sample s2=samples/ttbar_bblvqq/run_seed2 \\
-                            --levels reco --norm xsec --lumi 140
-  python code/make_plots.py --sample nominal=samples/ttbar_bblvqq/run_seed12345 --only top_had_mass,lep_pt
+  python code/plotting/make_plots.py --sample nominal=samples/ttbar_bblvqq/run_seed12345
+  python code/plotting/make_plots.py --sample s1=samples/ttbar_bblvqq/run_seed1 --sample s2=samples/ttbar_bblvqq/run_seed2 \\
+                                     --levels reco --norm xsec --lumi 140
+  python code/plotting/make_plots.py --sample nominal=samples/ttbar_bblvqq/run_seed12345 --only top_had_mass,lep_pt
 """
 import argparse
 import json
@@ -25,7 +25,8 @@ import awkward as ak
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, HERE)
+CODE = os.path.dirname(HERE)          # code/
+sys.path.insert(0, CODE)
 
 import repo_paths  # noqa: E402
 from lib import angles, histo, io, physics  # noqa: E402

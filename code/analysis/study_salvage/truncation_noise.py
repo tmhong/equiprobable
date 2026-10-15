@@ -22,7 +22,7 @@ import numpy as np  # noqa: E402
 from sklearn.metrics import roc_auc_score  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)          # code/
+ROOT = os.path.dirname(os.path.dirname(HERE))          # code/
 sys.path.insert(0, ROOT)
 import repo_paths  # noqa: E402
 from lib import osde, style  # noqa: E402

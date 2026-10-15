@@ -6,7 +6,7 @@ working points 0.5%, 1%, 2%, 5%, 10%, and f_T + BW (sum of -ln tail fractions) a
 The rule of CRITERIA.md is applied to every (signal, T, wp, f or f+BW) cell, with paired bootstrap.
 Also: f_T+BW minus BW (do angles add to the masses?), and the tt_indep null for each variant.
 
-Run: OMP_NUM_THREADS=4 .venv/bin/python code/study_gonogo/verify/robust_met/scan.py [--level reco] [--nboot 300]
+Run: OMP_NUM_THREADS=4 .venv/bin/python code/analysis/study_gonogo/verify/robust_met/scan.py [--level reco] [--nboot 300]
 """
 import argparse
 import json
@@ -17,10 +17,9 @@ import numpy as np
 import torch
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
+ROOT = os.path.abspath(os.path.join(HERE, "..", "..", "..", ".."))  # code/
 sys.path.insert(0, ROOT)
-sys.path.insert(0, os.path.join(ROOT, "study_gonogo"))
-import analyze as A  # noqa: E402
+from analysis.study_gonogo import analyze as A  # noqa: E402
 from lib import osde  # noqa: E402
 import repo_paths  # noqa: E402
 

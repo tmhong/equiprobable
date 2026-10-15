@@ -30,16 +30,15 @@ import numpy as np  # noqa: E402
 from sklearn.metrics import roc_auc_score  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)          # code/
+ROOT = os.path.dirname(os.path.dirname(HERE))          # code/
 sys.path.insert(0, ROOT)
 sys.path.insert(0, HERE)
-sys.path.insert(0, os.path.join(ROOT, "study_salvage"))
-import make_plots  # noqa: E402
 import repo_paths  # noqa: E402
+from plotting import make_plots  # noqa: E402
 from htt_study import term_groups  # noqa: E402
 from wtb_reweight import F_SM, eff_at, weights  # noqa: E402
-from salvage import surprisal  # noqa: E402
-from simplest import PDG, bw_surprisal, cauchy_surprisal  # noqa: E402
+from analysis.study_salvage.salvage import surprisal  # noqa: E402
+from analysis.study_salvage.simplest import PDG, bw_surprisal, cauchy_surprisal  # noqa: E402
 from lib import osde, style  # noqa: E402
 from lib.angles import ANGLE_NAMES  # noqa: E402
 

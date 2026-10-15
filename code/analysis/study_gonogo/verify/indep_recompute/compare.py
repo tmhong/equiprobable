@@ -1,6 +1,6 @@
 import json, os, sys
 H = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.abspath(os.path.join(H, "..", "..", ".."))
+ROOT = os.path.abspath(os.path.join(H, "..", "..", "..", ".."))  # code/
 sys.path.insert(0, ROOT)
 import repo_paths
 me = json.load(open(os.path.join(repo_paths.RESULTS, "study_gonogo/verify/indep_recompute/recompute.json")))

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Paper figures for reco level with Delta-R-matched jets (study T), in the style of paper_figs/make_paper_figs.py.
+Paper figures for reco level with Delta-R-matched jets (study T), in the style of make_paper_figs.py.
 
   fig2_osde_projections_recomatched   Fig. 2: four angles, tt̄ (matched reco) with the f_tt̄ projection; tt̄_R,
                                       HH(170), hh(125) overlaid (matched reco too)
@@ -8,7 +8,7 @@ Paper figures for reco level with Delta-R-matched jets (study T), in the style o
   figA_levels_hh170                   appendix: HH(170) vs tt̄ at every level (parton, parton+trigger, gen chi2,
                                       reco chi2, reco matched): ROC, and the HH/tt̄ density ratio vs the tt̄ quantile q
 
-Run: OMP_NUM_THREADS=3 .venv/bin/python code/study_truthmatch/paper_figs_matched.py [--fr 0.3]
+Run: OMP_NUM_THREADS=3 .venv/bin/python code/plotting/paper/paper_figs_matched.py [--fr 0.3]   (figures in results/study_truthmatch/)
 """
 import argparse
 import json
@@ -18,13 +18,13 @@ import sys
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
-sys.path[:0] = [ROOT, os.path.join(ROOT, "paper_figs"), os.path.join(ROOT, "study_bsm")]
-import make_paper_figs as M  # noqa: E402  (also sets the paper's rcParams)
-from make_paper_figs import plt  # noqa: E402
+CODE = os.path.dirname(os.path.dirname(HERE))          # code/
+sys.path.insert(0, CODE)
+from plotting.paper import make_paper_figs as M  # noqa: E402  (also sets the paper's rcParams)
+from plotting.paper.make_paper_figs import plt  # noqa: E402
 from lib import osde  # noqa: E402
 from lib.angles import ANGLE_NAMES  # noqa: E402
-from wtb_reweight import weights  # noqa: E402
+from analysis.study_bsm.wtb_reweight import weights  # noqa: E402
 import repo_paths  # noqa: E402
 
 SAMPLES = {"tt": "run_seed1001", "hh": "run_m170_all", "h1": "run_seed2001"}

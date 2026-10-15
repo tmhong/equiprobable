@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 # results/study_washout/decomposition, or with OUT_SUFFIX (e.g. "_h170") the sibling results/study_washout<SUFFIX>/decomposition:
 # read decomposition.json and write the figures there; SIGNAL_LABEL: legend name
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.dirname(os.path.dirname(HERE)))     # code/
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(HERE))))     # code/
 import repo_paths
 SUFFIX = os.environ.get("OUT_SUFFIX", "")
 OUT = repo_paths.results_dir("study_washout" + SUFFIX, "decomposition")

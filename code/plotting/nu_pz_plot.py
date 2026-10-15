@@ -8,7 +8,7 @@ correctly; (3) choice between the two m_W-constrained solutions: the top-mass χ
 (default, as in the paper) vs the smaller-|p_z| rule vs always taking the other solution.
 
 Example:
-  python code/nu_pz_plot.py --sample samples/ttbar_bblvqq/run_seed12345 --out results/plots/nu_pz.png
+  python code/plotting/nu_pz_plot.py --sample samples/ttbar_bblvqq/run_seed12345 --out results/plots/nu_pz.png
 """
 import argparse
 import json
@@ -24,10 +24,11 @@ import awkward as ak  # noqa: E402
 import numpy as np  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, HERE)
+CODE = os.path.dirname(HERE)          # code/
+sys.path.insert(0, CODE)
 
-import make_plots  # noqa: E402
 import repo_paths  # noqa: E402
+from plotting import make_plots  # noqa: E402
 from lib import physics, summary, style  # noqa: E402
 
 

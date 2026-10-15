@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.dirname(HERE))      # code/
+sys.path.insert(0, os.path.dirname(os.path.dirname(HERE)))      # code/
 import repo_paths  # noqa: E402
 
 OUT = repo_paths.results_dir("study_l1")

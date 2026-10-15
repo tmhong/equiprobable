@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.dirname(os.path.dirname(HERE)))     # code/
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(HERE))))     # code/
 import repo_paths
 # the tt̄ data and the default inputs/outputs: results/study_washout/mechanism
 BASE = repo_paths.results_dir("study_washout", "mechanism")

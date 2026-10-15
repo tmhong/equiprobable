@@ -9,7 +9,7 @@ make_plots.load_sample, then rebuilt a second time with an oracle E_T^miss from 
 analyze.py; R = eps_S/eps_tt at eps_tt = 1% and 10% with the tt fit sample's leave-one-out scores as reference.
 Also: supervised BDT (angles only), both versions; and R binned in the neutralino pT fraction of E_T^miss.
 
-Run: cd ttbar_bblvqq && OMP_NUM_THREADS=4 .venv/bin/python code/study_gonogo/verify/physics_skeptic/stop_met_test.py
+Run: cd ttbar_bblvqq && OMP_NUM_THREADS=4 .venv/bin/python code/analysis/study_gonogo/verify/physics_skeptic/stop_met_test.py
 """
 import json
 import os
@@ -19,7 +19,7 @@ import awkward as ak
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
+ROOT = os.path.abspath(os.path.join(HERE, "..", "..", "..", ".."))  # code/
 sys.path.insert(0, ROOT)
 from lib import angles, io, osde, physics  # noqa: E402
 from lib.angles import ANGLE_NAMES  # noqa: E402

@@ -1,7 +1,7 @@
 """Check the boost-free hardware formulas against lib/angles.py on massless random events."""
 import os, sys
 import numpy as np
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))   # code/
 from lib.angles import production_angles, decay_angles
 
 rng = np.random.default_rng(1)

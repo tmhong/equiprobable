@@ -8,7 +8,7 @@ plus n_all (generated events).  The ΔR-matched level comes from study_truthmatc
 
 For the tt̄ fit sample the angles are checked against osde_fit.py's cache, so that leave-one-out scores are exact.
 
-Run: OMP_NUM_THREADS=3 .venv/bin/python code/study_gonogo/extract.py KEY=PATH[,PATH...] ...   (PATH relative to the repo top)
+Run: OMP_NUM_THREADS=3 .venv/bin/python code/analysis/study_gonogo/extract.py KEY=PATH[,PATH...] ...   (PATH relative to the repo top)
 """
 import os
 import sys
@@ -16,9 +16,9 @@ import sys
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
-sys.path.insert(0, ROOT)
-import make_plots  # noqa: E402
+CODE = os.path.dirname(os.path.dirname(HERE))          # code/
+sys.path.insert(0, CODE)
+from plotting import make_plots  # noqa: E402
 from lib.angles import ANGLE_NAMES  # noqa: E402
 import repo_paths  # noqa: E402
 

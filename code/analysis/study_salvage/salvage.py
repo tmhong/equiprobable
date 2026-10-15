@@ -30,7 +30,7 @@ from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.metrics import roc_auc_score
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)          # code/
+ROOT = os.path.dirname(os.path.dirname(HERE))          # code/
 sys.path.insert(0, ROOT)
 import repo_paths  # noqa: E402
 from lib import osde  # noqa: E402

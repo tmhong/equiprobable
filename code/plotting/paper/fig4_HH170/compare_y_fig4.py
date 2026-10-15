@@ -64,7 +64,7 @@ from matplotlib.ticker import (AutoMinorLocator, FixedFormatter, FixedLocator, F
 
 # where the outputs go: in the repository, results/paper_figs/fig4_HH170/ (code/repo_paths.py); used on its
 # own, the figures and the toy's text files go to the working directory and the toy's event cache next to this file
-_CODE = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+_CODE = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))   # code/
 if os.path.exists(os.path.join(_CODE, "repo_paths.py")):
     sys.path.insert(0, _CODE)
     import repo_paths

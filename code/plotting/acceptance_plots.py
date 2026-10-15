@@ -14,7 +14,7 @@ Outputs per sample (in --out, default results/acceptance):
   acceptance_<label>.json            the efficiencies, per angle and bin
 
 Example:
-  python code/acceptance_plots.py --sample tt=samples/ttbar_bblvqq/run_seed1001 --sample hh=samples/hh_bblvqq/run_seed2001
+  python code/plotting/acceptance_plots.py --sample tt=samples/ttbar_bblvqq/run_seed1001 --sample hh=samples/hh_bblvqq/run_seed2001
 """
 import argparse
 import json
@@ -30,11 +30,12 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, HERE)
+CODE = os.path.dirname(HERE)          # code/
+sys.path.insert(0, CODE)
 
-import make_plots  # noqa: E402
 import repo_paths  # noqa: E402
-from osde_fit import ANGLE_TEX, domain  # noqa: E402
+from plotting import make_plots  # noqa: E402
+from analysis.osde_fit import ANGLE_TEX, domain  # noqa: E402
 from lib import style  # noqa: E402
 
 STYLE = {  # name: (color, linestyle)

@@ -5,7 +5,7 @@ Only the OSDE basis functions (TTbarDensity.factors) and the stored coefficients
 density evaluation, the leave-one-out correction, the mass scores, the working points, the m_tt windows, the AUCs
 and the bootstrap are written here from scratch.
 
-Run: OMP_NUM_THREADS=4 .venv/bin/python code/study_gonogo/verify/indep_recompute/recompute.py
+Run: OMP_NUM_THREADS=4 .venv/bin/python code/analysis/study_gonogo/verify/indep_recompute/recompute.py
 """
 import json
 import os
@@ -16,7 +16,7 @@ import numpy as np
 from scipy.stats import rankdata
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
+ROOT = os.path.abspath(os.path.join(HERE, "..", "..", "..", ".."))  # code/
 sys.path.insert(0, ROOT)
 from lib import osde  # noqa: E402
 import repo_paths  # noqa: E402

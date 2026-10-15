@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Redraw the score plots (scores_<level>.png) from the saved per-event scores, without refitting.
 
-  python code/osde_scores_plot.py --dir results/osde        (or results/osde_ext)
+  python code/plotting/osde_scores_plot.py --dir results/osde        (or results/osde_ext)
 """
 import argparse
 import os
@@ -10,10 +10,11 @@ import sys
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, HERE)
+CODE = os.path.dirname(HERE)          # code/
+sys.path.insert(0, CODE)
 
 import repo_paths  # noqa: E402
-from osde_fit import plot_scores  # noqa: E402
+from analysis.osde_fit import plot_scores  # noqa: E402
 
 
 def main():

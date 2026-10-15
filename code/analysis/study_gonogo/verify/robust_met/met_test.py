@@ -6,7 +6,7 @@ paired bootstrap against f_tt (CV-truncated, the primary detector); then conditi
   - f_tt enrichment for the stop after reweighting tt to the stop's (MET, m_T) distribution
   - f_tt enrichment within m_T < m_W (real neutrino solution) and m_T > m_W
   - supervised BDT: (MET, m_T) vs angles vs angles + (MET, m_T)
-Run: OMP_NUM_THREADS=4 .venv/bin/python code/study_gonogo/verify/robust_met/met_test.py
+Run: OMP_NUM_THREADS=4 .venv/bin/python code/analysis/study_gonogo/verify/robust_met/met_test.py
 """
 import json
 import os
@@ -15,10 +15,9 @@ import sys
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
+ROOT = os.path.abspath(os.path.join(HERE, "..", "..", "..", ".."))  # code/
 sys.path.insert(0, ROOT)
-sys.path.insert(0, os.path.join(ROOT, "study_gonogo"))
-import analyze as A  # noqa: E402
+from analysis.study_gonogo import analyze as A  # noqa: E402
 from lib import osde  # noqa: E402
 from lib.angles import ANGLE_NAMES  # noqa: E402
 import repo_paths  # noqa: E402

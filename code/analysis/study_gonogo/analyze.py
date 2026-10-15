@@ -16,7 +16,7 @@ Scores (higher = more anomalous; tt̄ scores are leave-one-out or out-of-fold on
   bdt_*       supervised ceilings (2-fold), not part of the rule
 Outputs: results/study_gonogo/results.json, results.md, fig_enrichment.png
 
-Run: OMP_NUM_THREADS=8 .venv/bin/python code/study_gonogo/analyze.py [--levels reco,matched] [--nboot 300]
+Run: OMP_NUM_THREADS=8 .venv/bin/python code/analysis/study_gonogo/analyze.py [--levels reco,matched] [--nboot 300]
 """
 import argparse
 import json
@@ -33,9 +33,9 @@ from sklearn.ensemble import HistGradientBoostingClassifier  # noqa: E402
 from sklearn.metrics import roc_auc_score  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
-sys.path.insert(0, ROOT)
-from ml_compare import RealNVP  # noqa: E402
+CODE = os.path.dirname(os.path.dirname(HERE))          # code/
+sys.path.insert(0, CODE)
+from analysis.ml_compare import RealNVP  # noqa: E402
 from lib import osde  # noqa: E402
 from lib.angles import ANGLE_NAMES  # noqa: E402
 import repo_paths  # noqa: E402

@@ -1,6 +1,6 @@
 """Scratch: print markdown tables from results.json for design.md."""
 import json, os, sys
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))   # code/
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))   # code/
 import repo_paths  # noqa: E402
 R = json.load(open(sys.argv[1] if len(sys.argv) > 1 else os.path.join(repo_paths.RESULTS, "study_l1", "results.json")))
 rows = {r["name"]: r for r in R["rows"]}

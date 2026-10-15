@@ -5,7 +5,7 @@ Figures 2 and 3 of the letter (Overleaf NPAD/main.tex), at one-column size (3.4 
 Fig. 2 (fig:OSDE): reco-level tt̄ (fit sample after the reco selection, 24k) with the one-dimensional projections of
   the OSDE fit f_tt̄ (results/osde/f_ttbar_reco.npz), for four of the ten angles, with the two BSM benchmarks overlaid (unit area):
     HH(170)  = samples/hh_bblvqq/run_m170_seed2170,
-    tt̄R     = the same tt̄ events reweighted to a right-handed W helicity fraction F_R (code/study_bsm/wtb_reweight.py).
+    tt̄R     = the same tt̄ events reweighted to a right-handed W helicity fraction F_R (code/analysis/study_bsm/wtb_reweight.py).
   Angles: cos Θ (production), cos θ (W in the top frame), cos θ' (lepton in the W frame), cos θ̃' (down-type quark in
   the hadronic W frame): HH(170) differs most in cos Θ and cos θ, tt̄R only in cos θ' and cos θ̃'.
 Fig. 3 (fig:p): reco level, y = f_tt̄(x) and υ (called t before: rescaled, flipped, shifted -ln y, as paper_style_plots.py) for tt̄
@@ -14,7 +14,7 @@ Fig. 3 (fig:p): reco level, y = f_tt̄(x) and υ (called t before: rescaled, fli
 Fig. 5 (fig:negprob): reco level, the two tt̄ scores υ_Ω (angles, f_tt̄) and υ_m (resonance masses, product of
   Cauchy factors) for tt̄, tt̄R and HH(170); the corner where both are small is where new physics sits.
 
-Run: OMP_NUM_THREADS=3 .venv/bin/python code/paper_figs/make_paper_figs.py [--fr 0.3]
+Run: OMP_NUM_THREADS=3 .venv/bin/python code/plotting/paper/make_paper_figs.py [--fr 0.3]
      -> results/paper_figs/fig2_*, fig3_*, fig5_* .pdf / .png
      (first run reads the samples, ~4 min, and caches the arrays in results/paper_figs/cache.npz)
 """
@@ -30,8 +30,8 @@ import numpy as np  # noqa: E402
 from matplotlib.ticker import AutoMinorLocator  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)          # code/
-sys.path[:0] = [ROOT, os.path.join(ROOT, "study_bsm")]
+CODE = os.path.dirname(os.path.dirname(HERE))          # code/
+sys.path.insert(0, CODE)
 import repo_paths  # noqa: E402
 OUT = repo_paths.results_dir("paper_figs", create=False)    # the figures and the cache (created by main)
 
@@ -115,7 +115,7 @@ def load_inputs(cache):
         z = np.load(cache)
         if "version" in z.files and int(z["version"]) == CACHE_VERSION:
             return {k: z[k] for k in z.files}
-    import make_plots
+    from plotting import make_plots
     from lib.angles import ANGLE_NAMES
     out = {}
     fit, _ = make_plots.load_sample("fit", os.path.join(repo_paths.REPO, FIT_SAMPLE), ["parton", "reco"], None, OPTS)
@@ -151,7 +151,7 @@ def fig2(D, fr, path, level="parton_trig"):
     hh(125) (cyan); unit area.  parton_trig: parton angles of the events that pass the lepton trigger."""
     from lib import osde
     from lib.angles import ANGLE_NAMES
-    from wtb_reweight import weights
+    from analysis.study_bsm.wtb_reweight import weights
     f = osde.load_density(os.path.join(repo_paths.RESULTS, "osde", f"f_ttbar_{level}.npz"))
 
     def sel(key):
@@ -312,7 +312,7 @@ def fig3_plot(path, fr, panels, w_r, n_eff_r, extra):
 
 def fig3(D, fr, path, level="reco", extra=False):
     from lib import osde
-    from wtb_reweight import weights
+    from analysis.study_bsm.wtb_reweight import weights
     sc = np.load(os.path.join(repo_paths.RESULTS, "osde_h170", f"scores_{level}.npz"))
     y_tt, y_hh = sc["train"], sc["hh"]           # tt̄: fit sample, leave-one-out; HH(170)
     # alignment check: the stored LOO scores are those of the reco-selected fit-sample events, in order
@@ -369,7 +369,7 @@ def fig5(D, fr, path, corner=0.20):
     from scipy.ndimage import gaussian_filter
     from lib import osde
     from lib.angles import ANGLE_NAMES
-    from wtb_reweight import weights
+    from analysis.study_bsm.wtb_reweight import weights
     f = osde.load_density(os.path.join(repo_paths.RESULTS, "osde_h170", "f_ttbar_reco.npz"))
     sc = np.load(os.path.join(repo_paths.RESULTS, "osde_h170", "scores_reco.npz"))
     yo_tt = sc["train"]                                             # leave-one-out, aligned (checked in fig3)

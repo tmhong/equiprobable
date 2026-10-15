@@ -3,7 +3,8 @@
 Fig. 6 (fig:negprob) with Delta-R-matched reco jets: HH(170)/tt̄ density in the plane of the tt̄ quantiles of the
 angular score (f_tt̄, LOO for tt̄) and the Breit-Wigner mass score; corner and single-score enrichments.
 
-Run: OMP_NUM_THREADS=3 .venv/bin/python code/study_truthmatch/fig6_corner_matched.py [--fr 0.3] [--bins 5]
+Run: OMP_NUM_THREADS=3 .venv/bin/python code/plotting/paper/fig6_corner_matched.py [--fr 0.3] [--bins 5]
+     (figures in results/study_truthmatch/)
 """
 import argparse
 import json
@@ -13,13 +14,13 @@ import sys
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
-sys.path[:0] = [ROOT, os.path.join(ROOT, "paper_figs"), os.path.join(ROOT, "study_bsm"), HERE]
-import make_paper_figs as M  # noqa: E402
-from analyze import bw_score, quantile  # noqa: E402
+CODE = os.path.dirname(os.path.dirname(HERE))          # code/
+sys.path.insert(0, CODE)
+from plotting.paper import make_paper_figs as M  # noqa: E402
+from analysis.study_truthmatch.analyze import bw_score, quantile  # noqa: E402
 from lib import osde  # noqa: E402
 from lib.angles import ANGLE_NAMES  # noqa: E402
-from wtb_reweight import weights  # noqa: E402
+from analysis.study_bsm.wtb_reweight import weights  # noqa: E402
 import repo_paths  # noqa: E402
 
 OUT = repo_paths.results_dir("study_truthmatch")

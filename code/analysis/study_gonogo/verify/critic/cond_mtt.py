@@ -2,7 +2,7 @@
 """Critic: cross-check physics_skeptic's m_tt-conditional R (threshold set within tt m_tt deciles) at reco and parton_trig."""
 import os, sys
 import numpy as np
-HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
+HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.abspath(os.path.join(HERE, "..", "..", "..", ".."))  # code/
 sys.path.insert(0, ROOT)
 from lib import osde
 from lib.angles import ANGLE_NAMES

@@ -24,8 +24,8 @@ which is bit-exact for W <= 24 because products of two <= 26-bit operands are ex
 Inputs: results/study_l1/cache/*.npz from extract.py.  Output: results/study_l1/results.json and a printed table.
 Deterministic (no random numbers except the bootstrap, which uses a fixed seed).
 
-    python code/study_l1/emulate.py              # everything (~2 min)
-    python code/study_l1/emulate.py --selftest   # only the consistency checks
+    python code/analysis/study_l1/emulate.py              # everything (~2 min)
+    python code/analysis/study_l1/emulate.py --selftest   # only the consistency checks
 """
 import argparse
 import json
@@ -39,7 +39,7 @@ import numpy as np
 from sklearn.metrics import roc_auc_score
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)          # code/
+ROOT = os.path.dirname(os.path.dirname(HERE))          # code/
 sys.path.insert(0, ROOT)
 import repo_paths  # noqa: E402
 from lib import osde  # noqa: E402

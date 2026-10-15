@@ -6,7 +6,7 @@ import os, sys
 import awkward as ak
 import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
+ROOT = os.path.abspath(os.path.join(HERE, "..", "..", "..", ".."))  # code/
 sys.path.insert(0, ROOT)
 from lib import io, osde
 from lib.angles import ANGLE_NAMES

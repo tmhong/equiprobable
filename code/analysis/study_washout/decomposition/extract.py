@@ -1,12 +1,12 @@
 """Extract aligned parton + gen arrays needed for the parton->gen decomposition into an npz cache.
 usage (from the repository top; SAMPLE_DIR and OUT relative to the current directory):
-  python code/study_washout/decomposition/extract.py tt samples/ttbar_bblvqq/run_seed1001 100000 results/study_washout/decomposition/cache_tt.npz
+  python code/analysis/study_washout/decomposition/extract.py tt samples/ttbar_bblvqq/run_seed1001 100000 results/study_washout/decomposition/cache_tt.npz
 decompose.py reads cache_tt.npz from results/study_washout/decomposition and cache_hh.npz from
 results/study_washout<OUT_SUFFIX>/decomposition."""
 import sys, os, time
 import numpy as np, awkward as ak
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))   # code/
-import make_plots
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))   # code/
+from plotting import make_plots
 from lib.angles import as_array, ANGLE_NAMES
 
 label, path, nmax, out = sys.argv[1], sys.argv[2], int(sys.argv[3]), sys.argv[4]

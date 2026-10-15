@@ -16,11 +16,11 @@ import numpy as np
 from sklearn.metrics import roc_auc_score
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)          # code/
+ROOT = os.path.dirname(os.path.dirname(HERE))          # code/
 sys.path.insert(0, ROOT)
 sys.path.insert(0, HERE)
-import make_plots  # noqa: E402
 import repo_paths  # noqa: E402
+from plotting import make_plots  # noqa: E402
 from salvage import surprisal  # noqa: E402
 from simplest import cauchy_surprisal  # noqa: E402
 from lib import osde  # noqa: E402

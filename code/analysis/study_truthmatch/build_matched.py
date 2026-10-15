@@ -7,15 +7,15 @@ the one closest to m_t, as in physics.build_parton) are matched one-to-one to th
 |eta| < 2.5), greedily, smallest Delta R first, Delta R < DR_MAX.  An event is kept when it passes the usual
 preselection (1 lepton, >= 4 jets, >= 1 b-tag) and all four quarks are matched.  The jets then take the roles of
 their partons (no chi2); the neutrino is still reconstructed from E_T^miss with the m_W constraint, keeping the root
-whose m(l nu b_lep) is closer to m_t.  The ten angles are computed with plotting/angles.add_angles.
+whose m(l nu b_lep) is closer to m_t.  The ten angles are computed with lib/angles.add_angles.
 
 Writes
   <sample>/angles_down_dRmatch.npz     reco/<angle> for the matched events, the osde_fit.py cache format
-                                       (fit with --config code/study_truthmatch/config_dRmatch.py --levels reco)
+                                       (fit with --config code/analysis/study_truthmatch/config_dRmatch.py --levels reco)
   results/study_truthmatch/data_<name>.npz   event indices, masses, the chi2-assignment angles of the same events,
                                        parton angles (for the tt̄_R weights) and the matching statistics
 
-Run: OMP_NUM_THREADS=3 .venv/bin/python code/study_truthmatch/build_matched.py [--max-events N] [--dr 0.4] SAMPLE ...
+Run: OMP_NUM_THREADS=3 .venv/bin/python code/analysis/study_truthmatch/build_matched.py [--max-events N] [--dr 0.4] SAMPLE ...
 (SAMPLE relative to the repo top, e.g. samples/ttbar_bblvqq/run_seed1001)
 """
 import argparse
@@ -28,9 +28,9 @@ import numpy as np
 import vector
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
-sys.path.insert(0, ROOT)
-import make_plots  # noqa: E402
+CODE = os.path.dirname(os.path.dirname(HERE))          # code/
+sys.path.insert(0, CODE)
+from plotting import make_plots  # noqa: E402
 from lib import angles, physics  # noqa: E402
 import repo_paths  # noqa: E402
 

@@ -2,7 +2,7 @@
 # ATLAS card with pileup, <mu> = 50
 # Derived from Delphes 3.5.1 cards/delphes_card_ATLAS_PileUp.tcl; only three changes:
 #   set PileUpFile  -> absolute path of the 100k-event 13 TeV SoftQCD:inelastic library
-#                      (pileup/MinBias_13TeV.pileup, made by pileup/make_minbias_library.sh)
+#                      (results/pileup/MinBias_13TeV.pileup, made by code/generation/pileup/make_minbias_library.sh)
 #   set MeanPileUp  50 -> 50   (Poisson mean number of inelastic pp interactions per crossing)
 #   "source trackResolutionATLAS.tcl" replaced by the file's content: Delphes resolves
 #   'source' relative to the top card's directory (<proc>/Cards under MG5), so it fails there.

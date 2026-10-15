@@ -38,7 +38,7 @@ Checks:
   - The flow NLL on the training / validation / independent tt̄ samples shows any overfitting.
   - The flow AUC for hh (run_seed2001) vs tt̄ at parton should match ml_compare (0.654).
 Output: results/study_bsm/ml_wtb.json and a printed table.
-Run: OMP_NUM_THREADS=3 .venv/bin/python code/study_bsm/ml_wtb.py      (~10 min; reading the 100k fit sample dominates)
+Run: OMP_NUM_THREADS=3 .venv/bin/python code/analysis/study_bsm/ml_wtb.py      (~10 min; reading the 100k fit sample dominates)
 """
 import argparse
 import json
@@ -55,14 +55,14 @@ from sklearn.ensemble import HistGradientBoostingClassifier  # noqa: E402
 from sklearn.metrics import roc_auc_score  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)          # code/
+ROOT = os.path.dirname(os.path.dirname(HERE))          # code/
 sys.path.insert(0, ROOT)
 sys.path.insert(0, HERE)
-import make_plots  # noqa: E402
 import repo_paths  # noqa: E402
-from ml_compare import SEED, angle_features, train_flow  # noqa: E402   (train_flow builds ml_compare.RealNVP)
+from plotting import make_plots  # noqa: E402
+from analysis.ml_compare import SEED, angle_features, train_flow  # noqa: E402   (train_flow builds ml_compare.RealNVP)
 from wtb_reweight import F_SM, eff_at, weights  # noqa: E402
-from salvage import surprisal  # noqa: E402              (study_salvage/, put on the path by wtb_reweight)
+from analysis.study_salvage.salvage import surprisal  # noqa: E402
 from lib import osde  # noqa: E402
 from lib.angles import ANGLE_NAMES  # noqa: E402
 

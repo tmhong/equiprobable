@@ -13,7 +13,7 @@ truncated fit scores the independent tt̄ sample.  At the matched level the chi2
 events are scored with the reco-level fold models (tt̄: the fold of the event in the reco fit sample).
 
 Writes results/study_cv/scores_<level>.npz and results/study_cv/cv_summary.json.
-Run: OMP_NUM_THREADS=8 .venv/bin/python code/study_cv/cv_scores.py [--levels ...] [--t 2.5]
+Run: OMP_NUM_THREADS=8 .venv/bin/python code/analysis/study_cv/cv_scores.py [--levels ...] [--t 2.5]
 """
 import argparse
 import json
@@ -23,8 +23,8 @@ import sys
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
-sys.path.insert(0, ROOT)
+CODE = os.path.dirname(os.path.dirname(HERE))          # code/
+sys.path.insert(0, CODE)
 from lib import osde  # noqa: E402
 from lib.angles import ANGLE_NAMES  # noqa: E402
 import repo_paths  # noqa: E402

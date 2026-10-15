@@ -8,7 +8,7 @@ Delta V = 2 pi Delta c, and |grad f| = |df/dc|, so Delta V ~ 2 pi Delta y / |df/
 The toy is compare_y.py's: spin 1 -> 1/2 + 1/2 with helicity fractions (F_0, F_-, F_+) = (0.7, 0.3, 0); type 0 is
 isotropic, 1/4pi.  A rotation keeps solid angles, so V(y), Delta V and dN/dy are those of Fig. 6.
 
-Run: .venv/bin/python code/paper_figs/fig7_volume3d.py      -> results/paper_figs/fig7_toy_collapsed.pdf / .png
+Run: .venv/bin/python code/plotting/paper/fig7_volume3d.py      -> results/paper_figs/fig7_toy_collapsed.pdf / .png
 """
 import json
 import os
@@ -18,9 +18,10 @@ import numpy as np
 from scipy.optimize import brentq
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path[:0] = [HERE, os.path.dirname(HERE)]          # paper_figs/ (make_paper_figs) and code/ (repo_paths)
-import make_paper_figs as M  # noqa: E402  (fonts, colours)
-from make_paper_figs import plt  # noqa: E402
+CODE = os.path.dirname(os.path.dirname(HERE))          # code/
+sys.path.insert(0, CODE)
+from plotting.paper import make_paper_figs as M  # noqa: E402  (fonts, colours)
+from plotting.paper.make_paper_figs import plt  # noqa: E402
 import repo_paths  # noqa: E402
 
 F0, FM, FP = 0.7, 0.3, 0.0

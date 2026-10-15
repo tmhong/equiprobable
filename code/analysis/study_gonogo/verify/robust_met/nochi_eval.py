@@ -3,9 +3,9 @@
 import os, sys, json
 import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
-sys.path.insert(0, ROOT); sys.path.insert(0, os.path.join(ROOT, "study_gonogo"))
-import analyze as A
+ROOT = os.path.abspath(os.path.join(HERE, "..", "..", "..", ".."))  # code/
+sys.path.insert(0, ROOT)
+from analysis.study_gonogo import analyze as A
 from lib import osde
 from lib.angles import ANGLE_NAMES
 import repo_paths

@@ -8,7 +8,8 @@ W rest frame:    z' = W direction, y' = z × z' (in the xy plane), x' = y' × z'
 Projection: z to the right, x up, y = z × x out of the page, so the page is the x-z plane,
 i.e. the plane spanned by the beam axis and the top momentum.
 
-Run:  python code/figures/make_angle_diagram.py   ->  code/figures/angle_diagram.tex, results/figures/angle_diagram.{pdf,png}
+Run:  python code/plotting/angle_diagram/make_angle_diagram.py   ->  code/plotting/angle_diagram/angle_diagram.tex,
+                                                                    results/figures/angle_diagram.{pdf,png}
 """
 import os
 import subprocess
@@ -16,8 +17,8 @@ import sys
 
 import numpy as np
 
-HERE = os.path.dirname(os.path.abspath(__file__))     # code/figures: the generated .tex (kept in git)
-sys.path.insert(0, os.path.dirname(HERE))
+HERE = os.path.dirname(os.path.abspath(__file__))     # code/plotting/angle_diagram: the generated .tex (kept in git)
+sys.path.insert(0, os.path.dirname(os.path.dirname(HERE)))          # code/
 import repo_paths  # noqa: E402
 
 # ---- angles drawn (degrees) and layout -------------------------------------

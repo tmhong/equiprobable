@@ -1,7 +1,7 @@
 #!/bin/bash
 # Merge sample directories from parallel generate_samples.py jobs into one sample directory
 # that make_plots.load_sample reads like any other (event i of the LHE = event i of Delphes).
-#   code/pileup/merge_samples.sh <out_dir> <sample_dir_1> <sample_dir_2> ...
+#   code/generation/pileup/merge_samples.sh <out_dir> <sample_dir_1> <sample_dir_2> ...
 # delphes_events.root: hadd (keeps the input order); parton_events.lhe.gz: header of the first
 # file + the <event> blocks of all files in the same order; metadata.json: summed nevents,
 # mean cross section, list of inputs.
@@ -15,7 +15,7 @@ hadd "$out/delphes_events.root" "${roots[@]}" > "$out/hadd.log" 2>&1
   for d in "${@:2}"; do gunzip -c "$d/parton_events.lhe.gz" | sed -n '/<event>/,/<\/event>/p'; done
   echo '</LesHouchesEvents>'; } | gzip > "$out/parton_events.lhe.gz"
 HERE=$(cd "$(dirname "$0")" && pwd)
-"$HERE/../../.venv/bin/python" - "$out" "$@" <<'EOF'
+"$HERE/../../../.venv/bin/python" - "$out" "$@" <<'EOF'
 import json, sys, gzip, uproot
 out, ins = sys.argv[1], sys.argv[2:]
 metas = [json.load(open(f"{d}/metadata.json")) for d in ins]

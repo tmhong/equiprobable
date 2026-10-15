@@ -12,8 +12,8 @@ Conventions (as make_angle_diagram.py):
                    top direction z), the gray plane contains z' and the lepton; φ' is the angle between them.
 
 Sized for one PRL column (8.6 cm); the printed font size is the size after scaling to it.
-Run:  .venv/bin/python code/figures/make_angle_diagram_slide.py   ->  code/figures/angle_diagram_slide.tex,
-                                                                   results/figures/angle_diagram_slide.{pdf,png}
+Run:  .venv/bin/python code/plotting/angle_diagram/make_angle_diagram_slide.py
+        ->  code/plotting/angle_diagram/angle_diagram_slide.tex, results/figures/angle_diagram_slide.{pdf,png}
 """
 import os
 import subprocess
@@ -21,8 +21,8 @@ import sys
 
 import numpy as np
 
-HERE = os.path.dirname(os.path.abspath(__file__))     # code/figures: the generated .tex (kept in git)
-sys.path.insert(0, os.path.dirname(HERE))
+HERE = os.path.dirname(os.path.abspath(__file__))     # code/plotting/angle_diagram: the generated .tex (kept in git)
+sys.path.insert(0, os.path.dirname(os.path.dirname(HERE)))          # code/
 import repo_paths  # noqa: E402
 
 STEM = "angle_diagram_slide"

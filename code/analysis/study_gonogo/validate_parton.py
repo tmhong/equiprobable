@@ -6,7 +6,7 @@ the down-type quark (in the hadronic top's rest frame).  With analyzing powers k
 SM tt̄ at 13 TeV ~ +0.07, no correlation 0, a spin singlet (eta_t) ~ +0.32, a 3P0 scalar (H -> tt̄) ~ -0.11.
 Also m_tt̄, |cos Theta| and the mean W-helicity (cos theta' of the lepton) for each sample.
 
-Run: .venv/bin/python code/study_gonogo/validate_parton.py NAME=PATH ...   (PATH relative to the repo top)
+Run: .venv/bin/python code/analysis/study_gonogo/validate_parton.py NAME=PATH ...   (PATH relative to the repo top)
 """
 import os
 import sys
@@ -14,9 +14,9 @@ import sys
 import numpy as np
 import vector
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, ROOT)
-import make_plots  # noqa: E402
+CODE = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))   # code/
+sys.path.insert(0, CODE)
+from plotting import make_plots  # noqa: E402
 import repo_paths  # noqa: E402
 
 OPTS = {"had_fermion": "down", "jet_assignment": "truth"}

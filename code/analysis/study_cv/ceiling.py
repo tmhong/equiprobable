@@ -5,8 +5,8 @@ import json, os, sys
 import numpy as np
 from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.metrics import roc_auc_score
-HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
-sys.path.insert(0, ROOT)
+HERE = os.path.dirname(os.path.abspath(__file__)); CODE = os.path.dirname(os.path.dirname(HERE))  # code/
+sys.path.insert(0, CODE)
 from lib.angles import ANGLE_NAMES  # noqa: E402
 import repo_paths  # noqa: E402
 OUT = repo_paths.results_dir("study_cv")
