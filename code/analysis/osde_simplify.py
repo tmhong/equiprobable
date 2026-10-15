@@ -29,8 +29,8 @@ sys.path.insert(0, HERE)
 
 import repo_paths  # noqa: E402
 from osde_fit import efficiency_curve  # noqa: E402
-from plotting import osde, style  # noqa: E402
-from plotting.angles import ANGLE_NAMES  # noqa: E402
+from lib import osde, style  # noqa: E402
+from lib.angles import ANGLE_NAMES  # noqa: E402
 
 THRESHOLDS = [0, 0.5, 1.0, osde.KT_THRESHOLD, 2, 2.5, 3, 4, 5, 7, 10, 15, 20]
 

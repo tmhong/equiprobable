@@ -25,8 +25,8 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
-from plotting import osde  # noqa: E402
-from plotting.angles import ANGLE_NAMES  # noqa: E402
+from lib import osde  # noqa: E402
+from lib.angles import ANGLE_NAMES  # noqa: E402
 import repo_paths  # noqa: E402
 
 K = 5

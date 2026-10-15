@@ -26,7 +26,7 @@ ROOT = os.path.dirname(HERE)          # code/
 sys.path.insert(0, ROOT)
 import make_plots  # noqa: E402
 import repo_paths  # noqa: E402
-from plotting.angles import ANGLE_NAMES, as_array  # noqa: E402
+from lib.angles import ANGLE_NAMES, as_array  # noqa: E402
 
 OPTS = {"had_fermion": "down", "jet_assignment": "truth"}
 NJ = 8

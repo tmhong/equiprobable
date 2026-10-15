@@ -7,7 +7,7 @@ from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.metrics import roc_auc_score
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
-from plotting.angles import ANGLE_NAMES  # noqa: E402
+from lib.angles import ANGLE_NAMES  # noqa: E402
 import repo_paths  # noqa: E402
 OUT = repo_paths.results_dir("study_cv")
 C = repo_paths.results_dir("study_gonogo", "cache", create=False); TM = repo_paths.results_dir("study_truthmatch", create=False)

@@ -5,7 +5,7 @@ import numpy as np
 H = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, H)
 from recompute import get, basis, f_eval, self_term, own_fit, R_at, SIG, FFILE, RES  # own helpers only
-from plotting import osde
+from lib import osde
 for level in ("reco", "matched"):
     f = osde.load_density(os.path.join(RES, FFILE[level]))
     tt = get("tt_fit", level)

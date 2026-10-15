@@ -29,7 +29,7 @@ sys.path.insert(0, HERE)
 
 import repo_paths  # noqa: E402
 from osde_fit import ANGLE_TEX  # noqa: E402
-from plotting import osde, style  # noqa: E402
+from lib import osde, style  # noqa: E402
 
 # angle: (kind, order of the paper's basis)
 ANGLES = {"cos_theta": ("leg", 1), "cos_theta_prime": ("leg", 2), "phi_prime": ("four", 1),

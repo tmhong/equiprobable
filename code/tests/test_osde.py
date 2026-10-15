@@ -11,7 +11,7 @@ import pytest
 from numpy.polynomial import legendre
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from plotting import angles, osde  # noqa: E402
+from lib import angles, osde  # noqa: E402
 
 RNG = np.random.default_rng(7)
 

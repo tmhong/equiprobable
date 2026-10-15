@@ -33,7 +33,7 @@ sys.path.insert(0, HERE)
 
 import make_plots  # noqa: E402
 import repo_paths  # noqa: E402
-from plotting import angles, osde, style  # noqa: E402
+from lib import angles, osde, style  # noqa: E402
 
 LEVELS = ["parton", "parton_trig", "gen", "reco"]
 COLORS = {"train": "#1f4e9c", "test": "#2a9d8f", "hh": "#d1495b"}
@@ -243,7 +243,7 @@ def truncation_study(f, X, ks=(0, 2, 3, 5)):
 def y_scale_scan(Y, n_hermite, scales=(1.0, 0.9, 0.8, 0.7)):
     """chi2 of the Hermite expansion of the Y marginal vs the histogram, for several scales
     (plus s = std(Y)); the paper uses s = 1."""
-    from plotting.osde import hermite_functions
+    from lib.osde import hermite_functions
     edges = np.linspace(-3, 3, 25)
     h, _ = np.histogram(Y, edges)
     dens, err = h / len(Y) / np.diff(edges), np.sqrt(h) / len(Y) / np.diff(edges)

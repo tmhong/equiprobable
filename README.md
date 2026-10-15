@@ -102,7 +102,7 @@ dict(name="lead_bjet_eta", levels=["gen", "reco"],
      bins=(30, -2.5, 2.5), xlabel=r"Leading b-jet $\eta$"),
 ```
 
-`expr` and `select` can be `{level: function}` dicts when the levels need different code. The top of `code/plot_config.py` lists everything available on `ev`. Object cuts (jet/lepton p_T and η, χ² resolutions) are in `CUTS` in `code/plotting/physics.py`; override them from `code/plot_config.py`.
+`expr` and `select` can be `{level: function}` dicts when the levels need different code. The top of `code/plot_config.py` lists everything available on `ev`. Object cuts (jet/lepton p_T and η, χ² resolutions) are in `CUTS` in `code/lib/physics.py`; override them from `code/plot_config.py`.
 
 ### Object and reconstruction definitions
 
@@ -116,7 +116,7 @@ Preselection (`ev.presel`): exactly 1 lepton, ≥4 jets, ≥1 b-jet.
 
 The tt̄ reconstruction (gen and reco) uses a χ² built from m_jj = m_W, m_jjb = m_t and m_ℓνb = m_t. It considers all assignments of the 6 leading jets in which the two b slots hold min(n_b, 2) b-tagged jets, and both m_W-constrained ν p_z solutions. The m_ℓνb = m_t term therefore resolves the two-fold ν ambiguity, as in the paper. On reco, jets truth-matched to the hadronic-top quarks give m_t ≈ 172 GeV and m_W ≈ 82 GeV. The χ² peaks are broader because the best χ² picks the fully correct assignment in only ~35% of events, and one or more quarks is often out of acceptance or merged.
 
-### The ten angles (`code/plotting/angles.py`, as defined in `main.tex`)
+### The ten angles (`code/lib/angles.py`, as defined in `main.tex`)
 
 `x = {Y, Θ, θ, φ, θ′, φ′, θ̃, φ̃, θ̃′, φ̃′}` are computed at all three levels. They are stored on `ev` as `Y, cos_Theta, cos_theta, phi, cos_theta_prime, phi_prime, cos_theta_tilde, phi_tilde, cos_theta_prime_tilde, phi_prime_tilde`; the plot files are named `angle_*.png`.
 
@@ -140,7 +140,7 @@ Validation (10k events):
 - The cross section (0.11 fb at 13 TeV) is LO HEFT with MG5's default parameters; its h width is not the sum of its own partial widths. It is **not** an SM prediction, so compare hh shapes with unit-area normalization.
 - For tt̄-hypothesis quantities (the angles), hh uses the same χ² at gen/reco level. At parton level, hh uses the b pairing that best matches m_t.
 
-## f_tt̄ by OSDE (`code/osde_fit.py`, `code/plotting/osde.py`)
+## f_tt̄ by OSDE (`code/osde_fit.py`, `code/lib/osde.py`)
 
 ```bash
 python code/osde_fit.py --train samples/ttbar_bblvqq/run_seed1001 --test samples/ttbar_bblvqq/run_seed12345 \

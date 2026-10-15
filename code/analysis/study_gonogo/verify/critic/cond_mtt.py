@@ -4,8 +4,8 @@ import os, sys
 import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
 sys.path.insert(0, ROOT)
-from plotting import osde
-from plotting.angles import ANGLE_NAMES
+from lib import osde
+from lib.angles import ANGLE_NAMES
 import repo_paths
 C = os.path.join(repo_paths.RESULTS, "study_gonogo/cache")
 FF = {"reco": "osde/f_ttbar_reco.npz", "parton_trig": "osde/f_ttbar_parton_trig.npz"}  # under results/

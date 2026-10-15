@@ -38,8 +38,8 @@ import repo_paths  # noqa: E402
 import make_plots  # noqa: E402
 from salvage import surprisal  # noqa: E402
 from simplest import cauchy_surprisal  # noqa: E402
-from plotting import osde, style, summary  # noqa: E402
-from plotting.angles import ANGLE_NAMES  # noqa: E402
+from lib import osde, style, summary  # noqa: E402
+from lib.angles import ANGLE_NAMES  # noqa: E402
 
 OUT = repo_paths.results_dir("pileup")       # results/pileup: densities, scores, figures
 OPTS = {"had_fermion": "down", "jet_assignment": "truth"}

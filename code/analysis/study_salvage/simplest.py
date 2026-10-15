@@ -19,8 +19,8 @@ sys.path.insert(0, ROOT)
 sys.path.insert(0, HERE)
 import repo_paths  # noqa: E402
 from salvage import surprisal  # noqa: E402
-from plotting import osde  # noqa: E402
-from plotting.angles import ANGLE_NAMES  # noqa: E402
+from lib import osde  # noqa: E402
+from lib.angles import ANGLE_NAMES  # noqa: E402
 
 # OUT_SUFFIX (e.g. "_h170"): signal data from results/study_washout<SUFFIX>/mechanism/data_hh.npz, output simplest<SUFFIX>.json
 SUFFIX = os.environ.get("OUT_SUFFIX", "")

@@ -11,7 +11,7 @@ from sklearn.model_selection import cross_val_predict, StratifiedKFold
 HERE = os.path.dirname(os.path.abspath(__file__)); CODE = os.path.abspath(os.path.join(HERE, "../.."))
 sys.path.insert(0, CODE)
 import repo_paths
-from plotting import angles as A, osde
+from lib import angles as A, osde
 # the tt̄ data and the default outputs: results/study_washout/mechanism
 BASE = repo_paths.results_dir("study_washout", "mechanism")
 # OUT_SUFFIX (e.g. "_h170"): signal data (data_hh.npz) and outputs in the sibling results/study_washout<SUFFIX>/mechanism;

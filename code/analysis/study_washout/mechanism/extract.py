@@ -11,7 +11,7 @@ PROJ = repo_paths.REPO
 SUFFIX = os.environ.get("OUT_SUFFIX", "")      # non-empty: write into the sibling results/study_washout<SUFFIX>/mechanism
 OUT = repo_paths.results_dir("study_washout" + SUFFIX, "mechanism")
 import make_plots
-from plotting import angles as A, physics as P
+from lib import angles as A, physics as P
 
 name, path, maxev = sys.argv[1], sys.argv[2], int(sys.argv[3])
 ev, _ = make_plots.load_sample(name, os.path.join(PROJ, path), ["parton", "gen"], maxev,

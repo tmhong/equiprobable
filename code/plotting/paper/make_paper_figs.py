@@ -116,7 +116,7 @@ def load_inputs(cache):
         if "version" in z.files and int(z["version"]) == CACHE_VERSION:
             return {k: z[k] for k in z.files}
     import make_plots
-    from plotting.angles import ANGLE_NAMES
+    from lib.angles import ANGLE_NAMES
     out = {}
     fit, _ = make_plots.load_sample("fit", os.path.join(repo_paths.REPO, FIT_SAMPLE), ["parton", "reco"], None, OPTS)
     hh, _ = make_plots.load_sample("hh170", os.path.join(repo_paths.REPO, HH170), ["parton", "reco"], None, OPTS)
@@ -149,8 +149,8 @@ def load_inputs(cache):
 def fig2(D, fr, path, level="parton_trig"):
     """Four angles: tt̄ (filled, navy outline) with the f_tt̄ projection (ink), tt̄R (gray dashed), HH(170) (amber),
     hh(125) (cyan); unit area.  parton_trig: parton angles of the events that pass the lepton trigger."""
-    from plotting import osde
-    from plotting.angles import ANGLE_NAMES
+    from lib import osde
+    from lib.angles import ANGLE_NAMES
     from wtb_reweight import weights
     f = osde.load_density(os.path.join(repo_paths.RESULTS, "osde", f"f_ttbar_{level}.npz"))
 
@@ -311,13 +311,13 @@ def fig3_plot(path, fr, panels, w_r, n_eff_r, extra):
 
 
 def fig3(D, fr, path, level="reco", extra=False):
-    from plotting import osde
+    from lib import osde
     from wtb_reweight import weights
     sc = np.load(os.path.join(repo_paths.RESULTS, "osde_h170", f"scores_{level}.npz"))
     y_tt, y_hh = sc["train"], sc["hh"]           # tt̄: fit sample, leave-one-out; HH(170)
     # alignment check: the stored LOO scores are those of the reco-selected fit-sample events, in order
     f = osde.load_density(os.path.join(repo_paths.RESULTS, "osde_h170", f"f_ttbar_{level}.npz"))
-    from plotting.angles import ANGLE_NAMES
+    from lib.angles import ANGLE_NAMES
     if level == "reco":
         ok, x_tt = D["reco_ok"], {a: D[f"tt_r_{a}"] for a in ANGLE_NAMES}
     else:                                        # parton_trig: parton angles of the events passing the lepton trigger
@@ -367,8 +367,8 @@ def fig5(D, fr, path, corner=0.20):
     """Reco level: the two tt̄ scores, angular (υ_Ω from f_tt̄) and resonance masses (υ_m from the Cauchy factors),
     for tt̄, tt̄R and HH(170); new physics sits in the corner where both are small."""
     from scipy.ndimage import gaussian_filter
-    from plotting import osde
-    from plotting.angles import ANGLE_NAMES
+    from lib import osde
+    from lib.angles import ANGLE_NAMES
     from wtb_reweight import weights
     f = osde.load_density(os.path.join(repo_paths.RESULTS, "osde_h170", "f_ttbar_reco.npz"))
     sc = np.load(os.path.join(repo_paths.RESULTS, "osde_h170", "scores_reco.npz"))

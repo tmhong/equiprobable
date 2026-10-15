@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))   # code/
 import repo_paths  # noqa: E402
-from plotting import style  # noqa: E402
+from lib import style  # noqa: E402
 
 OUT = repo_paths.results_dir("pileup")      # results/pileup
 ROOT = repo_paths.RESULTS                   # figure paths in results.json are relative to results/
@@ -45,7 +45,7 @@ def main():
     mus = sorted(per, key=float)
     x = [float(m) for m in mus]
     style.use()
-    # Sized for a 16:9 slide (~150 x 65 mm, see plotting/style.py): 15.5 x 6 in is scaled by ~0.38, so the
+    # Sized for a 16:9 slide (~150 x 65 mm, see lib/style.py): 15.5 x 6 in is scaled by ~0.38, so the
     # 16-20 pt text below lands at ~6-7.6 pt.  One unit per panel; distinct markers as well as colours.
     BLUE, RED, TEAL, ORANGE = "#1f4e9c", "#d1495b", "#2a9d8f", "#e9a03b"
     fig, axs = plt.subplots(1, 3, figsize=(15.5, 6.0))

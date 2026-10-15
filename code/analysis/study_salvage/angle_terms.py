@@ -17,8 +17,8 @@ sys.path.insert(0, HERE)
 import repo_paths  # noqa: E402
 from salvage import surprisal  # noqa: E402
 from simplest import PDG, bw_surprisal, cauchy_surprisal  # noqa: E402
-from plotting import osde  # noqa: E402
-from plotting.angles import ANGLE_NAMES  # noqa: E402
+from lib import osde  # noqa: E402
+from lib.angles import ANGLE_NAMES  # noqa: E402
 
 SUFFIX = os.environ.get("OUT_SUFFIX", "")   # e.g. "_h170": signal from results/study_washout_h170/, output angle_terms_h170.json
 tt = np.load(os.path.join(repo_paths.RESULTS, "study_washout/mechanism/data_tt.npz"))

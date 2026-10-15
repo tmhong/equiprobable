@@ -10,8 +10,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)          # code/
 sys.path.insert(0, ROOT)
 import repo_paths  # noqa: E402
-from plotting import osde  # noqa: E402
-from plotting.angles import ANGLE_NAMES, production_angles, decay_angles  # noqa: E402
+from lib import osde  # noqa: E402
+from lib.angles import ANGLE_NAMES, production_angles, decay_angles  # noqa: E402
 
 M_W, M_TOP, SIG_W, SIG_T = 80.4, 172.5, 10.0, 15.0
 
@@ -42,7 +42,7 @@ def nu_pz(lep, mex, mey, mw=M_W):
 
 
 def chi2_float(d, idx, njmax=6, use_btag=True, massless=False):
-    """Same algorithm as plotting.physics._reconstruct_ttbar (generalized)."""
+    """Same algorithm as lib.physics._reconstruct_ttbar (generalized)."""
     pt = d["jet_pt"][idx, :njmax]; eta = d["jet_eta"][idx, :njmax]; phi = d["jet_phi"][idx, :njmax]
     m = np.zeros_like(pt) if massless else d["jet_mass"][idx, :njmax]
     J = p4_from_ptetaphim(pt, eta, phi, m)                       # (n, nj, 4), NaN for missing

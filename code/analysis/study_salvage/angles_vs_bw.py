@@ -23,7 +23,7 @@ sys.path.insert(0, ROOT)
 sys.path.insert(0, HERE)
 import repo_paths  # noqa: E402
 from reco_extension import load, HH, SUFFIX  # noqa: E402  (SIGNAL_SAMPLE / OUT_SUFFIX, see reco_extension.py)
-from plotting.angles import ANGLE_NAMES  # noqa: E402
+from lib.angles import ANGLE_NAMES  # noqa: E402
 
 MASSES = ["m_w_had", "m_t_lep", "m_t_had"]
 

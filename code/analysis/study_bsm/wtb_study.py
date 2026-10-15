@@ -40,8 +40,8 @@ from htt_study import term_groups  # noqa: E402
 from wtb_reweight import F_SM, eff_at, weights  # noqa: E402
 from salvage import surprisal  # noqa: E402
 from simplest import PDG, bw_surprisal, cauchy_surprisal  # noqa: E402
-from plotting import osde, style  # noqa: E402
-from plotting.angles import ANGLE_NAMES  # noqa: E402
+from lib import osde, style  # noqa: E402
+from lib.angles import ANGLE_NAMES  # noqa: E402
 
 OPTS = {"had_fermion": "down", "jet_assignment": "truth"}
 FR_SCORE = [0.02, 0.05, 0.1, 0.3]

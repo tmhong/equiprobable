@@ -6,7 +6,7 @@ import numpy as np
 from sklearn.ensemble import HistGradientBoostingClassifier
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
 sys.path.insert(0, ROOT)
-from plotting.angles import ANGLE_NAMES
+from lib.angles import ANGLE_NAMES
 import repo_paths
 C = os.path.join(repo_paths.RESULTS, "study_gonogo/cache")
 A = lambda k: np.column_stack([np.load(f"{C}/{k}.npz")[f"reco/{a}"] for a in ANGLE_NAMES])

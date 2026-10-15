@@ -42,10 +42,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)          # code/
 sys.path.insert(0, ROOT)
 import repo_paths  # noqa: E402
-from plotting import osde  # noqa: E402
-from plotting.angles import ANGLE_NAMES, decay_angles, production_angles  # noqa: E402
+from lib import osde  # noqa: E402
+from lib.angles import ANGLE_NAMES, decay_angles, production_angles  # noqa: E402
 
-M_W, M_TOP, SIG_W, SIG_T = 80.4, 172.5, 10.0, 15.0     # χ² of plotting/physics.py
+M_W, M_TOP, SIG_W, SIG_T = 80.4, 172.5, 10.0, 15.0     # χ² of lib/physics.py
 DENSITY = os.path.join(repo_paths.RESULTS, "osde", "f_ttbar_reco.npz")
 SIG_CUT = 10.0                                         # keep |ĉ|/σ > 10  (31 terms at reco)
 MASSES = ("m_w_had", "m_t_lep", "m_t_had")
@@ -266,13 +266,13 @@ def _nu_pz(L, mex, mey, mw=M_W):
 
 
 def assignments(N):
-    """(bh, bl, q1, q2) with q1 < q2 (the order of plotting/physics.py)."""
+    """(bh, bl, q1, q2) with q1 < q2 (the order of lib/physics.py)."""
     return np.array([p for p in permutations(range(N), 4) if p[2] < p[3]])
 
 
 def float_chain(d, idx, N=6, use_btag=True, massless=False, dtype="truth", scheme=None, smear=False):
-    """Float χ² reconstruction (same algorithm as plotting/physics.py, generalized) + the ten angles
-    from plotting/angles.py.  With N=6, use_btag, massive objects and truth down-type assignment
+    """Float χ² reconstruction (same algorithm as lib/physics.py, generalized) + the ten angles
+    from lib/angles.py.  With N=6, use_btag, massive objects and truth down-type assignment
     it reproduces the offline reference exactly."""
     inp = l1_inputs(d, idx, N, scheme, smear)
     n = len(idx)
@@ -900,7 +900,7 @@ def summarize(res, ref=None, ref2=None, boot=True):
 def selftest(st):
     """The fixed-point code path with W = None, exact functions and unquantized inputs must reproduce
     the float chain (massless, no b-tag, softer down-type) event by event."""
-    print("selftest: fixed-point code path in float mode vs float chain (plotting/angles.py)")
+    print("selftest: fixed-point code path in float mode vs float chain (lib/angles.py)")
     ok = True
     for N in (6, 5, 4):
         fl = st.run_float(f"_float{N}", N, False, True, "softer")

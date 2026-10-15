@@ -24,7 +24,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
-from plotting import style  # noqa: E402
+from lib import style  # noqa: E402
 import numpy as np  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -32,7 +32,7 @@ sys.path.insert(0, HERE)
 
 import make_plots  # noqa: E402
 import repo_paths  # noqa: E402
-from plotting.physics import M_W  # noqa: E402
+from lib.physics import M_W  # noqa: E402
 
 LEVELS = {"parton": ("#1f4e9c", ":"), "gen": ("#d1495b", "--"), "reco": ("#2a9d8f", "-")}
 

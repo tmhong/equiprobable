@@ -14,8 +14,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import stop_met_test as T  # noqa: E402
 
-from plotting import osde  # noqa: E402
-from plotting.angles import ANGLE_NAMES  # noqa: E402
+from lib import osde  # noqa: E402
+from lib.angles import ANGLE_NAMES  # noqa: E402
 import repo_paths  # noqa: E402
 
 

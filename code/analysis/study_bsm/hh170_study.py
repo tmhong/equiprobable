@@ -34,8 +34,8 @@ from htt_study import lr_auc, eff_at  # noqa: E402
 from htt_test import auc_err, extract  # noqa: E402
 from salvage import surprisal  # noqa: E402
 from simplest import PDG, bw_surprisal, cauchy_surprisal  # noqa: E402
-from plotting import osde, style  # noqa: E402
-from plotting.angles import ANGLE_NAMES  # noqa: E402
+from lib import osde, style  # noqa: E402
+from lib.angles import ANGLE_NAMES  # noqa: E402
 
 import argparse  # noqa: E402
 

@@ -18,8 +18,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
 sys.path.insert(0, ROOT)
 import make_plots  # noqa: E402
-from plotting import physics  # noqa: E402
-from plotting.angles import ANGLE_NAMES  # noqa: E402
+from lib import physics  # noqa: E402
+from lib.angles import ANGLE_NAMES  # noqa: E402
 import repo_paths  # noqa: E402
 
 OUT = repo_paths.results_dir("study_gonogo", "verify", "robust_met")

@@ -28,7 +28,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 import repo_paths  # noqa: E402
-from plotting import angles, histo, io, physics  # noqa: E402
+from lib import angles, histo, io, physics  # noqa: E402
 
 CHUNK = 10000           # Delphes events read at a time
 LEVEL_STYLE = {"parton": ":", "parton_trig": "-.", "gen": "--", "reco": "-"}

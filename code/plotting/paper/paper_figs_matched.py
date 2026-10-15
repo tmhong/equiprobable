@@ -22,8 +22,8 @@ ROOT = os.path.dirname(HERE)
 sys.path[:0] = [ROOT, os.path.join(ROOT, "paper_figs"), os.path.join(ROOT, "study_bsm")]
 import make_paper_figs as M  # noqa: E402  (also sets the paper's rcParams)
 from make_paper_figs import plt  # noqa: E402
-from plotting import osde  # noqa: E402
-from plotting.angles import ANGLE_NAMES  # noqa: E402
+from lib import osde  # noqa: E402
+from lib.angles import ANGLE_NAMES  # noqa: E402
 from wtb_reweight import weights  # noqa: E402
 import repo_paths  # noqa: E402
 

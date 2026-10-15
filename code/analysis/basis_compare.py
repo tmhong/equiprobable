@@ -27,8 +27,8 @@ sys.path.insert(0, HERE)
 
 import osde_fit  # noqa: E402
 import repo_paths  # noqa: E402
-from plotting import osde, style  # noqa: E402
-from plotting.angles import ANGLE_NAMES  # noqa: E402
+from lib import osde, style  # noqa: E402
+from lib.angles import ANGLE_NAMES  # noqa: E402
 
 BASES = [("paper (M functions)", "osde"), ("spherical harmonics", "osde_sh"), ("extended", "osde_ext")]   # dirs in results/
 OUT = os.path.join(repo_paths.RESULTS, "osde_sh")

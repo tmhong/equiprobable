@@ -8,8 +8,8 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
 sys.path.insert(0, ROOT)
-from plotting import io, osde
-from plotting.angles import ANGLE_NAMES
+from lib import io, osde
+from lib.angles import ANGLE_NAMES
 import repo_paths
 
 path = os.path.join(repo_paths.SAMPLES, "stop_bblvqq/run_seed4002")

@@ -7,7 +7,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
 sys.path.insert(0, ROOT); sys.path.insert(0, os.path.join(ROOT, "study_gonogo"))
 import analyze as A
-from plotting import osde
+from lib import osde
 import repo_paths
 f0 = osde.load_density(os.path.join(repo_paths.RESULTS, A.F_FILES["reco"]))
 tt = A.load("tt_fit", "reco")

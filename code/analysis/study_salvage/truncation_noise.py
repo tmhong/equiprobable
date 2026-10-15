@@ -25,8 +25,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)          # code/
 sys.path.insert(0, ROOT)
 import repo_paths  # noqa: E402
-from plotting import osde, style  # noqa: E402
-from plotting.angles import ANGLE_NAMES  # noqa: E402
+from lib import osde, style  # noqa: E402
+from lib.angles import ANGLE_NAMES  # noqa: E402
 
 LVL = "parton"
 fit_all = np.load(os.path.join(repo_paths.SAMPLES, "ttbar_bblvqq/run_seed1001/angles_down_truth.npz"))

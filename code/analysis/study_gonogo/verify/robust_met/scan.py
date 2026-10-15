@@ -21,7 +21,7 @@ ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
 sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, "study_gonogo"))
 import analyze as A  # noqa: E402
-from plotting import osde  # noqa: E402
+from lib import osde  # noqa: E402
 import repo_paths  # noqa: E402
 
 OUT = repo_paths.results_dir("study_gonogo", "verify", "robust_met")

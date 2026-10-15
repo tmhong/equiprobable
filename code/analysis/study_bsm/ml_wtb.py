@@ -63,8 +63,8 @@ import repo_paths  # noqa: E402
 from ml_compare import SEED, angle_features, train_flow  # noqa: E402   (train_flow builds ml_compare.RealNVP)
 from wtb_reweight import F_SM, eff_at, weights  # noqa: E402
 from salvage import surprisal  # noqa: E402              (study_salvage/, put on the path by wtb_reweight)
-from plotting import osde  # noqa: E402
-from plotting.angles import ANGLE_NAMES  # noqa: E402
+from lib import osde  # noqa: E402
+from lib.angles import ANGLE_NAMES  # noqa: E402
 
 torch.set_num_threads(int(os.environ["OMP_NUM_THREADS"]))      # ml_compare sets 8 when imported
 

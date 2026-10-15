@@ -34,8 +34,8 @@ import make_plots  # noqa: E402
 import repo_paths  # noqa: E402
 from salvage import surprisal  # noqa: E402
 from simplest import PDG, bw_surprisal, cauchy_surprisal  # noqa: E402
-from plotting import osde  # noqa: E402
-from plotting.angles import ANGLE_NAMES  # noqa: E402
+from lib import osde  # noqa: E402
+from lib.angles import ANGLE_NAMES  # noqa: E402
 
 OPTS = {"had_fermion": "down", "jet_assignment": "truth"}
 F_SM = (0.703, 0.296, 0.001)

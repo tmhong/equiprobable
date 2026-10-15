@@ -29,7 +29,7 @@ sys.path.insert(0, HERE)
 
 import make_plots  # noqa: E402
 import repo_paths  # noqa: E402
-from plotting import style, summary  # noqa: E402
+from lib import style, summary  # noqa: E402
 
 PAIRS = [("cos_theta", "cos_theta_tilde", r"$\cos\theta$ vs $\cos\tilde\theta$", (-1, 1)),
          ("phi", "phi_tilde", r"$\phi$ vs $\tilde\phi$", (-np.pi, np.pi)),

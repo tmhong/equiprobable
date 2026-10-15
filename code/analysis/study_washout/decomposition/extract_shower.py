@@ -12,7 +12,7 @@ usage (from the repository top; SAMPLE_DIR and OUT relative to the current direc
 import sys, os, time
 import numpy as np, awkward as ak, uproot
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))   # code/
-from plotting import io, physics
+from lib import io, physics
 
 label, path, nmax, out = sys.argv[1], sys.argv[2], int(sys.argv[3]), sys.argv[4]
 t0 = time.time()

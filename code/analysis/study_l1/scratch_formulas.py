@@ -1,8 +1,8 @@
-"""Check the boost-free hardware formulas against plotting/angles.py on massless random events."""
+"""Check the boost-free hardware formulas against lib/angles.py on massless random events."""
 import os, sys
 import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from plotting.angles import production_angles, decay_angles
+from lib.angles import production_angles, decay_angles
 
 rng = np.random.default_rng(1)
 n = 20000

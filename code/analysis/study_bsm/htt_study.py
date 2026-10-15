@@ -36,8 +36,8 @@ import repo_paths  # noqa: E402
 from htt_test import HistDensity, auc_err, extract  # noqa: E402
 from salvage import surprisal  # noqa: E402
 from simplest import PDG, bw_surprisal, cauchy_surprisal  # noqa: E402
-from plotting import osde, style  # noqa: E402
-from plotting.angles import ANGLE_NAMES  # noqa: E402
+from lib import osde, style  # noqa: E402
+from lib.angles import ANGLE_NAMES  # noqa: E402
 
 SIGNALS = {"H500": ("samples/Htt_bblvqq/run_seed3002", r"$H(500)\to t\bar t$"),
            "H350": ("samples/Htt_bblvqq/run_m350_seed3003", r"$H(350)\to t\bar t$")}

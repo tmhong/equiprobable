@@ -37,9 +37,9 @@ import make_plots  # noqa: E402
 import repo_paths  # noqa: E402
 from salvage import surprisal  # noqa: E402
 from simplest import PDG, bw_surprisal, cauchy_surprisal  # noqa: E402
-from plotting import angles as A  # noqa: E402
-from plotting import osde  # noqa: E402
-from plotting.angles import ANGLE_NAMES  # noqa: E402
+from lib import angles as A  # noqa: E402
+from lib import osde  # noqa: E402
+from lib.angles import ANGLE_NAMES  # noqa: E402
 
 OPTS = {"had_fermion": "down", "jet_assignment": "truth"}
 # signal sample (SIGNAL_SAMPLE) and output suffix (OUT_SUFFIX, e.g. "_h170"); defaults = hh(125), tagging.json

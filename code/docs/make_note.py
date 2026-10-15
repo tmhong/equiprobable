@@ -120,12 +120,12 @@ def _jsonable(o):
 
 
 def sample_summary(sample, hh, recompute):
-    """plotting.summary numbers for the tt̄ (independent) sample and the hh reco cutflow, cached."""
+    """lib.summary numbers for the tt̄ (independent) sample and the hh reco cutflow, cached."""
     cache = os.path.join(OUT, f"sample_summary{SUF}.json")
     if os.path.exists(cache) and not recompute:
         return json.load(open(cache))
     import make_plots
-    from plotting import summary
+    from lib import summary
     opts = {"had_fermion": "down", "jet_assignment": "truth"}
     ev, xsec = make_plots.load_sample("tt", sample, ["parton", "gen", "reco"], None, opts)
     S = summary.summarize(ev)
@@ -1148,7 +1148,7 @@ cheap because for massless objects every hypothesis mass is a sum of shared pair
 $m^2_{{ij}}=2p_i\cdot p_j$, so the whole combinatorics needs 35 four-DSP dot products, 47 small $\chi^2$ ROMs
 indexed by $m^2$ (no square roots), 360 adders and a comparator tree.  The ten angles need no Lorentz boosts:
 they follow from closed-form dimensionless expressions (aberration, ratios of the same invariants,
-perpendicular components), checked against \texttt{{plotting/angles.py}} to $10^{{-10}}$.  The density (31 kept
+perpendicular components), checked against \texttt{{lib/angles.py}} to $10^{{-10}}$.  The density (31 kept
 terms) and the mass factors are one-dimensional ROMs.  The floating-point chain reproduces the offline
 reference (angles + BW AUC {obt:.3f} against {exp_:.3f}).
 
@@ -1506,7 +1506,7 @@ directory named after the code that writes it; the paths below are relative to \
 \begin{description}
 \item[\texttt{setup\_tools.sh}] installs MadGraph5\_aMC 3.6.7, Pythia8, Delphes 3.5.1 (built with CMake) and the Python environment.
 \item[\texttt{generate\_samples.py}] MadGraph $\to$ Pythia8 $\to$ Delphes production; \texttt{--process ttbar|hh|Htt}.
-\item[\texttt{plotting/}] \texttt{io.py} (LHE and Delphes readers), \texttt{physics.py} (objects, selection, $\chi^2$ reconstruction),
+\item[\texttt{lib/}] \texttt{io.py} (LHE and Delphes readers), \texttt{physics.py} (objects, selection, $\chi^2$ reconstruction),
   \texttt{angles.py} (the ten angles), \texttt{osde.py} (basis functions, OSDE, leave-one-out, extended and spherical-harmonic bases),
   \texttt{summary.py}, \texttt{histo.py}, \texttt{style.py}.
 \item[\texttt{make\_plots.py}, \texttt{plot\_config.py}] validation plots; \texttt{nu\_pz\_plot.py}, \texttt{lep\_had\_compare.py},

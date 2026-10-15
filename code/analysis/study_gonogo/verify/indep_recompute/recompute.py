@@ -18,7 +18,7 @@ from scipy.stats import rankdata
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
 sys.path.insert(0, ROOT)
-from plotting import osde  # noqa: E402
+from lib import osde  # noqa: E402
 import repo_paths  # noqa: E402
 
 RES = repo_paths.RESULTS                                    # inputs: FFILE, the caches, results.json

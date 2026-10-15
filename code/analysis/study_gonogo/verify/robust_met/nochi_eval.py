@@ -6,8 +6,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
 sys.path.insert(0, ROOT); sys.path.insert(0, os.path.join(ROOT, "study_gonogo"))
 import analyze as A
-from plotting import osde
-from plotting.angles import ANGLE_NAMES
+from lib import osde
+from lib.angles import ANGLE_NAMES
 import repo_paths
 OUT = repo_paths.results_dir("study_gonogo", "verify", "robust_met")   # also extract_met.py's and stop_nochi.py's outputs
 WPS = (0.005, 0.01, 0.02, 0.05, 0.1)

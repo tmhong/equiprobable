@@ -46,8 +46,8 @@ sys.path.insert(0, HERE)
 
 import make_plots  # noqa: E402
 import repo_paths  # noqa: E402
-from plotting import osde, style  # noqa: E402
-from plotting.angles import ANGLE_NAMES  # noqa: E402
+from lib import osde, style  # noqa: E402
+from lib.angles import ANGLE_NAMES  # noqa: E402
 
 torch.set_num_threads(8)
 SEED = 20261007

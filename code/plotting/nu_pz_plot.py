@@ -28,7 +28,7 @@ sys.path.insert(0, HERE)
 
 import make_plots  # noqa: E402
 import repo_paths  # noqa: E402
-from plotting import physics, summary, style  # noqa: E402
+from lib import physics, summary, style  # noqa: E402
 
 
 def width(d):

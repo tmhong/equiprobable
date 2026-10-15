@@ -28,12 +28,12 @@ sys.path.insert(0, HERE)
 
 import make_plots  # noqa: E402
 import repo_paths  # noqa: E402
-from plotting import summary  # noqa: E402
+from lib import summary  # noqa: E402
 
 
 # ============================================================================
 # Slide content.  Each entry is one frame; helpers are defined further below.
-#   S    = numbers from plotting/summary.py   (S["reco"]["hel_lep"]["F0"], ...)
+#   S    = numbers from lib/summary.py   (S["reco"]["hel_lep"]["F0"], ...)
 #   meta = the sample's metadata.json         (cross section, seed, ...)
 # ============================================================================
 def build_slides(S, meta):
@@ -990,7 +990,7 @@ def study_c_slides(pdir, ldir):
                 r"objects every hypothesis mass is a sum of shared pairwise invariants $m^2_{ij}=2p_i\!\cdot\!p_j$: 35 four-DSP dot products, "
                 r"47 small $\chi^2$ ROMs indexed by $m^2$ (no square roots), 360 adders and a comparator tree",
                 r"The ten angles need no Lorentz boosts: closed-form dimensionless expressions (aberration, ratios of the same invariants, "
-                r"perpendicular components), checked against \texttt{plotting/angles.py} to $10^{-10}$",
+                r"perpendicular components), checked against \texttt{lib/angles.py} to $10^{-10}$",
                 r"Density and masses as 1-D ROMs (Legendre, Hermite, Wigner-$d$, $\cos/\sin$, Breit--Wigner, $\ln$); the kept $f$ has 31 terms",
                 rf"Bit-true numpy emulation on the real reco samples; float chain reproduces the offline reference "
                 rf"(angles + BW {rc.get('obtained', {}).get('angles+BW', float('nan')):.3f} vs {rc.get('expected (study_salvage/reco_extension.json)', {}).get('angles+BW', float('nan')):.3f})",

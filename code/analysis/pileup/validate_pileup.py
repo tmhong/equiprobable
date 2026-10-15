@@ -6,7 +6,7 @@ Pileup validation: branch sizes and analysis-level numbers for Delphes samples.
       pu0=samples/ttbar_bblvqq/test_pu0 pu50=samples/ttbar_bblvqq/test_pu50 pu200=samples/ttbar_bblvqq/test_pu200
 
 label=path[:max_events] (a relative path is taken from the repository top).  Uses the analysis code unchanged
-(make_plots.load_sample, plotting.summary.correct_assignment).  Prints a table and writes results/pileup/validation.json.
+(make_plots.load_sample, lib.summary.correct_assignment).  Prints a table and writes results/pileup/validation.json.
 """
 import json
 import os
@@ -20,7 +20,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))           # code/
 import repo_paths                                   # noqa: E402
 import make_plots                                   # noqa: E402
-from plotting import io, summary                    # noqa: E402
+from lib import io, summary                    # noqa: E402
 
 ANGLES = {"had_fermion": "down", "jet_assignment": "truth"}
 
@@ -38,7 +38,7 @@ def branch_sizes(root):
 
 
 def check_branches(root):
-    """Every branch the analysis reads (plotting/io.py DELPHES_BRANCHES) must exist."""
+    """Every branch the analysis reads (lib/io.py DELPHES_BRANCHES) must exist."""
     keys = set(uproot.open(root)["Delphes"].keys())
     return [f"{c}.{f}" for c, fs in io.DELPHES_BRANCHES.items() if c != "Photon"
             for f in fs if f"{c}/{c}.{f}" not in keys]

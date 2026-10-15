@@ -7,7 +7,7 @@ import sys, os, time
 import numpy as np, awkward as ak
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))   # code/
 import make_plots
-from plotting.angles import as_array, ANGLE_NAMES
+from lib.angles import as_array, ANGLE_NAMES
 
 label, path, nmax, out = sys.argv[1], sys.argv[2], int(sys.argv[3]), sys.argv[4]
 t0 = time.time()

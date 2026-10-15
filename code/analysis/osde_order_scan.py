@@ -7,7 +7,7 @@ For an orthonormal 1-D basis φ_k, adding term k changes the integrated squared 
 criterion  J(K) = Σ_{k<=K} (2 σ_k^2 - |ĉ_k|^2)  is minimized at the best order K.
 (Fourier order m contributes its cos and sin terms together.)
 
-Mapping to the 10-D basis of plotting/osde.py:
+Mapping to the 10-D basis of lib/osde.py:
   cos θ (Legendre degree)  and φ (harmonic order)   -> j1max
   cos θ' (Legendre degree)                          -> j2max
   φ' (harmonic order)                               -> min(j1max, j2max)

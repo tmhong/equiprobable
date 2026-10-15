@@ -17,7 +17,7 @@ Coefficients: c = ∫ B* f dx, estimated by the sample mean ĉ = (1/N) Σ_k B*(x
 dx = dΩ dΩ' dΩ~ dΩ~' dcosΘ dY.  The basis factorizes, so fitting and evaluating use
 einsum contractions and never build an (N x 14400) array.
 
-Angles are passed as a dict of arrays keyed by plotting.angles.ANGLE_NAMES.
+Angles are passed as a dict of arrays keyed by lib.angles.ANGLE_NAMES.
 """
 from itertools import product
 from math import factorial, pi, sqrt

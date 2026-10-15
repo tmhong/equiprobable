@@ -14,7 +14,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)          # code/
 sys.path.insert(0, ROOT)
 import repo_paths  # noqa: E402
-from plotting import style  # noqa: E402
+from lib import style  # noqa: E402
 
 # OUT_SUFFIX (e.g. "_h170"): signal from results/study_washout<SUFFIX>/mechanism, output masses_<level><SUFFIX>.png;
 # SIGNAL_LABEL: signal name in the legend and titles.  Defaults: hh(125), as before.

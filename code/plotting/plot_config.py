@@ -18,7 +18,7 @@ Each entry in PLOTS is a dict:
   optional: xlabel, ylabel, logy, ratio (default True), ratio_range,
             overflow (default True), show_mean (default True), density, title
 
-What is available on `ev` (see plotting/physics.py):
+What is available on `ev` (see lib/physics.py):
   parton: t_lep, t_had (= W + b; for hh the pairing that best fits tt̄), w_lep, w_had, b, bbar, b_lep, b_had,
           lep, nu, quarks (pt-ordered), ttbar, lep_charge, lep_flavour
   gen & reco: jets, bjets, ljets, leptons, lep (leading), met, met_phi, mtw,
@@ -36,13 +36,13 @@ What is available on `ev` (see plotting/physics.py):
 import awkward as ak
 import numpy as np
 
-# Override object cuts here if you like (defaults in plotting/physics.py):
+# Override object cuts here if you like (defaults in lib/physics.py):
 CUTS = {
     # "jet_pt": 30.0,
     # "reco_max_jets": 5,
 }
 
-# The ten angles of the paper (plotting/angles.py):
+# The ten angles of the paper (lib/angles.py):
 #   had_fermion:    which W_had daughter defines the primed hadronic angles,
 #                   "down" (paper: the analogue of the charged lepton) or "up"
 #   jet_assignment: how gen/reco decide which W_had jet is the down-type quark:

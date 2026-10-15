@@ -18,8 +18,8 @@ from sklearn.ensemble import HistGradientBoostingClassifier
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(os.path.dirname(HERE)))     # code/
 import repo_paths
-from plotting.angles import decay_angles, production_angles, ANGLE_NAMES
-from plotting import osde
+from lib.angles import decay_angles, production_angles, ANGLE_NAMES
+from lib import osde
 
 # the tt̄ caches and the default outputs: results/study_washout/decomposition
 BASE = repo_paths.results_dir("study_washout", "decomposition")

@@ -35,7 +35,7 @@ sys.path.insert(0, HERE)
 import make_plots  # noqa: E402
 import repo_paths  # noqa: E402
 from osde_fit import ANGLE_TEX, domain  # noqa: E402
-from plotting import style  # noqa: E402
+from lib import style  # noqa: E402
 
 STYLE = {  # name: (color, linestyle)
     "no cuts": ("#1f1f1f", "-"),

@@ -31,7 +31,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
 import make_plots  # noqa: E402
-from plotting import angles, physics  # noqa: E402
+from lib import angles, physics  # noqa: E402
 import repo_paths  # noqa: E402
 
 OPTS = {"had_fermion": "down", "jet_assignment": "truth"}   # the chi2 comparison uses the paper's labelling
