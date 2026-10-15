@@ -138,12 +138,21 @@ def smoothed_ratio(v_tt, v_hh, lo, hi, n=401, smooth=1.5, min_events=50):
     return 0.5 * (fine[1:] + fine[:-1]), np.where(enough, d_hh / np.where(d_tt > 0, d_tt, 1.0), np.nan)
 
 
-def ratio_axis(ax, fig, v, edges):
+UPS_CLIPPED = "hide"    # Fig. 3, υ panel: the events whose υ is clipped to 0 or 1 (s' beyond s'_1 or s'_0, a long tail):
+                        # "hide" leaves them out of the histograms and the ratio, normalized to all events (the caption
+                        # gives their fractions); "bin" piles them into the first and last bins
+
+
+def ratio_axis(ax, fig, v, edges, keep=None):
     """HH/tt̄ of the panel's two samples as a red curve on its own axis on the right, styled as in Fig. 4
     (compare_y.py style_ratio and title_at_plot_top): linear from 0 (log over a wide range), its title, the
     red fraction, level with the top of the plot in the column of its values, the values it covers left out."""
     from matplotlib.ticker import AutoMinorLocator, FixedLocator, FuncFormatter, MaxNLocator
-    g, r = smoothed_ratio(v["tt"], v["hh"], edges[0], edges[-1])
+    if keep is None:
+        g, r = smoothed_ratio(v["tt"], v["hh"], edges[0], edges[-1])
+    else:                                   # the shown events, normalized to all events like the histograms
+        g, r = smoothed_ratio(v["tt"][keep["tt"]], v["hh"][keep["hh"]], edges[0], edges[-1])
+        r = r * keep["hh"].mean() / keep["tt"].mean()
     axr = ax.twinx()
     axr.plot(g, r, color=RATIO_C, lw=1.0, zorder=6, solid_capstyle="round")
     lo_v, hi_v = np.nanmin(r), np.nanmax(r)
@@ -189,11 +198,13 @@ def fig3_plot(path, panels, ratio_col=1):
     W = T + P + GX + T + P + RT
     H = B + P + TOP
     fig = plt.figure(figsize=(W, H))
-    for col, (v, edges, sym, xlab, shade_bins) in enumerate(panels):
+    for col, (v, edges, sym, xlab, shade_bins, *opt) in enumerate(panels):
+        keep = opt[0] if opt else None      # the events shown (None: all)
         ax = M.place(fig, T + col * (P + GX + T), B, P, P, W, H)
         clip = lambda u: np.clip(u, edges[0], edges[-1] - 1e-9 * (edges[-1] - edges[0]))
         wd = np.diff(edges)
-        h = {k: np.histogram(clip(v[k]), edges)[0] / len(v[k]) for k in ("tt", "hh")}
+        shown = {k: v[k] if keep is None else v[k][keep[k]] for k in ("tt", "hh")}
+        h = {k: np.histogram(clip(shown[k]), edges)[0] / len(v[k]) for k in ("tt", "hh")}
         colors = cmap(0.08 + 0.92 * shade_bins)
         for i in range(len(wd)):
             ax.fill_between([edges[i], edges[i + 1]], 0, h["tt"][i] / wd[i], color=colors[i], lw=0)
@@ -209,7 +220,7 @@ def fig3_plot(path, panels, ratio_col=1):
         ax.tick_params(axis="y", labelleft=True)
         tuck_ylabel(ax, fig)
         if col == ratio_col:
-            ratio_axis(ax, fig, v, edges)
+            ratio_axis(ax, fig, v, edges, keep)
     hs = [plt.Rectangle((0, 0), 1, 1, fc=cmap(0.45), ec=M.NAVY, lw=1.0), plt.Line2D([], [], color=HH_C, lw=1.3)]
     fig.axes[0].legend(hs, [M.TT_L, HH_LBL], loc="upper right", bbox_to_anchor=(1.03, 1.0), handlelength=1.3,
                        handletextpad=0.4, labelspacing=0.25, borderaxespad=0.1)
@@ -239,6 +250,13 @@ def fig3(y, w_r, path, with_h1=False):
     v_t = {"tt": t["tt"], "hh": t["hh"], **({"h1": t["x"]} if with_h1 else {})}
     panels = [(v_y, y_edges, "y", rf"$y\ \ [10^{{{expo}}}]$", shade(ups_of_y(yc))),
               (v_t, t_edges, r"\upsilon", r"$\upsilon$", shade(tc))]
+    if UPS_CLIPPED == "hide":               # υ strictly inside (0, 1), y inside the plotted range: the rest not shown
+        keep_t = {k: (v_t[k] > 0) & (v_t[k] < 1) for k in ("tt", "hh")}
+        keep_y = {k: (v_y[k] >= y_edges[0]) & (v_y[k] < y_edges[-1]) for k in ("tt", "hh")}
+        panels = [panels[0] + (keep_y,), panels[1] + (keep_t,)]
+        print("Fig. 3, not shown: " + "; ".join(
+            f"{k}: y below/above the range {np.mean(v_y[k] < y_edges[0]):.2%}/{np.mean(v_y[k] >= y_edges[-1]):.2%}, "
+            f"υ clipped to 0/1 {np.mean(v_t[k] == 0):.2%}/{np.mean(v_t[k] == 1):.2%}" for k in ("tt", "hh")))
     return fig3_plot(path, panels), n_eff_r
 
 
