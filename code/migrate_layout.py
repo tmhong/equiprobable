@@ -1,10 +1,26 @@
 #!/usr/bin/env python3
 """
-Move the files that git does not track (fits, caches, .npz, ROOT files, plots) from the old flat layout into the
-code/ + results/ layout, after pulling the reorganization.  git moves the tracked files itself; this script moves the
-rest.  Code-like files (.py .sh .C .tcl .tex) go to code/<dir>/, everything else to results/<dir>/; files at the top
-level that are not code go to results/figures/ (pdf, png) or results/logs/.  samples/, tools/, work/, .venv/, recon_cicero/, code/, results/ and .git
-are left alone.
+Move the files that git does not track (fits, caches, .npz, ROOT files, plots, scripts never committed) from an older
+layout into the current one, after pulling the reorganization.  git moves the tracked files itself; this script moves
+the rest.  Two older layouts are known:
+
+  flat    everything at the top (osde_fit.py, plotting/, paper_figs/, study_cv/, ...).  Code-like files (.py .sh .C
+          .cc .cmnd .tcl .tex, Makefile, README) go next to the moved code in code/<category>/ (see below), everything
+          else to results/<dir>/; files at the top level that are not code go to results/figures/ (pdf, png) or
+          results/logs/.
+  code/   code/ + results/, with code/ not yet sorted into categories (code/osde_fit.py, code/paper_figs/,
+          code/study_cv/, ...).  What is left in the old code/ directories after the pull goes the same way.
+
+Where the code goes now (old directory or file -> new place under code/):
+  plotting/ (flat layout: the shared library) -> lib/            cards/      -> generation/cards/
+  figures/    -> plotting/angle_diagram/                          note/       -> docs/
+  paper_figs/ -> plotting/paper/                                  study_*/    -> analysis/study_*/
+  pileup/     -> generation/pileup/ (src/, bin/, shell scripts, merge_*/make_*) or analysis/pileup/ (other .py)
+  study_gonogo/generate_gonogo.sh, study_truthmatch/generate_hh170_more.sh -> generation/;
+  study_truthmatch/paper_figs_matched.py, fig6_corner_matched.py -> plotting/paper/
+  top-level scripts -> generation/, analysis/, plotting/ or docs/ (TOP_SCRIPTS below); unknown ones stay in code/.
+code/plotting/ of the code/ layout (the shared library, now code/lib/) is left alone: after the pull it holds the
+plotting scripts.  samples/, tools/, work/, .venv/, recon_cicero/, results/ and .git are left alone.
 
 Dry run by default (prints what it would do).  Run from anywhere:
   python code/migrate_layout.py            # show
@@ -21,6 +37,49 @@ SKIP = {"samples", "tools", "work", ".venv", "recon_cicero", "code", "results", 
 CODE_EXT = {".py", ".sh", ".C", ".cc", ".cmnd", ".tcl", ".tex"}
 CODE_NAMES = {"Makefile", "README", "minbias2pileup"}
 GENERATED = ("note/", "slides", "figures/")       # .tex there is written by make_note.py / make_slides.py: a result
+CODE_NOW = {"generation", "analysis", "plotting", "docs", "lib", "tests", "repo_paths.py", "migrate_layout.py",
+            "__init__.py", "__pycache__"}            # code/ as it is now: not an old directory
+NEW_DIRS = {"cards": "generation/cards", "figures": "plotting/angle_diagram", "note": "docs",
+            "paper_figs": "plotting/paper", "tests": "tests"}
+MOVED_FILES = {"study_gonogo/generate_gonogo.sh": "generation/generate_gonogo.sh",
+               "study_truthmatch/generate_hh170_more.sh": "generation/generate_hh170_more.sh",
+               "study_truthmatch/paper_figs_matched.py": "plotting/paper/paper_figs_matched.py",
+               "study_truthmatch/fig6_corner_matched.py": "plotting/paper/fig6_corner_matched.py"}
+TOP_SCRIPTS = {
+    "generation": ("generate_samples.py", "setup_tools.sh"),
+    "analysis": ("osde_fit.py", "osde_simplify.py", "osde_order_scan.py", "osde_truncation_check.py", "osde_compare.py",
+                 "basis_compare.py", "ml_compare.py", "run_simplify_all.sh", "run_trig.sh"),
+    "plotting": ("make_plots.py", "plot_config.py", "hh_plots.py", "acceptance_plots.py", "lep_had_compare.py",
+                 "nu_pz_plot.py", "osde_scores_plot.py", "paper_style_plots.py", "regen_figures.sh"),
+    "docs": ("make_slides.py",),
+}
+
+
+def new_code_path(rel, flat=True):
+    """Where the code file rel (relative to the old top, or to the old code/) goes now, relative to code/."""
+    if rel in MOVED_FILES:
+        return MOVED_FILES[rel]
+    top, _, rest = rel.partition("/")
+    if not rest:                                     # a script at the top
+        return next((f"{cat}/{rel}" for cat, names in TOP_SCRIPTS.items() if rel in names), rel)
+    if top == "plotting" and flat:
+        return "lib/" + rest
+    if top in NEW_DIRS:
+        return f"{NEW_DIRS[top]}/{rest}"
+    if top.startswith("study_"):
+        return "analysis/" + rel
+    if top == "pileup":                              # production (minimum bias, merging) vs analysis of the samples
+        production = "/" in rest or not rest.endswith(".py") or rest.startswith(("merge_", "make_"))
+        return ("generation/pileup/" if production else "analysis/pileup/") + rest
+    return rel
+
+
+def old_code_entries(src_root):
+    """The code/ layout: what is in code/ but not part of code/ now (old directories, loose scripts)."""
+    d = os.path.join(src_root, "code")
+    if not os.path.isdir(d):
+        return []
+    return [e for e in sorted(os.listdir(d)) if e not in CODE_NOW and not e.startswith(".")]
 
 
 def is_code(rel):
@@ -46,16 +105,31 @@ def plan(src_root):
             if top in TOP_KEEP:
                 continue
             ext = os.path.splitext(top)[1]
-            kind = ("code" if ext in CODE_EXT else "results/figures" if ext in (".pdf", ".png")
-                    else "results/logs")
-            out.append((p, os.path.join(REPO, kind, top)))
+            dest = (os.path.join("code", new_code_path(top)) if ext in CODE_EXT
+                    else os.path.join("results/figures" if ext in (".pdf", ".png") else "results/logs", top))
+            out.append((p, os.path.join(REPO, dest)))
             continue
         for dp, dn, fn in os.walk(p):
             dn[:] = [d for d in dn if d not in ("__pycache__", ".pytest_cache")]
             for f in fn:
                 rel = os.path.relpath(os.path.join(dp, f), src_root)
-                kind = "code" if is_code(rel) else "results"
-                out.append((os.path.join(dp, f), os.path.join(REPO, kind, rel)))
+                dest = os.path.join("code", new_code_path(rel)) if is_code(rel) else os.path.join("results", rel)
+                out.append((os.path.join(dp, f), os.path.join(REPO, dest)))
+    code = os.path.join(src_root, "code")              # the code/ layout: what is left in the old code/ directories
+    for top in old_code_entries(src_root):
+        p = os.path.join(code, top)
+        if os.path.isfile(p):
+            new = new_code_path(top, flat=False)
+            if is_code(top) and new != top:
+                out.append((p, os.path.join(REPO, "code", new)))
+            continue
+        for dp, dn, fn in os.walk(p):
+            dn[:] = [d for d in dn if d not in ("__pycache__", ".pytest_cache")]
+            for f in fn:
+                rel = os.path.relpath(os.path.join(dp, f), code)
+                dest = (os.path.join("code", new_code_path(rel, flat=False)) if is_code(rel)
+                        else os.path.join("results", rel))
+                out.append((os.path.join(dp, f), os.path.join(REPO, dest)))
     return out
 
 
@@ -85,9 +159,10 @@ def main():
             shutil.move(s, d)
     print(f"{len(moves) - n_skip} files {'moved' if args.do else 'to move'} ({n_skip} already in place)")
     if args.do and not args.link:                      # remove the emptied old directories
-        for top in os.listdir(src):
-            p = os.path.join(src, top)
-            if top in SKIP or not os.path.isdir(p):
+        olds = [os.path.join(src, t) for t in os.listdir(src) if t not in SKIP]
+        olds += [os.path.join(src, "code", t) for t in old_code_entries(src)]
+        for p in olds:
+            if not os.path.isdir(p):
                 continue
             for dp, dn, fn in os.walk(p):                  # byte-code caches are rebuilt on import
                 for d in [d for d in dn if d in ("__pycache__", ".pytest_cache")]:
