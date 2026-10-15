@@ -9,12 +9,12 @@ Build f_tt̄(x) on the ten angles with OSDE and apply it to tt̄ and hh samples.
      and on hh
   4. plots: 1D projections of f vs data (as in the paper), distributions of
      y = f(x) and s = -ln y for tt̄ vs hh, hh-vs-tt̄ efficiency curve
-  5. <out>/summary.json with the numbers (used by make_slides.py); --out defaults to results/osde
+  5. <out>/summary.json with the numbers (used by code/docs/make_slides.py); --out defaults to results/osde
 
 Example:
-  python code/osde_fit.py --train samples/ttbar_bblvqq/run_seed1001 \\
-                          --test  samples/ttbar_bblvqq/run_seed12345 \\
-                          --hh    samples/hh_bblvqq/run_seed2001
+  python code/analysis/osde_fit.py --train samples/ttbar_bblvqq/run_seed1001 \\
+                                   --test  samples/ttbar_bblvqq/run_seed12345 \\
+                                   --hh    samples/hh_bblvqq/run_seed2001
 """
 import argparse
 import json
@@ -29,10 +29,11 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, HERE)
+CODE = os.path.dirname(HERE)          # code/
+sys.path.insert(0, CODE)
 
-import make_plots  # noqa: E402
 import repo_paths  # noqa: E402
+from plotting import make_plots  # noqa: E402
 from lib import angles, osde, style  # noqa: E402
 
 LEVELS = ["parton", "parton_trig", "gen", "reco"]
@@ -284,7 +285,7 @@ def main():
     p.add_argument("--test", help="independent tt̄ sample")
     p.add_argument("--hh", required=True, help="hh sample")
     p.add_argument("--levels", default=",".join(LEVELS))
-    p.add_argument("--config", default=os.path.join(HERE, "plot_config.py"))
+    p.add_argument("--config", default=os.path.join(CODE, "plotting", "plot_config.py"))
     p.add_argument("--n-legendre", type=int, default=5)
     p.add_argument("--n-hermite", type=int, default=5)
     p.add_argument("--y-scale", type=float, default=1.0, help="Hermite scale s (paper: 1)")

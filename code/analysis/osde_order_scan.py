@@ -27,7 +27,8 @@ import numpy as np
 from numpy.polynomial import hermite, legendre
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, HERE)
+CODE = os.path.dirname(HERE)          # code/
+sys.path.insert(0, CODE)
 
 import repo_paths  # noqa: E402
 

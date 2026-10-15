@@ -25,10 +25,11 @@ import numpy as np  # noqa: E402
 from numpy.polynomial import legendre  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, HERE)
+CODE = os.path.dirname(HERE)          # code/
+sys.path.insert(0, CODE)
 
 import repo_paths  # noqa: E402
-from osde_fit import ANGLE_TEX  # noqa: E402
+from analysis.osde_fit import ANGLE_TEX  # noqa: E402
 from lib import osde, style  # noqa: E402
 
 # angle: (kind, order of the paper's basis)

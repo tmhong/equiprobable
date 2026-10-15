@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Compile the per-<mu> results (results/pileup/results_pu<mu>.json from analyze_pileup.py) into results/pileup/results.json
-in the schema used by code/note/make_note.py and code/make_slides.py, plus the summary figure
+in the schema used by code/docs/make_note.py and code/docs/make_slides.py, plus the summary figure
 results/pileup/figures/summary_vs_mu.png (AUC and efficiencies versus <mu>) and a short LaTeX summary paragraph.
 The figure paths in results.json are relative to results/ (pileup/figures/...).
 """
@@ -15,7 +15,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.dirname(HERE))   # code/
+sys.path.insert(0, os.path.dirname(os.path.dirname(HERE)))   # code/
 import repo_paths  # noqa: E402
 from lib import style  # noqa: E402
 

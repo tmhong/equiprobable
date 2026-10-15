@@ -15,10 +15,11 @@ import sys
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, HERE)
+CODE = os.path.dirname(HERE)          # code/
+sys.path.insert(0, CODE)
 
-import osde_fit  # noqa: E402
 import repo_paths  # noqa: E402
+from analysis import osde_fit  # noqa: E402
 from lib import osde  # noqa: E402
 from lib.angles import ANGLE_NAMES  # noqa: E402
 

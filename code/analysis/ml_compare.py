@@ -42,10 +42,11 @@ from sklearn.mixture import GaussianMixture  # noqa: E402
 from sklearn.metrics import roc_auc_score, roc_curve  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, HERE)
+CODE = os.path.dirname(HERE)          # code/
+sys.path.insert(0, CODE)
 
-import make_plots  # noqa: E402
 import repo_paths  # noqa: E402
+from plotting import make_plots  # noqa: E402
 from lib import osde, style  # noqa: E402
 from lib.angles import ANGLE_NAMES  # noqa: E402
 
@@ -313,7 +314,7 @@ def main():
     p.add_argument("--osde", default=os.path.join(repo_paths.RESULTS, "osde"),
                    help="directory with f_ttbar_<level>.npz (paper basis)")
     p.add_argument("--out", default=os.path.join(repo_paths.RESULTS, "ml"))
-    p.add_argument("--config", default=os.path.join(HERE, "plot_config.py"))
+    p.add_argument("--config", default=os.path.join(CODE, "plotting", "plot_config.py"))
     p.add_argument("--quick", action="store_true", help="few epochs (testing only)")
     p.add_argument("--replot", action="store_true", help="only redraw the ROC figures from saved curves")
     p.add_argument("--threads", type=int, default=8, help="torch intra-op threads (default 8, as before)")

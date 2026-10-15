@@ -23,10 +23,11 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, HERE)
+CODE = os.path.dirname(HERE)          # code/
+sys.path.insert(0, CODE)
 
-import osde_fit  # noqa: E402
 import repo_paths  # noqa: E402
+from analysis import osde_fit  # noqa: E402
 from lib import osde, style  # noqa: E402
 from lib.angles import ANGLE_NAMES  # noqa: E402
 

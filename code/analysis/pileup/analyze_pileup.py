@@ -2,7 +2,7 @@
 """
 Reco-level analysis of one pileup case, identical for every <mu> so the cases are comparable.
 
-  .venv/bin/python code/pileup/analyze_pileup.py --mu 50 --tt-fit samples/.../pu50_fit --tt-test samples/.../pu50_test \
+  .venv/bin/python code/analysis/pileup/analyze_pileup.py --mu 50 --tt-fit samples/.../pu50_fit --tt-test samples/.../pu50_test \
         --hh samples/.../pu50_hh --out results/pileup/results_pu50.json
 
 Does, at reco level (events passing 1 lepton, >=4 jets, >=1 b-jet and the chi2 reconstruction):
@@ -15,7 +15,7 @@ Does, at reco level (events passing 1 lepton, >=4 jets, >=1 b-jet and the chi2 r
                AUC (bootstrap error) and signal efficiency at tt̄ efficiency 1% and 10%
   gen check    the existing gen-level f (results/osde/f_ttbar_gen.npz) + masses on the gen angles of the same events:
                gen level is pileup-independent, so this must agree between the <mu> cases
-Outputs: the JSON (schema used by code/note/make_note.py), per-event scores results/pileup/scores_pu<mu>.npz, figures in
+Outputs: the JSON (schema used by code/docs/make_note.py), per-event scores results/pileup/scores_pu<mu>.npz, figures in
 results/pileup/figures/.
 """
 import argparse
@@ -31,13 +31,12 @@ import numpy as np  # noqa: E402
 from sklearn.metrics import roc_auc_score  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)          # code/
+ROOT = os.path.dirname(os.path.dirname(HERE))          # code/
 sys.path.insert(0, ROOT)
-sys.path.insert(0, os.path.join(ROOT, "study_salvage"))
 import repo_paths  # noqa: E402
-import make_plots  # noqa: E402
-from salvage import surprisal  # noqa: E402
-from simplest import cauchy_surprisal  # noqa: E402
+from plotting import make_plots  # noqa: E402
+from analysis.study_salvage.salvage import surprisal  # noqa: E402
+from analysis.study_salvage.simplest import cauchy_surprisal  # noqa: E402
 from lib import osde, style, summary  # noqa: E402
 from lib.angles import ANGLE_NAMES  # noqa: E402
 
