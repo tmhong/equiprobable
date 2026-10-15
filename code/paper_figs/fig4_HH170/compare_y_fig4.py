@@ -180,6 +180,7 @@ RATIO_COLOR = "#d62728"            # the hh/ttbar curves and their axes
 DATA_LEGEND_IN = "x"               # with the ratio: the legend naming the two types in the dN/dx plot ("x", in
                                    # its upper right, in from the edge), or in the dN/dy plot with the ratio ("y")
 RATIO_LW = 1.0                     # width of the ratio curves
+RATIO_BAND_ALPHA = 0.2             # each ratio's ±1σ statistical band, in its colour
 RATIO_SMOOTH = 1.5                 # it is smooth: both y distributions smoothed by one Gaussian this many
                                    # times Scott's width, then divided
 RATIO_CURVE = True                 # the bin-by-bin ratio of the last panel's two histograms, as a curve with its own
@@ -788,7 +789,7 @@ ratio_frac = r"$\dfrac{%s}{%s}$" % (names_r[0].strip("$"), names_r[1].strip("$")
 ratio_small = r"$\frac{%s}{%s}$" % (names_r[0].strip("$"), names_r[1].strip("$"))   # the smaller one
 
 
-def smoothed_ratio(v_i, v_j, w_i, w_j, lo, hi, n=401, trim=False):
+def smoothed_ratio(v_i, v_j, w_i, w_j, lo, hi, n=401, trim=False, with_error=False):
     """The ratio hh/ttbar (or ttbar/hh, RATIO_OF) of the two types' distributions of v, both smoothed by
     the same Gaussian (RATIO_SMOOTH times Scott's width), on n - 1 points from lo to hi; nan wherever
     either type has fewer than RATIO_MIN_EVENTS events under the kernel."""
@@ -812,6 +813,12 @@ def smoothed_ratio(v_i, v_j, w_i, w_j, lo, hi, n=401, trim=False):
 
     def smooth(v, w):
         return np.convolve(np.histogram(v, bins=fine, weights=w)[0], kern, mode="same") / inside
+
+    def rel_err(v, w):                      # a smoothed count c = Σ K w has variance Σ K² w² (Poisson events)
+        w2 = None if w is None else w ** 2
+        var = np.convolve(np.histogram(v, bins=fine, weights=w2)[0], kern ** 2, mode="same") / inside ** 2
+        with np.errstate(divide="ignore", invalid="ignore"):
+            return np.sqrt(var) / smooth(v, w)
     d_i, d_j = smooth(v_i, w_i) / (w_i.sum() * step), smooth(v_j, w_j) / (w_j.sum() * step)
     under = np.sqrt(2 * np.pi) * sig                                     # fine bins under the kernel
     enough = (smooth(v_i, None) * under >= RATIO_MIN_EVENTS) & (smooth(v_j, None) * under >= RATIO_MIN_EVENTS)
@@ -831,8 +838,11 @@ def smoothed_ratio(v_i, v_j, w_i, w_j, lo, hi, n=401, trim=False):
             a, b = sorted((edge, beyond.min() if edge == v_bottom.min() else beyond.max()))
             if b > lo and a < hi:
                 infinite.append((max(a, lo), min(b, hi), edge))
-    return ((fine[1:] + fine[:-1]) / 2, np.where(enough, top_d / np.where(bottom_d > 0, bottom_d, 1.0), np.nan),
-            infinite)
+    out = ((fine[1:] + fine[:-1]) / 2, np.where(enough, top_d / np.where(bottom_d > 0, bottom_d, 1.0), np.nan),
+           infinite)
+    if with_error:                          # the ratio's relative statistical error (±1σ band)
+        out += (np.where(enough, np.sqrt(rel_err(v_i, w_i) ** 2 + rel_err(v_j, w_j) ** 2), np.nan),)
+    return out
 
 
 def style_ratio(ax, axis, values):
@@ -1216,15 +1226,17 @@ if B is not None:
     handles.append(Line2D([], [], color=LINE_J, lw=1.6, marker="o", ms=3.5, mfc=COLOR_J,
                           mec=DOT_EDGE_J, mew=0.4, label=NAME_J))
 if show_ratio and RATIO_PROJECTIONS:        # the ratio over x, on an axis right of the dN/dx plot
-    g1r, rat1, inf1 = smoothed_ratio(xi[:, 0], xj[:, 0], wi, wj, *r1)
+    g1r, rat1, inf1, rel1 = smoothed_ratio(xi[:, 0], xj[:, 0], wi, wj, *r1, with_error=True)
     ax1r = axx1.twinx()
+    ax1r.fill_between(g1r, rat1 * (1 - rel1), rat1 * (1 + rel1), color=color_r, alpha=RATIO_BAND_ALPHA, lw=0, zorder=5)
     ax1r.plot(g1r, rat1, color=color_r, lw=RATIO_LW, zorder=6, solid_capstyle="round")
     style_ratio(ax1r, ax1r.yaxis, rat1)
     ax1r.set_ylabel(ratio_frac, rotation=0, ha="left", va="center", color=color_r, fontsize=TITLE_SIZE)
     ax1r.yaxis.set_label_position("right")
     ax1r.spines["right"].set_color(color_r)
-    g2r, rat2, inf2 = smoothed_ratio(xi[:, 1], xj[:, 1], wi, wj, *r2)  # ... and over x2, right of dN/dx2
+    g2r, rat2, inf2, rel2 = smoothed_ratio(xi[:, 1], xj[:, 1], wi, wj, *r2, with_error=True)  # ... over x2, right of dN/dx2
     ax2r = axx2.twinx()
+    ax2r.fill_between(g2r, rat2 * (1 - rel2), rat2 * (1 + rel2), color=color_r, alpha=RATIO_BAND_ALPHA, lw=0, zorder=5)
     ax2r.plot(g2r, rat2, color=color_r, lw=RATIO_LW, zorder=6, solid_capstyle="round")
     style_ratio(ax2r, ax2r.yaxis, rat2)
     ax2r.set_ylabel(ratio_frac, rotation=0, ha="left", va="center", color=color_r, fontsize=TITLE_SIZE)
@@ -1278,8 +1290,10 @@ if GRADIENT_FILL and contour_mode:        # and its two sides in white, like the
     axy.vlines([edges_b[HL0], edges_b[HL1]], 0, [ci[HL0], ci[HL1 - 1]], colors=MARK_COLOR, lw=1.0, zorder=1.8)
 axy.set(xlim=(edges_b[0], edges_b[-1]), ylim=(0, top))
 if show_ratio:                             # hh/ttbar (or ttbar/hh), smoothed, on its own axis on the right
-    mid_r, ratio, inf_y = smoothed_ratio(bi, bj, wi, wj, edges_b[0], edges_b[-1], trim=not use_t)
+    mid_r, ratio, inf_y, rel_y = smoothed_ratio(bi, bj, wi, wj, edges_b[0], edges_b[-1], trim=not use_t, with_error=True)
     axr = axy.twinx()
+    axr.fill_between(mid_r, ratio * (1 - rel_y), ratio * (1 + rel_y), color=color_r, alpha=RATIO_BAND_ALPHA, lw=0,
+                     zorder=5)                # its ±1σ statistical band
     axr.plot(mid_r, ratio, color=color_r, lw=RATIO_LW, zorder=6, solid_capstyle="round")   # gaps: few events
     style_ratio(axr, axr.yaxis, ratio)
     if RATIO_PROJECTIONS:                   # the two projections: linear, on one scale, to compare

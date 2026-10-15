@@ -115,13 +115,15 @@ def fig2(x, f, y, w_r, path, with_h1=False):
 
 
 RATIO_RT = 0.76         # Fig. 3's right margin (inches) with the ratio axis: its values and the fraction
+RATIO_BAND_ALPHA = 0.2  # the ratio's ±1σ statistical band, in its colour
 RATIO_C = "#d62728"     # compare_y.py RATIO_COLOR: the HH/tt̄ curve and its axis, as in Fig. 4
 
 
 def smoothed_ratio(v_tt, v_hh, lo, hi, n=401, smooth=1.5, min_events=50):
     """HH/tt̄ of the two distributions of v, both smoothed by one Gaussian (smooth times Scott's width), on n - 1
     points from lo to hi; nan wherever either sample has fewer than min_events events under the kernel.
-    compare_y.py's smoothed_ratio (Fig. 4) for unweighted events."""
+    compare_y.py's smoothed_ratio (Fig. 4) for unweighted events.  Also returns the ratio's relative statistical
+    error: each smoothed count c = Σ K n has variance Σ K² n (Poisson n per fine bin)."""
     v_tt, v_hh = v_tt[np.isfinite(v_tt)], v_hh[np.isfinite(v_hh)]
     fine = np.linspace(lo, hi, n)
     step = fine[1] - fine[0]
@@ -131,11 +133,16 @@ def smoothed_ratio(v_tt, v_hh, lo, hi, n=401, smooth=1.5, min_events=50):
     kern = np.exp(-0.5 * (np.arange(-m, m + 1) / sig) ** 2)
     kern /= kern.sum()
     inside = np.convolve(np.ones(n - 1), kern, mode="same")             # renormalised at the ends
-    c_tt, c_hh = (np.convolve(np.histogram(v, fine)[0], kern, mode="same") / inside for v in (v_tt, v_hh))
+    n_tt, n_hh = np.histogram(v_tt, fine)[0], np.histogram(v_hh, fine)[0]
+    c_tt, c_hh = (np.convolve(nb, kern, mode="same") / inside for nb in (n_tt, n_hh))
+    var_tt, var_hh = (np.convolve(nb, kern ** 2, mode="same") / inside ** 2 for nb in (n_tt, n_hh))
     d_tt, d_hh = c_tt / (len(v_tt) * step), c_hh / (len(v_hh) * step)
     under = np.sqrt(2 * np.pi) * sig                                     # fine bins under the kernel
     enough = (c_tt * under >= min_events) & (c_hh * under >= min_events) & (d_tt > 0)
-    return 0.5 * (fine[1:] + fine[:-1]), np.where(enough, d_hh / np.where(d_tt > 0, d_tt, 1.0), np.nan)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        rel = np.sqrt(var_tt / c_tt ** 2 + var_hh / c_hh ** 2)
+    return (0.5 * (fine[1:] + fine[:-1]), np.where(enough, d_hh / np.where(d_tt > 0, d_tt, 1.0), np.nan),
+            np.where(enough, rel, np.nan))
 
 
 UPS_CLIPPED = "bin"     # Fig. 3: the events outside the plotted ranges (υ clipped to 0 or 1, s' beyond s'_1 or s'_0, and
@@ -149,11 +156,12 @@ def ratio_axis(ax, fig, v, edges, keep=None):
     red fraction, level with the top of the plot in the column of its values, the values it covers left out."""
     from matplotlib.ticker import AutoMinorLocator, FixedLocator, FuncFormatter, MaxNLocator
     if keep is None:
-        g, r = smoothed_ratio(v["tt"], v["hh"], edges[0], edges[-1])
+        g, r, rel = smoothed_ratio(v["tt"], v["hh"], edges[0], edges[-1])
     else:                                   # the shown events, normalized to all events like the histograms
-        g, r = smoothed_ratio(v["tt"][keep["tt"]], v["hh"][keep["hh"]], edges[0], edges[-1])
+        g, r, rel = smoothed_ratio(v["tt"][keep["tt"]], v["hh"][keep["hh"]], edges[0], edges[-1])
         r = r * keep["hh"].mean() / keep["tt"].mean()
     axr = ax.twinx()
+    axr.fill_between(g, r * (1 - rel), r * (1 + rel), color=RATIO_C, alpha=RATIO_BAND_ALPHA, lw=0, zorder=5)
     axr.plot(g, r, color=RATIO_C, lw=1.0, zorder=6, solid_capstyle="round")
     lo_v, hi_v = np.nanmin(r), np.nanmax(r)
     fmt = FuncFormatter(lambda u, _p: "$%g$" % u)
