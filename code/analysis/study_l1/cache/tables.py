@@ -2,7 +2,7 @@
 import json, os, sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))   # code/
 import repo_paths  # noqa: E402
-R = json.load(open(sys.argv[1] if len(sys.argv) > 1 else os.path.join(repo_paths.RESULTS, "study_l1", "results.json")))
+R = json.load(open(sys.argv[1] if len(sys.argv) > 1 else repo_paths.results("study_l1", "results.json")))
 rows = {r["name"]: r for r in R["rows"]}
 def f4(v): return "–" if v is None else f"{v:.3f}"
 def d(r, k):

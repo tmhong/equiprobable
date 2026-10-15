@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Supervised ceiling on the same ten angles (BDT trained with the signal labels, 5-fold out-of-fold predictions),
-at each level, on the events of study_cv/cv_scores.py.  Writes results/study_cv/ceiling.json."""
+at each level, on the events of study_cv/cv_scores.py.  Writes results/analysis/study_cv/ceiling.json."""
 import json, os, sys
 import numpy as np
 from sklearn.ensemble import HistGradientBoostingClassifier

@@ -1,7 +1,7 @@
 """
 Stepwise parton -> gen decomposition of the tt̄ / hh separation on the ten angles.
 
-Reads cache_tt.npz / cache_hh.npz (from extract.py, in results/study_washout/decomposition) and, for each
+Reads cache_tt.npz / cache_hh.npz (from extract.py, in results/analysis/study_washout/decomposition) and, for each
 step, computes the ten angles, then
   * AUC of f_tt̄ (paper OSDE basis) fit on a random half of the tt̄ events at that step,
     evaluated on the other half + all hh at that step (score = -f, hh = 1);
@@ -21,9 +21,9 @@ import repo_paths
 from lib.angles import decay_angles, production_angles, ANGLE_NAMES
 from lib import osde
 
-# the tt̄ caches and the default outputs: results/study_washout/decomposition
+# the tt̄ caches and the default outputs: results/analysis/study_washout/decomposition
 BASE = repo_paths.results_dir("study_washout", "decomposition")
-# OUT_SUFFIX (e.g. "_h170"): signal caches (cache_hh*.npz) and outputs in the sibling results/study_washout<SUFFIX>/decomposition;
+# OUT_SUFFIX (e.g. "_h170"): signal caches (cache_hh*.npz) and outputs in the sibling results/analysis/study_washout<SUFFIX>/decomposition;
 # the tt̄ caches are always read from BASE.  Default: everything in BASE, as before.
 SUFFIX = os.environ.get("OUT_SUFFIX", "")
 OUT = repo_paths.results_dir("study_washout" + SUFFIX, "decomposition") if SUFFIX else BASE

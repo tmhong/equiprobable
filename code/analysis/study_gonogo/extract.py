@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Per-sample arrays for the go/no-go analysis, cached in results/study_gonogo/cache/<key>.npz.
+Per-sample arrays for the go/no-go analysis, cached in results/analysis/study_gonogo/cache/<key>.npz.
 
 For each level in (parton_trig, gen, reco) and the events that osde_fit.py uses (finite angles; gen/reco: a
 reconstructed tt̄ system, i.e. reco_ok of the chi2 assignment): the ten angles, m_W,had, m_t,lep, m_t,had and m_tt̄,

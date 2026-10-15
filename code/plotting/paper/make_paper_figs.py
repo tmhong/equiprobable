@@ -3,7 +3,7 @@
 Figures 2 and 3 of the letter (Overleaf NPAD/main.tex), at one-column size (3.4 in), Pitt colours.
 
 Fig. 2 (fig:OSDE): reco-level tt̄ (fit sample after the reco selection, 24k) with the one-dimensional projections of
-  the OSDE fit f_tt̄ (results/osde/f_ttbar_reco.npz), for four of the ten angles, with the two BSM benchmarks overlaid (unit area):
+  the OSDE fit f_tt̄ (results/analysis/osde/f_ttbar_reco.npz), for four of the ten angles, with the two BSM benchmarks overlaid (unit area):
     HH(170)  = samples/hh_bblvqq/run_m170_seed2170,
     tt̄R     = the same tt̄ events reweighted to a right-handed W helicity fraction F_R (code/analysis/study_bsm/wtb_reweight.py).
   Angles: cos Θ (production), cos θ (W in the top frame), cos θ' (lepton in the W frame), cos θ̃' (down-type quark in
@@ -15,8 +15,8 @@ Fig. 5 (fig:negprob): reco level, the two tt̄ scores υ_Ω (angles, f_tt̄) and
   Cauchy factors) for tt̄, tt̄R and HH(170); the corner where both are small is where new physics sits.
 
 Run: OMP_NUM_THREADS=3 .venv/bin/python code/plotting/paper/make_paper_figs.py [--fr 0.3]
-     -> results/paper_figs/fig2_*, fig3_*, fig5_* .pdf / .png
-     (first run reads the samples, ~4 min, and caches the arrays in results/paper_figs/cache.npz)
+     -> results/plotting/paper/fig2_*, fig3_*, fig5_* .pdf / .png
+     (first run reads the samples, ~4 min, and caches the arrays in results/plotting/paper/cache.npz)
 """
 import argparse
 import os
@@ -152,7 +152,7 @@ def fig2(D, fr, path, level="parton_trig"):
     from lib import osde
     from lib.angles import ANGLE_NAMES
     from analysis.study_bsm.wtb_reweight import weights
-    f = osde.load_density(os.path.join(repo_paths.RESULTS, "osde", f"f_ttbar_{level}.npz"))
+    f = osde.load_density(repo_paths.results("osde", f"f_ttbar_{level}.npz"))
 
     def sel(key):
         ok = np.all([np.isfinite(D[f"{key}_p_{a}"]) for a in ANGLE_NAMES], 0)
@@ -168,7 +168,7 @@ def fig2(D, fr, path, level="parton_trig"):
     # projections), so the legend swatch is the same as Fig. 3's
     from matplotlib.colors import LinearSegmentedColormap
     cmap = LinearSegmentedColormap.from_list("tt", ["#ffffff", NAVY])
-    sc = np.load(os.path.join(repo_paths.RESULTS, "osde", f"scores_{level}.npz"))
+    sc = np.load(repo_paths.results("osde", f"scores_{level}.npz"))
     assert len(sc["train"]) == len(x["tt"]["Y"]), "tt̄ scores and events are not aligned"
     ups = npad_upsilon({"tt": sc["train"], "x": sc["hh"]}, {"tt": sc["train"]})[0]["tt"]
     edges = np.linspace(-1, 1, 25)
@@ -313,10 +313,10 @@ def fig3_plot(path, fr, panels, w_r, n_eff_r, extra):
 def fig3(D, fr, path, level="reco", extra=False):
     from lib import osde
     from analysis.study_bsm.wtb_reweight import weights
-    sc = np.load(os.path.join(repo_paths.RESULTS, "osde_h170", f"scores_{level}.npz"))
+    sc = np.load(repo_paths.results("osde_h170", f"scores_{level}.npz"))
     y_tt, y_hh = sc["train"], sc["hh"]           # tt̄: fit sample, leave-one-out; HH(170)
     # alignment check: the stored LOO scores are those of the reco-selected fit-sample events, in order
-    f = osde.load_density(os.path.join(repo_paths.RESULTS, "osde_h170", f"f_ttbar_{level}.npz"))
+    f = osde.load_density(repo_paths.results("osde_h170", f"f_ttbar_{level}.npz"))
     from lib.angles import ANGLE_NAMES
     if level == "reco":
         ok, x_tt = D["reco_ok"], {a: D[f"tt_r_{a}"] for a in ANGLE_NAMES}
@@ -329,9 +329,9 @@ def fig3(D, fr, path, level="reco", extra=False):
     w_r = weights(D["tt_p_cos_theta_prime"][ok], D["tt_p_cos_theta_prime_tilde"][ok], fr)
     n_eff_r = w_r.sum() ** 2 / (w_r ** 2).sum()
     # optional hh(125) (osde/: the same tt̄-only fit and identical tt̄ scores as osde_h170/)
-    y_x = np.load(os.path.join(repo_paths.RESULTS, "osde", f"scores_{level}.npz"))["hh"] if extra else None
+    y_x = np.load(repo_paths.results("osde", f"scores_{level}.npz"))["hh"] if extra else None
     # υ as in Fig. 5 (compare_y.py), with its parameters from tt̄ and hh(125), so υ is the same number in both
-    y_ref = y_x if extra else np.load(os.path.join(repo_paths.RESULTS, "osde", f"scores_{level}.npz"))["hh"]
+    y_ref = y_x if extra else np.load(repo_paths.results("osde", f"scores_{level}.npz"))["hh"]
     t, y0 = npad_upsilon({"tt": y_tt, "x": y_ref}, {"tt": y_tt, "hh": y_hh, "x": y_ref})
     expo = int(np.floor(np.log10(np.percentile(y_tt, 99))))
     scale = 10.0 ** expo
@@ -370,8 +370,8 @@ def fig5(D, fr, path, corner=0.20):
     from lib import osde
     from lib.angles import ANGLE_NAMES
     from analysis.study_bsm.wtb_reweight import weights
-    f = osde.load_density(os.path.join(repo_paths.RESULTS, "osde_h170", "f_ttbar_reco.npz"))
-    sc = np.load(os.path.join(repo_paths.RESULTS, "osde_h170", "scores_reco.npz"))
+    f = osde.load_density(repo_paths.results("osde_h170", "f_ttbar_reco.npz"))
+    sc = np.load(repo_paths.results("osde_h170", "scores_reco.npz"))
     yo_tt = sc["train"]                                             # leave-one-out, aligned (checked in fig3)
     yo_hh = f({a: D[f"hh_r_{a}"] for a in ANGLE_NAMES})
     hh_check = float(np.max(np.abs(yo_hh - sc["hh"]))) if len(sc["hh"]) == len(yo_hh) else np.nan
@@ -446,7 +446,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--fr", type=float, default=0.3, help="right-handed W helicity fraction of tt̄R")
     args = p.parse_args()
-    repo_paths.results_dir("paper_figs")                       # creates results/paper_figs/
+    repo_paths.results_dir("paper_figs")                       # creates results/plotting/paper/
     D = load_inputs(os.path.join(OUT, "cache.npz"))
     col = 0.95 * 3.375                                         # \includegraphics[width=0.95\linewidth]
     scale5 = col / DATA_WIDTH_IN                                # Fig. 5's print scale: match its panels and text

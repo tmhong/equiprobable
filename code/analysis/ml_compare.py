@@ -21,7 +21,7 @@ Models
 Test set (identical for every method): the independent tt̄ sample + a held-out 40% of hh.
 Checks: shuffled labels and tt̄-vs-tt̄ must give AUC ≈ 0.5; train vs test AUC (overtraining).
 
-Output: results/ml/roc_<level>.png, results/ml/results_<level>.json
+Output: results/analysis/ml/roc_<level>.png, results/analysis/ml/results_<level>.json
 """
 import argparse
 import json
@@ -311,9 +311,9 @@ def main():
     p.add_argument("--test", default=os.path.join(repo_paths.SAMPLES, "ttbar_bblvqq/run_seed12345"))
     p.add_argument("--hh", default=os.path.join(repo_paths.SAMPLES, "hh_bblvqq/run_seed2001"))
     p.add_argument("--level", default="parton", choices=["parton", "parton_trig"])
-    p.add_argument("--osde", default=os.path.join(repo_paths.RESULTS, "osde"),
+    p.add_argument("--osde", default=repo_paths.results("osde"),
                    help="directory with f_ttbar_<level>.npz (paper basis)")
-    p.add_argument("--out", default=os.path.join(repo_paths.RESULTS, "ml"))
+    p.add_argument("--out", default=repo_paths.results("ml"))
     p.add_argument("--config", default=os.path.join(CODE, "plotting", "plot_config.py"))
     p.add_argument("--quick", action="store_true", help="few epochs (testing only)")
     p.add_argument("--replot", action="store_true", help="only redraw the ROC figures from saved curves")

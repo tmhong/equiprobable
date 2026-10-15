@@ -41,7 +41,7 @@ def main():
     a = p.parse_args()
     torch.set_num_threads(4)
     level = a.level
-    f_all = osde.load_density(os.path.join(repo_paths.RESULTS, A.F_FILES[level]))
+    f_all = osde.load_density(repo_paths.results(A.F_FILES[level]))
     sig = f_all.significance()
     tt = A.load([A.TT_RUN], level) if level == "matched" else A.load("tt_fit", level)
     assert len(tt["mtt"]) == f_all.n_fit

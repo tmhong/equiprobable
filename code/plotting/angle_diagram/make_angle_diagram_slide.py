@@ -13,7 +13,7 @@ Conventions (as make_angle_diagram.py):
 
 Sized for one PRL column (8.6 cm); the printed font size is the size after scaling to it.
 Run:  .venv/bin/python code/plotting/angle_diagram/make_angle_diagram_slide.py
-        ->  code/plotting/angle_diagram/angle_diagram_slide.tex, results/figures/angle_diagram_slide.{pdf,png}
+        ->  code/plotting/angle_diagram/angle_diagram_slide.tex, results/plotting/angle_diagram/angle_diagram_slide.{pdf,png}
 """
 import os
 import subprocess

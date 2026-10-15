@@ -8,9 +8,9 @@ HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.abspath(os.pat
 sys.path.insert(0, ROOT)
 from lib.angles import ANGLE_NAMES
 import repo_paths
-C = os.path.join(repo_paths.RESULTS, "study_gonogo/cache")
+C = repo_paths.results("study_gonogo/cache")
 A = lambda k: np.column_stack([np.load(f"{C}/{k}.npz")[f"reco/{a}"] for a in ANGLE_NAMES])
-tt = A("tt_fit"); res = json.load(open(os.path.join(repo_paths.RESULTS, "study_gonogo/results.json")))
+tt = A("tt_fit"); res = json.load(open(repo_paths.results("study_gonogo/results.json")))
 def R(s, b, wp): return float(np.mean(s > np.quantile(b, 1 - wp)) / wp)
 for k in ("etat", "stop", "H350", "nospin", "tt_indep"):
     X = A(k); out = []

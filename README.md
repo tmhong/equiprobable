@@ -14,10 +14,13 @@ code/                 all code, sorted by what it does:
   lib/                the shared library: readers, physics objects, the ten angles, OSDE, drawing
   tests/              unit tests (pytest)
 code/repo_paths.py    where everything lives: every script finds its inputs and writes its outputs through it
-results/              every output, in the directory named after the code that writes it (results/study_cv/ from
-                      code/analysis/study_cv/, results/osde/ from code/analysis/osde_fit.py, results/paper_figs/ from
-                      code/plotting/paper/, results/slides*/ from code/docs/make_slides.py ...);
-                      fits, caches, .npz files and regenerated plot directories are not in git (see .gitignore)
+results/              every output, grouped like code/:
+  analysis/           OSDE fits (osde*/), ML (ml*/), pileup/, and one study_*/ per study
+  plotting/           validation plots (plots*/, acceptance*/), paper/ (every paper figure), angle_diagram/
+  docs/               note/, slides*/
+  logs/
+                      fits, caches, .npz files and regenerated plot directories are not in git (see .gitignore);
+                      scripts name an output directory by its short name and code/repo_paths.py places it
 recon_cicero/         J. Cicero's reconstruction, kept as is
 samples/ tools/ work/ .venv/   event samples, MG5/Pythia8/Delphes, MG5 work areas, python env (not in git)
 LOG.md                the running log of requests, decisions and results
@@ -25,8 +28,8 @@ LOG.md                the running log of requests, decisions and results
 
 Run everything from the repository top (`python code/<category>/<script>.py ...`).  A checkout from before this layout
 keeps its untracked files (fits, caches, plots, scripts not in git) in the old places after `git pull`;
-`python code/migrate_layout.py` shows where each file goes (data to results/, code next to the moved code in
-code/<category>/), and `--do` moves them.
+`python code/migrate_layout.py` shows where each file goes (data to its results/ group, code next to the moved code
+in code/<category>/), and `--do` moves them.
 
 ```
 code/generation/setup_tools.sh        one-time install: MG5_aMC 3.6.7, Pythia8, Delphes 3.5.1, python venv
@@ -154,9 +157,9 @@ Validation (10k events):
 
 ```bash
 python code/analysis/osde_fit.py --train samples/ttbar_bblvqq/run_seed1001 --test samples/ttbar_bblvqq/run_seed12345 \
-                                 --hh samples/hh_bblvqq/run_seed2001     # all levels; outputs in results/osde/
+                                 --hh samples/hh_bblvqq/run_seed2001     # all levels; outputs in results/analysis/osde/
 python -m pytest -q code/tests                                           # basis and OSDE checks
-python code/docs/make_slides.py --sample samples/ttbar_bblvqq/run_seed12345 --hh samples/hh_bblvqq/run_seed2001 --osde results/osde
+python code/docs/make_slides.py --sample samples/ttbar_bblvqq/run_seed12345 --hh samples/hh_bblvqq/run_seed2001 --osde results/analysis/osde
 ```
 
 **Basis** (as in the paper):
@@ -166,7 +169,7 @@ python code/docs/make_slides.py --sample samples/ttbar_bblvqq/run_seed12345 --hh
 - Y: normalized Hermite *functions* (2ⁿn!√π)^{−1/2}·H_n(Y)·e^{−Y²/2}, with scale `--y-scale` (paper: 1).
 - Total: 24 × 24 × 5 × 5 = 14,400 coefficients, estimated as ĉ = mean(B*) together with their standard errors. The basis factorizes, so the fit uses einsum and never builds an N × 14,400 array.
 
-**Outputs** (in `results/osde/`):
+**Outputs** (in `results/analysis/osde/`):
 
 - `f_ttbar_<level>.npz`: coefficients and their errors; reload with `TTbarDensity.load`.
 - `scores_<level>.npz`: f evaluated on every event.
@@ -181,7 +184,7 @@ python code/docs/make_slides.py --sample samples/ttbar_bblvqq/run_seed12345 --hh
 - Closure of the basis under complex conjugation, so f is real.
 - A toy with known coefficients: all 14,400 are recovered with unit-width pulls, and the projections and ∫f = 1 are reproduced.
 
-**Results** (tt̄ trained on 100k events and tested on an independent 10k; hh 20k): see `results/slides/slides.pdf`.
+**Results** (tt̄ trained on 100k events and tested on an independent 10k; hh 20k): see `results/docs/slides/slides.pdf`.
 
 - AUC(hh vs tt̄) is 0.65 at parton level and 0.53 / 0.51 at gen / reco.
 - Only 1–2% of the coefficients are significant at 3σ, so keeping all 14,400 overfits (the training sample looks more probable than the test sample). Truncating removes the overfitting but does not restore separation at gen/reco.
@@ -192,11 +195,11 @@ Angles are cached as `<sample>/angles_<options>.npz`. Delete the cache, or use `
 
 | script | what it makes |
 |---|---|
-| `code/plotting/acceptance_plots.py` | parton-level angles before and after the gen/reco selections, plus the efficiency vs angle cut by cut (`results/acceptance/`) |
-| `code/plotting/nu_pz_plot.py` | Δp_z of the reconstructed neutrino: gen vs reco, effect of the jet assignment, choice of the m_W solution (`results/plots/nu_pz.png`) |
-| `code/plotting/hh_plots.py` | hh overview and the hadronic-W mass split into on-shell W and W* (`results/plots_hh/`) |
-| `code/analysis/osde_simplify.py` | how many coefficients matter: Kronmal–Tarter rule, 5-fold cross-validated threshold, physics labels of the kept terms (`results/osde/simplify_*`, `results/osde/terms_*.txt`) |
-| `code/plotting/angle_diagram/make_angle_diagram.py` | TikZ diagram of (θ, φ, θ′, φ′) in the top and W rest frames (`results/figures/angle_diagram.pdf`) |
+| `code/plotting/acceptance_plots.py` | parton-level angles before and after the gen/reco selections, plus the efficiency vs angle cut by cut (`results/plotting/acceptance/`) |
+| `code/plotting/nu_pz_plot.py` | Δp_z of the reconstructed neutrino: gen vs reco, effect of the jet assignment, choice of the m_W solution (`results/plotting/plots/nu_pz.png`) |
+| `code/plotting/hh_plots.py` | hh overview and the hadronic-W mass split into on-shell W and W* (`results/plotting/plots_hh/`) |
+| `code/analysis/osde_simplify.py` | how many coefficients matter: Kronmal–Tarter rule, 5-fold cross-validated threshold, physics labels of the kept terms (`results/analysis/osde/simplify_*`, `results/analysis/osde/terms_*.txt`) |
+| `code/plotting/angle_diagram/make_angle_diagram.py` | TikZ diagram of (θ, φ, θ′, φ′) in the top and W rest frames (`results/plotting/angle_diagram/angle_diagram.pdf`) |
 
-Full deck: `python code/docs/make_slides.py --sample samples/ttbar_bblvqq/run_seed12345 --hh samples/hh_bblvqq/run_seed2001 --osde results/osde --acceptance results/acceptance`.
+Full deck: `python code/docs/make_slides.py --sample samples/ttbar_bblvqq/run_seed12345 --hh samples/hh_bblvqq/run_seed2001 --osde results/analysis/osde --acceptance results/plotting/acceptance`.
 It uses a University of Pittsburgh color theme, includes an outline, and runs the unit tests.

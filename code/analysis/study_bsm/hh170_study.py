@@ -11,7 +11,7 @@ Same scores as the hh(125) study, nothing retrained: f_tt̄ (paper basis, all te
 the Breit-Wigner factors, and their sum, at parton, gen and reco; AUC (bootstrap error) and the
 signal efficiency at tt̄ efficiency 1% and 10%; selection efficiencies; per-variable 1-D likelihood-
 ratio AUCs at parton level; a figure of m_W,had and m_t,had (parton and reco) for tt̄, hh(125), hh(170).
-Output: results/study_bsm/hh170_study.json, results/study_bsm/fig_hh170.png
+Output: results/analysis/study_bsm/hh170_study.json, results/analysis/study_bsm/fig_hh170.png
 """
 import json
 import os
@@ -65,7 +65,7 @@ def main():
             D[k] = extract(os.path.join(repo_paths.REPO, p), level)
         keep[level] = D
         ref = D["tt_fit"]
-        f_all = osde.load_density(os.path.join(repo_paths.RESULTS, "osde", fname))
+        f_all = osde.load_density(repo_paths.results("osde", fname))
         f_10 = f_all.truncated(f_all.significance() > 10)
         masses = list(D["tt"]["m"])
 

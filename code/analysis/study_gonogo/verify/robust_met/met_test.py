@@ -38,7 +38,7 @@ def wquantile(x, w, q):
 
 
 def main():
-    f_all = osde.load_density(os.path.join(repo_paths.RESULTS, A.F_FILES["reco"]))
+    f_all = osde.load_density(repo_paths.results(A.F_FILES["reco"]))
     f_cv = f_all.truncated(f_all.significance() > A.T_CV)
     tt = A.load("tt_fit", "reco")
     keys = [k for k in ("stop", "etat", "H350", "tt_indep") if os.path.exists(os.path.join(OUT, f"met_{k}.npz"))]

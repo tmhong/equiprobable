@@ -8,7 +8,7 @@ correctly; (3) choice between the two m_W-constrained solutions: the top-mass χ
 (default, as in the paper) vs the smaller-|p_z| rule vs always taking the other solution.
 
 Example:
-  python code/plotting/nu_pz_plot.py --sample samples/ttbar_bblvqq/run_seed12345 --out results/plots/nu_pz.png
+  python code/plotting/nu_pz_plot.py --sample samples/ttbar_bblvqq/run_seed12345 --out results/plotting/plots/nu_pz.png
 """
 import argparse
 import json
@@ -51,7 +51,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--sample", required=True)
     p.add_argument("--config", default=os.path.join(HERE, "plot_config.py"))
-    p.add_argument("--out", default=os.path.join(repo_paths.RESULTS, "plots", "nu_pz.png"))
+    p.add_argument("--out", default=repo_paths.results("plots", "nu_pz.png"))
     p.add_argument("--max-events", type=int, default=None)
     args = p.parse_args()
 

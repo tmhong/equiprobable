@@ -9,7 +9,7 @@ sys.path.insert(0, ROOT)
 from analysis.study_gonogo import analyze as A
 from lib import osde
 import repo_paths
-f0 = osde.load_density(os.path.join(repo_paths.RESULTS, A.F_FILES["reco"]))
+f0 = osde.load_density(repo_paths.results(A.F_FILES["reco"]))
 tt = A.load("tt_fit", "reco")
 X = tt["X"]; n = len(X["Y"])
 WPS = (0.005, 0.01, 0.02, 0.05, 0.1)

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Reco-level MET handles for a sample, with exactly the selection of study_gonogo/extract.py (reco_ok & finite
-angles), so that the rows line up with results/study_gonogo/cache/<key>.npz reco arrays.  Scratch for the robustness check.
+angles), so that the rows line up with results/analysis/study_gonogo/cache/<key>.npz reco arrays.  Scratch for the robustness check.
 
 Run: OMP_NUM_THREADS=4 .venv/bin/python code/analysis/study_gonogo/verify/robust_met/extract_met.py KEY=PATH ...   (PATH relative to the repo top)
 """
@@ -49,7 +49,7 @@ def one(key, path):
         out[f"ang/{a_}"] = v[ok]
     out["n_all"] = np.array(len(e))
     # alignment check with the go/no-go cache
-    z = np.load(os.path.join(repo_paths.RESULTS, "study_gonogo", "cache", f"{key}.npz"))
+    z = np.load(repo_paths.results("study_gonogo", "cache", f"{key}.npz"))
     same = all(len(z[f"reco/{x}"]) == len(out[f"ang/{x}"]) and np.allclose(z[f"reco/{x}"], out[f"ang/{x}"])
                for x in ANGLE_NAMES)
     print(f"{key}: {ok.sum()} of {len(e)} events, identical to study_gonogo cache: {same}", flush=True)

@@ -8,6 +8,6 @@ for seed in 2171 2172 2173 2174; do
     > work/hh170_seed$seed.out 2>&1 || { echo "generation failed for $seed"; tail -5 work/hh170_seed$seed.out; exit 1; }
   tail -3 work/hh170_seed$seed.out
   OMP_NUM_THREADS=3 .venv/bin/python code/analysis/study_truthmatch/build_matched.py samples/hh_bblvqq/run_m170_seed$seed \
-    > results/study_truthmatch/build_matched_seed$seed.log 2>&1 && grep -E 'n_all"|n_matched_presel' results/study_truthmatch/build_matched_seed$seed.log
+    > results/analysis/study_truthmatch/build_matched_seed$seed.log 2>&1 && grep -E 'n_all"|n_matched_presel' results/analysis/study_truthmatch/build_matched_seed$seed.log
 done
 echo "=== ALL DONE $(date +%H:%M:%S)"

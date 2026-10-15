@@ -6,8 +6,9 @@ H = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, H)
 from recompute import get, basis, f_eval, self_term, own_fit, R_at, SIG, FFILE, RES  # own helpers only
 from lib import osde
+import repo_paths  # noqa: E402  (code/ is on sys.path via recompute)
 for level in ("reco", "matched"):
-    f = osde.load_density(os.path.join(RES, FFILE[level]))
+    f = osde.load_density(repo_paths.results(FFILE[level]))
     tt = get("tt_fit", level)
     n = len(tt["mtt"])
     ft = basis(f, tt["X"])

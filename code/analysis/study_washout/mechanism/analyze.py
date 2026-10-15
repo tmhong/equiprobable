@@ -1,4 +1,4 @@
-"""Numbers + figures for the washout mechanism study (reads data_hh.npz, data_tt.npz in results/study_washout/mechanism,
+"""Numbers + figures for the washout mechanism study (reads data_hh.npz, data_tt.npz in results/analysis/study_washout/mechanism,
 writes results.json there; see OUT_SUFFIX below)."""
 import os, sys, json
 os.environ.setdefault("OMP_NUM_THREADS", "4")
@@ -12,9 +12,9 @@ HERE = os.path.dirname(os.path.abspath(__file__)); CODE = os.path.abspath(os.pat
 sys.path.insert(0, CODE)
 import repo_paths
 from lib import angles as A, osde
-# the tt̄ data and the default outputs: results/study_washout/mechanism
+# the tt̄ data and the default outputs: results/analysis/study_washout/mechanism
 BASE = repo_paths.results_dir("study_washout", "mechanism")
-# OUT_SUFFIX (e.g. "_h170"): signal data (data_hh.npz) and outputs in the sibling results/study_washout<SUFFIX>/mechanism;
+# OUT_SUFFIX (e.g. "_h170"): signal data (data_hh.npz) and outputs in the sibling results/analysis/study_washout<SUFFIX>/mechanism;
 # the tt̄ data (data_tt.npz) is always read from BASE.  Default: everything in BASE, as before.
 SUFFIX = os.environ.get("OUT_SUFFIX", "")
 OUT = repo_paths.results_dir("study_washout" + SUFFIX, "mechanism") if SUFFIX else BASE
@@ -93,10 +93,10 @@ mh, mt = fin(hh, "c", hh["match_reco"]), fin(tt, "c", tt["match_reco"])
 R["bdt"]["χ², matched-event subset"] = bdt_auc(angs(hh, "c", mh), angs(tt, "c", mt))
 print(R["bdt"])
 
-# ----- f_ttbar sanity (paper basis fits from results/osde/), tt̄ = independent sample seed12345 cached angles
+# ----- f_ttbar sanity (paper basis fits from results/analysis/osde/), tt̄ = independent sample seed12345 cached angles
 R["f_auc"] = {}
 for lvl, pre, cls in (("parton", "p", "all"), ("gen", "c", "reco")):
-    f = osde.TTbarDensity.load(os.path.join(repo_paths.RESULTS, "osde", f"f_ttbar_{lvl}.npz"))
+    f = osde.TTbarDensity.load(repo_paths.results("osde", f"f_ttbar_{lvl}.npz"))
     z = np.load(os.path.join(repo_paths.SAMPLES, "ttbar_bblvqq/run_seed12345/angles_down_truth.npz"))
     Xt = {a: z[f"{lvl}/{a}"] for a in NAMES}
     m = fin(hh, pre, hh[cls]); Xh = {a: hh[f"{pre}_{a}"][m] for a in NAMES}

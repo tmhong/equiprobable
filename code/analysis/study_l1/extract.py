@@ -10,7 +10,7 @@ own loader (make_plots.load_sample, angle options down-type / truth) and cache, 
     four-vectors (b_had, b_lep, q1, q2, nu), the truth-matched down-type W_had jet, the three
     masses and the ten angles.
 
-Output: results/study_l1/cache/<name>.npz (one file per sample).  Never modifies existing files.
+Output: results/analysis/study_l1/cache/<name>.npz (one file per sample).  Never modifies existing files.
 
   python code/analysis/study_l1/extract.py       # all three samples (skips existing cache files)
 """

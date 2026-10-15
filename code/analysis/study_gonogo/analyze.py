@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Go/no-go analysis for a PRL: does f_tt̄ flag spin-structure anomalies at reconstruction level better than the mass
-handles and as well as a flow?  The decision rule is fixed in results/study_gonogo/CRITERIA.md (committed before results).
+handles and as well as a flow?  The decision rule is fixed in results/analysis/study_gonogo/CRITERIA.md (committed before results).
 
 Inputs (under results/)
   study_gonogo/cache/<key>.npz         extract.py: angles, masses, m_tt̄ at parton_trig / gen / reco (chi2 jets)
@@ -14,7 +14,7 @@ Scores (higher = more anomalous; tt̄ scores are leave-one-out or out-of-fold on
   flow        RealNVP on the ten angles, 5-fold out-of-fold, seed ensemble
   osde_cv+bw  -ln(tail fraction) of osde_cv plus that of bw
   bdt_*       supervised ceilings (2-fold), not part of the rule
-Outputs: results/study_gonogo/results.json, results.md, fig_enrichment.png
+Outputs: results/analysis/study_gonogo/results.json, results.md, fig_enrichment.png
 
 Run: OMP_NUM_THREADS=8 .venv/bin/python code/analysis/study_gonogo/analyze.py [--levels reco,matched] [--nboot 300]
 """
@@ -263,7 +263,7 @@ def main():
     out = json.load(open(out_path)) if os.path.exists(out_path) else {}
     out.setdefault("levels", {})
     for level in levels:
-        f_all = osde.load_density(os.path.join(repo_paths.RESULTS, F_FILES[level]))
+        f_all = osde.load_density(repo_paths.results(F_FILES[level]))
         f_cv = f_all.truncated(f_all.significance() > T_CV)
         tt = load([TT_RUN], level) if level == "matched" else load("tt_fit", level)
         n_tt = len(tt["mtt"])

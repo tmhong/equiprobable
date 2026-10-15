@@ -38,7 +38,7 @@ NBOOT = 300
 
 def get(key, level):
     if level != "matched":
-        z = np.load(os.path.join(RES, "study_gonogo/cache", key + ".npz"))
+        z = np.load(repo_paths.results("study_gonogo/cache", key + ".npz"))
         return {"X": {a: np.asarray(z[f"{level}/{a}"], float) for a in ANG},
                 "m": {k: np.asarray(z[f"{level}/{k}"], float) for k in MASS},
                 "mtt": np.asarray(z[f"{level}/mtt"], float), "n_all": int(z[f"{level}/n_all"])}
@@ -46,7 +46,7 @@ def get(key, level):
     m = {k: [] for k in MASS}
     mtt, n_all = [], 0
     for r in RUNS[key]:
-        z = np.load(os.path.join(RES, "study_truthmatch", f"data_{r}.npz"))
+        z = np.load(repo_paths.results("study_truthmatch", f"data_{r}.npz"))
         ok = z["ok"].astype(bool)
         for a in ANG:
             X[a].append(z["m_" + a][ok])
@@ -197,11 +197,11 @@ def window_evenodd(ms, mb, eb):
 # ---------------------------------------------------------------- main
 def main():
     t0 = time.time()
-    ref = json.load(open(os.path.join(RES, "study_gonogo/results.json")))
+    ref = json.load(open(repo_paths.results("study_gonogo/results.json")))
     out = {}
     for level in ["reco", "matched", "parton_trig", "gen"]:
         full_rule = level in ("reco", "matched")
-        f = osde.load_density(os.path.join(RES, FFILE[level]))
+        f = osde.load_density(repo_paths.results(FFILE[level]))
         tt = get("tt_fit", level)
         n = len(tt["mtt"])
         L = out.setdefault(level, {})

@@ -8,11 +8,11 @@ With --mh > 2 m_W (e.g. the m_h = 170 GeV sample) both W are on shell: the split
 heavier vs lighter W (labels only; the classification is the same).  --mh also places the
 parton m_bb marker (default 125 GeV).
 
-Output: <out>/w_had_mass_split.png (+ .json with the fractions); --out defaults to results/plots_hh
+Output: <out>/w_had_mass_split.png (+ .json with the fractions); --out defaults to results/plotting/plots_hh
 
 Example:
-  python code/plotting/hh_plots.py --sample samples/hh_bblvqq/run_seed2001 --out results/plots_hh
-  python code/plotting/hh_plots.py --sample samples/hh_bblvqq/run_m170_seed2170 --mh 170 --out results/plots_hh_h170
+  python code/plotting/hh_plots.py --sample samples/hh_bblvqq/run_seed2001 --out results/plotting/plots_hh
+  python code/plotting/hh_plots.py --sample samples/hh_bblvqq/run_m170_seed2170 --mh 170 --out results/plotting/plots_hh_h170
 """
 import argparse
 import json
@@ -42,7 +42,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--sample", required=True)
     p.add_argument("--config", default=os.path.join(HERE, "plot_config.py"))
-    p.add_argument("--out", default=os.path.join(repo_paths.RESULTS, "plots_hh"))
+    p.add_argument("--out", default=repo_paths.results("plots_hh"))
     p.add_argument("--mh", type=float, default=125.0,
                    help="Higgs mass of the sample in GeV (default 125): position of the parton m_bb marker; for "
                         "m_h > 2 m_W both W are on shell and the split is labelled heavier / lighter W")

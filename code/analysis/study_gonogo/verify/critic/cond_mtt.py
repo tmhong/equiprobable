@@ -7,12 +7,12 @@ sys.path.insert(0, ROOT)
 from lib import osde
 from lib.angles import ANGLE_NAMES
 import repo_paths
-C = os.path.join(repo_paths.RESULTS, "study_gonogo/cache")
+C = repo_paths.results("study_gonogo/cache")
 FF = {"reco": "osde/f_ttbar_reco.npz", "parton_trig": "osde/f_ttbar_parton_trig.npz"}  # under results/
 for lev, fpath in FF.items():
-    if not os.path.exists(os.path.join(repo_paths.RESULTS, fpath)):
+    if not os.path.exists(repo_paths.results(fpath)):
         print("missing", fpath); continue
-    f = osde.load_density(os.path.join(repo_paths.RESULTS, fpath)); f = f.truncated(f.significance() > 2.5)
+    f = osde.load_density(repo_paths.results(fpath)); f = f.truncated(f.significance() > 2.5)
     z = np.load(f"{C}/tt_fit.npz"); stt = -f.loo({a: z[f"{lev}/{a}"] for a in ANGLE_NAMES}); mtt = z[f"{lev}/mtt"]
     edges = np.quantile(mtt, np.linspace(0, 1, 11)); edges[0], edges[-1] = -np.inf, np.inf
     btt = np.digitize(mtt, edges[1:-1])

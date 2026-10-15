@@ -9,7 +9,7 @@ Projection: z to the right, x up, y = z × x out of the page, so the page is the
 i.e. the plane spanned by the beam axis and the top momentum.
 
 Run:  python code/plotting/angle_diagram/make_angle_diagram.py   ->  code/plotting/angle_diagram/angle_diagram.tex,
-                                                                    results/figures/angle_diagram.{pdf,png}
+                                                                    results/plotting/angle_diagram/angle_diagram.{pdf,png}
 """
 import os
 import subprocess

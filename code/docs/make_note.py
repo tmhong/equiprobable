@@ -5,14 +5,14 @@ Internal note (LaTeX article) that compiles and explains the study shown in the 
 Every number is read from the analysis outputs (the same JSON files make_slides.py uses) and the
 figures are the ones in the plot directories, so the note stays in sync with the slides.  The
 sample-level numbers (cutflow, helicity fractions, resolutions) are computed once from the samples
-and cached in results/note/sample_summary.json.
+and cached in results/docs/note/sample_summary.json.
 
-  .venv/bin/python code/docs/make_note.py                 # writes results/note/note.tex and compiles results/note/note.pdf
+  .venv/bin/python code/docs/make_note.py                 # writes results/docs/note/note.tex and compiles results/docs/note/note.pdf
   .venv/bin/python code/docs/make_note.py --no-compile
   .venv/bin/python code/docs/make_note.py --recompute     # rebuild the sample summary cache
 
 Sections that depend on studies still running (BSM test, pileup) are written from their result
-files when present (results/study_bsm/htt_test.json, results/pileup/results.json) and as a short status paragraph
+files when present (results/analysis/study_bsm/htt_test.json, results/analysis/pileup/results.json) and as a short status paragraph
 otherwise.
 """
 import argparse
@@ -70,7 +70,7 @@ def variant():
     if SIGNAL in VARIANTS:
         return VARIANTS[SIGNAL]
     for k in ("h170", "h2mw"):   # HH(170) first: its W masses are tt̄-like (W-factor AUC 0.50), so it isolates the angles best
-        if os.path.exists(os.path.join(ROOT, "study_bsm", f"hh{VARIANTS[k]['tag']}_study.json")):
+        if os.path.exists(repo_paths.results("study_bsm", f"hh{VARIANTS[k]['tag']}_study.json")):
             return VARIANTS[k]
     return VARIANTS["h170"]
 
@@ -78,37 +78,37 @@ def variant():
 def load(*parts):
     """JSON of the main signal: tries the _h170 variant of the directory or file first when SIGNAL is h170."""
     if SUF:
-        d = os.path.join(ROOT, parts[0] + SUF, *parts[1:])          # sibling directory
+        d = repo_paths.results(parts[0] + SUF, *parts[1:])          # sibling directory
         if os.path.exists(d):
             return json.load(open(d))
         base, ext = os.path.splitext(parts[-1])
-        q = os.path.join(ROOT, *parts[:-1], base + SUF + ext)      # suffixed file
+        q = repo_paths.results(*parts[:-1], base + SUF + ext)      # suffixed file
         if os.path.exists(q):
             return json.load(open(q))
-    p = os.path.join(ROOT, *parts)
+    p = repo_paths.results(*parts)
     return json.load(open(p)) if os.path.exists(p) else None
 
 
 def srel(*parts):
     """Figure path of the main signal relative to the note directory (sibling dir or suffixed file when h170)."""
     if SUF:
-        d = os.path.join(ROOT, parts[0] + SUF, *parts[1:])
+        d = repo_paths.results(parts[0] + SUF, *parts[1:])
         if os.path.exists(d):
             return os.path.relpath(d, OUT)
         base, ext = os.path.splitext(parts[-1])
-        q = os.path.join(ROOT, *parts[:-1], base + SUF + ext)
+        q = repo_paths.results(*parts[:-1], base + SUF + ext)
         if os.path.exists(q):
             return os.path.relpath(q, OUT)
-    return os.path.relpath(os.path.join(ROOT, *parts), OUT)
+    return os.path.relpath(repo_paths.results(*parts), OUT)
 
 
 def rel(*parts):
     """Path of a figure relative to the note directory."""
-    return os.path.relpath(os.path.join(ROOT, *parts), OUT)
+    return os.path.relpath(repo_paths.results(*parts), OUT)
 
 
 def exists(*parts):
-    return os.path.exists(os.path.join(ROOT, *parts))
+    return os.path.exists(repo_paths.results(*parts))
 
 
 def _jsonable(o):
@@ -1527,7 +1527,7 @@ directory named after the code that writes it.  The code is sorted by what it do
 \item[\texttt{../LOG.md}] the running log of the study.
 \end{description}
 The slides are rebuilt with
-\texttt{python code/docs/make\_slides.py --sample samples/ttbar\_bblvqq/run\_seed12345 --hh samples/hh\_bblvqq/run\_seed2001 --osde results/osde --acceptance results/acceptance}
+\texttt{python code/docs/make\_slides.py --sample samples/ttbar\_bblvqq/run\_seed12345 --hh samples/hh\_bblvqq/run\_seed2001 --osde results/analysis/osde --acceptance results/plotting/acceptance}
 and this note with \texttt{python code/docs/make\_note.py}, both from the top of the repository.
 
 \section*{Acknowledgement}

@@ -13,7 +13,7 @@ Background: the independent tt̄ sample; everything tt̄-derived is fitted on th
    sample = independent tt̄ + a signal fraction ε, compare with the tt̄ reference coefficients
    (fit sample, 100k) term by term: pulls, global χ² over the 14,400 real degrees of freedom, the terms
    that respond.  ε = 0 calibrates the pulls (must be N(0,1)).
-Outputs: results/study_bsm/htt_study.json, figures results/study_bsm/fig_*.png
+Outputs: results/analysis/study_bsm/htt_study.json, figures results/analysis/study_bsm/fig_*.png
 """
 import json
 import os
@@ -129,7 +129,7 @@ def main():
                 D[k] = extract(os.path.join(repo_paths.REPO, p), level)
         data[level] = D
         ref = D["tt_fit"]
-        f_all = osde.load_density(os.path.join(repo_paths.RESULTS, "osde", f"f_ttbar_{level}.npz"))
+        f_all = osde.load_density(repo_paths.results("osde", f"f_ttbar_{level}.npz"))
         f_10 = f_all.truncated(f_all.significance() > 10)
         mtt_den = HistDensity(ref["mtt"], 300, 1500)
 

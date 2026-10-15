@@ -1,4 +1,4 @@
-"""Figures for the washout mechanism study (results/study_washout/mechanism/figures; see OUT_SUFFIX below)."""
+"""Figures for the washout mechanism study (results/analysis/study_washout/mechanism/figures; see OUT_SUFFIX below)."""
 import os, sys, json
 import numpy as np
 import matplotlib; matplotlib.use("Agg")
@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(HERE))))     # code/
 import repo_paths
-# the tt̄ data and the default inputs/outputs: results/study_washout/mechanism
+# the tt̄ data and the default inputs/outputs: results/analysis/study_washout/mechanism
 BASE = repo_paths.results_dir("study_washout", "mechanism")
-# OUT_SUFFIX (e.g. "_h170"): signal data, results and figures in the sibling results/study_washout<SUFFIX>/mechanism (tt̄ data
+# OUT_SUFFIX (e.g. "_h170"): signal data, results and figures in the sibling results/analysis/study_washout<SUFFIX>/mechanism (tt̄ data
 # always from BASE); SIGNAL_LABEL: name of the signal in the figures.  Defaults: as before.
 SUFFIX = os.environ.get("OUT_SUFFIX", "")
 OUT = repo_paths.results_dir("study_washout" + SUFFIX, "mechanism") if SUFFIX else BASE

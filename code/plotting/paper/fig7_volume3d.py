@@ -8,7 +8,7 @@ Delta V = 2 pi Delta c, and |grad f| = |df/dc|, so Delta V ~ 2 pi Delta y / |df/
 The toy is compare_y.py's: spin 1 -> 1/2 + 1/2 with helicity fractions (F_0, F_-, F_+) = (0.7, 0.3, 0); type 0 is
 isotropic, 1/4pi.  A rotation keeps solid angles, so V(y), Delta V and dN/dy are those of Fig. 6.
 
-Run: .venv/bin/python code/plotting/paper/fig7_volume3d.py      -> results/paper_figs/fig7_toy_collapsed.pdf / .png
+Run: .venv/bin/python code/plotting/paper/fig7_volume3d.py      -> results/plotting/paper/fig7_toy_collapsed.pdf / .png
 """
 import json
 import os

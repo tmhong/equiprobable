@@ -3,20 +3,20 @@
 Reco-level analysis of one pileup case, identical for every <mu> so the cases are comparable.
 
   .venv/bin/python code/analysis/pileup/analyze_pileup.py --mu 50 --tt-fit samples/.../pu50_fit --tt-test samples/.../pu50_test \
-        --hh samples/.../pu50_hh --out results/pileup/results_pu50.json
+        --hh samples/.../pu50_hh --out results/analysis/pileup/results_pu50.json
 
 Does, at reco level (events passing 1 lepton, >=4 jets, >=1 b-jet and the chi2 reconstruction):
   validation   reco efficiency, jet and b-jet multiplicities, fraction of events with all four jets correct,
                neutrino p_z and MET resolution, resonance-mass widths (tt̄ and hh)
   f_tt̄        the paper-basis OSDE density fitted on the reco angles of the fit sample; all terms and the
-               terms with |c|/sigma > 10, 5, 3; saved as results/pileup/f_ttbar_reco_pu<mu>.npz
+               terms with |c|/sigma > 10, 5, 3; saved as results/analysis/pileup/f_ttbar_reco_pu<mu>.npz
   masses       one Cauchy factor per mass (M, W = median, half-IQR of the fit sample) for m_W,had, m_t,lep, m_t,had
   scores       surprisal of angles, masses, and angles + masses on the independent tt̄ and on hh:
                AUC (bootstrap error) and signal efficiency at tt̄ efficiency 1% and 10%
-  gen check    the existing gen-level f (results/osde/f_ttbar_gen.npz) + masses on the gen angles of the same events:
+  gen check    the existing gen-level f (results/analysis/osde/f_ttbar_gen.npz) + masses on the gen angles of the same events:
                gen level is pileup-independent, so this must agree between the <mu> cases
-Outputs: the JSON (schema used by code/docs/make_note.py), per-event scores results/pileup/scores_pu<mu>.npz, figures in
-results/pileup/figures/.
+Outputs: the JSON (schema used by code/docs/make_note.py), per-event scores results/analysis/pileup/scores_pu<mu>.npz, figures in
+results/analysis/pileup/figures/.
 """
 import argparse
 import json
@@ -40,7 +40,7 @@ from analysis.study_salvage.simplest import cauchy_surprisal  # noqa: E402
 from lib import osde, style, summary  # noqa: E402
 from lib.angles import ANGLE_NAMES  # noqa: E402
 
-OUT = repo_paths.results_dir("pileup")       # results/pileup: densities, scores, figures
+OUT = repo_paths.results_dir("pileup")       # results/analysis/pileup: densities, scores, figures
 OPTS = {"had_fermion": "down", "jet_assignment": "truth"}
 MASSES = ["m_w_had", "m_t_lep", "m_t_had"]
 
@@ -141,7 +141,7 @@ def main():
     res["auc_angles_all"], res["auc_angles_10sigma"] = res["auc_angles_all"], res["auc_angles_10sigma"]
     res["auc_angles_masses"] = res["auc_angles_10sigma_masses"]
     # gen-level check with the existing gen density (pileup independent)
-    fg = osde.load_density(os.path.join(repo_paths.RESULTS, "osde", "f_ttbar_gen.npz"))
+    fg = osde.load_density(repo_paths.results("osde", "f_ttbar_gen.npz"))
     fg = fg.truncated(fg.significance() > 10)
     gc = {}
     for k in MASSES:

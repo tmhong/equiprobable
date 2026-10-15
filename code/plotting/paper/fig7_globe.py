@@ -5,7 +5,7 @@ spin axis P (here along z) the type-1 density depends only on c = cos(theta_P); 
 coloured by f, so the zero of f along P is a crater.  The band y1 < y < y2 is the red ring; its area on the unit
 sphere is the solid angle Delta V; the arrows are grad f along the surface (away from P).
 
-Run: .venv/bin/python code/plotting/paper/fig7_globe.py      -> results/paper_figs/fig7_toy_globe.pdf / .png
+Run: .venv/bin/python code/plotting/paper/fig7_globe.py      -> results/plotting/paper/fig7_toy_globe.pdf / .png
 """
 import os
 import sys

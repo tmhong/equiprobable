@@ -6,8 +6,8 @@ Pythia-record truth for the decomposition: for each role (b_lep, b_had, q_down, 
 Roles are assigned by PID from the LHE event (same pairing as the parton level).
 usage (from the repository top; SAMPLE_DIR and OUT relative to the current directory):
   python code/analysis/study_washout/decomposition/extract_shower.py tt samples/ttbar_bblvqq/run_seed1001 100000 \
-      results/study_washout/decomposition/cache_tt_shower.npz
-(cache_hh_shower.npz goes to results/study_washout<OUT_SUFFIX>/decomposition, next to cache_hh.npz.)
+      results/analysis/study_washout/decomposition/cache_tt_shower.npz
+(cache_hh_shower.npz goes to results/analysis/study_washout<OUT_SUFFIX>/decomposition, next to cache_hh.npz.)
 """
 import sys, os, time
 import numpy as np, awkward as ak, uproot

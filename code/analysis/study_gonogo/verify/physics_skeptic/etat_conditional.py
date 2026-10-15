@@ -40,16 +40,16 @@ def main():
     out = {}
     rng = np.random.default_rng(3)
     for level in ("parton_trig", "gen", "reco"):
-        f_all = osde.load_density(os.path.join(repo_paths.RESULTS, F[level]))
+        f_all = osde.load_density(repo_paths.results(F[level]))
         f_cv = f_all.truncated(f_all.significance() > 2.5)
-        z = np.load(os.path.join(repo_paths.RESULTS, "study_gonogo/cache/tt_fit.npz"))
+        z = np.load(repo_paths.results("study_gonogo/cache/tt_fit.npz"))
         b = -f_cv.loo({a: z[f"{level}/{a}"] for a in ANGLE_NAMES})
         m_b = z[f"{level}/mtt"]
         edges = np.quantile(m_b, np.linspace(0, 1, 11))          # tt m_tt deciles
         edges[0], edges[-1] = 0, 1e9
         out[level] = {}
         for key in ("etat", "H350", "stop", "nospin", "tt_indep"):
-            zs = np.load(os.path.join(repo_paths.RESULTS, f"study_gonogo/cache/{key}.npz"))
+            zs = np.load(repo_paths.results(f"study_gonogo/cache/{key}.npz"))
             s = -f_cv({a: zs[f"{level}/{a}"] for a in ANGLE_NAMES})
             m_s = zs[f"{level}/mtt"]
             r = {}

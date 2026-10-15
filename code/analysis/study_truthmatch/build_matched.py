@@ -12,7 +12,7 @@ whose m(l nu b_lep) is closer to m_t.  The ten angles are computed with lib/angl
 Writes
   <sample>/angles_down_dRmatch.npz     reco/<angle> for the matched events, the osde_fit.py cache format
                                        (fit with --config code/analysis/study_truthmatch/config_dRmatch.py --levels reco)
-  results/study_truthmatch/data_<name>.npz   event indices, masses, the chi2-assignment angles of the same events,
+  results/analysis/study_truthmatch/data_<name>.npz   event indices, masses, the chi2-assignment angles of the same events,
                                        parton angles (for the tt̄_R weights) and the matching statistics
 
 Run: OMP_NUM_THREADS=3 .venv/bin/python code/analysis/study_truthmatch/build_matched.py [--max-events N] [--dr 0.4] SAMPLE ...

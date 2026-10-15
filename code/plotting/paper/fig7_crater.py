@@ -6,7 +6,7 @@ r = sqrt(2 (1 - c)) (Lambert projection: r dr dphi = dc dphi = dOmega, so areas 
 The band y1 < y < y2 of Fig. 6 is the red ring on the surface; its projection is the hatched ring of area Delta V;
 the arrows are grad f (radial).  Every equiprobable contour is a circle.
 
-Run: .venv/bin/python code/plotting/paper/fig7_crater.py      -> results/paper_figs/fig7_toy_crater.pdf / .png (+ .json numbers)
+Run: .venv/bin/python code/plotting/paper/fig7_crater.py      -> results/plotting/paper/fig7_toy_crater.pdf / .png (+ .json numbers)
 """
 import json
 import os

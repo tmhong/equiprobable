@@ -7,7 +7,7 @@ Here the supervised check: a BDT on the masses alone, on the angles alone, and o
 on the tt̄ fit sample (30k) + half of hh and tested on the independent tt̄ sample + the other half
 of hh, with a paired bootstrap on AUC(both) - AUC(masses).  If a joint model cannot use the angles
 either, the angles carry no extra information for hh at that level.
-Output: results/study_salvage/angles_vs_bw.json
+Output: results/analysis/study_salvage/angles_vs_bw.json
 """
 import json
 import os

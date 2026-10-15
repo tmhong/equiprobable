@@ -7,7 +7,7 @@ Per level (parton_trig, gen, reco = chi2 jets, matched = ΔR-matched jets):
   AUC of HH(170) and hh(125) against tt̄ (low y = anomalous) with bootstrap errors, and the all-terms cross-fit;
   fractions with y <= 0; the HH/tt̄ ratio in deciles of the tt̄ quantile q (Fig. 7) and the KL divergence it carries;
 matched level: chi2 assignment on the same events; the corner of Fig. 5 (angles x Breit-Wigner masses).
-Writes results/study_cv/numbers.json.  Run: .venv/bin/python code/analysis/study_cv/cv_numbers.py
+Writes results/analysis/study_cv/numbers.json.  Run: .venv/bin/python code/analysis/study_cv/cv_numbers.py
 """
 import json
 import os

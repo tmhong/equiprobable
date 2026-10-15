@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Compare the three bases for f_tt̄ — the paper's M functions (results/osde/), spherical-harmonic
-products (results/osde_sh/), the extended block basis (results/osde_ext/) — full and CV-truncated, per level.
+Compare the three bases for f_tt̄ — the paper's M functions (results/analysis/osde/), spherical-harmonic
+products (results/analysis/osde_sh/), the extended block basis (results/analysis/osde_ext/) — full and CV-truncated, per level.
 
 Figures of merit (all on the independent tt̄ sample, which no fit has seen):
   held-out ISE   ∫(f̂ - f)^2 - ∫f^2 = Σ|ĉ|^2 - 2 <f̂>_indep   (orthonormal bases; lower = closer to the
@@ -10,7 +10,7 @@ Figures of merit (all on the independent tt̄ sample, which no fit has seen):
   f <= 0         fraction of independent tt̄ events with negative density
   AUC            hh vs tt̄ (from <dir>/simplify_summary.json)
 
-Output: results/osde_sh/basis_comparison.json and results/osde_sh/basis_comparison.png
+Output: results/analysis/osde_sh/basis_comparison.json and results/analysis/osde_sh/basis_comparison.png
 """
 import json
 import os
@@ -32,7 +32,7 @@ from lib import osde, style  # noqa: E402
 from lib.angles import ANGLE_NAMES  # noqa: E402
 
 BASES = [("paper (M functions)", "osde"), ("spherical harmonics", "osde_sh"), ("extended", "osde_ext")]   # dirs in results/
-OUT = os.path.join(repo_paths.RESULTS, "osde_sh")
+OUT = repo_paths.results("osde_sh")
 LEVELS = ["parton", "parton_trig", "gen", "reco"]
 
 
@@ -42,7 +42,7 @@ def main():
     get = lambda z, l: {a: z[f"{l}/{a}"] for a in ANGLE_NAMES}  # noqa: E731
     res, fvals = {}, {}
     for lab, d in BASES:
-        d = os.path.join(repo_paths.RESULTS, d)
+        d = repo_paths.results(d)
         simp = json.load(open(os.path.join(d, "simplify_summary.json")))["levels"] \
             if os.path.exists(os.path.join(d, "simplify_summary.json")) else {}
         for lvl in LEVELS:

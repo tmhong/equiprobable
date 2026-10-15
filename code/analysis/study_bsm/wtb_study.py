@@ -16,7 +16,7 @@ effective number of events Σw²/Σw² is reported).
    1% and 10%, at parton, gen, reco, for F_R = 0.02 ... 0.3.
 2. The coefficient test (pulls of ĉ_data - ĉ_tt̄ over the 14,400 real degrees of freedom; chi2 per physics
    category; the terms that respond) at parton, gen and reco, for F_R = 0.01 ... 0.3.
-Outputs: results/study_bsm/wtb_study.json, results/study_bsm/fig_wtb.png
+Outputs: results/analysis/study_bsm/wtb_study.json, results/analysis/study_bsm/fig_wtb.png
 """
 import json
 import os
@@ -106,7 +106,7 @@ def main():
         rang = {a: np.asarray(r[a], float)[rok] for a in ANGLE_NAMES}
         fin = np.all([np.isfinite(x) for x in rang.values()], 0)
         rang = {a: v[fin] for a, v in rang.items()}
-        f_all = osde.load_density(os.path.join(repo_paths.RESULTS, "osde", f"f_ttbar_{lvl}.npz"))
+        f_all = osde.load_density(repo_paths.results("osde", f"f_ttbar_{lvl}.npz"))
         f_10 = f_all.truncated(f_all.significance() > 10)
         masses = {"m_w_had": e.w_had.mass, "m_t_lep": e.t_lep.mass, "m_t_had": e.t_had.mass}
         if lvl == "parton":

@@ -11,7 +11,7 @@ from lib.angles import ANGLE_NAMES
 import repo_paths
 OUT = repo_paths.results_dir("study_gonogo", "verify", "robust_met")   # also extract_met.py's and stop_nochi.py's outputs
 WPS = (0.005, 0.01, 0.02, 0.05, 0.1)
-f_all = osde.load_density(os.path.join(repo_paths.RESULTS, A.F_FILES["reco"]))
+f_all = osde.load_density(repo_paths.results(A.F_FILES["reco"]))
 f_cv = f_all.truncated(f_all.significance() > A.T_CV)
 tt = A.load("tt_fit", "reco")
 Mtt = dict(np.load(os.path.join(OUT, "met_tt_fit.npz")))
