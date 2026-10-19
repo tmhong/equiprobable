@@ -110,11 +110,19 @@ TOP_KEEP = {"README.md", "LOG.md", "LICENSE", "requirements.txt", ".gitignore", 
             "py.py"}                         # py.py: MG5's parser table, rewritten wherever MG5 is started (ignored)
 
 
+def tracked_tops(src_root):
+    """Top-level entries that git tracks (co-authors' directories such as cicero/ or whitten/): never moved."""
+    import subprocess
+    r = subprocess.run(["git", "-C", src_root, "ls-files"], capture_output=True, text=True)
+    return {f.split("/")[0] for f in r.stdout.split()} if r.returncode == 0 else set()
+
+
 def plan(src_root):
     out = []
+    keep = tracked_tops(src_root)
     for top in sorted(os.listdir(src_root)):
         p = os.path.join(src_root, top)
-        if top in SKIP or top.startswith("."):
+        if top in SKIP or top in keep or top.startswith("."):
             continue
         if os.path.isfile(p):
             if top in TOP_KEEP:
@@ -193,7 +201,7 @@ def main():
             shutil.move(s, d)
     print(f"{len(moves) - n_skip} files {'moved' if args.do else 'to move'} ({n_skip} already in place)")
     if args.do and not args.link:                      # remove the emptied old directories
-        olds = [os.path.join(src, t) for t in os.listdir(src) if t not in SKIP]
+        olds = [os.path.join(src, t) for t in os.listdir(src) if t not in SKIP and t not in tracked_tops(src)]
         olds += [os.path.join(src, "code", t) for t in old_code_entries(src)]
         olds += [os.path.join(src, "results", t) for t in old_results_entries(src)]
         for p in olds:
