@@ -519,3 +519,15 @@ Newest entries are at the bottom. Numbers refer to the samples listed under "Sam
   - All 30 argparse scripts run `--help`.
   - Byte-identical to main: `numbers.json`, the Figs. 2, 3, 4, 6 and 7 PNG and JSON, and the go/no-go `results.md`.
   - The note builds with all 42 included figures found; pytest 14 passed.
+
+## 2026-10-19: study_vae, the tt̄ density as a VAE prior (first test: fixed chi2 encoder)
+
+- **Idea:** latent space = the ten angles, prior = f_tt̄, encoder = the event's candidate list (jet permutation x neutrino solution), weighted by exp(-chi2/2T).
+  - Scores: E_q[s], the latent KL = E_q[s] - H(q), and the marginal -ln sum w y'.
+  - The density is shifted by y0 to be positive (not renormalized: Y is unbounded, so only a constant moves).
+- **Code:** `code/analysis/study_vae/candidates.py` keeps the K = 8 lowest-chi2 candidates of every selected event. The best candidate reproduces the paper's assignment and angles in every sample. `score.py` computes the scores; outputs are in `results/analysis/study_vae/`.
+- **Result** (AUC against the independent tt̄ test sample; tt_pu0 50k agrees):
+  - The paper's reco density on the best candidate reproduces 0.540 (HH170) / 0.505 (hh125).
+  - The parton-level density on the same best candidate gives 0.579 / 0.542. This is the largest effect, and it needs no averaging.
+  - Averaging over the candidates gains at most 0.003 (E_q[s], marginal, T = 1..inf). With chi2 weights, the assignment ambiguity is not recovered.
+  - The full KL moves hh125 to 0.572 but HH170 down to 0.570. The entropy term H(q) is built from the chi2 values, so this is mass information, not angles.

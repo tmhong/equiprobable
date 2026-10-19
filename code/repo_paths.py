@@ -55,8 +55,9 @@ def results(*parts):
     if os.path.isabs(p):
         return p
     head, _, rest = os.path.normpath(p).partition(os.sep)
-    if head in LAYOUT:
-        p = os.path.join(LAYOUT[head], rest) if rest else LAYOUT[head]
+    group = LAYOUT.get(head) or ("analysis/" + head if head.startswith("study_") else None)   # new studies too
+    if group:
+        p = os.path.join(group, rest) if rest else group
     return os.path.join(RESULTS, p)
 
 
