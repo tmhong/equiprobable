@@ -531,3 +531,6 @@ Newest entries are at the bottom. Numbers refer to the samples listed under "Sam
   - The parton-level density on the same best candidate gives 0.579 / 0.542. This is the largest effect, and it needs no averaging.
   - Averaging over the candidates gains at most 0.003 (E_q[s], marginal, T = 1..inf). With chi2 weights, the assignment ambiguity is not recovered.
   - The full KL moves hh125 to 0.572 but HH170 down to 0.570. The entropy term H(q) is built from the chi2 values, so this is mass information, not angles.
+- **Factorized prior** (`factorized.py`, verified by independent recomputation to 0.003): f(angles | m_tt̄ bin) h(m_tt̄) g(three reco masses).
+  - h(m_tt̄) alone gives AUC 0.47 for HH170: its reconstructed m_tt̄ sits nearer the peak of the tt̄ distribution than tt̄'s own tail, so a density score ranks it as more tt̄-like. A density score only catches signal in the low-density tails; the go/no-go m_tt̄ handle was a window chosen with signal knowledge.
+  - g (the three masses, χ² assignment) alone 0.61; angles × g 0.63, the best; adding h lowers it to 0.59. Conditioning the angles on m_tt̄ changes nothing (0.580).

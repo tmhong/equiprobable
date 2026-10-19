@@ -9,8 +9,9 @@ min(n_b, 2) b-tagged jets in the two b slots) and the two W-mass neutrino soluti
 lib/physics._reconstruct_ttbar; the down-type W_had jet of each candidate is chosen by truth matching to the
 parton-level quarks, as in the paper (jet_assignment "truth").
 
-Writes results/analysis/study_vae/cand_<key>.npz: chi2 (n, K) (inf = no candidate), the ten angles <name> (n, K) and
-reco_ok (n,) (the paper's selected events: preselection and a finite best chi2).
+Writes results/analysis/study_vae/cand_<key>.npz: chi2 (n, K) (inf = no candidate), the ten angles <name> (n, K), the
+candidate's masses mtt, m_w_had, m_t_had, m_t_lep (n, K) and reco_ok (n,) (the paper's selected events: preselection
+and a finite best chi2).
 
 Run: OMP_NUM_THREADS=6 .venv/bin/python code/analysis/study_vae/candidates.py KEY=PATH[,PATH...] ... [--k 8]
 """
@@ -31,6 +32,12 @@ from lib.angles import ANGLE_NAMES, as_array, decay_angles, production_angles  #
 from plotting import make_plots  # noqa: E402
 
 OPTS = {"had_fermion": "down", "jet_assignment": "truth"}
+MASSES = ["mtt", "m_w_had", "m_t_had", "m_t_lep"]
+
+
+def inv_mass(p):
+    """Invariant mass of (n, 4) four-vectors [px, py, pz, E]."""
+    return np.sqrt(np.clip(p[:, 3] ** 2 - p[:, 0] ** 2 - p[:, 1] ** 2 - p[:, 2] ** 2, 0, None))
 
 
 def eta_phi(p):
@@ -93,7 +100,7 @@ def candidates(ev, parton, k):
     rows = np.arange(nev)
     J = np.stack([jpx, jpy, jpz, je])                                 # (4, n, nmax)
     q_down, q_up = as_array(parton.q_down), as_array(parton.q_up)
-    out = {a: np.full((nev, k), np.nan) for a in ANGLE_NAMES}
+    out = {a: np.full((nev, k), np.nan) for a in ANGLE_NAMES + MASSES}
     for j in range(k):
         isol, iperm = top_idx[:, j] // nperm, top_idx[:, j] % nperm
         sel = perms[iperm]
@@ -112,8 +119,9 @@ def candidates(ev, parton, k):
         ct, ph, ctp, php = decay_angles(t_lep, w_lep, lep)
         ctt, pht, cttp, phtp = decay_angles(t_had, w_had, f_had)
         vals = dict(zip(ANGLE_NAMES, (Y, cT, ct, ph, ctp, php, ctt, pht, cttp, phtp)))   # ANGLE_NAMES order
+        vals.update(mtt=inv_mass(t_lep + t_had), m_w_had=inv_mass(w_had), m_t_had=inv_mass(t_had), m_t_lep=inv_mass(t_lep))
         ok = np.isfinite(top_chi2[:, j])
-        for a in ANGLE_NAMES:
+        for a in ANGLE_NAMES + MASSES:
             out[a][:, j] = np.where(ok, vals[a], np.nan)
     return top_chi2, out
 
@@ -136,6 +144,8 @@ def main():
             same = np.allclose(chi2[best_ok, 0], np.asarray(ev.reco_chi2)[best_ok], rtol=1e-9, atol=1e-9)
             for nm in ANGLE_NAMES:                                     # the paper's reco angles of the best candidate
                 same &= np.allclose(ang[nm][best_ok, 0], np.asarray(ev[nm], float)[best_ok], equal_nan=True, atol=1e-7)
+            for nm, obj in (("m_w_had", ev.w_had), ("m_t_had", ev.t_had), ("m_t_lep", ev.t_lep), ("mtt", ev.ttbar)):
+                same &= np.allclose(ang[nm][best_ok, 0], np.asarray(obj.mass, float)[best_ok], equal_nan=True, atol=1e-6)
             print(f"[{key}] {path}: {len(best_ok)} events, {best_ok.sum()} selected; best candidate = paper's chi2 "
                   f"assignment and angles: {same}", flush=True)
             parts.append(dict(chi2=chi2, reco_ok=best_ok, **ang))

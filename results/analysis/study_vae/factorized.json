@@ -1,0 +1,388 @@
+{
+ "bins": 4,
+ "mtt_edges": [
+  413.1638981158381,
+  477.99856490173215,
+  584.7247467926502
+ ],
+ "per_bin": [
+  {
+   "n": 17831,
+   "kept_terms": 216,
+   "y0": 2.5999999999999997e-06
+  },
+  {
+   "n": 17830,
+   "kept_terms": 190,
+   "y0": 2.3e-06
+  },
+  {
+   "n": 17830,
+   "kept_terms": 196,
+   "y0": 4.6e-06
+  },
+  {
+   "n": 17831,
+   "kept_terms": 217,
+   "y0": 7.2999999999999996e-06
+  }
+ ],
+ "y0": 7.2999999999999996e-06,
+ "kept_terms_unconditional": 385,
+ "g_bandwidth_GeV": [
+  15.379778357554711,
+  20.81497885931011,
+  14.043822289125922
+ ],
+ "h_bandwidth_ln_mtt": {
+  "parton": 0.030952756191601524,
+  "reco": 0.045306593994264885
+ },
+ "n_selected": {
+  "tt_test": 2440,
+  "tt_pu0": 10217,
+  "HH170": 19675,
+  "hh125": 1878
+ },
+ "auc": {
+  "angles/best/HH170_vs_tt_test": [
+   0.579,
+   0.0059
+  ],
+  "angles/best/HH170_vs_tt_pu0": [
+   0.5758,
+   0.0034
+  ],
+  "angles/best/hh125_vs_tt_test": [
+   0.5421,
+   0.0084
+  ],
+  "angles/best/hh125_vs_tt_pu0": [
+   0.5381,
+   0.0079
+  ],
+  "angles/Eq_s/HH170_vs_tt_test": [
+   0.5804,
+   0.0058
+  ],
+  "angles/Eq_s/HH170_vs_tt_pu0": [
+   0.5809,
+   0.0034
+  ],
+  "angles/Eq_s/hh125_vs_tt_test": [
+   0.5412,
+   0.0084
+  ],
+  "angles/Eq_s/hh125_vs_tt_pu0": [
+   0.5408,
+   0.0078
+  ],
+  "angles|mtt/best/HH170_vs_tt_test": [
+   0.58,
+   0.0059
+  ],
+  "angles|mtt/best/HH170_vs_tt_pu0": [
+   0.5787,
+   0.0033
+  ],
+  "angles|mtt/best/hh125_vs_tt_test": [
+   0.5497,
+   0.0085
+  ],
+  "angles|mtt/best/hh125_vs_tt_pu0": [
+   0.5481,
+   0.0075
+  ],
+  "angles|mtt/Eq_s/HH170_vs_tt_test": [
+   0.5822,
+   0.0058
+  ],
+  "angles|mtt/Eq_s/HH170_vs_tt_pu0": [
+   0.5833,
+   0.0032
+  ],
+  "angles|mtt/Eq_s/hh125_vs_tt_test": [
+   0.5504,
+   0.0084
+  ],
+  "angles|mtt/Eq_s/hh125_vs_tt_pu0": [
+   0.5514,
+   0.0074
+  ],
+  "h(mtt) parton/best/HH170_vs_tt_test": [
+   0.4695,
+   0.0063
+  ],
+  "h(mtt) parton/best/HH170_vs_tt_pu0": [
+   0.46,
+   0.0034
+  ],
+  "h(mtt) parton/best/hh125_vs_tt_test": [
+   0.502,
+   0.0094
+  ],
+  "h(mtt) parton/best/hh125_vs_tt_pu0": [
+   0.493,
+   0.0079
+  ],
+  "h(mtt) parton/Eq_s/HH170_vs_tt_test": [
+   0.4703,
+   0.0062
+  ],
+  "h(mtt) parton/Eq_s/HH170_vs_tt_pu0": [
+   0.4611,
+   0.0033
+  ],
+  "h(mtt) parton/Eq_s/hh125_vs_tt_test": [
+   0.5187,
+   0.0094
+  ],
+  "h(mtt) parton/Eq_s/hh125_vs_tt_pu0": [
+   0.5097,
+   0.0079
+  ],
+  "h(mtt) reco/best/HH170_vs_tt_test": [
+   0.4793,
+   0.0067
+  ],
+  "h(mtt) reco/best/HH170_vs_tt_pu0": [
+   0.4672,
+   0.0033
+  ],
+  "h(mtt) reco/best/hh125_vs_tt_test": [
+   0.5144,
+   0.0097
+  ],
+  "h(mtt) reco/best/hh125_vs_tt_pu0": [
+   0.5027,
+   0.0075
+  ],
+  "h(mtt) reco/Eq_s/HH170_vs_tt_test": [
+   0.4764,
+   0.0065
+  ],
+  "h(mtt) reco/Eq_s/HH170_vs_tt_pu0": [
+   0.4651,
+   0.0032
+  ],
+  "h(mtt) reco/Eq_s/hh125_vs_tt_test": [
+   0.5205,
+   0.0097
+  ],
+  "h(mtt) reco/Eq_s/hh125_vs_tt_pu0": [
+   0.5096,
+   0.0075
+  ],
+  "angles * h/best/HH170_vs_tt_test": [
+   0.5027,
+   0.0064
+  ],
+  "angles * h/best/HH170_vs_tt_pu0": [
+   0.4922,
+   0.0037
+  ],
+  "angles * h/best/hh125_vs_tt_test": [
+   0.5176,
+   0.0091
+  ],
+  "angles * h/best/hh125_vs_tt_pu0": [
+   0.5078,
+   0.0082
+  ],
+  "angles * h/Eq_s/HH170_vs_tt_test": [
+   0.5043,
+   0.0063
+  ],
+  "angles * h/Eq_s/HH170_vs_tt_pu0": [
+   0.4952,
+   0.0036
+  ],
+  "angles * h/Eq_s/hh125_vs_tt_test": [
+   0.5344,
+   0.0091
+  ],
+  "angles * h/Eq_s/hh125_vs_tt_pu0": [
+   0.5257,
+   0.0081
+  ],
+  "angles|mtt * h/best/HH170_vs_tt_test": [
+   0.5093,
+   0.0065
+  ],
+  "angles|mtt * h/best/HH170_vs_tt_pu0": [
+   0.5001,
+   0.0037
+  ],
+  "angles|mtt * h/best/hh125_vs_tt_test": [
+   0.5267,
+   0.0088
+  ],
+  "angles|mtt * h/best/hh125_vs_tt_pu0": [
+   0.5177,
+   0.0083
+  ],
+  "angles|mtt * h/Eq_s/HH170_vs_tt_test": [
+   0.5116,
+   0.0064
+  ],
+  "angles|mtt * h/Eq_s/HH170_vs_tt_pu0": [
+   0.5028,
+   0.0036
+  ],
+  "angles|mtt * h/Eq_s/hh125_vs_tt_test": [
+   0.5435,
+   0.009
+  ],
+  "angles|mtt * h/Eq_s/hh125_vs_tt_pu0": [
+   0.535,
+   0.0083
+  ],
+  "g(masses)/best/HH170_vs_tt_test": [
+   0.6109,
+   0.0065
+  ],
+  "g(masses)/best/HH170_vs_tt_pu0": [
+   0.6037,
+   0.0036
+  ],
+  "g(masses)/best/hh125_vs_tt_test": [
+   0.6021,
+   0.009
+  ],
+  "g(masses)/best/hh125_vs_tt_pu0": [
+   0.595,
+   0.0062
+  ],
+  "g(masses)/Eq_s/HH170_vs_tt_test": [
+   0.6131,
+   0.0065
+  ],
+  "g(masses)/Eq_s/HH170_vs_tt_pu0": [
+   0.606,
+   0.0036
+  ],
+  "g(masses)/Eq_s/hh125_vs_tt_test": [
+   0.6047,
+   0.0089
+  ],
+  "g(masses)/Eq_s/hh125_vs_tt_pu0": [
+   0.5976,
+   0.0063
+  ],
+  "angles * g/best/HH170_vs_tt_test": [
+   0.6257,
+   0.0064
+  ],
+  "angles * g/best/HH170_vs_tt_pu0": [
+   0.6179,
+   0.0036
+  ],
+  "angles * g/best/hh125_vs_tt_test": [
+   0.6069,
+   0.0088
+  ],
+  "angles * g/best/hh125_vs_tt_pu0": [
+   0.5988,
+   0.0064
+  ],
+  "angles * g/Eq_s/HH170_vs_tt_test": [
+   0.6278,
+   0.0065
+  ],
+  "angles * g/Eq_s/HH170_vs_tt_pu0": [
+   0.621,
+   0.0037
+  ],
+  "angles * g/Eq_s/hh125_vs_tt_test": [
+   0.6096,
+   0.0088
+  ],
+  "angles * g/Eq_s/hh125_vs_tt_pu0": [
+   0.6028,
+   0.0064
+  ],
+  "angles|mtt * h * g/best/HH170_vs_tt_test": [
+   0.5847,
+   0.0065
+  ],
+  "angles|mtt * h * g/best/HH170_vs_tt_pu0": [
+   0.5748,
+   0.0036
+  ],
+  "angles|mtt * h * g/best/hh125_vs_tt_test": [
+   0.5905,
+   0.009
+  ],
+  "angles|mtt * h * g/best/hh125_vs_tt_pu0": [
+   0.5809,
+   0.0073
+  ],
+  "angles|mtt * h * g/Eq_s/HH170_vs_tt_test": [
+   0.5885,
+   0.0066
+  ],
+  "angles|mtt * h * g/Eq_s/HH170_vs_tt_pu0": [
+   0.5786,
+   0.0036
+  ],
+  "angles|mtt * h * g/Eq_s/hh125_vs_tt_test": [
+   0.6022,
+   0.0088
+  ],
+  "angles|mtt * h * g/Eq_s/hh125_vs_tt_pu0": [
+   0.5923,
+   0.0072
+  ],
+  "angles|mtt * h(reco) * g/best/HH170_vs_tt_test": [
+   0.602,
+   0.0067
+  ],
+  "angles|mtt * h(reco) * g/best/HH170_vs_tt_pu0": [
+   0.5926,
+   0.0036
+  ],
+  "angles|mtt * h(reco) * g/best/hh125_vs_tt_test": [
+   0.6001,
+   0.009
+  ],
+  "angles|mtt * h(reco) * g/best/hh125_vs_tt_pu0": [
+   0.5907,
+   0.0068
+  ],
+  "angles|mtt * h(reco) * g/Eq_s/HH170_vs_tt_test": [
+   0.6047,
+   0.0067
+  ],
+  "angles|mtt * h(reco) * g/Eq_s/HH170_vs_tt_pu0": [
+   0.5955,
+   0.0036
+  ],
+  "angles|mtt * h(reco) * g/Eq_s/hh125_vs_tt_test": [
+   0.6059,
+   0.0089
+  ],
+  "angles|mtt * h(reco) * g/Eq_s/hh125_vs_tt_pu0": [
+   0.5965,
+   0.0067
+  ]
+ },
+ "best_candidate_masses_match_cache": true,
+ "n_floored": {
+  "tt_test": {
+   "uncond": 0,
+   "cond": 2
+  },
+  "tt_pu0": {
+   "uncond": 0,
+   "cond": 25
+  },
+  "HH170": {
+   "uncond": 2,
+   "cond": 44
+  },
+  "hh125": {
+   "uncond": 0,
+   "cond": 7
+  }
+ }
+}
