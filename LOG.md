@@ -534,3 +534,12 @@ Newest entries are at the bottom. Numbers refer to the samples listed under "Sam
 - **Factorized prior** (`factorized.py`, verified by independent recomputation to 0.003): f(angles | m_tt̄ bin) h(m_tt̄) g(three reco masses).
   - h(m_tt̄) alone gives AUC 0.47 for HH170: its reconstructed m_tt̄ sits nearer the peak of the tt̄ distribution than tt̄'s own tail, so a density score ranks it as more tt̄-like. A density score only catches signal in the low-density tails; the go/no-go m_tt̄ handle was a window chosen with signal knowledge.
   - g (the three masses, χ² assignment) alone 0.61; angles × g 0.63, the best; adding h lowers it to 0.59. Conditioning the angles on m_tt̄ changes nothing (0.580).
+
+## 2026-10-19: study_vae rung 1, a plain VAE on the ten angles against the OSDE density
+
+- **Setup** (`vae_angles.py`): a standard VAE (latent 10, N(0,1) prior) trained on 80% of the parton-level tt̄ fit sample; its decoders are densities in the same measure as f (truncated normal in cos, normal in Y, von Mises in φ), so −ELBO and −ln f are comparable with no free constant. Compared event by event on the independent tt̄ sample; the paper's RealNVP flow trained on the same split as a second yardstick.
+- **Held-out cross-entropy** (lower is the better density): f 11.89, VAE 12.04 (IWAE, warm-up variant) / 12.08 (baseline), flow 12.26 nats. f is the best density of the three.
+- **Baseline VAE collapses:** latent KL 0.04 nats, so it is a product of per-variable parametric marginals (r = 0.997 with that product). Entropy budget: marginals 11.98, correlations among the angles only 0.09 nats, parametric-family cost 0.10 (a truncated normal cannot make the U shape of cos Θ: 0.07 of it).
+- **With KL warm-up and free bits** the latent carries 3.2 nats; IWAE 12.04, r(IWAE, s_f) = 0.78, slope 0.72, residual 0.15 ± 0.54 nats; AUC 0.63/0.65 (HH170/hh125) against 0.67/0.68 for f and 0.68/0.68 for the flow.
+- **Residual patterns:** VAE: U shape in cos Θ (+0.7 at the edges), Y tails (+0.4), cos θ′ edges; flow: a flat 0.35-nat offset plus the φ = ±π edges (not periodic).
+- Verified (implementation by numerical integration to 1e-13, collapse diagnosis, all numbers) by three independent agents.
